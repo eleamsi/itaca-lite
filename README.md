@@ -9,6 +9,32 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
    Agli avvii successivi Itaca riapre da sola l’ultima cartella. Se il browser ha dimenticato il permesso, basta un clic o un tasto qualsiasi per concederlo di nuovo; scegli **Consenti a ogni visita**, se il browser lo propone, per non doverlo più ripetere.
 3. Seleziona un documento dalla barra laterale.
 
+## Ricerca nei documenti
+
+La casella **Cerca nei documenti…** in alto nella barra laterale (`Ctrl/⌘ + K`) cerca nei nomi, nelle cartelle e nel testo di tutti i documenti della cartella.
+
+- Non distingue maiuscole e accenti: `perche` trova anche «Perché». Più parole devono esserci tutte; per una frase esatta usa le virgolette (`"motore principale"`).
+- Ogni risultato mostra la sezione in cui si trova (§ titolo), quante volte compare e un estratto. Clic sul risultato per aprirlo sulla prima occorrenza; clic di nuovo per passare alla successiva.
+- Tastiera: **Invio** apre il primo risultato, **↓/↑** scorrono i risultati, **Esc** torna alla casella o la svuota.
+- I file cambiati fuori da Itaca (da un altro programma o da un altro utente) vengono riletti alla ricerca successiva.
+
+## Barra di formattazione
+
+Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
+
+## Modifiche non salvate
+
+Se cambi documento, ricarichi o apri un’altra cartella con modifiche non salvate, Itaca chiede **Salvare le modifiche?**: **Salva** (o `Invio`) salva e prosegue, **Non salvare** scarta le modifiche, **Annulla** (o `Esc`) resta sul documento.
+
+## Barra del documento
+
+In alto a destra, da sinistra a destra:
+
+- **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente. Nelle finestre strette restano solo le icone.
+- **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
+- **⋯ Altre azioni**: **Esporta PDF…** e, se la cartella è un repository git, **Versioni precedenti…**.
+- **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
+
 ## Modifica immagine
 
 Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica immagine**.
@@ -36,7 +62,7 @@ La versione di Itaca compare sotto il nome, in alto nella barra laterale, e nell
 
 ## Modifica condivisa
 
-Quando attivi **Modifica** su un documento della cartella, Itaca lo segnala con un piccolo file in `.itaca-locks`, rinnovato ogni 30 secondi e rimosso quando smetti di modificare o chiudi la pagina. Chi apre lo stesso documento da un’altra scheda o da un altro computer che usa la stessa cartella (per esempio una cartella di rete o sincronizzata) lo vede in sola lettura, con l’indicazione **In modifica: nome**.
+Quando passi a **Modifica** o **Markdown** su un documento della cartella, Itaca lo segnala con un piccolo file in `.itaca-locks`, rinnovato ogni 30 secondi e rimosso quando smetti di modificare o chiudi la pagina. Chi apre lo stesso documento da un’altra scheda o da un altro computer che usa la stessa cartella (per esempio una cartella di rete o sincronizzata) lo vede in sola lettura, con l’indicazione **In modifica: nome**.
 
 - Il documento resta leggibile; la modifica si sblocca da sola quando l’altro utente ha finito.
 - Se Itaca si è chiusa senza rilasciare il documento, il blocco scade dopo circa 2 minuti e mezzo. Puoi anche premere **In modifica: nome** e scegliere **Modifica comunque**: l’altro utente passa in sola lettura (se ha modifiche non salvate riceve un avviso).
