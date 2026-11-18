@@ -11,13 +11,14 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 
 ## Impostazioni
 
-Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Puoi scegliere:
+Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Le scelte restano salvate nel browser.
 
-- **Tema**: Laguna, Salvia, Terracotta o Indaco, ognuno con variante chiara e scura;
-- **Aspetto**: automatico (segue il sistema), chiaro o scuro;
-- **Dimensione del testo** dei documenti, dall’80% al 140%.
+- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato) e larghezza della colonna (stretta, media, larga, piena).
+- **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
+- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma) e preselezione di «Aggiorna i collegamenti» quando rinomini o sposti.
+- **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione.
 
-Le impostazioni restano salvate nel browser. La versione di Itaca compare sotto il nome, in alto nella barra laterale, e nella finestra Impostazioni.
+La versione di Itaca compare sotto il nome, in alto nella barra laterale, e nella finestra Impostazioni.
 
 ## Versioni
 
