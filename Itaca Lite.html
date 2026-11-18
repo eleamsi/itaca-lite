@@ -112,9 +112,10 @@ button:disabled { opacity: .4; cursor: default; }
 
 .app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 .sidebar {
+  --side-x: 12px;
   width: 272px;
   flex: 0 0 auto;
-  padding: 20px 14px 14px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   background: var(--sidebar);
@@ -123,24 +124,17 @@ button:disabled { opacity: .4; cursor: default; }
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar) transparent;
 }
-.brand { display: flex; align-items: center; gap: 11px; margin: 0 6px 22px; }
-.brandmark { display: grid; place-items: center; flex: none; width: 36px; height: 36px; overflow: hidden; border-radius: 9px; background: #f5f1e5; box-shadow: 0 0 0 1px #17212b14; }
-.brandmark img { width: 36px; height: 36px; }
-.brand strong { display: block; font: 650 17px/1.15 var(--display); letter-spacing: -.01em; }
-.brand small { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+.sidebar > * { flex: none; }
+
+/* Testata: marchio + ricerca */
+.brand { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 14px calc(var(--side-x) + 4px) 10px; }
+.brandmark { display: grid; place-items: center; flex: none; width: 32px; height: 32px; overflow: hidden; border-radius: 8px; background: #f5f1e5; box-shadow: 0 0 0 1px #17212b14; }
+.brandmark img { width: 32px; height: 32px; }
+.brand strong { display: block; font: 650 15.5px/1.2 var(--display); letter-spacing: -.01em; color: var(--ink); }
+.brand small { display: block; margin-top: 1px; color: var(--muted); font-size: 12px; }
 .close-sidebar { display: none; margin-left: auto; }
 
-.file-actions { display: grid; gap: 6px; margin-bottom: 18px; }
-.file-actions button { display: flex; justify-content: center; align-items: center; gap: 7px; white-space: nowrap; font-size: 12.5px; font-weight: 550; }
-.file-actions .new-doc { min-height: 36px; font-size: 13px; font-weight: 600; color: var(--on-accent); background: var(--accent); }
-.file-actions .new-doc:hover:not(:disabled) { background: var(--accent-hover); }
-.open-actions { display: grid; grid-template-columns: 1.18fr 1fr; gap: 6px; }
-.open-actions button { min-height: 32px; padding: 5px; }
-.open-actions .icon, .import-folder .icon { width: 15px; height: 15px; }
-.file-actions .import-folder { min-height: 32px; }
-.folder-access-note { margin: 2px 4px 0; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
-
-.search-box { position: relative; display: flex; align-items: center; margin-bottom: 18px; color: var(--muted); }
+.search-box { position: relative; display: flex; align-items: center; margin: 0 var(--side-x) 14px; color: var(--muted); }
 .search-box .icon { position: absolute; left: 10px; width: 15px; height: 15px; pointer-events: none; }
 .search-box input { width: 100%; height: 34px; border: 1px solid var(--line); border-radius: var(--radius); padding: 0 48px 0 32px; background: var(--paper); font-size: 13px; transition: border-color .12s ease, box-shadow .12s ease; }
 .search-box input:hover { border-color: color-mix(in srgb, var(--line) 55%, var(--muted)); }
@@ -150,12 +144,18 @@ button:disabled { opacity: .4; cursor: default; }
 .search-box input:focus, .search-box input:not(:placeholder-shown) { padding-right: 9px; }
 .search-box input:focus + kbd, .search-box input:not(:placeholder-shown) + kbd { display: none; }
 
-.files { display: flex; flex-direction: column; flex: 1; min-height: 85px; }
-.nav-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 0 2px 4px 8px; }
-.nav-heading h2 { margin: 0; font-size: 12.5px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.nav-heading button { height: 26px; width: 26px; }
-.nav-heading .icon { width: 15px; height: 15px; }
-.tree { flex: 1; overflow: auto; padding: 2px; scrollbar-width: thin; }
+/* Cartella di lavoro: nome, aggiorna, nuovo documento, albero */
+.files { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 150px; padding: 0 var(--side-x); }
+.nav-heading { display: flex; align-items: center; gap: 8px; min-height: 30px; margin: 0 0 2px; padding: 0 0 0 8px; color: var(--muted); }
+.nav-heading > .icon { width: 15px; height: 15px; }
+.nav-heading h2 { flex: 1; min-width: 0; margin: 0; font-size: 12.5px; font-weight: 600; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nav-heading button { height: 28px; width: 28px; }
+.nav-heading button .icon { width: 15px; height: 15px; }
+.files .new-doc { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 31px; margin: 0 0 4px; padding: 5px 8px; color: var(--accent-text); font-size: 13px; font-weight: 550; text-align: left; }
+.files .new-doc .icon { width: 15px; height: 15px; }
+.files .new-doc:hover:not(:disabled) { background: var(--tint); }
+.files:has(#searchStatus:not([hidden])) .new-doc { display: none; }
+.tree { flex: 1; min-height: 0; overflow: auto; margin: 0 calc(var(--side-x) * -1); padding: 2px var(--side-x) 8px; scrollbar-width: thin; }
 .tree-row { position: relative; display: flex; width: 100%; min-height: 31px; align-items: center; gap: 8px; padding: 5px 7px 5px var(--indent, 8px); text-align: left; color: var(--copy); }
 .tree-row .icon { width: 15px; height: 15px; color: var(--muted); }
 .tree-row.current .icon { color: currentColor; }
@@ -210,16 +210,25 @@ button:disabled { opacity: .4; cursor: default; }
 .primary.danger:hover { background: var(--danger-hover); }
 .empty-tree { margin: 8px; color: var(--muted); font-size: 12.5px; line-height: 1.5; overflow-wrap: anywhere; }
 
-.outline-nav { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
-.outline-nav summary { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; font-size: 12.5px; font-weight: 600; list-style: none; }
+/* Indice del documento aperto */
+.outline-nav { margin: 0; padding: 8px var(--side-x) 6px; border-top: 1px solid var(--line); }
+.outline-nav summary { display: flex; flex: none; align-items: center; gap: 8px; min-height: 30px; padding: 5px 8px; border-radius: 6px; color: var(--ink); font-size: 12.5px; font-weight: 600; list-style: none; }
 .outline-nav summary::-webkit-details-marker { display: none; }
-.outline-nav summary .i-index { color: var(--muted); width: 16px; height: 16px; }
-.outline-nav summary .i-chevron { width: 11px; height: 11px; margin-left: auto; color: var(--muted); }
+.outline-nav summary .i-index { color: var(--muted); width: 15px; height: 15px; }
+.outline-nav summary .i-chevron { width: 11px; height: 11px; margin-left: auto; color: var(--muted); transition: transform .15s ease; }
 .outline-nav[open] summary .i-chevron { transform: rotate(90deg); }
-.outline-nav nav { margin-top: 3px; padding: 2px; max-height: min(26vh, 200px); overflow: auto; scrollbar-width: thin; }
-.outline-nav nav { border-left: 1px solid var(--line); margin-left: 15px; padding-left: 0; }
-.outline-nav nav button { display: block; width: 100%; padding: 4px 8px 4px var(--indent, 8px); border-radius: 0 6px 6px 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; font-size: 12.5px; color: var(--muted); }
+.outline-nav nav { max-height: min(30vh, 260px); margin: 2px 0 0 15px; padding: 0; overflow: auto; border-left: 1px solid var(--line); scrollbar-width: thin; }
+.outline-nav nav button { display: block; position: relative; width: 100%; padding: 4px 8px 4px var(--indent, 8px); border-radius: 0 6px 6px 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: left; font-size: 12.5px; color: var(--muted); }
 .outline-nav nav button:hover:not(:disabled) { color: var(--ink); }
+.outline-nav nav button:hover::before { position: absolute; left: -1px; top: 5px; bottom: 5px; width: 2px; border-radius: 2px; background: var(--accent); content: ''; }
+
+/* Origine dei documenti: apri / importa */
+.file-actions { display: grid; gap: 1px; margin-top: auto; padding: 8px var(--side-x) 12px; border-top: 1px solid var(--line); }
+.file-actions button { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 31px; padding: 5px 8px; color: var(--copy); font-size: 13px; text-align: left; white-space: nowrap; }
+.file-actions button .icon { width: 15px; height: 15px; color: var(--muted); }
+.file-actions button:hover:not(:disabled) { color: var(--ink); }
+.file-actions button:hover:not(:disabled) .icon { color: var(--ink); }
+.folder-access-note { margin: 4px 8px 2px; padding: 7px 9px; border-radius: 6px; background: var(--hover); color: var(--copy); font-size: 12px; line-height: 1.45; }
 
 .main { min-width: 0; flex: 1; display: flex; flex-direction: column; }
 .document-area { position: relative; display: flex; flex: 1; min-height: 0; }
@@ -425,13 +434,13 @@ dialog p { margin: 9px 0; color: var(--muted); font-size: 13px; }
 #toast { display: none; position: fixed; z-index: 6; right: 18px; top: 66px; max-width: min(420px, calc(100vw - 36px)); padding: 10px 14px; border-radius: 8px; background: var(--ink); color: var(--paper); box-shadow: var(--floating-shadow); font-size: 13px; pointer-events: none; }
 
 @media (max-width: 960px) {
-  .sidebar { width: 235px; padding-inline: 13px; }
+  .sidebar { width: 240px; --side-x: 10px; }
   .tools { padding-inline: 4px; }
   .tools button, .color-control { width: 27px; }
 }
 
 @media (max-width: 760px) {
-  .sidebar { position: fixed; z-index: 5; inset: 0 auto 0 0; width: min(286px, calc(100vw - 42px)); min-height: 0; padding: 18px 15px 14px; box-shadow: 8px 0 34px #1936542b; }
+  .sidebar { position: fixed; z-index: 5; inset: 0 auto 0 0; width: min(286px, calc(100vw - 42px)); min-height: 0; box-shadow: 8px 0 34px #1936542b; }
   .close-sidebar { display: inline-grid; }
   .backdrop { position: fixed; z-index: 4; inset: 0; border-radius: 0; padding: 0; }
   .backdrop, .backdrop:hover:not(:disabled) { background: var(--overlay); }
@@ -553,15 +562,6 @@ dialog p { margin: 9px 0; color: var(--muted); font-size: 13px; }
         <span><strong>Itaca Lite</strong><small>Editor Markdown</small></span>
         <button type="button" class="icon-button close-sidebar" id="closeSidebar" aria-label="Chiudi navigazione" title="Chiudi navigazione"><i class="icon i-close" aria-hidden="true"></i></button>
       </header>
-      <div class="file-actions">
-        <button type="button" class="new-doc" id="newDoc"><i class="icon i-plus" aria-hidden="true"></i>Nuovo documento</button>
-        <div class="open-actions">
-          <button type="button" class="outline" id="openDir"><i class="icon i-folder-open" aria-hidden="true"></i>Apri cartella</button>
-          <button type="button" class="outline" id="openFile"><i class="icon i-file" aria-hidden="true"></i>Apri file</button>
-        </div>
-        <button type="button" class="outline import-folder" id="importFolder"><i class="icon i-folder-open" aria-hidden="true"></i>Importa cartella</button>
-        <p class="folder-access-note" id="folderAccessNote" role="status" hidden></p>
-      </div>
       <div class="search-box">
         <i class="icon i-search" aria-hidden="true"></i>
         <input type="search" id="search" placeholder="Cerca nei documenti…" aria-label="Cerca nei nomi e nel testo dei documenti" aria-keyshortcuts="Control+K Meta+K">
@@ -569,9 +569,11 @@ dialog p { margin: 9px 0; color: var(--muted); font-size: 13px; }
       </div>
       <nav class="files" aria-labelledby="rootName">
         <div class="nav-heading">
+          <i class="icon i-folder" aria-hidden="true"></i>
           <h2 id="rootName">Documenti</h2>
           <button type="button" class="icon-button" id="refresh" aria-label="Aggiorna cartella" title="Aggiorna cartella"><i class="icon i-refresh" aria-hidden="true"></i></button>
         </div>
+        <button type="button" class="new-doc" id="newDoc"><i class="icon i-plus" aria-hidden="true"></i>Nuovo documento</button>
         <p class="search-status" id="searchStatus" role="status" hidden></p>
         <div class="tree" id="tree"></div>
       </nav>
@@ -579,6 +581,12 @@ dialog p { margin: 9px 0; color: var(--muted); font-size: 13px; }
         <summary><i class="icon i-index" aria-hidden="true"></i><span>Indice del documento</span><i class="icon i-chevron" aria-hidden="true"></i></summary>
         <nav id="outlineList" aria-label="Titoli del documento"></nav>
       </details>
+      <div class="file-actions" role="group" aria-label="Apri documenti">
+        <button type="button" id="openDir"><i class="icon i-folder-open" aria-hidden="true"></i>Apri cartella</button>
+        <button type="button" id="openFile"><i class="icon i-file" aria-hidden="true"></i>Apri file</button>
+        <button type="button" class="import-folder" id="importFolder"><i class="icon i-folder-open" aria-hidden="true"></i>Importa cartella</button>
+        <p class="folder-access-note" id="folderAccessNote" role="status" hidden></p>
+      </div>
     </aside>
 
     <main class="main" id="main">
