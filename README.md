@@ -9,6 +9,22 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
    Agli avvii successivi Itaca riapre da sola l’ultima cartella. Se il browser ha dimenticato il permesso, basta un clic o un tasto qualsiasi per concederlo di nuovo; scegli **Consenti a ogni visita**, se il browser lo propone, per non doverlo più ripetere.
 3. Seleziona un documento dalla barra laterale.
 
+## Nuovo documento
+
+- **Nuovo documento** in alto nella barra laterale chiede la **Cartella** (proposta: quella del documento aperto) e il nome. Scrivendo `Sottocartella/Nome` crei anche la sottocartella.
+- Per fare prima, passa con il mouse tra due voci dell’elenco: compare un **+** con una linea. Cliccalo, scrivi il nome e premi **Invio** (**Esc** annulla). Il documento va nella cartella della voce sopra, oppure dentro di essa se è una cartella aperta.
+- Anche il menu **⋯** di una cartella o di un documento ha **Nuovo documento qui**.
+
+**Copia percorso** nel menu **⋯** di un file o di una cartella, oppure l’icona accanto al percorso in basso, copia il percorso completo sul computer (per esempio `/Users/nome/Documenti/docs/Procedure/Guida.md`). Il browser non rivela dove si trova la cartella: se è quella che contiene Itaca lo ricava da solo, altrimenti te lo chiede la prima volta e lo ricorda. Puoi correggerlo in **Impostazioni › File › Percorso della cartella aperta**.
+
+## Cartelle salvate
+
+Se lavori spesso con le stesse cartelle, salvale per riaprirle senza cercarle ogni volta.
+
+- Con una cartella aperta, premi la **stella** accanto al suo nome in cima all’elenco. La stella piena indica che è già salvata; premila di nuovo per toglierla.
+- **Cartelle salvate**, in basso nella barra laterale, elenca le cartelle salvate: clic sul nome per aprirla. Passando sopra una voce compaiono **Modifica** (cambia il nome nell’elenco o, con **Cambia cartella…**, la cartella sul disco) e **×**, che la toglie dall’elenco senza toccare i file.
+- Il browser può chiedere di nuovo il permesso quando apri una cartella salvata.
+
 ## Ricerca nei documenti
 
 La casella **Cerca nei documenti…** in alto nella barra laterale (`Ctrl/⌘ + K`) cerca nei nomi, nelle cartelle e nel testo di tutti i documenti della cartella.
@@ -21,6 +37,16 @@ La casella **Cerca nei documenti…** in alto nella barra laterale (`Ctrl/⌘ + 
 ## Barra di formattazione
 
 Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
+
+## Collegamenti
+
+In **Lettura**, passando sopra un collegamento a un documento ne vedi l’anteprima; in **Modifica** l’anteprima non compare. In **Modifica**, con il cursore dentro un collegamento compare un piccolo riquadro con la destinazione e tre pulsanti: **Apri**, **Modifica** (testo, documento interno o URL) e **Rimuovi**, che lascia il testo senza collegamento (`Ctrl/⌘ + Z` lo ripristina). Anche il pulsante 🔗 della barra di formattazione modifica il collegamento in cui si trova il cursore, invece di crearne uno nuovo.
+
+## Allegati
+
+Oltre alle immagini puoi inserire file di qualsiasi tipo (PDF, Word, Excel, archivi…): **incollali** dopo averli copiati dal Finder o da Esplora risorse, **trascinali** nel punto del testo che vuoi, oppure usa il pulsante 📎 della barra di formattazione. Nel testo compare un collegamento con il nome del file; al salvataggio il file viene copiato in `_allegati` (se il nome è già usato diventa «Nome (2).pdf»).
+
+Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegamento in **Modifica**) PDF, testi, audio e video si aprono in una nuova scheda; gli altri file vengono scaricati.
 
 ## Modifiche non salvate
 
