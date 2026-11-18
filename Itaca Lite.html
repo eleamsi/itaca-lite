@@ -341,6 +341,8 @@ button:disabled { opacity: .4; cursor: default; }
 .image-grip { position: absolute; right: 0; bottom: 0; display: grid; place-items: center; width: 27px; height: 27px; padding: 0; border: 1px solid var(--panel); border-radius: 6px 0 5px 0; color: var(--on-accent); background: var(--accent); cursor: nwse-resize; pointer-events: auto; touch-action: none; }
 .image-grip:hover:not(:disabled) { background: var(--accent-hover); }
 .image-size { position: absolute; right: 32px; bottom: 3px; padding: 1px 5px; border-radius: 4px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); font-size: 11px; white-space: nowrap; }
+.image-edit { position: absolute; top: 0; left: 0; min-height: 28px; padding: 4px 8px; border-radius: 5px 0 6px 0; color: var(--on-accent); background: var(--accent); font-size: 12px; pointer-events: auto; }
+.image-edit:hover:not(:disabled) { background: var(--accent-hover); }
 .editor pre, .editor code { background: var(--canvas); font-family: var(--mono); }
 .editor pre { margin: 1.2em 0 1.5em; padding: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .editor [data-code-gap] { min-height: 1lh; }
@@ -433,6 +435,29 @@ dialog .check-option input { width: 16px; height: 16px; margin: 0; accent-color:
 .preview-zoom { display: flex; align-items: center; padding: 2px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
 .preview-zoom .icon-button { height: 30px; width: 34px; font-size: 19px; }
 .preview-scale { min-width: 56px; font-size: 12px; font-variant-numeric: tabular-nums; }
+.image-paint { width: min(96vw, 1080px); max-width: 96vw; height: min(94dvh, 820px); max-height: 94dvh; padding: 12px; }
+.image-paint[open] { display: grid; grid-template-rows: auto auto minmax(64px, 1fr) auto auto; gap: 9px; }
+.image-paint::backdrop { background: #0b1427a8; backdrop-filter: blur(6px); }
+.paint-header, .paint-tools, .paint-actions, .paint-settings { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.paint-header { flex-wrap: nowrap; }
+.paint-header h2 { margin: 0; }
+.paint-file { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 13px; }
+.paint-tools { padding: 5px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.paint-tools button, .paint-actions button { min-height: 34px; font-size: 13px; }
+.paint-tools button[aria-pressed='true'] { background: var(--accent); color: var(--on-accent); }
+.paint-settings { margin-inline-start: auto; }
+.image-paint .paint-settings label { margin: 0; }
+.image-paint .paint-settings input[type='color'] { width: 36px; height: 31px; padding: 2px; cursor: pointer; }
+.image-paint .paint-settings input[type='range'] { width: 86px; padding: 0; accent-color: var(--accent); }
+.paint-settings output { min-width: 36px; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+.paint-stage { display: grid; place-items: center; min-height: 0; overflow: hidden; background: var(--canvas); border: 1px solid var(--line); border-radius: 8px; }
+.paint-surface { position: relative; background: conic-gradient(#d0d5de 25%, #f4f6f9 0 50%, #d0d5de 0 75%, #f4f6f9 0) 0 0 / 16px 16px; box-shadow: var(--floating-shadow); }
+.paint-surface[data-opaque] { background: white; }
+.paint-surface canvas { display: block; width: 100%; height: 100%; }
+.paint-surface canvas + canvas { position: absolute; inset: 0; cursor: crosshair; touch-action: none; }
+.image-paint .paint-status { min-height: 1.4em; margin: 0; overflow-wrap: anywhere; }
+.paint-actions { justify-content: flex-end; }
+.paint-actions .paint-restore { margin-inline-end: auto; }
 #toast { display: none; position: fixed; z-index: 6; right: 18px; top: 66px; max-width: min(420px, calc(100vw - 36px)); padding: 10px 14px; border-radius: 8px; background: var(--ink); color: var(--paper); box-shadow: var(--floating-shadow); font-size: 13px; pointer-events: none; }
 
 @media (max-width: 960px) {
@@ -489,6 +514,17 @@ dialog .check-option input { width: 16px; height: 16px; margin: 0; accent-color:
 .badge-minus { position: relative; }
 .badge-minus::after { content: '−'; position: absolute; right: 2px; bottom: 1px; display: grid; place-items: center; width: 11px; height: 11px; border-radius: 50%; background: var(--danger); color: #fff; font: 700 10px/1 var(--sans); }
 #tableAlign { width: 46px; }
+.align-control { position: relative; width: 29px; height: 29px; border-radius: 6px; display: inline-grid; place-items: center; color: var(--copy); cursor: pointer; }
+.align-control:hover:not(:has(select:disabled)) { background: var(--canvas); }
+.align-control:has(select:disabled) { opacity: .4; cursor: default; }
+.align-control:has(select:focus-visible) { outline: 2px solid var(--accent); outline-offset: 1px; }
+.align-control .icon { width: 16px; height: 16px; --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 2.5h12v1.6H2zM2 6h8v1.6H2zM2 9.5h12v1.6H2zM2 13h8v1.6H2z'/%3E%3C/svg%3E"); }
+.align-control[data-align='center'] .icon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 2.5h12v1.6H2zM4 6h8v1.6H4zM2 9.5h12v1.6H2zM4 13h8v1.6H4z'/%3E%3C/svg%3E"); }
+.align-control[data-align='right'] .icon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 2.5h12v1.6H2zM6 6h8v1.6H6zM2 9.5h12v1.6H2zM6 13h8v1.6H6z'/%3E%3C/svg%3E"); }
+.align-control[data-align='justify'] .icon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 2.5h12v1.6H2zM2 6h12v1.6H2zM2 9.5h12v1.6H2zM2 13h12v1.6H2z'/%3E%3C/svg%3E"); }
+.align-control[data-align='image-left'] .icon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 2.5h6v6H2zM10 3h4v1.6h-4zM10 6.5h4v1.6h-4zM2 10h12v1.6H2zM2 13.5h12v1.6H2z'/%3E%3C/svg%3E"); }
+.align-control[data-align='image-right'] .icon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 2.5h6v6H8zM2 3h4v1.6H2zM2 6.5h4v1.6H2zM2 10h12v1.6H2zM2 13.5h12v1.6H2z'/%3E%3C/svg%3E"); }
+.tools .align-control select { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; opacity: 0; cursor: inherit; }
 .glyph-arrow { width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); }
 .glyph-arrow.up { transform: translateY(2px) rotate(-135deg); }
 
@@ -840,6 +876,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           </div>
         </div>
         <div class="image-resize" id="imageResize" hidden>
+          <button type="button" id="editSelectedImage" class="image-edit" hidden>Modifica immagine</button>
           <span id="imageSize" class="image-size" aria-hidden="true"></span>
           <button type="button" id="imageGrip" class="image-grip" role="slider" aria-label="Larghezza dell’immagine" title="Trascina o usa le frecce per ridimensionare">↘</button>
         </div>
@@ -873,6 +910,16 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
               <button type="button" data-cmd="underline" title="Sottolineato" aria-label="Sottolineato"><u aria-hidden="true">U</u></button>
               <button type="button" data-cmd="strikeThrough" title="Barrato" aria-label="Barrato"><s aria-hidden="true">S</s></button>
               <label class="color-control" title="Colore del testo"><span aria-hidden="true">A</span><input type="color" id="color" value="#38679c" aria-label="Colore del testo"></label>
+              <label class="align-control" id="alignControl" title="Allineamento del testo" data-align="left"><i class="icon" aria-hidden="true"></i>
+                <select id="align" aria-label="Allineamento del testo o dell’immagine">
+                  <option value="" selected hidden>Allineamento</option>
+                  <option value="left">A sinistra</option>
+                  <option value="center">Al centro</option>
+                  <option value="right">A destra</option>
+                  <option value="justify">Giustificato</option>
+                  <option value="none" hidden>Senza testo a lato</option>
+                </select>
+              </label>
             </div>
             <div class="tools" role="group" aria-label="Elenchi">
               <button type="button" data-cmd="insertUnorderedList" title="Elenco puntato" aria-label="Elenco puntato"><i class="icon i-list" aria-hidden="true"></i></button>
@@ -907,8 +954,6 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
                 <option value="sub">Pedice ~</option>
                 <option value="sup">Apice ^</option>
                 <option value="keys">Tasti ++</option>
-                <option value="icon">Icona o emoji :…:</option>
-                <option value="math">Formula in linea $</option>
               </select>
               <button type="button" id="pasteRich" title="Incolla con formattazione (Ctrl/⌘ + Maiusc + V incolla sempre testo semplice)" aria-label="Incolla con formattazione" aria-pressed="true"><span class="glyph glyph-paste" aria-hidden="true"></span></button>
             </div>
@@ -925,7 +970,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
                 <option value="none">Predefinito</option>
               </select>
             </div>
-            <div class="tools history-tools" role="group" aria-label="Cronologia delle modifiche">
+            <div class="tools undo-tools" role="group" aria-label="Cronologia delle modifiche">
               <button type="button" data-cmd="undo" title="Annulla" aria-label="Annulla"><i class="icon i-undo" aria-hidden="true"></i></button>
               <button type="button" data-cmd="redo" title="Ripeti" aria-label="Ripeti"><i class="icon i-redo" aria-hidden="true"></i></button>
             </div>
@@ -994,6 +1039,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
       <figcaption id="previewCaption" hidden></figcaption>
     </figure>
     <div class="preview-controls">
+      <button type="button" class="outline" id="editPreviewImage" hidden>Modifica immagine</button>
       <div class="preview-zoom" role="group" aria-label="Zoom immagine">
         <button type="button" class="icon-button" id="zoomOut" aria-label="Riduci zoom" title="Riduci zoom">−</button>
         <button type="button" class="preview-scale" id="zoomReset" aria-label="Ripristina zoom" title="Adatta alla finestra">100%</button>
@@ -1001,6 +1047,43 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
       </div>
       <button type="button" class="icon-button" id="closeImagePreview" aria-label="Chiudi anteprima" title="Chiudi anteprima" autofocus><i class="icon i-close" aria-hidden="true"></i></button>
     </div>
+  </dialog>
+  <dialog id="imagePaint" class="image-paint" aria-labelledby="imagePaintTitle">
+    <header class="paint-header">
+      <h2 id="imagePaintTitle">Modifica immagine</h2>
+      <span id="paintFile" class="paint-file"></span>
+      <button type="button" class="icon-button" id="paintClose" aria-label="Chiudi editor immagine" title="Chiudi editor immagine" autofocus><i class="icon i-close" aria-hidden="true"></i></button>
+    </header>
+    <div class="paint-tools" role="group" aria-label="Strumenti immagine">
+      <button type="button" data-paint-tool="pen" aria-pressed="true">Penna</button>
+      <button type="button" data-paint-tool="marker" aria-pressed="false">Evidenziatore</button>
+      <button type="button" data-paint-tool="eraser" aria-pressed="false" title="Cancella pixel dell’immagine">Gomma</button>
+      <button type="button" data-paint-tool="line" aria-pressed="false">Linea</button>
+      <button type="button" data-paint-tool="rectangle" aria-pressed="false">Rettangolo</button>
+      <button type="button" data-paint-tool="ellipse" aria-pressed="false">Ellisse</button>
+      <button type="button" data-paint-tool="crop" aria-pressed="false">Ritaglia</button>
+      <div class="paint-settings">
+        <label for="paintColor">Colore</label>
+        <input type="color" id="paintColor" value="#d62839">
+        <label for="paintWidth">Spessore</label>
+        <input type="range" id="paintWidth" min="1" max="100" value="8" aria-describedby="paintWidthValue">
+        <output id="paintWidthValue" for="paintWidth">8 px</output>
+      </div>
+    </div>
+    <div id="paintStage" class="paint-stage">
+      <div id="paintSurface" class="paint-surface" hidden>
+        <canvas id="paintCanvas" aria-label="Immagine in modifica"></canvas>
+        <canvas id="paintOverlay" tabindex="-1" aria-label="Area di disegno"></canvas>
+      </div>
+    </div>
+    <p id="paintStatus" class="paint-status" role="status"></p>
+    <footer class="paint-actions">
+      <button type="button" class="outline paint-restore" id="paintRestore" hidden>Ripristina originale</button>
+      <button type="button" class="outline" id="paintUndo">Annulla</button>
+      <button type="button" class="outline" id="paintRedo">Ripeti</button>
+      <button type="button" class="outline" id="paintApplyCrop" hidden>Applica ritaglio</button>
+      <button type="button" class="primary" id="paintSave">Salva immagine</button>
+    </footer>
   </dialog>
   <div id="toast" role="status"></div>
 <script>
@@ -5481,7 +5564,7 @@ marked.use({
   },
 } });
 const allowed=new Set('P DIV BR H1 H2 H3 H4 H5 H6 STRONG B EM I U S DEL STRIKE A IMG UL OL LI BLOCKQUOTE PRE CODE TABLE THEAD TBODY TFOOT TR TH TD HR SPAN FONT INPUT SUP SUB DETAILS SUMMARY MARK INS KBD DL DT DD ABBR'.split(' '));
-function sanitize(html){const t=document.createElement('template');t.innerHTML=html;function copy(n){if(n.nodeType===3)return document.createTextNode(n.data);if(n.nodeType!==1)return null;const tag=n.tagName;if(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','VIDEO','AUDIO','SVG','MATH','FORM','LINK','META','NOSCRIPT'].includes(tag))return null;if(!allowed.has(tag)){const f=document.createDocumentFragment();for(const c of n.childNodes){const x=copy(c);if(x)f.append(x)}return f}const o=document.createElement(tag);for(const a of n.attributes)if(a.name.startsWith('data-ext'))o.setAttribute(a.name,a.value);for(const c of n.childNodes){const x=copy(c);if(x)o.append(x)}if(tag==='A'){if(n.getAttribute('title')&&!n.hasAttribute('data-ext-title'))o.dataset.extTitle=n.getAttribute('title');for(const key of ['data-wiki','data-href'])if(n.hasAttribute(key))o.setAttribute(key,n.getAttribute(key));const h=n.getAttribute('href');if(h)o.dataset.href=h;o.contentEditable='inherit';o.title='Ctrl/⌘ + clic per aprire'}if(tag==='IMG'){o.alt=n.getAttribute('alt')||'';o.dataset.src=n.getAttribute('data-src')||n.getAttribute('src')||'';if(n.hasAttribute('data-wiki-img'))o.dataset.wikiImg=n.getAttribute('data-wiki-img');o.title=o.alt;const width=imagePixelWidth(n);if(width)o.setAttribute('width',width)}if(tag==='INPUT'){if(n.type!=='checkbox')return null;o.type='checkbox';o.checked=n.checked;o.contentEditable='false';if(n.hasAttribute('data-task-checkbox'))o.dataset.taskCheckbox=''}if(tag==='OL'&&n.hasAttribute('start'))o.start=n.start;if(tag==='DETAILS'&&(n.hasAttribute('open')||n.hasAttribute('data-open'))){o.dataset.open='';o.open=true}if(tag==='CODE'&&/^language-[\w+.#-]+$/.test(n.className))o.className=n.className;for(const key of ['color','backgroundColor']){const v=n.style[key];if(v&&safeColors.test(v))o.style[key]=v}if(n.style.fontSize&&/^[\d.]+(px|em|rem|pt|%)$|^(small|medium|large|x-large|xx-large)$/.test(n.style.fontSize))o.style.fontSize=n.style.fontSize;if(['left','right','center'].includes(n.style.textAlign||n.getAttribute('align')))o.style.textAlign=n.style.textAlign||n.getAttribute('align');if(n.style.fontWeight==='bold'||n.style.fontWeight==='700')o.style.fontWeight='bold';if(n.style.fontStyle==='italic')o.style.fontStyle='italic';if(['underline','line-through'].includes(n.style.textDecoration))o.style.textDecoration=n.style.textDecoration;if(tag==='FONT'){if(safeColors.test(n.getAttribute('color')||''))o.setAttribute('color',n.getAttribute('color'));if(/^[1-7]$/.test(n.getAttribute('size')||''))o.setAttribute('size',n.getAttribute('size'))}return o}const frag=document.createDocumentFragment();for(const n of t.content.childNodes){const x=copy(n);if(x)frag.append(x)}return frag}
+function sanitize(html){const t=document.createElement('template');t.innerHTML=html;function copy(n){if(n.nodeType===3)return document.createTextNode(n.data);if(n.nodeType!==1)return null;const tag=n.tagName;if(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','VIDEO','AUDIO','SVG','MATH','FORM','LINK','META','NOSCRIPT'].includes(tag))return null;if(!allowed.has(tag)){const f=document.createDocumentFragment();for(const c of n.childNodes){const x=copy(c);if(x)f.append(x)}return f}const o=document.createElement(tag);for(const a of n.attributes)if(a.name.startsWith('data-ext'))o.setAttribute(a.name,a.value);for(const c of n.childNodes){const x=copy(c);if(x)o.append(x)}if(tag==='A'){if(n.getAttribute('title')&&!n.hasAttribute('data-ext-title'))o.dataset.extTitle=n.getAttribute('title');for(const key of ['data-wiki','data-href'])if(n.hasAttribute(key))o.setAttribute(key,n.getAttribute(key));const h=n.getAttribute('href');if(h)o.dataset.href=h;o.contentEditable='inherit';o.title='Ctrl/⌘ + clic per aprire'}if(tag==='IMG'){o.alt=n.getAttribute('alt')||'';o.dataset.src=n.getAttribute('data-src')||n.getAttribute('src')||'';if(n.hasAttribute('data-wiki-img'))o.dataset.wikiImg=n.getAttribute('data-wiki-img');o.title=o.alt;const width=imagePixelWidth(n);if(width)o.setAttribute('width',width);const side=n.dataset.mdAlign||n.getAttribute('align');if(/^(left|right)$/.test(side||''))o.dataset.mdAlign=side}if(tag==='INPUT'){if(n.type!=='checkbox')return null;o.type='checkbox';o.checked=n.checked;o.contentEditable='false';if(n.hasAttribute('data-task-checkbox'))o.dataset.taskCheckbox=''}if(tag==='OL'&&n.hasAttribute('start'))o.start=n.start;if(tag==='DETAILS'&&(n.hasAttribute('open')||n.hasAttribute('data-open'))){o.dataset.open='';o.open=true}if(tag==='CODE'&&/^language-[\w+.#-]+$/.test(n.className))o.className=n.className;for(const key of ['color','backgroundColor']){const v=n.style[key];if(v&&safeColors.test(v))o.style[key]=v}if(n.style.fontSize&&/^[\d.]+(px|em|rem|pt|%)$|^(small|medium|large|x-large|xx-large)$/.test(n.style.fontSize))o.style.fontSize=n.style.fontSize;if(tag!=='IMG'&&['left','right','center','justify'].includes(n.style.textAlign||n.getAttribute('align')))o.style.textAlign=n.style.textAlign||n.getAttribute('align');if(n.style.fontWeight==='bold'||n.style.fontWeight==='700')o.style.fontWeight='bold';if(n.style.fontStyle==='italic')o.style.fontStyle='italic';if(['underline','line-through'].includes(n.style.textDecoration))o.style.textDecoration=n.style.textDecoration;if(tag==='FONT'){if(safeColors.test(n.getAttribute('color')||''))o.setAttribute('color',n.getAttribute('color'));if(/^[1-7]$/.test(n.getAttribute('size')||''))o.setAttribute('size',n.getAttribute('size'))}return o}const frag=document.createDocumentFragment();for(const n of t.content.childNodes){const x=copy(n);if(x)frag.append(x)}return frag}
 function normalize(p){const parts=[];for(let s of p.replace(/\\/g,'/').split('/')){try{s=decodeURIComponent(s)}catch{}if(!s||s==='.')continue;if(s==='..'){if(!parts.length)return null;parts.pop()}else parts.push(s)}return parts.join('/')}
 function parent(p){return p.includes('/')?p.slice(0,p.lastIndexOf('/')):''}
 function expandParentFolders(path) {
@@ -5561,8 +5644,9 @@ function styleWrap(n,s){const styles=[];if(n.style.color)styles.push('color:'+n.
 function inline(n){if(n.nodeType===3)return mdText(n.data);if(n.nodeType!==1||n.hasAttribute('data-code-chrome'))return '';if(n.hasAttribute('data-ext-raw'))return n.dataset.extRaw;const tag=n.tagName;let s=[...n.childNodes].map(inline).join('');const extended=extendedInlineMarkdown(n,s);if(extended!==undefined)return extended;const wrap=(a,b=a)=>s.trim()?s.replace(/^(\s*)([\s\S]*?)(\s*)$/,(m,x,y,z)=>x+a+y+b+z):s;switch(tag){case 'BR':return '<br>';case 'B':case 'STRONG':return styleWrap(n,wrap('**'));case 'EM':case 'I':return styleWrap(n,wrap('*'));case 'S':case 'STRIKE':case 'DEL':return wrap('~~');case 'U':return wrap('<u>','</u>');case 'SUP':case 'SUB':return '<'+tag.toLowerCase()+'>'+s+'</'+tag.toLowerCase()+'>';case 'CODE':{const t=n.textContent;if(!t)return '';const fence='`'.repeat(Math.max(1,...(t.match(/`+/g)||[]).map(x=>x.length+1)));return fence+(/(^`|`$|^ | $)/.test(t)?' '+t+' ':t)+fence}case 'A':if(n.dataset.wiki){const alias=n.textContent;return '[['+n.dataset.wiki+(alias!==n.dataset.wiki?'|'+alias:'')+']]'}return '['+s+']('+dest(n.dataset.href||n.getAttribute('href'))+(n.dataset.extTitle?' "'+n.dataset.extTitle.replace(/["\\]/g,'\\$&')+'"':'')+')';case 'IMG':return imageMarkdown(n);case 'INPUT':return n.hasAttribute('data-task-checkbox')?(n.checked?'[x]':'[ ]'):'<input type="checkbox"'+(n.checked?' checked':'')+'>';case 'DIV':case 'P':return styleWrap(n,s);default:return styleWrap(n,s)}}
 function listMD(n){let k=n.start||1,spread=false;const items=[...n.children].filter(x=>x.tagName==='LI').map(li=>{const lead=n.tagName==='OL'?(k++)+'. ':'- ';const loose=looseListItem(li);if(loose!==undefined){spread=true;return lead+loose.replace(/^\[([x ])\]\s*/,'[$1] ').split('\n').map((x,i)=>i&&x?' '.repeat(Math.max(4,lead.length))+x:x).join('\n')}let s='',nested=[];for(const c of li.childNodes){if(c.nodeType===1&&['UL','OL'].includes(c.tagName))nested.push(listMD(c));else if(c.nodeType===1&&c.tagName==='PRE')s+=(s?'\n\n':'')+block(c);else if(c.nodeType===1&&['P','DIV'].includes(c.tagName))s+=(s?'\n':'')+inline(c);else s+=inline(c)}s=s.replace(/^\[([x ])\]\s*/, '[$1] ');return lead+s.trim().replace(/\n/g,'\n'+' '.repeat(lead.length))+(nested.length?'\n'+nested.join('\n').split('\n').map(x=>x?' '.repeat(Math.max(4,lead.length))+x:x).join('\n'):'')});return items.join(spread?'\n\n':'\n')}
 function tableMD(n){const rows=[...n.rows];if(!rows.length)return '';const width=Math.max(...rows.map(r=>r.cells.length));const v=rows.map(r=>Array.from({length:width},(_,i)=>r.cells[i]?inline(r.cells[i]).trim().replace(/^(?:<br>)+$/,'').replace(/\|/g,'\\|').replace(/\n/g,'<br>'):''));const line=a=>'| '+a.join(' | ')+' |';return [line(v[0]),line(Array.from({length:width},(_,i)=>{const a=rows[0].cells[i]?.style.textAlign;return a==='center'?':---:':a==='right'?'---:':a==='left'?':---':'---'})),...v.slice(1).map(line)].join('\n')}
-function block(n){if(n.nodeType===3)return mdText(n.data).trim();if(n.nodeType!==1)return '';const tag=n.tagName;if(n.hasAttribute('data-code-chrome'))return '';if(n.hasAttribute('data-ext-raw'))return n.dataset.extRaw;if(n.dataset.ext||tag==='DL'){const extended=extendedBlockMarkdown(n);if(extended!==undefined)return extended}if(tag==='BLOCKQUOTE'&&n.dataset.callout)return calloutMarkdown(n);if(tag==='DETAILS')return detailsMarkdown(n);if(/^H[1-6]$/.test(tag))return '#'.repeat(+tag[1])+' '+inline(n).trim();if(tag==='UL'||tag==='OL')return listMD(n);if(tag==='TABLE')return tableMD(n);if(tag==='HR')return '---';if(tag==='PRE'){const code=n.querySelector('code')||n,t=codeBlockText(n);const fence='`'.repeat(Math.max(3,...(t.match(/`+/g)||[]).map(x=>x.length+1)));return fence+codeLanguage(code)+(code.dataset?.extInfo?' '+code.dataset.extInfo:'')+'\n'+t+'\n'+fence}if(tag==='BLOCKQUOTE')return blocks(n).split('\n').map(x=>'> '+x).join('\n');if(tag==='DIV'&&[...n.children].some(x=>/^(P|DIV|H[1-6]|UL|OL|TABLE|PRE|BLOCKQUOTE|DETAILS)$/.test(x.tagName)))return blocks(n);return inline(n).trim().replace(/^(?:<br>)+$/,'')}
-function blocks(n){const out=[];let pending='';const flush=()=>{if(pending.trim())out.push(pending.trim());pending=''};for(const c of n.childNodes){if(c.nodeType===1&&/^(P|DIV|H[1-6]|UL|OL|TABLE|PRE|BLOCKQUOTE|HR|DETAILS|DL)$/.test(c.tagName)){flush();const s=block(c);if(s)out.push(s)}else if(c.nodeType===1||c.nodeType===3)pending+=inline(c)}flush();return out.join('\n\n')}
+function block(n){if(n.nodeType===3)return mdText(n.data).trim();if(n.nodeType!==1)return '';const tag=n.tagName;if(n.hasAttribute('data-code-chrome'))return '';if(n.hasAttribute('data-ext-raw'))return n.dataset.extRaw;if(n.dataset.ext||tag==='DL'){const extended=extendedBlockMarkdown(n);if(extended!==undefined)return extended}if(tag==='BLOCKQUOTE'&&n.dataset.callout)return calloutMarkdown(n);if(tag==='DETAILS')return detailsMarkdown(n);if(/^H[1-6]$/.test(tag))return '#'.repeat(+tag[1])+' '+inline(n).trim();if(tag==='UL'||tag==='OL')return listMD(n);if(tag==='TABLE')return tableMD(n);if(tag==='HR')return '---';if(tag==='PRE'){const code=n.querySelector('code')||n,t=codeBlockText(n);const fence='`'.repeat(Math.max(3,...(t.match(/`+/g)||[]).map(x=>x.length+1)));return fence+codeLanguage(code)+(code.dataset?.extInfo?' '+code.dataset.extInfo:'')+'\n'+t+'\n'+fence}if(tag==='BLOCKQUOTE')return blocks(n).split('\n').map(x=>'> '+x).join('\n');if((tag==='DIV'||tag==='P')&&[...n.children].some(x=>/^(P|DIV|H[1-6]|UL|OL|TABLE|PRE|BLOCKQUOTE|DETAILS)$/.test(x.tagName)))return blocks(n);return inline(n).trim().replace(/^(?:<br>)+$/,'')}
+function blockAlignment(c){return c.nodeType===1&&/^(P|DIV|H[1-6])$/.test(c.tagName)&&!c.dataset.ext&&!c.hasAttribute('data-ext-raw')&&['center','right','justify'].includes(c.style.textAlign)?c.style.textAlign:''}
+function blocks(n){const out=[];let pending='',group=null;const close=()=>{if(group)out.push('<div align="'+group.align+'" markdown>\n\n'+group.parts.join('\n\n')+'\n\n</div>');group=null};const push=(s,align)=>{if(!s)return;if(!align){close();out.push(s);return}if(group?.align!==align){close();group={align,parts:[]}}group.parts.push(s)};const flush=()=>{if(pending.trim())push(pending.trim(),'');pending=''};for(const c of n.childNodes){if(c.nodeType===1&&/^(P|DIV|H[1-6]|UL|OL|TABLE|PRE|BLOCKQUOTE|HR|DETAILS|DL)$/.test(c.tagName)){flush();push(block(c),blockAlignment(c))}else if(c.nodeType===1||c.nodeType===3)pending+=inline(c)}flush();close();return out.join('\n\n')}
 function serializeVisualMarkdown() {
   return front + (front && !front.endsWith('\n') ? '\n' : '') + blocks(editorForMarkdown()).trimEnd() + '\n';
 }
@@ -5766,6 +5850,7 @@ async function save() {
     workspace.inert = false;
     loading = false;
     updateSaveButton();
+    positionImageResize();
   }
 }
 function modal(title, body, ok = 'Inserisci', danger = false, confirmation = null) {
@@ -5857,9 +5942,10 @@ function stageImage(file, from = current, drafts = draftImages) {
   return relative(from, path);
 }
 
-async function writeSavedFile(handle, data) {
+async function writeSavedFile(handle, data, prepare) {
   const writer = await handle.createWritable({ mode: 'exclusive' });
   try {
+    if (prepare) await prepare();
     await writer.write(data);
     await writer.close();
   } catch (error) {
@@ -5938,7 +6024,7 @@ function addImageFile(file) {
   insertNode('<img data-src="' + escapeHtml(path) + '" alt="' + escapeHtml(file.name) + '">');
 }
 async function imageDialog(){remember();const options=[...files.keys()].filter(isImage).map(p=>'<option value="'+escapeHtml(p)+'">'+escapeHtml(p)+'</option>').join('');const a=await modal('Inserisci immagine','<p>Usa un allegato già presente o scegli un’immagine dal computer. L’immagine verrà copiata in <code>_allegati</code> al salvataggio.</p><label>Immagine esistente</label><select name="path"><option value="">Scegli un file dal computer</option>'+options+'</select><label>Descrizione alternativa</label><input name="alt">');if(!a)return;if(a.path){insertNode('<img data-src="'+escapeHtml(relative(current,a.path))+'" alt="'+escapeHtml(a.alt||a.path.split('/').pop())+'">')}else $('imageInput').click()}
-async function insertTable(){remember();const a=await modal('Inserisci tabella','<label>Colonne (1–12)</label><input name="cols" type="number" min="1" max="12" value="3" required><label>Righe dati (1–30)</label><input name="rows" type="number" min="1" max="30" value="3" required>');if(!a)return;const c=Math.min(12,Math.max(1,+a.cols)),r=Math.min(30,Math.max(1,+a.rows));addHTML('<table><thead><tr>'+Array.from({length:c},(_,i)=>'<th>Colonna '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+Array.from({length:r},()=>'<tr>'+'<td><br></td>'.repeat(c)+'</tr>').join('')+'</tbody></table><p><br></p>')}
+async function insertTable(){remember();const a=await modal('Inserisci tabella','<label>Colonne (1–12)</label><input name="cols" type="number" min="1" max="12" value="3" required><label>Righe dati (1–30)</label><input name="rows" type="number" min="1" max="30" value="3" required>');if(!a)return;const c=Math.min(12,Math.max(1,+a.cols)),r=Math.min(30,Math.max(1,+a.rows));prepareBlockInsertion();addHTML('<table><thead><tr>'+Array.from({length:c},(_,i)=>'<th>Colonna '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+Array.from({length:r},()=>'<tr>'+'<td><br></td>'.repeat(c)+'</tr>').join('')+'</tbody></table><p><br></p>')}
 function tableEdit(col){if(!canEditVisual())return;restore();const node=getSelection().anchorNode,cell=(node?.nodeType===1?node:node?.parentElement)?.closest('td,th'),table=cell?.closest('table');if(!table){toast('Posiziona il cursore in una cella');return}if(col){for(const row of table.rows){const x=document.createElement(row.parentElement.tagName==='THEAD'?'th':'td');x.innerHTML='<br>';row.append(x)}}else{const body=table.tBodies[0]||table.createTBody(),r=body.insertRow();for(let i=0;i<table.rows[0].cells.length;i++)r.insertCell().innerHTML='<br>'}mark()}
 
 $('openFile').onclick = async () => {
@@ -6147,6 +6233,7 @@ ed.addEventListener('drop', event => {
   }
 });
 document.addEventListener('keydown', event => {
+  if (imagePaint.open) return;
   const key = event.key.toLowerCase();
   if ((event.ctrlKey || event.metaKey) && key === 's') {
     event.preventDefault();
@@ -6158,8 +6245,8 @@ document.addEventListener('keydown', event => {
 });
 window.addEventListener('beforeunload', event => {
   flushMark();
-  if (!dirty || reloadApproved) return;
-  checkpointDraft();
+  if ((!dirty || reloadApproved) && !imagePaintState?.historyIndex && !imagePaintState?.writing) return;
+  if (dirty) checkpointDraft();
   event.preventDefault();
   event.returnValue = true;
 });
@@ -6862,15 +6949,96 @@ function updateFormatButtons() {
   const checkboxes = checkboxesOnLine(line);
   $('check').setAttribute('aria-pressed', checkboxes.some(checkbox => checkbox.hasAttribute('data-task-checkbox')));
   $('inlineCheck').setAttribute('aria-pressed', checkboxes.some(checkbox => !checkbox.hasAttribute('data-task-checkbox')));
-  const cell = inside && target?.closest('td,th');
+  const cell = (inside ? target : element)?.closest('td,th') || null;
+  for (const id of ['rowAdd', 'colAdd', 'rowDelete', 'colDelete', 'tableAlign']) $(id).disabled = !cell || !canEditVisual();
+  updateAlignControl(inside ? target : element, codeBlock);
   if (inside || !selected) $('code').setAttribute('aria-pressed', Boolean(target?.closest('code:not(pre code)') && inside));
   if (inside || !selected) {
-    for (const id of ['rowAdd', 'colAdd', 'rowDelete', 'colDelete', 'tableAlign']) $(id).disabled = !cell;
     for (const button of formatButtons) {
       button.setAttribute('aria-pressed', inside && document.queryCommandState(button.dataset.cmd));
     }
   }
 }
+
+// ── Allineamento di testo e immagini ──
+var alignableBlocks = 'p, h1, h2, h3, h4, h5, h6';
+function alignedImage() {
+  return selectedImage?.isConnected && ed.contains(selectedImage) && canEditVisual() ? selectedImage : null;
+}
+function updateAlignControl(element, codeBlock) {
+  const control = $('alignControl');
+  const select = $('align');
+  const image = alignedImage();
+  const cell = element?.closest('td,th');
+  const blocked = !image && (!element || codeBlock || element.closest('li, dt, summary, [data-ext-part], [data-ext-raw]'));
+  select.disabled = !canEditVisual() || Boolean(blocked);
+  select.options[4].hidden = Boolean(image);
+  select.options[5].hidden = !image;
+  if (image) {
+    const side = image.dataset.mdAlign;
+    control.dataset.align = side ? 'image-' + side : image.closest(alignableBlocks)?.style.textAlign === 'center' ? 'center' : 'left';
+    control.title = 'Allineamento dell’immagine';
+  } else {
+    const align = cell ? cell.style.textAlign || cell.getAttribute('align') : element?.closest(alignableBlocks + ', div')?.style.textAlign;
+    control.dataset.align = ['center', 'right', 'justify'].includes(align) ? align : 'left';
+    control.title = cell ? 'Allineamento della colonna' : 'Allineamento del testo';
+  }
+}
+function setImageChipAlign(image, side) {
+  const chip = image.nextSibling?.nodeType === Node.ELEMENT_NODE && image.nextSibling.dataset.ext === 'attrs' ? image.nextSibling : null;
+  if (!chip) return;
+  let raw = chip.dataset.extRaw.replace(/\s*\balign\s*=\s*(?:"[^"]*"|'[^']*'|[^\s}]+)/, '');
+  if (side) raw = raw.replace(/\s*\}\s*$/, ' align=' + side + ' }');
+  if (/^\s*\{\s*\}\s*$/.test(raw)) chip.remove();
+  else {
+    chip.dataset.extRaw = raw;
+    chip.textContent = raw.trim();
+  }
+}
+function alignImage(image, value) {
+  const side = value === 'left' || value === 'right' ? value : '';
+  if (side) image.dataset.mdAlign = side;
+  else delete image.dataset.mdAlign;
+  setImageChipAlign(image, side);
+  const holder = image.closest(alignableBlocks);
+  if (holder && ed.contains(holder)) {
+    if (value === 'center') holder.style.textAlign = 'center';
+    else if (holder.style.textAlign === 'center') holder.style.removeProperty('text-align');
+    if (!holder.getAttribute('style')) holder.removeAttribute('style');
+  }
+  positionImageResize();
+}
+function alignSelection(value) {
+  if (!canEditVisual()) return;
+  const image = alignedImage();
+  if (image) {
+    alignImage(image, value);
+    mark();
+    updateFormatButtons();
+    return;
+  }
+  restore();
+  const node = getSelection().anchorNode;
+  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  if (!element || !ed.contains(element)) return;
+  if (element.closest('td,th')) {
+    tableChange('align', value === 'justify' ? 'left' : value);
+    return;
+  }
+  command({ left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight', justify: 'justifyFull' }[value]);
+  // «A sinistra» is the default: drop the explicit style so nothing extra is saved.
+  for (const block of ed.querySelectorAll('[style*="text-align"]')) {
+    if (block.style.textAlign === 'left' || block.style.textAlign === 'start') block.style.removeProperty('text-align');
+    if (!block.getAttribute('style')) block.removeAttribute('style');
+  }
+  mark();
+  updateFormatButtons();
+}
+$('align').onchange = event => {
+  const value = event.target.value;
+  event.target.selectedIndex = 0;
+  if (value) alignSelection(value);
+};
 
 $('toggle').onclick = () => setSidebar(sidebar.hidden, narrowLayout.matches);
 $('closeSidebar').onclick = () => setSidebar(false, true);
@@ -6882,7 +7050,7 @@ setSidebar(!narrowLayout.matches);
 
 document.addEventListener('selectionchange', updateFormatButtons);
 document.addEventListener('keydown', event => {
-  if ($('dialog').open || $('imagePreview').open || $('fileMenu').matches(':popover-open')) return;
+  if ($('dialog').open || $('imagePreview').open || imagePaint.open || $('fileMenu').matches(':popover-open')) return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
     setSidebar(true);
@@ -7433,9 +7601,10 @@ function imageMarkdown(image) {
   const width = imagePixelWidth(image);
   const wiki = image.dataset.wikiImg;
   const path = image.dataset.src || '';
-  if (!width) return wiki ? '![[' + wiki + ']]' : '![' + mdText(image.alt) + '](' + dest(path) + ')';
+  const side = /^(left|right)$/.test(image.dataset.mdAlign || '') && image.nextSibling?.dataset?.ext !== 'attrs' ? image.dataset.mdAlign : '';
+  if (!width) return (wiki ? '![[' + wiki + ']]' : '![' + mdText(image.alt) + '](' + dest(path) + ')') + (side ? '{ align=' + side + ' }' : '');
   const wikiSource = wiki ? ' data-wiki-img="' + escapeHtml(wiki) + '"' : '';
-  return '<img src="' + escapeHtml(path) + '" alt="' + escapeHtml(image.alt) + '" width="' + width + '"' + wikiSource + '>';
+  return '<img src="' + escapeHtml(path) + '" alt="' + escapeHtml(image.alt) + '" width="' + width + '"' + (side ? ' align="' + side + '"' : '') + wikiSource + '>';
 }
 
 function configureEditorImage(image) {
@@ -7460,6 +7629,7 @@ function selectImageForResize(image) {
     imageResizeObserver.observe(workspace);
   }
   positionImageResize();
+  updateFormatButtons();
 }
 
 function imageWidthLimits() {
@@ -7485,6 +7655,7 @@ function positionImageResize() {
   const height = Math.min(visible.bottom, dock.getBoundingClientRect().top - 4, bounds.bottom) - top;
   imageResize.hidden = width <= 0 || height <= 0;
   if (imageResize.hidden) return;
+  $('editSelectedImage').hidden = !paintableImagePath(findImagePath(image));
   Object.assign(imageResize.style, { left: left - area.left + 'px', top: top - area.top + 'px', width: width + 'px', height: height + 'px' });
   const pixels = Math.round(bounds.width);
   const { min, max } = imageWidthLimits();
@@ -7554,6 +7725,10 @@ imageGrip.addEventListener('keydown', event => {
   commitImageResize();
 });
 
+$('editSelectedImage').onclick = () => {
+  if (canEditVisual() && selectedImage?.isConnected) openImagePaint(findImagePath(selectedImage));
+};
+
 const editorLinkSelector = 'a[data-wiki], a[data-href]';
 
 function editorLinkTarget(link, from = current) {
@@ -7593,8 +7768,8 @@ async function openLinkedImage(path) {
     image.alt = path.split('/').pop();
     image.src = url;
     await image.decode();
-    if (activeVersion !== version || imagePreview.open || $('dialog').open) return;
-    showImagePreview(image);
+    if (activeVersion !== version || imagePreview.open || imagePaint.open || $('dialog').open) return;
+    showImagePreview(image, path);
     if (imagePreview.open) {
       const previewUrl = url;
       imagePreview.addEventListener('close', () => URL.revokeObjectURL(previewUrl), { once: true });
@@ -7726,7 +7901,7 @@ function queueLinkPreview(link, delay) {
     return;
   }
   closeLinkPreview();
-  if (documentOpening || folderOpening || fileActionBusy || $('dialog').open || $('imagePreview').open) return;
+  if (documentOpening || folderOpening || fileActionBusy || $('dialog').open || $('imagePreview').open || imagePaint.open) return;
   const { path, anchor } = editorLinkTarget(link);
   if (!path || (!isMD(path) && !isImage(path)) || (path !== current && !files.has(path))) return;
   const state = { link, path, anchor, root, version, urls: [] };
@@ -7801,7 +7976,7 @@ ed.addEventListener('click', event => {
   if (image?.naturalWidth && (!link || !(event.ctrlKey || event.metaKey))) {
     event.preventDefault();
     if (canEditVisual()) selectImageForResize(image);
-    else if (!editingEnabled) showImagePreview(image);
+    else if (!editingEnabled) showImagePreview(image, findImagePath(image));
     return;
   }
   if (selectedImage) selectImageForResize(null);
@@ -8180,9 +8355,13 @@ const maximumZoom = 5;
 let previewSize = null;
 let previewZoom = 1;
 let previewDrag = null;
+let previewPath = null;
+let previewEditedUrl = null;
 
-function showImagePreview(image) {
+function showImagePreview(image, path) {
   if (!image.naturalWidth || imagePreview.open) return;
+  previewPath = path;
+  $('editPreviewImage').hidden = !paintableImagePath(path);
   previewSize = { width: image.naturalWidth, height: image.naturalHeight };
   previewZoom = 1;
   previewImage.src = image.src;
@@ -8222,11 +8401,15 @@ function resizePreview(zoom, point) {
 $('zoomOut').onclick = () => resizePreview(previewZoom / 1.25);
 $('zoomIn').onclick = () => resizePreview(previewZoom * 1.25);
 $('zoomReset').onclick = () => resizePreview(1);
+$('editPreviewImage').onclick = () => openImagePaint(previewPath);
 $('closeImagePreview').onclick = () => imagePreview.close();
 imagePreview.onclick = event => { if (event.target === imagePreview) imagePreview.close(); };
 imagePreview.addEventListener('close', () => {
   previewSize = null;
   previewDrag = null;
+  previewPath = null;
+  if (previewEditedUrl) URL.revokeObjectURL(previewEditedUrl);
+  previewEditedUrl = null;
   previewViewport.classList.remove('is-dragging');
   previewImage.removeAttribute('src');
 });
@@ -8262,6 +8445,444 @@ previewViewport.addEventListener('lostpointercapture', () => {
 });
 
 window.addEventListener('resize', () => resizePreview(previewZoom));
+
+const imagePaint = $('imagePaint');
+const paintStage = $('paintStage');
+const paintSurface = $('paintSurface');
+const paintCanvas = $('paintCanvas');
+const paintOverlay = $('paintOverlay');
+const paintContext = paintCanvas.getContext('2d');
+const paintOverlayContext = paintOverlay.getContext('2d');
+const paintTools = [...imagePaint.querySelectorAll('[data-paint-tool]')];
+const paintFormats = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp' };
+const paintBackupFolder = '.itaca-backup';
+let imagePaintState = null;
+
+function paintableImagePath(path) {
+  return root && files.has(path) && !draftImages.has(path) && paintFormats[path.split('.').pop().toLowerCase()];
+}
+
+async function validatePaintFormat(file, type) {
+  const header = new Uint8Array(await file.slice(0, 21).arrayBuffer());
+  const tagAt = offset => String.fromCharCode(...header.slice(offset, offset + 4));
+  const matchesExtension = {
+    'image/png': tagAt(0) === '\x89PNG' && tagAt(4) === '\r\n\x1a\n',
+    'image/jpeg': header[0] === 255 && header[1] === 216 && header[2] === 255,
+    'image/webp': tagAt(0) === 'RIFF' && tagAt(8) === 'WEBP',
+  };
+  if (!matchesExtension[type]) throw new Error('Il formato effettivo dell’immagine non corrisponde all’estensione del file.');
+  let animated = type === 'image/webp' && tagAt(12) === 'VP8X' && Boolean(header[20] & 2);
+  if (type === 'image/png') {
+    // APNG declares its animation before the first image data chunk.
+    for (let offset = 8; offset + 8 <= file.size;) {
+      const chunk = new DataView(await file.slice(offset, offset + 8).arrayBuffer());
+      const tag = chunk.getUint32(4);
+      if (tag === 0x6163544c) { // acTL
+        animated = true;
+        break;
+      }
+      if (tag === 0x49444154) break; // IDAT
+      offset += chunk.getUint32(0) + 12;
+    }
+  }
+  if (animated) throw new Error('L’immagine è animata. L’editor può salvare solo immagini statiche.');
+}
+
+async function decodePaintImage(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const image = new Image();
+    image.src = url;
+    await image.decode();
+    return image;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+async function findPaintBackup(state) {
+  const folder = await entryDirectory(state.directory, paintBackupFolder);
+  return folder ? existingFile(folder, state.name) : null;
+}
+
+async function openImagePaint(path) {
+  const type = paintableImagePath(path);
+  if (!type || imagePaint.open || fileActionBusy || loading || folderOpening || documentOpening || $('dialog').open) return;
+  const state = {
+    path, type, root, name: path.split('/').pop(), handle: files.get(path),
+    directory: folderHandles.get(parent(path)), tool: 'pen', operations: [], historyIndex: 0, busy: true,
+  };
+  if (!state.directory) return;
+  closeLinkPreview();
+  imagePaintState = state;
+  $('paintFile').textContent = state.name;
+  $('paintFile').title = path;
+  paintSurface.hidden = true;
+  updatePaintControls('Caricamento dell’immagine…');
+  imagePaint.showModal();
+  let message;
+  try {
+    state.file = await state.handle.getFile();
+    await validatePaintFormat(state.file, type);
+    const image = await decodePaintImage(state.file);
+    if (imagePaintState !== state || !imagePaint.open) return;
+    state.backup = await findPaintBackup(state);
+    if (state.backup && !(await state.backup.getFile()).size) state.backup = null;
+    if (imagePaintState !== state || !imagePaint.open) return;
+    state.image = image;
+    paintSurface.toggleAttribute('data-opaque', type === 'image/jpeg');
+    paintSurface.hidden = false;
+    replayPaint(state);
+  } catch (error) {
+    message = 'Impossibile aprire l’editor. ' + error.message;
+  } finally {
+    if (imagePaintState === state && imagePaint.open) {
+      state.busy = false;
+      updatePaintControls(message);
+    }
+  }
+}
+
+function updatePaintControls(message) {
+  const state = imagePaintState;
+  const ready = Boolean(state.image) && !state.busy;
+  const idle = ready && !state.gesture;
+  const cropping = state.tool === 'crop';
+  for (const button of paintTools) {
+    button.disabled = !idle;
+    button.setAttribute('aria-pressed', button.dataset.paintTool === state.tool);
+  }
+  $('paintColor').disabled = !idle || cropping || state.tool === 'eraser';
+  $('paintWidth').disabled = !idle || cropping;
+  $('paintUndo').disabled = !idle || !state.historyIndex;
+  $('paintRedo').disabled = !idle || state.historyIndex === state.operations.length;
+  $('paintApplyCrop').hidden = !cropping;
+  $('paintApplyCrop').disabled = !idle || !state.crop;
+  $('paintSave').disabled = !idle || !state.historyIndex || Boolean(state.crop);
+  $('paintRestore').hidden = !state.backup;
+  $('paintRestore').disabled = !idle;
+  $('paintClose').disabled = Boolean(state.writing || state.prompting);
+  const dimensions = `${paintCanvas.width} × ${paintCanvas.height} px`;
+  const cropHint = state.crop ? ` · Ritaglio ${state.crop.width} × ${state.crop.height} px` : ' · Trascina per selezionare l’area da tenere.';
+  $('paintStatus').textContent = message ?? (state.image ? dimensions + (cropping ? cropHint : '') : '');
+}
+
+function fitPaintSurface() {
+  if (!imagePaint.open || paintSurface.hidden) return;
+  const factor = Math.min(1, paintStage.clientWidth / paintCanvas.width, paintStage.clientHeight / paintCanvas.height);
+  const width = Math.max(1, Math.floor(paintCanvas.width * factor));
+  const height = Math.max(1, Math.floor(paintCanvas.height * factor));
+  paintSurface.style.width = width + 'px';
+  paintSurface.style.height = height + 'px';
+  const density = Math.min(2, devicePixelRatio);
+  paintOverlay.width = Math.round(width * density);
+  paintOverlay.height = Math.round(height * density);
+  drawPaintOverlay(imagePaintState);
+}
+
+function paintRect(start, end) {
+  const x = Math.floor(Math.min(start.x, end.x));
+  const y = Math.floor(Math.min(start.y, end.y));
+  return { x, y, width: Math.ceil(Math.max(start.x, end.x)) - x, height: Math.ceil(Math.max(start.y, end.y)) - y };
+}
+
+function drawPaintMark(context, operation, opaque) {
+  const { tool, points, color, width } = operation;
+  const start = points[0], end = points.at(-1);
+  context.save();
+  context.lineCap = context.lineJoin = 'round';
+  context.lineWidth = width;
+  context.strokeStyle = context.fillStyle = tool === 'eraser' && opaque ? '#fff' : color;
+  if (tool === 'marker') context.globalAlpha = .35;
+  if (tool === 'eraser' && !opaque) context.globalCompositeOperation = 'destination-out';
+  context.beginPath();
+  if (tool === 'rectangle' || tool === 'ellipse') {
+    const { x, y, width, height } = paintRect(start, end);
+    if (tool === 'rectangle') context.rect(x, y, width, height);
+    else context.ellipse(x + width / 2, y + height / 2, width / 2, height / 2, 0, 0, 2 * Math.PI);
+    context.stroke();
+  } else if (points.length === 1) {
+    context.arc(start.x, start.y, width / 2, 0, 2 * Math.PI);
+    context.fill();
+  } else {
+    context.moveTo(start.x, start.y);
+    for (let i = 1; i < points.length; i++) context.lineTo(points[i].x, points[i].y);
+    context.stroke();
+  }
+  context.restore();
+}
+
+function drawPaintOverlay(state) {
+  const context = paintOverlayContext;
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.clearRect(0, 0, paintOverlay.width, paintOverlay.height);
+  const scaleX = paintOverlay.width / paintCanvas.width;
+  const scaleY = paintOverlay.height / paintCanvas.height;
+  context.setTransform(scaleX, 0, 0, scaleY, 0, 0);
+  const gesture = state.gesture;
+  const crop = gesture?.tool === 'crop' ? paintRect(gesture.points[0], gesture.points.at(-1)) : state.crop;
+  if (crop?.width && crop.height) {
+    context.fillStyle = '#0b142799';
+    context.beginPath();
+    context.rect(0, 0, paintCanvas.width, paintCanvas.height);
+    context.rect(crop.x, crop.y, crop.width, crop.height);
+    context.fill('evenodd');
+    context.strokeStyle = '#fff';
+    context.lineWidth = 1.5 / scaleX;
+    context.strokeRect(crop.x, crop.y, crop.width, crop.height);
+  } else if (gesture && gesture.tool !== 'crop' && gesture.tool !== 'eraser') {
+    drawPaintMark(context, gesture, false);
+  }
+}
+
+function applyPaintOperation(state, operation) {
+  if (operation.tool !== 'crop') {
+    drawPaintMark(paintContext, operation, state.type === 'image/jpeg');
+    return;
+  }
+  const { x, y, width, height } = operation.rect;
+  const cutout = document.createElement('canvas');
+  cutout.width = width;
+  cutout.height = height;
+  cutout.getContext('2d').drawImage(paintCanvas, x, y, width, height, 0, 0, width, height);
+  paintCanvas.width = width;
+  paintCanvas.height = height;
+  paintContext.drawImage(cutout, 0, 0);
+  cutout.width = cutout.height = 1;
+}
+
+function replayPaint(state) {
+  paintCanvas.width = state.image.naturalWidth;
+  paintCanvas.height = state.image.naturalHeight;
+  paintContext.drawImage(state.image, 0, 0);
+  for (let i = 0; i < state.historyIndex; i++) applyPaintOperation(state, state.operations[i]);
+  fitPaintSurface();
+}
+
+function commitPaint(state, operation) {
+  state.operations.splice(state.historyIndex, state.operations.length - state.historyIndex, operation);
+  state.historyIndex++;
+  if (operation.tool === 'eraser') replayPaint(state);
+  else applyPaintOperation(state, operation);
+}
+
+function stepPaintHistory(step) {
+  const state = imagePaintState;
+  const next = state.historyIndex + step;
+  if (state.busy || state.gesture || next < 0 || next > state.operations.length) return;
+  state.crop = null;
+  state.historyIndex = next;
+  replayPaint(state);
+  updatePaintControls();
+}
+
+function paintPoint(event) {
+  const box = paintOverlay.getBoundingClientRect();
+  return {
+    x: Math.max(0, Math.min(paintCanvas.width, (event.clientX - box.left) * paintCanvas.width / box.width)),
+    y: Math.max(0, Math.min(paintCanvas.height, (event.clientY - box.top) * paintCanvas.height / box.height)),
+  };
+}
+
+paintOverlay.addEventListener('pointerdown', event => {
+  const state = imagePaintState;
+  if (event.button !== 0 || !state?.image || state.busy || state.gesture) return;
+  event.preventDefault();
+  paintOverlay.focus({ preventScroll: true });
+  paintOverlay.setPointerCapture(event.pointerId);
+  state.crop = null;
+  const width = Number($('paintWidth').value);
+  state.gesture = {
+    pointer: event.pointerId, tool: state.tool, points: [paintPoint(event)], color: $('paintColor').value,
+    width,
+  };
+  if (state.tool === 'eraser') drawPaintMark(paintContext, state.gesture, state.type === 'image/jpeg');
+  drawPaintOverlay(state);
+  updatePaintControls();
+});
+
+function extendPaintGesture(state, event) {
+  const gesture = state.gesture;
+  const point = paintPoint(event);
+  const previous = gesture.points.at(-1);
+  if (previous.x === point.x && previous.y === point.y) return;
+  if (['pen', 'marker', 'eraser'].includes(gesture.tool)) gesture.points.push(point);
+  else gesture.points[1] = point;
+  if (gesture.tool === 'eraser') {
+    drawPaintMark(paintContext, { ...gesture, points: [previous, point] }, state.type === 'image/jpeg');
+  }
+}
+
+paintOverlay.addEventListener('pointermove', event => {
+  const state = imagePaintState;
+  if (state?.gesture?.pointer !== event.pointerId) return;
+  const samples = event.getCoalescedEvents?.();
+  for (const sample of samples?.length ? samples : [event]) extendPaintGesture(state, sample);
+  drawPaintOverlay(state);
+});
+
+paintOverlay.addEventListener('pointerup', event => {
+  const state = imagePaintState;
+  const gesture = state?.gesture;
+  if (gesture?.pointer !== event.pointerId) return;
+  extendPaintGesture(state, event);
+  state.gesture = null;
+  if (gesture.tool === 'crop') {
+    const [start, end] = gesture.points;
+    if (end && Math.abs(start.x - end.x) >= 1 && Math.abs(start.y - end.y) >= 1) state.crop = paintRect(start, end);
+  } else if (gesture.points.length > 1 || ['pen', 'marker', 'eraser'].includes(gesture.tool)) {
+    commitPaint(state, gesture);
+  }
+  drawPaintOverlay(state);
+  updatePaintControls();
+});
+
+paintOverlay.addEventListener('lostpointercapture', event => {
+  const state = imagePaintState;
+  if (state?.gesture?.pointer !== event.pointerId) return;
+  const erasing = state.gesture.tool === 'eraser';
+  state.gesture = null;
+  if (erasing) replayPaint(state);
+  else drawPaintOverlay(state);
+  updatePaintControls();
+});
+
+for (const button of paintTools) button.onclick = () => {
+  const state = imagePaintState;
+  state.tool = button.dataset.paintTool;
+  state.crop = null;
+  drawPaintOverlay(state);
+  updatePaintControls();
+};
+$('paintWidth').oninput = event => { $('paintWidthValue').value = event.target.value + ' px'; };
+$('paintUndo').onclick = () => stepPaintHistory(-1);
+$('paintRedo').onclick = () => stepPaintHistory(1);
+$('paintApplyCrop').onclick = () => {
+  const state = imagePaintState;
+  commitPaint(state, { tool: 'crop', rect: state.crop });
+  state.crop = null;
+  state.tool = 'pen';
+  fitPaintSurface();
+  updatePaintControls();
+};
+new ResizeObserver(fitPaintSurface).observe(paintStage);
+
+async function closeImagePaint() {
+  const state = imagePaintState;
+  if (state.writing || state.prompting) return;
+  if (state.historyIndex) {
+    state.prompting = state.busy = true;
+    updatePaintControls();
+    const answer = await modal('Chiudere l’editor immagine?', '<p>Le modifiche all’immagine verranno scartate.</p>', 'Scarta modifiche', true);
+    state.prompting = state.busy = false;
+    updatePaintControls();
+    if (!answer) return;
+  }
+  imagePaint.close();
+}
+
+async function verifyPaintSource(state) {
+  if (root !== state.root || files.get(state.path) !== state.handle) throw new Error('La cartella di lavoro è cambiata. Riapri l’immagine.');
+  const latest = await state.directory.getFileHandle(state.name);
+  const currentFile = await latest.getFile();
+  if (!await state.handle.isSameEntry(latest) || currentFile.size !== state.file.size || currentFile.lastModified !== state.file.lastModified) {
+    throw new Error('Il file è cambiato mentre l’editor era aperto. Riapri l’immagine prima di riprovare.');
+  }
+}
+
+async function ensurePaintBackup(state) {
+  const folder = await state.directory.getDirectoryHandle(paintBackupFolder, { create: true });
+  const backup = await folder.getFileHandle(state.name, { create: true });
+  if (!(await backup.getFile()).size) {
+    await writeSavedFile(backup, state.file);
+    if ((await backup.getFile()).size !== state.file.size) throw new Error('La copia di sicurezza è incompleta.');
+  }
+  state.backup = backup;
+}
+
+function refreshPaintedImage(state, blob, width, height) {
+  closeLinkPreview();
+  refreshDocumentImages(state.path);
+  if (!imagePreview.open || previewPath !== state.path) return;
+  const previousUrl = previewEditedUrl;
+  previewEditedUrl = URL.createObjectURL(blob);
+  previewSize = { width, height };
+  previewImage.src = previewEditedUrl;
+  resizePreview(1);
+  if (previousUrl) URL.revokeObjectURL(previousUrl);
+}
+
+async function saveImagePaint(restoreOriginal = false) {
+  const state = imagePaintState;
+  if (!state?.image || state.busy || state.gesture) return;
+  state.writing = state.busy = true;
+  updatePaintControls(restoreOriginal ? 'Preparazione del ripristino…' : 'Salvataggio dell’immagine…');
+  let message;
+  try {
+    if (!await allowFolderWrite(state.root)) {
+      message = 'Il browser non ha concesso la scrittura nella cartella.';
+      return;
+    }
+    let blob, width = paintCanvas.width, height = paintCanvas.height;
+    if (restoreOriginal) {
+      const answer = await modal('Ripristinare l’immagine originale?', '<p>Il file nella cartella verrà sostituito con la copia originale. Eventuali modifiche aperte verranno scartate.</p>', 'Ripristina originale', true);
+      if (!answer) return;
+      const backup = await findPaintBackup(state);
+      if (!backup) throw new Error('La copia di sicurezza non è più disponibile.');
+      blob = await backup.getFile();
+      await validatePaintFormat(blob, state.type);
+      const image = await decodePaintImage(blob);
+      width = image.naturalWidth;
+      height = image.naturalHeight;
+    } else {
+      blob = await new Promise(resolve => paintCanvas.toBlob(resolve, state.type, .94));
+      if (!blob || blob.type !== state.type) throw new Error('Il browser non ha potuto esportare l’immagine nel formato originale.');
+    }
+    await writeSavedFile(state.handle, blob, async () => {
+      await verifyPaintSource(state);
+      if (!restoreOriginal) {
+        await ensurePaintBackup(state);
+        await verifyPaintSource(state);
+      }
+    });
+    refreshPaintedImage(state, blob, width, height);
+    state.historyIndex = 0;
+    imagePaint.close();
+    toast(restoreOriginal ? 'Immagine originale ripristinata' : 'Immagine salvata · originale in ' + paintBackupFolder);
+  } catch (error) {
+    message = (restoreOriginal ? 'Ripristino non riuscito. ' : 'Salvataggio non riuscito. ') + error.message;
+  } finally {
+    state.writing = state.busy = false;
+    if (imagePaintState === state && imagePaint.open) updatePaintControls(message);
+  }
+}
+
+$('paintSave').onclick = () => saveImagePaint();
+$('paintRestore').onclick = () => saveImagePaint(true);
+$('paintClose').onclick = closeImagePaint;
+imagePaint.addEventListener('cancel', event => {
+  event.preventDefault();
+  if (imagePaintState.crop && !imagePaintState.busy) {
+    imagePaintState.crop = null;
+    drawPaintOverlay(imagePaintState);
+    updatePaintControls();
+  } else closeImagePaint();
+});
+document.addEventListener('keydown', event => {
+  if (!imagePaint.open || $('dialog').open || (!event.ctrlKey && !event.metaKey)) return;
+  const key = event.key.toLowerCase();
+  if (!['s', 'y', 'z'].includes(key)) return;
+  event.preventDefault();
+  event.stopPropagation();
+  if (key === 's') {
+    if (!$('paintSave').disabled) saveImagePaint();
+  } else stepPaintHistory(key === 'z' && !event.shiftKey ? -1 : 1);
+}, true);
+imagePaint.addEventListener('close', () => {
+  imagePaintState = null;
+  paintSurface.hidden = true;
+  paintCanvas.width = paintCanvas.height = paintOverlay.width = paintOverlay.height = 1;
+});
 
 const workspaceUrl = new URL(location.href);
 workspaceUrl.hash = '';
@@ -8403,7 +9024,7 @@ function clearDraftCheckpoint() {
 }
 
 async function reloadAfterGuard() {
-  if (reloadApproved || loading || fileActionBusy || documentOpening || folderOpening || $('dialog').open || $('imagePreview').open) return;
+  if (reloadApproved || loading || fileActionBusy || documentOpening || folderOpening || $('dialog').open || $('imagePreview').open || imagePaint.open) return;
   if (!await guard('Ricarica')) return;
   reloadApproved = true;
   clearDraftCheckpoint();
@@ -9027,14 +9648,21 @@ function updateDocumentPaths(remap) {
   }
 }
 
-function refreshDocumentImages() {
+function refreshDocumentImages(changedPath = null) {
   version++;
-  revoke();
+  if (changedPath === null) revoke();
+  const expired = new Set();
   for (const image of ed.querySelectorAll('img[data-src]')) {
+    if (changedPath !== null) {
+      if (findImagePath(image) !== changedPath) continue;
+      if (image.src.startsWith('blob:')) expired.add(image.src);
+    }
     image.removeAttribute('src');
     image.classList.remove('missing');
     image.title = image.alt;
   }
+  for (const url of expired) URL.revokeObjectURL(url);
+  if (expired.size) objectUrls = objectUrls.filter(url => !expired.has(url));
   loadImages();
 }
 
@@ -9321,10 +9949,37 @@ function detailsMarkdown(details) {
     (summary ? '<summary>' + title + '</summary>\n' : '') + '\n' + (content ? content + '\n\n' : '') + '</details>';
 }
 
+// Chrome mangles block HTML inserted in the middle of a paragraph: move to a block boundary first.
+function prepareBlockInsertion() {
+  restore();
+  const selection = getSelection();
+  if (!selection.rangeCount || !ed.contains(selection.anchorNode)) return;
+  if (!selection.isCollapsed) document.execCommand('delete');
+  const node = selection.anchorNode;
+  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  if (!element || element === ed || !ed.contains(element)) {
+    remember();
+    return;
+  }
+  let top = element;
+  while (top.parentElement !== ed) top = top.parentElement;
+  if (top.matches('p, h1, h2, h3, h4, h5, h6') && emptyVisualText(top) && !top.querySelector('img, input')) {
+    remember();
+    return;
+  }
+  const range = document.createRange();
+  range.setStartAfter(top);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  remember();
+}
+
 function insertCallout() {
   if (!canEditVisual()) return;
   remember();
   const text = selected?.toString().trim();
+  prepareBlockInsertion();
   addHTML('<blockquote data-callout="NOTE" data-new-block><p>' + (text ? escapeHtml(text) : '<br>') + '</p></blockquote><p><br></p>');
   focusNewBlock('p');
 }
@@ -9332,6 +9987,7 @@ function insertCallout() {
 function insertDetails() {
   if (!canEditVisual()) return;
   remember();
+  prepareBlockInsertion();
   addHTML('<details open data-new-block><summary>Dettagli</summary><p><br></p></details><p><br></p>');
   focusNewBlock('summary');
 }
@@ -9867,16 +10523,20 @@ function tableChange(action, value) {
     toast('Posiziona il cursore in una cella');
     return;
   }
-  const row = cell.parentElement;
-  const rows = [...table.rows];
+  // Work on a copy and swap it in with insertHTML, so Annulla/Ripeti undo table edits too.
+  const liveRows = [...table.rows];
+  const rowIndex = liveRows.indexOf(cell.parentElement);
   const column = cell.cellIndex;
+  const work = table.cloneNode(true);
+  const rows = [...work.rows];
+  const row = rows[rowIndex];
   const width = Math.max(...rows.map(item => item.cells.length));
   const emptyCell = tag => Object.assign(document.createElement(tag), { innerHTML: '<br>' });
-  let focus = cell;
+  let focus = row.cells[column];
+  let removed = false;
   const removeTable = () => {
-    const paragraph = emptyCell('p');
-    table.replaceWith(paragraph);
-    focus = paragraph;
+    removed = true;
+    focus = null;
   };
   if (action === 'addRow') {
     const fresh = document.createElement('tr');
@@ -9886,7 +10546,7 @@ function tableChange(action, value) {
       if (align) created.style.textAlign = align;
       fresh.append(created);
     }
-    if (row.parentElement.tagName === 'THEAD') (table.tBodies[0] || table.createTBody()).prepend(fresh);
+    if (row.parentElement.tagName === 'THEAD') (work.tBodies[0] || work.createTBody()).prepend(fresh);
     else row.after(fresh);
     focus = fresh.cells[column] || fresh.cells[0];
   } else if (action === 'addColumn') {
@@ -9933,10 +10593,28 @@ function tableChange(action, value) {
     for (const item of rows) {
       const target = item.cells[column];
       if (target) target.style.textAlign = value === 'none' ? '' : value;
+      if (target && !target.getAttribute('style')) target.removeAttribute('style');
     }
   }
-  if (focus?.isConnected) placeCaret(focus, 0);
+  const focusRow = focus ? [...work.rows].indexOf(focus.parentElement) : -1;
+  const focusColumn = focus ? focus.cellIndex : -1;
+  work.dataset.tableEdit = '';
+  const range = document.createRange();
+  range.selectNode(table);
+  const selection = getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+  document.execCommand('insertHTML', false, removed ? '<p data-table-edit><br></p>' : work.outerHTML);
+  const replaced = ed.querySelector('[data-table-edit]');
+  if (replaced) {
+    delete replaced.dataset.tableEdit;
+    configureVisualContent();
+    const target = removed ? replaced : replaced.rows?.[focusRow]?.cells[focusColumn] || replaced.rows?.[0]?.cells[0];
+    if (target) placeCaret(target, 0);
+  }
+  remember();
   mark();
+  queueOutline();
   updateFormatButtons();
 }
 
@@ -12055,6 +12733,18 @@ function applyAttributes(element, raw) {
 
 // One-time transformations of freshly rendered Markdown.
 function enhanceMaterial(container) {
+  // «<div align="center" markdown>» around paragraphs and headings becomes their own alignment.
+  for (const wrapper of [...container.querySelectorAll('[data-ext="mdhtml"]')]) {
+    const align = /^<div\s+align\s*=\s*["']?(center|right|justify|left)["']?\s+markdown(?:\s*=\s*["']?1["']?)?\s*>$/i.exec(wrapper.dataset.extOpen || '')?.[1].toLowerCase();
+    if (!align || !/^<\/div>$/i.test(wrapper.dataset.extClose || '')) continue;
+    const children = [...wrapper.children];
+    if (!children.length || children.some(child => !/^(P|H[1-6])$/.test(child.tagName))) {
+      wrapper.style.textAlign = align;
+      continue;
+    }
+    for (const child of children) if (align !== 'left') child.style.textAlign = align;
+    wrapper.replaceWith(...wrapper.childNodes);
+  }
   // Consecutive tabs form one group; «===!» starts a new one.
   for (const tab of [...container.querySelectorAll('[data-ext="tab"]')]) {
     if (tab.parentElement?.dataset.ext === 'tabs') continue;
@@ -12590,21 +13280,11 @@ async function insertMaterialInline(kind) {
     insertSpecialInline(open + content + '</' + kind + '>');
     return;
   }
-  const prompts = {
-    keys: ['Tasti', 'Combinazione (per esempio ctrl+alt+del)', text || 'ctrl+c'],
-    icon: ['Icona o emoji', 'Nome, per esempio material-check, fontawesome-brands-github, octicons-heart-fill-24 o smile', 'material-check'],
-    math: ['Formula in linea', 'Formula TeX, per esempio E = mc^2', text || 'E = mc^2'],
-  }[kind];
-  const answer = await modal(prompts[0], '<label>' + escapeHtml(prompts[1]) + '</label><input name="value" required value="' + escapeHtml(prompts[2]) + '">', 'Inserisci');
+  if (kind !== 'keys') return;
+  const answer = await modal('Tasti', '<label>Combinazione (per esempio ctrl+alt+del)</label><input name="value" required value="' + escapeHtml(text || 'ctrl+c') + '">', 'Inserisci');
   if (!answer?.value.trim()) return;
   const value = answer.value.trim();
-  const raw = kind === 'keys' ? '++' + value.toLowerCase().split('+').map(key => key.trim().replace(/\s+/g, '-')).filter(Boolean).join('+') + '++' :
-    kind === 'icon' ? ':' + value.replace(/^:|:$/g, '').replace(/[/\s]+/g, '-').toLowerCase() + ':' : '$' + value + '$';
-  if (kind === 'icon' && !isIconName(raw.slice(1, -1)) && !emojiFor(raw.slice(1, -1))) {
-    toast('Nome non riconosciuto: usa material-…, fontawesome-brands-…, octicons-…, simple-… o un’emoji come smile.');
-    return;
-  }
-  insertSpecialInline(renderedInline(raw));
+  insertSpecialInline(renderedInline('++' + value.toLowerCase().split('+').map(key => key.trim().replace(/\s+/g, '-')).filter(Boolean).join('+') + '++'));
 }
 
 async function insertMaterialBlock(kind) {
@@ -12622,6 +13302,7 @@ async function insertMaterialBlock(kind) {
       '<li><p><strong>Prima scheda</strong></p><hr><p>Descrizione</p></li><li><p><strong>Seconda scheda</strong></p><hr><p>Descrizione</p></li></ul></div>',
   };
   if (blocksHtml[kind]) {
+    prepareBlockInsertion();
     addHTML(blocksHtml[kind] + '<p><br></p>');
     focusNewBlock(kind === 'deflist' ? 'dt' : kind === 'grid' ? 'strong' : kind === 'tabs' ? '[data-ext="tab"] > p' : ':scope > p:not([data-ext-part])');
     return;
@@ -12648,6 +13329,7 @@ async function insertMaterialBlock(kind) {
     return;
   }
   if (kind === 'mermaid') {
+    prepareBlockInsertion();
     addHTML('<pre data-new-code-block contenteditable="false"><code class="language-mermaid">graph LR\n  A[Inizio] --&gt; B{Scelta}\n  B --&gt;|Sì| C[Fine]\n  B --&gt;|No| A\n</code></pre><p data-code-gap><br></p>');
     const block = ed.querySelector('[data-new-code-block]');
     if (block) {
@@ -12662,7 +13344,7 @@ async function insertMaterialBlock(kind) {
       : await modal('Abbreviazione', '<label>Abbreviazione</label><input name="term" required value="' + escapeHtml(text || '') + '"><label>Significato</label><input name="value" required>', 'Inserisci');
     if (!answer) return;
     if (kind === 'math') {
-      restore();
+      prepareBlockInsertion();
       addHTML(enhanceRenderedHtml('$$\n' + answer.value.trim() + '\n$$') + '<p><br></p>');
     } else {
       const line = '*[' + answer.term.trim() + ']: ' + answer.value.trim();
@@ -12835,7 +13517,7 @@ document.addEventListener('keydown', event => {
     setTimeout(() => { plainPasteRequested = false; }, 1000);
   }
   if (!modifier || event.altKey || event.shiftKey || (key !== 'h' && key !== 'f')) return;
-  if (!current || $('dialog').open || panel.open || $('imagePreview').open) return;
+  if (!current || $('dialog').open || panel.open || $('imagePreview').open || imagePaint.open) return;
   event.preventDefault();
   openFind(key === 'h');
 }, true);
