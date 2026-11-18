@@ -27,12 +27,20 @@ Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica 
 
 Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Le scelte restano salvate nel browser.
 
-- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato) e larghezza della colonna (stretta, media, larga, piena).
+- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena) e posizione di **Indice del documento** e **Citato da**: nella barra laterale oppure a lato del documento, in alto a destra, sempre visibili mentre scorri (nelle finestre strette tornano nella barra laterale). L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
-- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma) e preselezione di «Aggiorna i collegamenti» quando rinomini o sposti.
+- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti e il tuo nome, mostrato agli altri quando stai modificando un documento.
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione.
 
 La versione di Itaca compare sotto il nome, in alto nella barra laterale, e nella finestra Impostazioni.
+
+## Modifica condivisa
+
+Quando attivi **Modifica** su un documento della cartella, Itaca lo segnala con un piccolo file in `.itaca-locks`, rinnovato ogni 30 secondi e rimosso quando smetti di modificare o chiudi la pagina. Chi apre lo stesso documento da un’altra scheda o da un altro computer che usa la stessa cartella (per esempio una cartella di rete o sincronizzata) lo vede in sola lettura, con l’indicazione **In modifica: nome**.
+
+- Il documento resta leggibile; la modifica si sblocca da sola quando l’altro utente ha finito.
+- Se Itaca si è chiusa senza rilasciare il documento, il blocco scade dopo circa 2 minuti e mezzo. Puoi anche premere **In modifica: nome** e scegliere **Modifica comunque**: l’altro utente passa in sola lettura (se ha modifiche non salvate riceve un avviso).
+- Con le cartelle sincronizzate nel cloud il blocco arriva agli altri con il ritardo della sincronizzazione.
 
 ## Versioni
 
