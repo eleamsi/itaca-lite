@@ -15,6 +15,13 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 - Per fare prima, passa con il mouse tra due voci dell’elenco: compare un **+** con una linea. Cliccalo, scrivi il nome e premi **Invio** (**Esc** annulla). Il documento va nella cartella della voce sopra, oppure dentro di essa se è una cartella aperta.
 - Anche il menu **⋯** di una cartella o di un documento ha **Nuovo documento qui**.
 
+## Nuova cartella
+
+- L’icona con la cartella e il **+**, a destra di **Nuovo documento**, chiede dove crearla (**Dentro**) e il nome. Scrivendo `A/B` crei anche le cartelle intermedie.
+- Il menu **⋯** di una cartella o di un documento ha **Nuova cartella qui**.
+- Nel **+** rapido tra due voci dell’elenco, un nome che finisce con `/` (per esempio `Archivio/`) crea una cartella invece di un documento.
+- La nuova cartella compare aperta; finché è vuota sotto di lei si legge «Cartella vuota». Funziona con le cartelle aperte con **Apri cartella** (non con quelle importate).
+
 **Copia percorso** nel menu **⋯** di un file o di una cartella, oppure l’icona accanto al percorso in basso, copia il percorso completo sul computer (per esempio `/Users/nome/Documenti/docs/Procedure/Guida.md`). Il browser non rivela dove si trova la cartella: se è quella che contiene Itaca lo ricava da solo, altrimenti te lo chiede la prima volta e lo ricorda. Puoi correggerlo in **Impostazioni › File › Percorso della cartella aperta**.
 
 ## Cartelle salvate
@@ -71,6 +78,20 @@ In alto a destra, da sinistra a destra:
 - **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
 - **⋯ Altre azioni**: **Esporta PDF…** e, se la cartella è un repository git, **Versioni precedenti…**.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
+
+## Caricamento
+
+Se un’operazione richiede un momento, sul documento compare **Apertura di «Nome»…** con una barra che scorre in alto. Succede quando apri un documento molto grande, passi tra Lettura e Modifica in un documento grande, o apri una cartella con molti file. Le aperture veloci non mostrano nulla.
+
+## Immagini allineate
+
+Seleziona un’immagine in **Modifica** e usa il comando di allineamento della barra:
+
+- **A sinistra** / **A destra**: l’immagine si affianca al testo, che le scorre intorno.
+- **Al centro**: l’immagine sta da sola al centro della colonna.
+- **Senza testo a lato**: l’immagine torna a sinistra, senza testo intorno.
+
+Anche le immagini ridimensionate (salvate come `<img … width="…">`) si possono centrare e allineare. Ciò che è centrato, le linee orizzontali e i titoli principali non restano accanto a un’immagine affiancata: vanno sotto di lei.
 
 ## Modifica immagine
 
