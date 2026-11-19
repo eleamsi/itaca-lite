@@ -123,13 +123,22 @@ Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del te
 - **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (gatto, barchetta o nessuna) e **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde).
 - **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno e si mettono nella barra laterale oppure nel documento, nell’angolo scelto su una piccola pagina, sempre visibili mentre scorri (nelle finestre strette tornano nella barra laterale). L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
-- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti e il tuo nome, mostrato agli altri quando stai modificando un documento.
+- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti, il tuo nome, mostrato agli altri quando stai modificando un documento, e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 - **Scorciatoie**: elenco delle scorciatoie da tastiera disponibili (per ora non modificabili).
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
 
-La versione di Itaca compare sotto il nome, in alto nella barra laterale, e nella finestra Impostazioni.
+La versione di Itaca compare in una piccola etichetta accanto al nome, in alto nella barra laterale, e nella finestra Impostazioni. Il marchio è una colonna ionica che prende il colore della tavolozza e del tema; nella scheda del browser l’icona è la stessa colonna, bianca con il contorno nero, leggibile su qualsiasi sfondo.
+
+## Icona di Itaca
+
+Il marchio di Itaca è una colonna ionica. In **Impostazioni › File › Icona di Itaca** puoi scaricarla per dare un’icona al file `Itaca Lite.html`; dopo il download compaiono le istruzioni.
+
+- **Mac · PNG**: seleziona `Itaca Lite.html` nel Finder e premi `Cmd+I`; apri l’immagine scaricata, copiala (`Cmd+A`, `Cmd+C`), clicca l’icona piccola in alto nella finestra Informazioni e incolla (`Cmd+V`).
+- **Windows · ICO**: Windows non permette di dare un’icona a un singolo file `.html`, quindi si usa un collegamento: tasto destro su `Itaca Lite.html` › *Mostra altre opzioni* › *Crea collegamento*, poi tasto destro sul collegamento › *Proprietà* › *Cambia icona…* › *Sfoglia* e scegli il file `.ico`.
+
+L’icona va rimessa ogni volta che sostituisci il file con una nuova versione.
 
 ## Modifica condivisa
 
