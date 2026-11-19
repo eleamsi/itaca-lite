@@ -111,6 +111,16 @@
 .settings-dialog .segmented.two { grid-template-columns: repeat(2, 1fr); }
 .settings-dialog .segmented.corners { grid-template-columns: repeat(2, 1fr); margin-top: 8px; }
 .settings-dialog .segmented:has(input:disabled) { opacity: .5; }
+.settings-tabs button { padding-inline: 4px; }
+.shortcut-intro { margin: 0 0 14px; color: var(--muted); font-size: 12.5px; }
+.shortcut-group { margin: 0 0 16px; }
+.shortcut-group h3 { margin: 0 0 6px; color: var(--ink); font-size: 13px; font-weight: 650; }
+.shortcut-group dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; margin: 0; border: 1px solid var(--line-soft); border-radius: 8px; overflow: hidden; }
+.shortcut-group dt, .shortcut-group dd { display: flex; align-items: center; min-height: 32px; margin: 0; padding: 5px 10px; border-top: 1px solid var(--line-soft); font-size: 12.5px; }
+.shortcut-group dt { color: var(--copy); }
+.shortcut-group dd { justify-content: flex-end; gap: 3px; flex-wrap: wrap; color: var(--muted); white-space: nowrap; }
+.shortcut-group dt:first-of-type, .shortcut-group dd:first-of-type { border-top: 0; }
+.shortcut-group kbd { display: inline-block; min-width: 22px; padding: 1px 6px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; background: var(--canvas); color: var(--ink); font: 600 11.5px/1.5 var(--sans); text-align: center; }
 .settings-dialog .segmented:has(input:disabled) label { cursor: default; }
 .settings-dialog .setting-note { margin: 6px 0 0; font-size: 12px; }
 .settings-dialog .stack { display: grid; gap: 2px; }
@@ -190,6 +200,10 @@ button:disabled { opacity: .4; cursor: default; }
   scrollbar-color: var(--scrollbar) transparent;
 }
 .sidebar > * { flex: none; }
+/* Barra laterale a destra (Impostazioni › Aspetto) */
+.app.sidebar-right .sidebar { order: 2; border-right: 0; border-left: 1px solid var(--line-soft); }
+.app.sidebar-right #toggle { order: 1; }
+.app.sidebar-right .sidebar-toggle .icon { transform: scaleX(-1); }
 
 /* Testata: marchio + ricerca */
 .brand { display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 14px calc(var(--side-x) + 4px) 10px; }
@@ -518,6 +532,32 @@ dialog::backdrop { background: var(--overlay); }
 dialog h2 { margin: 0 0 14px; font: 600 18px/1.3 var(--display); letter-spacing: -.01em; }
 dialog label { display: block; color: var(--copy); margin: 12px 0 4px; font-size: 13px; }
 dialog input:not([type='radio'], [type='checkbox']), dialog select { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+dialog select, .callout-head select, .adm-tools select {
+  appearance: none;
+  padding-right: 30px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 16px) calc(50% + 1px), calc(100% - 12px) calc(50% + 1px);
+  background-size: 4px 4px;
+  background-repeat: no-repeat;
+}
+.callout-head select, .adm-tools select { padding-right: 18px; background-position: calc(100% - 10px) calc(50% + 1px), calc(100% - 6px) calc(50% + 1px); }
+select.select-open, .tools select.select-open { border-color: var(--focus); }
+.select-menu { position: fixed; inset: auto; z-index: 20; box-sizing: border-box; min-width: 140px; max-width: min(380px, calc(100vw - 16px)); margin: 0; padding: 4px; overflow: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); font: 13px/1.35 var(--sans); scrollbar-width: thin; user-select: none; }
+.select-option { position: relative; padding: 6px 30px 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.select-option.active { background: var(--hover); }
+.select-option[aria-selected='true'] { color: var(--accent-text); font-weight: 600; }
+.select-option[aria-selected='true']::after { position: absolute; right: 12px; top: 50%; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-65%) rotate(45deg); content: ''; }
+.select-option[aria-disabled='true'] { opacity: .45; cursor: default; }
+.select-option[aria-disabled='true'].active { background: none; }
+.select-group-label { padding: 7px 10px 3px; color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; }
+.select-menu [role='group'] + [role='group'], .select-menu .select-option + [role='group'] { margin-top: 4px; padding-top: 2px; border-top: 1px solid var(--line-soft); }
+.select-menu[data-for='heading'] [data-value='h1'] { font: 700 18px/1.3 var(--display); }
+.select-menu[data-for='heading'] [data-value='h2'] { font: 700 16px/1.3 var(--display); }
+.select-menu[data-for='heading'] [data-value='h3'] { font: 650 14.5px/1.3 var(--display); }
+.select-menu[data-for='heading'] :is([data-value='h4'], [data-value='h5'], [data-value='h6']) { font-weight: 650; }
+.select-menu[data-for='heading'] [data-value='blockquote'] { font-style: italic; }
+.select-menu[data-for='heading'] [data-value='pre'] { font-family: var(--mono); font-size: 12.5px; }
+@media (forced-colors: active) { .select-option.active { outline: 1px solid Highlight; } }
 dialog input:not([type='radio'], [type='checkbox']):focus, dialog select:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent); }
 dialog input[type='radio'] { accent-color: var(--accent); vertical-align: -1px; }
 dialog p { margin: 9px 0; color: var(--muted); font-size: 13px; }
@@ -639,6 +679,7 @@ dialog .check-option input { width: 16px; height: 16px; margin: 0; accent-color:
 @media (max-width: 760px) {
   .sidebar { position: fixed; z-index: 5; inset: 0 auto 0 0; width: min(286px, calc(100vw - 42px)); min-height: 0; box-shadow: 8px 0 34px #1936542b; }
   .close-sidebar { display: inline-grid; }
+  .app.sidebar-right .sidebar { inset: 0 0 0 auto; box-shadow: -8px 0 34px #1936542b; }
   .backdrop { position: fixed; z-index: 4; inset: 0; border-radius: 0; padding: 0; }
   .backdrop, .backdrop:hover:not(:disabled) { background: var(--overlay); }
   .document-actions { inset: 10px 10px auto auto; }
@@ -1186,7 +1227,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
       </div>
       <div class="hint" id="hint" role="status"></div>
       <footer class="statusbar">
-        <button type="button" class="icon-button sidebar-toggle" id="toggle" aria-label="Nascondi navigazione" title="Mostra o nascondi navigazione" aria-controls="sidebar" aria-expanded="true"><i class="icon i-panel" aria-hidden="true"></i></button>
+        <button type="button" class="icon-button sidebar-toggle" id="toggle" aria-label="Nascondi navigazione" title="Mostra o nascondi navigazione (Ctrl/⌘ + Maiusc + B)" aria-controls="sidebar" aria-expanded="true"><i class="icon i-panel" aria-hidden="true"></i></button>
         <div class="document-history" role="group" aria-label="Cronologia documenti">
           <button type="button" class="icon-button" id="historyBack" aria-label="Documento precedente" title="Documento precedente" disabled><i class="icon history-arrow back" aria-hidden="true"></i></button>
           <button type="button" class="icon-button" id="historyForward" aria-label="Documento successivo" title="Documento successivo" disabled><i class="icon history-arrow" aria-hidden="true"></i></button>
@@ -1245,6 +1286,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
         <button type="button" role="tab" id="settingsTab-documents" aria-controls="settingsPanel-documents" aria-selected="false" tabindex="-1">Documenti</button>
         <button type="button" role="tab" id="settingsTab-files" aria-controls="settingsPanel-files" aria-selected="false" tabindex="-1">File</button>
         <button type="button" role="tab" id="settingsTab-pdf" aria-controls="settingsPanel-pdf" aria-selected="false" tabindex="-1">PDF</button>
+        <button type="button" role="tab" id="settingsTab-shortcuts" aria-controls="settingsPanel-shortcuts" aria-selected="false" tabindex="-1">Scorciatoie</button>
       </div>
       <div class="settings-body">
       <section role="tabpanel" id="settingsPanel-appearance" aria-labelledby="settingsTab-appearance">
@@ -1281,6 +1323,11 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
         <fieldset>
           <legend>Larghezza della colonna</legend>
           <div class="segmented four"><label><input type="radio" name="paperWidth" value="narrow"><span>Stretta</span></label><label><input type="radio" name="paperWidth" value="medium"><span>Media</span></label><label><input type="radio" name="paperWidth" value="wide"><span>Larga</span></label><label><input type="radio" name="paperWidth" value="full"><span>Piena</span></label></div>
+        </fieldset>
+        <fieldset>
+          <legend>Barra laterale</legend>
+          <div class="segmented two"><label><input type="radio" name="sidebarSide" value="left"><span>A sinistra</span></label><label><input type="radio" name="sidebarSide" value="right"><span>A destra</span></label></div>
+          <p class="setting-note">Mostra o nascondi la barra laterale con <span class="mod-key">Ctrl</span> + Maiusc + B.</p>
         </fieldset>
         <fieldset>
           <legend>Indice e citazioni</legend>
@@ -1338,6 +1385,10 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           </label>
           <p class="setting-note">Mentre modifichi un documento, Itaca lo segnala nella cartella (.itaca-locks): chi lo apre da un’altra scheda o da un altro computer può leggerlo ma non modificarlo. Il nome serve a far sapere chi lo sta modificando.</p>
         </fieldset>
+      </section>
+      <section role="tabpanel" id="settingsPanel-shortcuts" aria-labelledby="settingsTab-shortcuts" hidden>
+        <p class="shortcut-intro">Le scorciatoie da tastiera disponibili in Itaca. Per ora non si possono modificare.</p>
+        <div id="shortcutList"></div>
       </section>
       <section role="tabpanel" id="settingsPanel-pdf" aria-labelledby="settingsTab-pdf" hidden>
         <fieldset>
@@ -7069,11 +7120,12 @@ const settingChoices = {
   pdfAsk: [true, false],
   navPlacement: ['sidebar', 'document'],
   navCorner: ['top-right', 'bottom-right', 'top-left', 'bottom-left'],
+  sidebarSide: ['left', 'right'],
   showOutline: [true, false],
   showBacklinks: [true, false],
 };
 const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '100%' };
-const settings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', updateLinks: true, pdfAsk: true, navPlacement: 'sidebar', navCorner: 'top-right', showOutline: true, showBacklinks: true };
+const settings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', updateLinks: true, pdfAsk: true, navPlacement: 'sidebar', navCorner: 'top-right', showOutline: true, showBacklinks: true, sidebarSide: 'left' };
 try {
   const saved = JSON.parse(localStorage.getItem(settingsKey)) || {};
   for (const [key, values] of Object.entries(settingChoices)) {
@@ -7102,13 +7154,14 @@ function applyAppearance() {
   if (settings.docFont === 'serif') delete document.documentElement.dataset.docFont;
   else document.documentElement.dataset.docFont = settings.docFont;
   document.documentElement.style.setProperty('--paper-width', paperWidths[settings.paperWidth]);
+  $('app').classList.toggle('sidebar-right', settings.sidebarSide === 'right');
 }
 
 function syncSettings() {
   settingsForm.palette.value = preferredPalette;
   settingsForm.themeMode.value = preferredTheme === 'light' || preferredTheme === 'dark' ? preferredTheme : 'auto';
   $('textScale').value = textScale;
-  for (const key of ['docFont', 'paperWidth', 'openMode', 'deleteConfirm', 'navPlacement', 'navCorner']) settingsForm[key].value = settings[key];
+  for (const key of ['docFont', 'paperWidth', 'openMode', 'deleteConfirm', 'navPlacement', 'navCorner', 'sidebarSide']) settingsForm[key].value = settings[key];
   settingsForm.showOutline.checked = settings.showOutline;
   settingsForm.showBacklinks.checked = settings.showBacklinks;
   syncNavSettingControls();
@@ -7234,6 +7287,286 @@ function markToolbarOverflow() {
 $('toolbar').addEventListener('scroll', markToolbarOverflow, { passive: true });
 
 if (/Mac/i.test(navigator.platform)) $('searchKey').textContent = '⌘ K';
+
+// ── Scorciatoie da tastiera (Impostazioni › Scorciatoie, sola consultazione) ──
+const macKeys = /Mac|iPhone|iPad/i.test(navigator.platform);
+const shortcutKeyNames = macKeys
+  ? { Mod: '⌘', Shift: '⇧', Alt: '⌥', Enter: '↩', Esc: 'Esc', Space: 'Spazio' }
+  : { Mod: 'Ctrl', Shift: 'Maiusc', Alt: 'Alt', Enter: 'Invio', Esc: 'Esc', Space: 'Spazio' };
+const shortcutGroups = [
+  ['Generali', [
+    ['Cerca nei documenti', 'Mod K'],
+    ['Mostra o nascondi la barra laterale', 'Mod Shift B'],
+    ['Apri le Impostazioni', 'Mod ,'],
+    ['Salva il documento', 'Mod S'],
+    ['Chiudi finestre e menu', 'Esc'],
+  ]],
+  ['Documento', [
+    ['Trova nel documento', 'Mod F'],
+    ['Trova e sostituisci', 'Mod H'],
+    ['Risultato successivo / precedente', 'Enter|Shift Enter'],
+    ['Apri un collegamento in Modifica', 'Mod clic'],
+  ]],
+  ['Modifica', [
+    ['Grassetto', 'Mod B'],
+    ['Corsivo', 'Mod I'],
+    ['Sottolineato', 'Mod U'],
+    ['Annulla', 'Mod Z'],
+    ['Ripeti', macKeys ? 'Mod Shift Z' : 'Mod Y'],
+    ['Incolla come testo semplice', 'Mod Shift V'],
+  ]],
+  ['Ricerca nella barra laterale', [
+    ['Passa ai risultati e scorrili', '↓|↑'],
+    ['Torna alla casella / svuotala', 'Esc'],
+  ]],
+  ['Anteprima immagine', [
+    ['Ingrandisci / riduci', '+|−'],
+    ['Dimensione iniziale', '0'],
+  ]],
+  ['Modifica immagine', [
+    ['Penna, evidenziatore, gomma', 'P|H|E'],
+    ['Linea, freccia, rettangolo, ellisse', 'L|A|R|O'],
+    ['Testo, ritaglio', 'T|C'],
+    ['Forme piene', 'F'],
+    ['Spessore o dimensione del testo', '[|]'],
+    ['Sposta l’immagine ingrandita', 'Space trascina'],
+    ['Adatta alla finestra / 100%', 'Mod 0|Mod 1'],
+    ['Ingrandisci / riduci', 'Mod +|Mod −'],
+    ['Annulla / ripeti', 'Mod Z|Mod Y'],
+    ['Applica / annulla il ritaglio', 'Enter|Esc'],
+    ['Salva', 'Mod S'],
+  ]],
+];
+
+function shortcutKeys(combo) {
+  const dd = document.createElement('dd');
+  combo.split('|').forEach((keys, index) => {
+    if (index) dd.append(' / ');
+    keys.split(' ').forEach((key, part) => {
+      if (part) dd.append(macKeys && !/^(clic|trascina)$/.test(key) ? '' : '+');
+      if (key === 'clic' || key === 'trascina') dd.append(key);
+      else {
+        const kbd = document.createElement('kbd');
+        kbd.textContent = shortcutKeyNames[key] || key;
+        dd.append(kbd);
+      }
+    });
+  });
+  return dd;
+}
+
+function renderShortcuts() {
+  $('shortcutList').replaceChildren(...shortcutGroups.map(([title, items]) => {
+    const group = document.createElement('section');
+    group.className = 'shortcut-group';
+    const heading = document.createElement('h3');
+    heading.textContent = title;
+    const list = document.createElement('dl');
+    for (const [label, combo] of items) {
+      const dt = document.createElement('dt');
+      dt.textContent = label;
+      list.append(dt, shortcutKeys(combo));
+    }
+    group.append(heading, list);
+    return group;
+  }));
+  for (const key of document.querySelectorAll('.mod-key')) key.textContent = macKeys ? '⌘' : 'Ctrl';
+}
+renderShortcuts();
+
+// ── Menu a tendina con la grafica di Itaca ──────────────────────────────────
+// I <select> restano la fonte del valore (e degli eventi change): al loro posto
+// si apre un elenco a comparsa nei colori del tema invece del menu di sistema.
+// Sui dispositivi touch resta il selettore nativo del sistema.
+const selectMenu = document.createElement('div');
+selectMenu.className = 'select-menu';
+selectMenu.popover = 'manual';
+selectMenu.setAttribute('role', 'listbox');
+const coarsePointer = matchMedia('(pointer: coarse)');
+let selectMenuOwner = null;
+let selectMenuItems = [];
+let selectMenuActive = -1;
+let selectTypeahead = '';
+let selectTypeaheadTimer = 0;
+
+function customSelect(select) {
+  return select instanceof HTMLSelectElement && !select.multiple && select.size <= 1 && !select.disabled && !coarsePointer.matches;
+}
+
+function selectMenuItem(option) {
+  if (option.hidden) return null;
+  const item = document.createElement('div');
+  item.className = 'select-option';
+  item.setAttribute('role', 'option');
+  item.dataset.value = option.value;
+  item.textContent = option.label || option.textContent;
+  item.setAttribute('aria-selected', option.selected);
+  if (option.disabled) item.setAttribute('aria-disabled', 'true');
+  item.option = option;
+  selectMenuItems.push(item);
+  return item;
+}
+
+function openSelectMenu(select) {
+  closeSelectMenu();
+  selectMenuItems = [];
+  const children = [];
+  for (const child of select.children) {
+    if (child.tagName === 'OPTGROUP') {
+      if (child.hidden) continue;
+      const items = [...child.children].map(selectMenuItem).filter(Boolean);
+      if (!items.length) continue;
+      const group = document.createElement('div');
+      group.setAttribute('role', 'group');
+      group.setAttribute('aria-label', child.label);
+      const label = document.createElement('div');
+      label.className = 'select-group-label';
+      label.textContent = child.label;
+      group.append(label, ...items);
+      children.push(group);
+    } else if (child.tagName === 'OPTION') {
+      const item = selectMenuItem(child);
+      if (item) children.push(item);
+    }
+  }
+  if (!selectMenuItems.length) return;
+  // Dentro una finestra modale l'elenco deve stare nella finestra, altrimenti è inerte.
+  (select.closest('dialog') || document.body).append(selectMenu);
+  selectMenu.replaceChildren(...children);
+  selectMenu.dataset.for = select.id || select.name || '';
+  selectMenu.setAttribute('aria-label', select.getAttribute('aria-label') || select.title || 'Scelte');
+  selectMenuOwner = select;
+  select.classList.add('select-open');
+  selectMenu.showPopover();
+  positionSelectMenu();
+  const selected = selectMenuItems.findIndex(item => item.option.selected && !item.hasAttribute('aria-disabled'));
+  setSelectMenuActive(selected >= 0 ? selected : stepSelectMenu(-1, 1));
+}
+
+function positionSelectMenu() {
+  const select = selectMenuOwner;
+  if (!select) return;
+  const anchor = select.closest('.align-control') || select;
+  const rect = anchor.getBoundingClientRect();
+  if (!rect.width && !rect.height) return closeSelectMenu();
+  selectMenu.style.minWidth = Math.max(rect.width, 140) + 'px';
+  selectMenu.style.maxHeight = 'none';
+  const natural = selectMenu.offsetHeight;
+  const below = innerHeight - rect.bottom - 12;
+  const above = rect.top - 12;
+  const up = natural > below && above > below;
+  const height = Math.min(natural, Math.max(120, up ? above : below), 440);
+  selectMenu.style.maxHeight = height + 'px';
+  selectMenu.style.top = Math.max(8, up ? rect.top - 4 - height : rect.bottom + 4) + 'px';
+  selectMenu.style.left = Math.max(8, Math.min(rect.left, innerWidth - selectMenu.offsetWidth - 8)) + 'px';
+}
+
+function closeSelectMenu() {
+  if (!selectMenuOwner) return;
+  selectMenuOwner.classList.remove('select-open');
+  selectMenuOwner = null;
+  selectMenuItems = [];
+  selectMenuActive = -1;
+  if (selectMenu.matches(':popover-open')) selectMenu.hidePopover();
+}
+
+function setSelectMenuActive(index, scroll = true) {
+  selectMenuItems[selectMenuActive]?.classList.remove('active');
+  selectMenuActive = index;
+  const item = selectMenuItems[index];
+  if (!item) return;
+  item.classList.add('active');
+  if (scroll) {
+    const top = item.offsetTop - 4;
+    const bottom = item.offsetTop + item.offsetHeight + 4;
+    if (top < selectMenu.scrollTop) selectMenu.scrollTop = top - (item.previousElementSibling?.matches('.select-group-label') ? item.previousElementSibling.offsetHeight : 0);
+    else if (bottom > selectMenu.scrollTop + selectMenu.clientHeight) selectMenu.scrollTop = bottom - selectMenu.clientHeight;
+  }
+}
+
+function stepSelectMenu(from, step) {
+  for (let index = from + step; index >= 0 && index < selectMenuItems.length; index += step) {
+    if (!selectMenuItems[index].hasAttribute('aria-disabled')) return index;
+  }
+  return from;
+}
+
+function chooseSelectMenuItem(item) {
+  const select = selectMenuOwner;
+  if (!item || !select || item.hasAttribute('aria-disabled')) return;
+  closeSelectMenu();
+  if (select.selectedIndex === item.option.index) return;
+  select.selectedIndex = item.option.index;
+  select.dispatchEvent(new Event('input', { bubbles: true }));
+  select.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+addEventListener('mousedown', event => {
+  const select = event.target.closest?.('select');
+  if (event.button !== 0 || !customSelect(select)) return;
+  event.preventDefault();
+  if (selectMenuOwner === select) return closeSelectMenu();
+  // Barra di formattazione e blocchi nel documento: il cursore resta nel testo.
+  if (!select.closest('.toolbar, #editor')) select.focus({ preventScroll: true });
+  openSelectMenu(select);
+}, true);
+
+addEventListener('pointerdown', event => {
+  if (!selectMenuOwner || selectMenu.contains(event.target) || event.target.closest?.('select') === selectMenuOwner) return;
+  closeSelectMenu();
+}, true);
+
+addEventListener('keydown', event => {
+  const select = event.target.closest?.('select');
+  if (!selectMenuOwner) {
+    if (!customSelect(select) || event.ctrlKey || event.metaKey || event.isComposing) return;
+    if (![' ', 'Enter', 'ArrowDown', 'ArrowUp'].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    openSelectMenu(select);
+    return;
+  }
+  const key = event.key;
+  if (key === 'Tab') return closeSelectMenu();
+  if (event.ctrlKey || event.metaKey || event.altKey && !key.startsWith('Arrow')) {
+    closeSelectMenu();
+    return;
+  }
+  let handled = true;
+  if (key === 'ArrowDown') setSelectMenuActive(stepSelectMenu(selectMenuActive, 1));
+  else if (key === 'ArrowUp') setSelectMenuActive(stepSelectMenu(selectMenuActive, -1));
+  else if (key === 'Home') setSelectMenuActive(stepSelectMenu(-1, 1));
+  else if (key === 'End') setSelectMenuActive(stepSelectMenu(selectMenuItems.length, -1));
+  else if (key === 'Enter' || key === ' ' && !selectTypeahead) chooseSelectMenuItem(selectMenuItems[selectMenuActive]);
+  else if (key === 'Escape') closeSelectMenu();
+  else if (key.length === 1) {
+    clearTimeout(selectTypeaheadTimer);
+    selectTypeahead += key.toLocaleLowerCase('it');
+    selectTypeaheadTimer = setTimeout(() => { selectTypeahead = ''; }, 700);
+    const fold = text => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('it');
+    const wanted = fold(selectTypeahead);
+    const order = selectMenuItems.map((_, index) => (selectMenuActive + (selectTypeahead.length > 1 ? 0 : 1) + index) % selectMenuItems.length);
+    const match = order.find(index => !selectMenuItems[index].hasAttribute('aria-disabled') && fold(selectMenuItems[index].textContent).startsWith(wanted));
+    if (match !== undefined) setSelectMenuActive(match);
+  } else handled = false;
+  if (!handled) return;
+  event.preventDefault();
+  event.stopPropagation();
+}, true);
+
+selectMenu.addEventListener('pointerdown', event => event.preventDefault());
+selectMenu.addEventListener('pointermove', event => {
+  const item = event.target.closest('.select-option');
+  const index = selectMenuItems.indexOf(item);
+  if (index >= 0 && index !== selectMenuActive && !item.hasAttribute('aria-disabled')) setSelectMenuActive(index, false);
+});
+selectMenu.addEventListener('click', event => chooseSelectMenuItem(event.target.closest('.select-option')));
+addEventListener('resize', closeSelectMenu);
+addEventListener('blur', closeSelectMenu);
+document.addEventListener('scroll', event => {
+  if (selectMenuOwner && event.target !== selectMenu) closeSelectMenu();
+}, true);
+document.addEventListener('close', closeSelectMenu, true);
 let searchQueryRevision = 0;
 let lastSearchReveal = null;
 search.addEventListener('focus', () => { if (search.value.trim()) revalidateSearchIndex(); });
@@ -8329,6 +8662,13 @@ $('visualMode').onclick = () => setDocumentMode('edit');
 $('sourceToggle').onclick = () => setDocumentMode('source');
 narrowLayout.addEventListener('change', event => setSidebar(!event.matches));
 setSidebar(!narrowLayout.matches);
+// Ctrl/⌘ + Maiusc + B: mostra o nasconde la barra laterale (Ctrl/⌘ + B resta il grassetto).
+addEventListener('keydown', event => {
+  if (!(event.ctrlKey || event.metaKey) || !event.shiftKey || event.altKey || event.key.toLowerCase() !== 'b' || event.isComposing) return;
+  event.preventDefault();
+  if (document.querySelector('dialog[open]')) return;
+  setSidebar(sidebar.hidden, narrowLayout.matches);
+}, true);
 
 document.addEventListener('selectionchange', updateFormatButtons);
 document.addEventListener('keydown', event => {
