@@ -93,6 +93,15 @@ Seleziona un’immagine in **Modifica** e usa il comando di allineamento della b
 
 Anche le immagini ridimensionate (salvate come `<img … width="…">`) si possono centrare e allineare. Ciò che è centrato, le linee orizzontali e i titoli principali non restano accanto a un’immagine affiancata: vanno sotto di lei.
 
+## Gatto o barchetta
+
+In fondo al documento può comparire una piccola animazione in pixel art, a scelta in **Impostazioni › Aspetto › Animazione**: **Gatto**, **Barchetta** oppure **Nessuna**.
+
+- **Gatto**: un gatto bianco e nero che fa quello che vuole: cammina, si ferma, si siede, si lecca una zampa, si sdraia a dormire, ogni tanto esce dallo schermo e poi torna.
+- **Barchetta**: una nave a remi che attraversa lentamente un mare largo quanto il documento, poi sparisce per un po’ e riparte da sinistra.
+
+L’animazione non intralcia: non si può cliccare, passa sotto i pannelli, si nasconde in **Modifica** (dove c’è la barra di formattazione) e non compare nel PDF. Si ferma quando la scheda non è visibile e, se nel sistema è attiva la riduzione del movimento, resta ferma (il gatto dorme, la barca è in mezzo al mare).
+
 ## Modifica immagine
 
 Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica immagine**, oppure, in **Modifica**, fai clic sull’immagine nel documento: si apre subito l’editor e, alla chiusura, l’immagine resta selezionata per ridimensionarla.
@@ -111,7 +120,7 @@ Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica 
 
 Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Le sezioni sono a sinistra; ogni riga ha a destra il suo comando (interruttore, scelta o menu) e le opzioni compaiono solo quando servono, per esempio l’angolo solo se il riquadro sta nel documento. Le scelte restano salvate nel browser.
 
-- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena) e **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde).
+- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (gatto, barchetta o nessuna) e **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde).
 - **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno e si mettono nella barra laterale oppure nel documento, nell’angolo scelto su una piccola pagina, sempre visibili mentre scorri (nelle finestre strette tornano nella barra laterale). L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
 - **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti e il tuo nome, mostrato agli altri quando stai modificando un documento.
