@@ -48,6 +48,17 @@ Oltre alle immagini puoi inserire file di qualsiasi tipo (PDF, Word, Excel, arch
 
 Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegamento in **Modifica**) PDF, testi, audio e video si aprono in una nuova scheda; gli altri file vengono scaricati.
 
+## Grafo dei collegamenti
+
+Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si collegano tra loro: ogni nodo è un documento, ogni linea un collegamento (in un verso o nell’altro). Il documento aperto ha il colore d’accento del tema, gli altri il colore della loro cartella principale.
+
+- **Locale** mostra il documento aperto e quelli collegati, **Tutto** l’intera cartella (anche i documenti senza collegamenti).
+- Trascina un nodo: i documenti collegati lo seguono. Trascina lo sfondo per spostare la vista, usa la rotella per lo zoom, doppio clic sullo sfondo (o `0`) per adattare.
+- Passando sopra un nodo si evidenziano i suoi collegamenti; un clic apre il documento.
+- **⤢** apre il grafo grande in una finestra, con la legenda delle cartelle.
+
+In **Impostazioni › Aspetto** si sceglie se mostrarlo e dove: nella barra laterale oppure nel documento, in uno dei quattro angoli. Se anche indice e citazioni sono nel documento, il grafo sta nel loro stesso angolo, sopra o sotto di loro; nella barra laterale si sceglie allo stesso modo se sopra o sotto.
+
 ## Modifiche non salvate
 
 Se cambi documento, ricarichi o apri un’altra cartella con modifiche non salvate, Itaca chiede **Salvare le modifiche?**: **Salva** (o `Invio`) salva e prosegue, **Non salvare** scarta le modifiche, **Annulla** (o `Esc`) resta sul documento.
@@ -82,7 +93,7 @@ Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del te
 - **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde) e **Indice del documento** e **Citato da**: si possono nascondere uno per uno e mettere nella barra laterale oppure nel documento, in uno dei quattro angoli, sempre visibili mentre scorri (nelle finestre strette tornano nella barra laterale). L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
 - **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti e il tuo nome, mostrato agli altri quando stai modificando un documento.
-- **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione.
+- **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 - **Scorciatoie**: elenco delle scorciatoie da tastiera disponibili (per ora non modificabili).
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
