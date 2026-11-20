@@ -14,22 +14,49 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 La barra laterale mostra **tutti i file** della cartella, non solo i documenti Markdown. Ogni tipo ha un’icona e un colore propri per riconoscerlo a colpo d’occhio: immagini, PDF, documenti di testo (Word, ODT, RTF), fogli di calcolo (Excel, CSV), presentazioni, archivi (ZIP, RAR, 7z), audio, video, codice e configurazioni (JS, Python, HTML, JSON, YAML…) e testo semplice; gli altri hanno un’icona generica.
 
 - Clic su un documento Markdown: si apre in Itaca. Clic su un’immagine: anteprima. Clic su PDF, testo, audio o video: si apre in una nuova scheda; gli altri file vengono scaricati.
-- Il menu **⋯** permette di rinominare (l’estensione resta se non ne scrivi un’altra), spostare, eliminare e copiare il percorso di qualsiasi file.
+- Il menu **⋯** permette di rinominare (l’estensione resta se non ne scrivi un’altra), spostare, duplicare, eliminare, copiare il percorso e vedere le **Informazioni** di qualsiasi file o cartella (vedi **Gestire file e cartelle**).
+- Passando sopra un file, il suggerimento mostra percorso, dimensione e data dell’ultima modifica.
 - La ricerca nel testo riguarda solo i documenti Markdown.
 
 L’elenco **si aggiorna da solo**: file e cartelle creati, rinominati o eliminati fuori da Itaca compaiono o spariscono in pochi secondi, e subito quando torni sulla finestra. Il pulsante **Aggiorna** accanto al nome della cartella resta per forzare una nuova lettura (e per ricaricare le cartelle importate, che sono una copia e non si aggiornano da sole).
 
+## Gestire file e cartelle
+
+Tutto quello che serve per organizzare la cartella si fa dall’elenco, senza pulsanti in più.
+
+- **Trascina una voce** su una cartella per spostarla lì (sul nome di un file: nella sua cartella; nello spazio vuoto in fondo: nella cartella principale). Tenendo premuto **Alt** (**⌥** su Mac) la copi invece di spostarla. La cartella di destinazione si evidenzia con un tratteggio e un’etichetta in basso dice cosa succederà («Sposta in…», «Copia in…»); fermandoti un attimo su una cartella chiusa, si apre. I collegamenti vengono aggiornati come indicato in **Impostazioni › File › Aggiorna i collegamenti**. Si aggiornano sia i collegamenti che puntano all’elemento spostato, sia quelli scritti dentro il documento spostato: un collegamento relativo come `Appunti/Idee.md` diventa `../../Appunti/Idee.md`, così funziona anche in MkDocs e nel sito esportato.
+- **Trascina file e cartelle dal computer** (Finder, Esplora risorse) sull’elenco: vengono copiati nella cartella sotto il puntatore, con tutte le sottocartelle. Se un nome è già usato il nuovo diventa «Nome (2).pdf». Gli elementi aggiunti lampeggiano per un attimo. Lo stesso fa **⋯ › Aggiungi file qui…**.
+- **Trascina un file dall’elenco nel documento** (in Modifica): diventa un collegamento nel punto di rilascio, oppure un’immagine se è un’immagine.
+- **Informazioni** (**⋯** o `Ctrl/⌘ + I`): tipo, dimensione, data dell’ultima modifica e posizione; per i documenti anche parole e tempo di lettura, titoli, collegamenti, immagini e quanti documenti li citano; per le immagini le dimensioni in pixel; per le cartelle quanti documenti, file e sottocartelle contengono e lo spazio occupato.
+- **Duplica** crea «Nome copia.md» accanto all’originale (anche per le cartelle, con tutto il contenuto).
+
+Con una voce selezionata nell’elenco (clic, oppure `Ctrl/⌘ + Maiusc + E` per andarci dalla tastiera):
+
+| Tasto | Azione |
+| --- | --- |
+| ↑ ↓ · ← → | Spostati tra le voci · chiudi o apri le cartelle |
+| `N` · `Maiusc + N` | Nuovo documento · nuova cartella in quella cartella |
+| `F2` | Rinomina |
+| `M` | Sposta in un’altra cartella |
+| `Ctrl/⌘ + D` | Duplica |
+| `Ctrl/⌘ + X`, `C`, `V` | Taglia o copia, poi incolla nella cartella selezionata |
+| `Ctrl/⌘ + I` | Informazioni |
+| `Ctrl/⌘ + Alt + C` | Copia percorso |
+| `Canc` (`⌘ + ⌫` su Mac) | Elimina |
+
+Le stesse scorciatoie sono indicate a destra nel menu **⋯** e nel **Glossario**. Spostare, copiare, rinominare ed eliminare funzionano con le cartelle aperte con **Apri cartella**; in una copia importata si possono solo aggiungere file, che restano nella copia.
+
 ## Nuovo documento
 
 - **Nuovo documento** in alto nella barra laterale chiede la **Cartella** (proposta: quella del documento aperto) e il nome. Scrivendo `Sottocartella/Nome` crei anche la sottocartella.
-- Per fare prima, passa con il mouse tra due voci dell’elenco: compare un **+** con una linea. Cliccalo, scrivi il nome e premi **Invio** (**Esc** annulla). Il documento va nella cartella della voce sopra, oppure dentro di essa se è una cartella aperta.
+- **Inserimento rapido** (da accendere in **Impostazioni › File**, spento all’inizio): fermati con il puntatore tra due voci dell’elenco. Una linea di puntini si carica dal centro e dopo un secondo l’elenco si apre come un varco nella griglia di puntini del grafo, nei colori del tema, con un **+** al centro; le voci sotto scendono per fare posto. Clicca, scrivi il nome e premi **Invio** (**Esc** annulla). Il documento va nella cartella della voce sopra, oppure dentro di essa se è una cartella aperta. Allontanandoti il varco si richiude.
 - Anche il menu **⋯** di una cartella o di un documento ha **Nuovo documento qui**.
 
 ## Nuova cartella
 
 - L’icona con la cartella e il **+**, a destra di **Nuovo documento**, chiede dove crearla (**Dentro**) e il nome. Scrivendo `A/B` crei anche le cartelle intermedie.
 - Il menu **⋯** di una cartella o di un documento ha **Nuova cartella qui**.
-- Nel **+** rapido tra due voci dell’elenco, un nome che finisce con `/` (per esempio `Archivio/`) crea una cartella invece di un documento.
+- Nell’**inserimento rapido** tra due voci dell’elenco, un nome che finisce con `/` (per esempio `Archivio/`) crea una cartella invece di un documento.
 - La nuova cartella compare aperta; finché è vuota sotto di lei si legge «Cartella vuota». Funziona con le cartelle aperte con **Apri cartella** (non con quelle importate).
 
 **Copia percorso** nel menu **⋯** di un file o di una cartella, oppure l’icona accanto al percorso in basso, copia il percorso completo sul computer (per esempio `/Users/nome/Documenti/docs/Procedure/Guida.md`). Il browser non rivela dove si trova la cartella: se è quella che contiene Itaca lo ricava da solo, altrimenti te lo chiede la prima volta e lo ricorda. Puoi correggerlo in **Impostazioni › File › Percorso della cartella aperta**.
@@ -46,7 +73,7 @@ In basso nella barra laterale c’è un solo pulsante, **Cartelle e file**, che 
 
 ## Cartelle importate
 
-Una cartella importata è una **copia in memoria**: Itaca non può scrivere nella cartella originale. Puoi leggere, cercare e modificare i documenti, ma **Salva** scarica il singolo `.md` nella cartella Download; allegati, nuove cartelle, rinomina, spostamento ed eliminazione non sono disponibili e l’elenco non si aggiorna da solo.
+Una cartella importata è una **copia in memoria**: Itaca non può scrivere nella cartella originale. Puoi leggere, cercare e modificare i documenti, ma **Salva** scarica il singolo `.md` nella cartella Download; allegati, nuove cartelle, rinomina, spostamento ed eliminazione non sono disponibili e l’elenco non si aggiorna da solo. I file trascinati dal computer nell’elenco si aggiungono alla copia (e partono con **Salva cartella altrove…**).
 
 Per portare via tutto il lavoro usa **Cartelle e file › Salva cartella altrove…**:
 
@@ -168,7 +195,7 @@ Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del te
 - **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (Loki, barchetta o nessuna), **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde) e **Marchio**: dimensione del logo (normale, grande, più grande; solo il logo oppure logo e titolo) e posizione della versione (accanto al nome, sotto il nome, in basso nella barra di stato, oppure nascosta).
 - **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno; indice e citazioni si mettono insieme nella barra laterale o in un angolo del documento, il grafo nella barra laterale o nel documento (nello stesso angolo di indice e citazioni se anche loro sono nel documento). **Ordine** decide chi sta sopra. Si possono anche trascinare, vedi **Spostare i pannelli**. L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
-- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti, il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
+- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti (vale anche per gli spostamenti trascinando), **Inserimento rapido** (il varco con il **+** tra due voci dell’elenco, spento all’inizio), il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
