@@ -93,7 +93,19 @@ Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si
 - Passando sopra un nodo si evidenziano i suoi collegamenti; un clic apre il documento.
 - **⤢** apre il grafo grande in una finestra, con la legenda delle cartelle.
 
-In **Impostazioni › Pannelli** si sceglie se mostrarlo e dove: nella barra laterale oppure nel documento, in uno dei quattro angoli. Se anche indice e citazioni sono nel documento, il grafo sta nel loro stesso angolo, sopra o sotto di loro; nella barra laterale si sceglie allo stesso modo se sopra o sotto.
+Come gli altri pannelli, si accende e si sposta da **Impostazioni › Pannelli** oppure trascinandolo (vedi **Spostare i pannelli**).
+
+## Spostare i pannelli
+
+**Indice del documento** e **Citato da** stanno sempre insieme: nella barra laterale oppure in un angolo del documento. Il **Grafo dei collegamenti** ha la sua posizione, ma se anche indice e citazioni sono nel documento sta nel loro stesso angolo e si sposta con loro.
+
+- Per spostarli, tieni premuto il **titolo** di un pannello e trascinalo: compaiono le **zone tratteggiate** dove puoi lasciarlo (la barra laterale e i quattro angoli). La zona sotto il puntatore si evidenzia e una linea mostra dove finirà rispetto agli altri pannelli. **Esc** annulla.
+- Spostando l’indice o le citazioni si spostano entrambi; nel documento si sposta tutto il gruppo, grafo compreso. Il grafo portato nella barra laterale si stacca dal gruppo; riportato in un angolo, se indice e citazioni sono nel documento, li raggiunge.
+- Trascinando un pannello sopra o sotto gli altri dello stesso posto ne cambi l’**ordine**, che si sceglie anche in **Impostazioni › Pannelli › Ordine**.
+- Un semplice clic sul titolo continua ad aprire e chiudere il pannello.
+- Nelle finestre strette gli angoli non sono disponibili e i pannelli tornano nella barra laterale.
+
+Al primo avvio l’indice è nella barra laterale, «Citato da» è spento e il grafo è nel documento in alto a destra.
 
 ## Modifiche non salvate
 
@@ -122,11 +134,11 @@ Seleziona un’immagine in **Modifica** e usa il comando di allineamento della b
 
 Anche le immagini ridimensionate (salvate come `<img … width="…">`) si possono centrare e allineare. Ciò che è centrato, le linee orizzontali e i titoli principali non restano accanto a un’immagine affiancata: vanno sotto di lei.
 
-## Gatto o barchetta
+## Loki o barchetta
 
-In fondo al documento può comparire una piccola animazione in pixel art, a scelta in **Impostazioni › Aspetto › Animazione**: **Gatto**, **Barchetta** oppure **Nessuna**.
+In fondo al documento può comparire una piccola animazione in pixel art, a scelta in **Impostazioni › Aspetto › Animazione**: **Loki**, **Barchetta** oppure **Nessuna** (predefinita).
 
-- **Gatto**: un gatto bianco e nero che fa quello che vuole: cammina, si ferma, si siede, si lecca una zampa, si sdraia a dormire, ogni tanto esce dallo schermo e poi torna.
+- **Loki**: un gatto bianco e nero che fa quello che vuole: cammina, si ferma, si siede, si lecca una zampa, si sdraia a dormire, ogni tanto esce dallo schermo e poi torna.
 - **Barchetta**: una nave a remi che attraversa lentamente un mare largo quanto il documento, poi sparisce per un po’ e riparte da sinistra.
 
 L’animazione non intralcia: non si può cliccare, passa sotto i pannelli, si nasconde in **Modifica** (dove c’è la barra di formattazione) e non compare nel PDF. Si ferma quando la scheda non è visibile e, se nel sistema è attiva la riduzione del movimento, resta ferma (il gatto dorme, la barca è in mezzo al mare).
@@ -147,17 +159,21 @@ Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica 
 
 ## Impostazioni
 
+Al primo avvio: nessuna animazione, tema automatico, barra laterale a sinistra, documenti aperti in lettura, pannelli come descritto in **Spostare i pannelli**.
+
+**Ripristina predefinite**, in basso a sinistra nella finestra, riporta tutte le impostazioni (aspetto, pannelli, documenti, file, PDF) a quelle del primo avvio, dopo una conferma. Restano la cartella di lavoro, le cartelle salvate, i percorsi delle cartelle, il tuo nome e i documenti.
+
 Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Si chiude con **Esc**, con la **×** o con un clic fuori dalla finestra. Le sezioni sono a sinistra; ogni riga ha a destra il suo comando (interruttore, scelta o menu) e le opzioni compaiono solo quando servono, per esempio l’angolo solo se il riquadro sta nel documento. Le scelte restano salvate nel browser.
 
-- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (gatto, barchetta o nessuna) e **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde).
-- **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno e si mettono nella barra laterale oppure nel documento, nell’angolo scelto su una piccola pagina, sempre visibili mentre scorri (nelle finestre strette tornano nella barra laterale). L’indice evidenzia la sezione che stai leggendo.
+- **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (Loki, barchetta o nessuna), **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde) e **Marchio**: dimensione del logo (normale, grande, più grande; solo il logo oppure logo e titolo) e posizione della versione (accanto al nome, sotto il nome, in basso nella barra di stato, oppure nascosta).
+- **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno; indice e citazioni si mettono insieme nella barra laterale o in un angolo del documento, il grafo nella barra laterale o nel documento (nello stesso angolo di indice e citazioni se anche loro sono nel documento). **Ordine** decide chi sta sopra. Si possono anche trascinare, vedi **Spostare i pannelli**. L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
 - **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti, il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
 
-La versione di Itaca compare in una piccola etichetta accanto al nome, in alto nella barra laterale, e nella finestra Impostazioni. Il marchio è una colonna ionica che prende il colore della tavolozza e del tema; nella scheda del browser l’icona è la stessa colonna, bianca con il contorno nero, leggibile su qualsiasi sfondo.
+La versione di Itaca compare in una piccola etichetta accanto al nome, in alto nella barra laterale (oppure sotto il nome, in basso nella barra di stato o da nessuna parte, a scelta in **Impostazioni › Aspetto › Marchio**), e nella finestra Impostazioni. Il marchio è una colonna ionica che prende il colore della tavolozza e del tema; nella scheda del browser l’icona è la stessa colonna, bianca con il contorno nero, leggibile su qualsiasi sfondo.
 
 ## Glossario
 
