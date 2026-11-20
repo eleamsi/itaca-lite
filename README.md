@@ -9,6 +9,16 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
    Agli avvii successivi Itaca riapre da sola l’ultima cartella. Se il browser ha dimenticato il permesso, basta un clic o un tasto qualsiasi per concederlo di nuovo; scegli **Consenti a ogni visita**, se il browser lo propone, per non doverlo più ripetere.
 3. Seleziona un documento dalla barra laterale. Le cartelle hanno l’icona piena colorata e il nome in grassetto; i documenti l’icona del foglio, con l’estensione `.md` attenuata. Linee sottili mostrano a quale cartella appartiene ogni voce.
 
+## File della cartella
+
+La barra laterale mostra **tutti i file** della cartella, non solo i documenti Markdown. Ogni tipo ha un’icona e un colore propri per riconoscerlo a colpo d’occhio: immagini, PDF, documenti di testo (Word, ODT, RTF), fogli di calcolo (Excel, CSV), presentazioni, archivi (ZIP, RAR, 7z), audio, video, codice e configurazioni (JS, Python, HTML, JSON, YAML…) e testo semplice; gli altri hanno un’icona generica.
+
+- Clic su un documento Markdown: si apre in Itaca. Clic su un’immagine: anteprima. Clic su PDF, testo, audio o video: si apre in una nuova scheda; gli altri file vengono scaricati.
+- Il menu **⋯** permette di rinominare (l’estensione resta se non ne scrivi un’altra), spostare, eliminare e copiare il percorso di qualsiasi file.
+- La ricerca nel testo riguarda solo i documenti Markdown.
+
+L’elenco **si aggiorna da solo**: file e cartelle creati, rinominati o eliminati fuori da Itaca compaiono o spariscono in pochi secondi, e subito quando torni sulla finestra. Il pulsante **Aggiorna** accanto al nome della cartella resta per forzare una nuova lettura (e per ricaricare le cartelle importate, che sono una copia e non si aggiornano da sole).
+
 ## Nuovo documento
 
 - **Nuovo documento** in alto nella barra laterale chiede la **Cartella** (proposta: quella del documento aperto) e il nome. Scrivendo `Sottocartella/Nome` crei anche la sottocartella.
@@ -24,12 +34,31 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 
 **Copia percorso** nel menu **⋯** di un file o di una cartella, oppure l’icona accanto al percorso in basso, copia il percorso completo sul computer (per esempio `/Users/nome/Documenti/docs/Procedure/Guida.md`). Il browser non rivela dove si trova la cartella: se è quella che contiene Itaca lo ricava da solo, altrimenti te lo chiede la prima volta e lo ricorda. Puoi correggerlo in **Impostazioni › File › Percorso della cartella aperta**.
 
+## Cartelle e file
+
+In basso nella barra laterale c’è un solo pulsante, **Cartelle e file**, che apre un menu con:
+
+- le **cartelle salvate** (vedi sotto) e, se la cartella aperta non lo è ancora, **Salva «nome»**;
+- **Apri cartella…**: lavori direttamente sui file della cartella (Chrome ed Edge);
+- **Apri file…**: un singolo documento Markdown;
+- **Importa una copia…**: legge una copia della cartella, utile nei browser che non permettono di aprirla in scrittura (Firefox, Safari);
+- **Salva cartella altrove…**, solo con una copia importata (vedi sotto).
+
+## Cartelle importate
+
+Una cartella importata è una **copia in memoria**: Itaca non può scrivere nella cartella originale. Puoi leggere, cercare e modificare i documenti, ma **Salva** scarica il singolo `.md` nella cartella Download; allegati, nuove cartelle, rinomina, spostamento ed eliminazione non sono disponibili e l’elenco non si aggiorna da solo.
+
+Per portare via tutto il lavoro usa **Cartelle e file › Salva cartella altrove…**:
+
+- in **Chrome ed Edge** scegli dove salvarla: Itaca crea lì la cartella con tutti i file (anche quelli non Markdown, le cartelle vuote, i documenti nuovi e le modifiche non salvate del documento aperto) e da quel momento lavora su di lei come con **Apri cartella**, quindi Salva scrive sul disco;
+- in **Firefox e Safari** la voce diventa **Scarica la cartella (ZIP)**: scarica un archivio con lo stesso contenuto, da estrarre dove vuoi; la copia importata resta aperta.
+
 ## Cartelle salvate
 
 Se lavori spesso con le stesse cartelle, salvale per riaprirle senza cercarle ogni volta.
 
 - Con una cartella aperta, premi la **stella** accanto al suo nome in cima all’elenco. La stella piena indica che è già salvata; premila di nuovo per toglierla.
-- **Cartelle salvate**, in basso nella barra laterale, elenca le cartelle salvate: clic sul nome per aprirla. Passando sopra una voce compaiono **Modifica** (cambia il nome nell’elenco o, con **Cambia cartella…**, la cartella sul disco) e **×**, che la toglie dall’elenco senza toccare i file.
+- Il menu **Cartelle e file**, in basso nella barra laterale, elenca le cartelle salvate: clic sul nome per aprirla. Passando sopra una voce compaiono **Modifica** (cambia il nome nell’elenco o, con **Cambia cartella…**, la cartella sul disco) e **×**, che la toglie dall’elenco senza toccare i file.
 - Il browser può chiedere di nuovo il permesso quando apri una cartella salvata.
 
 ## Ricerca nei documenti
@@ -118,18 +147,31 @@ Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica 
 
 ## Impostazioni
 
-Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Le sezioni sono a sinistra; ogni riga ha a destra il suo comando (interruttore, scelta o menu) e le opzioni compaiono solo quando servono, per esempio l’angolo solo se il riquadro sta nel documento. Le scelte restano salvate nel browser.
+Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Si chiude con **Esc**, con la **×** o con un clic fuori dalla finestra. Le sezioni sono a sinistra; ogni riga ha a destra il suo comando (interruttore, scelta o menu) e le opzioni compaiono solo quando servono, per esempio l’angolo solo se il riquadro sta nel documento. Le scelte restano salvate nel browser.
 
 - **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (gatto, barchetta o nessuna) e **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde).
 - **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno e si mettono nella barra laterale oppure nel documento, nell’angolo scelto su una piccola pagina, sempre visibili mentre scorri (nelle finestre strette tornano nella barra laterale). L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
-- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti, il tuo nome, mostrato agli altri quando stai modificando un documento, e **Icona di Itaca** (vedi sotto).
+- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti, il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
-- **Scorciatoie**: elenco delle scorciatoie da tastiera disponibili (per ora non modificabili).
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
 
 La versione di Itaca compare in una piccola etichetta accanto al nome, in alto nella barra laterale, e nella finestra Impostazioni. Il marchio è una colonna ionica che prende il colore della tavolozza e del tema; nella scheda del browser l’icona è la stessa colonna, bianca con il contorno nero, leggibile su qualsiasi sfondo.
+
+## Glossario
+
+L’icona del libro in basso a destra, accanto a **Impostazioni**, apre il **Glossario** (anche con `Ctrl+/`, `Cmd+/` su Mac). Si chiude con **Esc**, con la **×** o con un clic fuori.
+
+- **Scorciatoie**: tutte le scorciatoie da tastiera.
+- **Markdown**: come scrivere titoli, enfasi, elenchi, liste di controllo, citazioni, collegamenti (anche wiki), immagini, allegati, tabelle e codice.
+- **Material per MkDocs**: le estensioni che Itaca mostra e conserva, come ammonimenti, riquadri espandibili, schede, griglie, didascalie, opzioni dei blocchi di codice, diagrammi Mermaid, formule, evidenziato e tasti, icone ed emoji, CriticMarkup, note a piè di pagina, annotazioni, abbreviazioni, elenchi di definizioni e attributi.
+
+Ogni voce ha un esempio da copiare con un clic.
+
+## Finestre di conferma
+
+Nelle finestre con un campo da compilare (rinomina, nuovo documento, collegamento…) **Invio** conferma come il pulsante principale.
 
 ## Icona di Itaca
 
