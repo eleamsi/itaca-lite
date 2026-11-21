@@ -6,7 +6,7 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 
 1. Scarica `Itaca Lite.html` e aprilo in Chrome o Edge.
 2. Al primo avvio usa **Scegli cartella** per selezionare la cartella dei documenti `.md` (di solito quella che contiene Itaca) e consenti la modifica dei file: il browser chiede un solo permesso, valido per lettura e scrittura.
-   Agli avvii successivi Itaca riapre da sola l’ultima cartella. Se il browser ha dimenticato il permesso, basta un clic o un tasto qualsiasi per concederlo di nuovo; scegli **Consenti a ogni visita**, se il browser lo propone, per non doverlo più ripetere.
+   Agli avvii successivi Itaca riapre da sola l’ultima cartella, sul **documento iniziale**: `index.md` se esiste (altrimenti `README.md` o il primo documento), oppure quello che hai scelto in **Impostazioni › File › Documento iniziale** (scrivi il nome e scegli tra i suggerimenti; casella vuota = predefinito) o con **⋯ › Apri all’avvio** su un documento. La scelta vale per quella cartella e segue il documento se lo rinomini o lo sposti. Se il browser ha dimenticato il permesso, basta un clic o un tasto qualsiasi per concederlo di nuovo; scegli **Consenti a ogni visita**, se il browser lo propone, per non doverlo più ripetere.
 3. Seleziona un documento dalla barra laterale. Le cartelle hanno l’icona piena colorata e il nome in grassetto; i documenti l’icona del foglio, con l’estensione `.md` attenuata. Linee sottili mostrano a quale cartella appartiene ogni voce.
 
 ## File della cartella
@@ -99,11 +99,27 @@ La casella **Cerca nei documenti…** in alto nella barra laterale (`Ctrl/⌘ + 
 
 ## Barra di formattazione
 
-Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
+Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Il pulsante **Linea di separazione** inserisce una riga orizzontale (`---`) dopo il paragrafo in cui si trova il cursore. I titoli non hanno più una linea automatica sopra: le separazioni le metti tu dove servono. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
 
 ## Collegamenti
 
-In **Lettura**, passando sopra un collegamento a un documento ne vedi l’anteprima; in **Modifica** l’anteprima non compare. In **Modifica**, con il cursore dentro un collegamento compare un piccolo riquadro con la destinazione e tre pulsanti: **Apri**, **Modifica** (testo, documento interno o URL) e **Rimuovi**, che lascia il testo senza collegamento (`Ctrl/⌘ + Z` lo ripristina). Anche il pulsante 🔗 della barra di formattazione modifica il collegamento in cui si trova il cursore, invece di crearne uno nuovo.
+In **Lettura**, passando sopra un collegamento a un documento ne vedi l’anteprima; un clic lo apre.
+
+In **Modifica** un clic su un collegamento apre subito il riquadro per modificarlo (per aprirlo: `Ctrl/⌘ + clic` oppure il pulsante **Apri** del riquadro). Il pulsante 🔗 della barra di formattazione apre lo stesso riquadro per un nuovo collegamento, o per quello in cui si trova il cursore.
+
+- Una sola casella: mentre scrivi compaiono i **suggerimenti** tra **tutti i file** della cartella (documenti, PDF, immagini, video, fogli di calcolo…), con l’icona del tipo e la cartella. `↑ ↓` per scegliere; **Invio** (o un clic) **scrive** il suggerimento nella casella e, per un documento, ne elenca subito le **sezioni**; un altro **Invio** (o **Inserisci**) crea il collegamento. Così puoi scegliere il documento e poi aggiungere `#` e la sezione senza riaprire il riquadro.
+- Puoi anche incollare un **indirizzo web** (`https://…`, `www.…`, un indirizzo e-mail), scrivere un percorso o `[[Documento]]`.
+- Per collegare una **sezione**: `#` seguito dal titolo per il documento aperto (`#installazione`), oppure nome del documento, `#` e titolo (`procedure#uso`).
+- Inserendo o modificando un collegamento la pagina resta dove sei.
+- **Testo** è il testo del collegamento: se lo lasci vuoto si usa il nome del file.
+- **Rimuovi** toglie il collegamento lasciando il testo (`Ctrl/⌘ + Z` lo ripristina).
+- **Esc**, **Annulla** o un **clic fuori dal riquadro** chiudono senza cambiare nulla.
+
+## Video
+
+Incollando nel documento l’indirizzo di un video (**YouTube**, **Vimeo**, **Dailymotion**, **Loom**, **Twitch**, **TikTok** o un file `.mp4`, `.webm`, `.mov`…) Itaca inserisce un collegamento con un testo leggibile, ad esempio «▶ Video su YouTube», invece dell’indirizzo per intero; se prima selezioni del testo, il collegamento va su quel testo. Il video si apre con un clic in **Lettura** (o `Ctrl/⌘ + clic` in **Modifica**). Il testo si cambia come per ogni collegamento.
+
+Itaca è aperta come file (`file://`): da lì i lettori di YouTube e degli altri servizi rifiutano di essere mostrati dentro la pagina, perciò i video restano collegamenti.
 
 ## Allegati
 
@@ -115,7 +131,7 @@ Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegam
 
 Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si collegano tra loro: ogni nodo è un documento, ogni linea un collegamento (in un verso o nell’altro). Il documento aperto ha il colore d’accento del tema, gli altri il colore della loro cartella principale.
 
-- **Locale** mostra il documento aperto e quelli collegati, **Tutto** l’intera cartella (anche i documenti senza collegamenti).
+- **Locale** mostra il documento aperto e quelli collegati, **Tutto** l’intera cartella (anche i documenti senza collegamenti). La scelta è una sola: vale sia nel riquadro sia nella vista a schermo intero, e cambiandola in una delle due cambia anche nell’altra.
 - Trascina un nodo: i documenti collegati lo seguono. Trascina lo sfondo per spostare la vista, usa la rotella per lo zoom, doppio clic sullo sfondo (o `0`) per adattare.
 - Passando sopra un nodo si evidenziano i suoi collegamenti; un clic apre il documento.
 - **⤢** apre il grafo grande in una finestra, con la legenda delle cartelle.
@@ -146,6 +162,8 @@ In alto a destra, da sinistra a destra:
 - **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
 - **⋯ Altre azioni**: **Esporta PDF…** e, se la cartella è un repository git, **Versioni precedenti…**.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
+
+Nella barra in basso il percorso del documento è modificabile: un clic sul **nome del documento** o su una delle sue **cartelle** lo trasforma in una casella (con un percorso lungo ogni cartella si accorcia ma resta cliccabile; il nome completo è nel suggerimento); **Invio** rinomina e aggiorna i collegamenti (come indicato in **Impostazioni › File › Aggiorna i collegamenti**), **Esc** o un clic altrove annullano. L’estensione `.md` resta da sola.
 
 ## Caricamento
 
@@ -195,7 +213,7 @@ Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del te
 - **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (Loki, barchetta o nessuna), **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde) e **Marchio**: dimensione del logo (normale, grande, più grande; solo il logo oppure logo e titolo) e posizione della versione (accanto al nome, sotto il nome, in basso nella barra di stato, oppure nascosta).
 - **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno; indice e citazioni si mettono insieme nella barra laterale o in un angolo del documento, il grafo nella barra laterale o nel documento (nello stesso angolo di indice e citazioni se anche loro sono nel documento). **Ordine** decide chi sta sopra. Si possono anche trascinare, vedi **Spostare i pannelli**. L’indice evidenzia la sezione che stai leggendo.
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
-- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti (vale anche per gli spostamenti trascinando), **Inserimento rapido** (il varco con il **+** tra due voci dell’elenco, spento all’inizio), il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
+- **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti (vale anche per gli spostamenti trascinando), **Documento iniziale** (vedi **Avvio**), **Inserimento rapido** (il varco con il **+** tra due voci dell’elenco, spento all’inizio), il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
