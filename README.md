@@ -267,6 +267,7 @@ Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del te
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown), **Più documenti aperti** (uno, schede o affiancati: vedi **Più documenti aperti**), **Markdown mentre scrivi** (acceso all’inizio) e **Chiudi automaticamente** (spento all'inizio), vedi **Scrivere in Markdown**, e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
 - **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti (vale anche per gli spostamenti trascinando), **Documento iniziale** (vedi **Avvio**), **Inserimento rapido** (il varco con il **+** tra due voci dell’elenco, spento all’inizio), il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
+- **Aggiornamenti**: la versione che usi, **Controlla ora**, le novità dell’ultima versione e se cercare gli aggiornamenti **all’avvio** (all’inizio) o **solo a mano** (vedi **Aggiornamenti**).
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
 
@@ -293,7 +294,17 @@ Il marchio di Itaca è una colonna ionica. In **Impostazioni › File › Icona 
 - **Mac · PNG**: seleziona `Itaca Lite.html` nel Finder e premi `Cmd+I`; apri l’immagine scaricata, copiala (`Cmd+A`, `Cmd+C`), clicca l’icona piccola in alto nella finestra Informazioni e incolla (`Cmd+V`).
 - **Windows · ICO**: Windows non permette di dare un’icona a un singolo file `.html`, quindi si usa un collegamento: tasto destro su `Itaca Lite.html` › *Mostra altre opzioni* › *Crea collegamento*, poi tasto destro sul collegamento › *Proprietà* › *Cambia icona…* › *Sfoglia* e scegli il file `.ico`.
 
-L’icona va rimessa ogni volta che sostituisci il file con una nuova versione.
+L’icona va rimessa ogni volta che sostituisci il file con una nuova versione, anche quando Itaca si aggiorna da sola.
+
+## Aggiornamenti
+
+Le nuove versioni di Itaca sono pubblicate su GitHub, nelle [Release di eleamsi/itaca-lite](https://github.com/eleamsi/itaca-lite/releases).
+
+- **Controllo**: all’apertura Itaca chiede a GitHub, una volta e in background, qual è l’ultima versione. In **Impostazioni › Aggiornamenti** puoi controllare quando vuoi con **Controlla ora** e scegliere **Solo a mano**: allora all’avvio Itaca non contatta GitHub.
+- **Se c’è una versione nuova**: la pillola della versione diventa colorata con una freccia (clic = dettagli), sull’icona delle **Impostazioni** e sulla scheda **Aggiornamenti** compare un pallino, e in basso a destra un avviso con **Aggiorna** e **Novità** resta finché non lo chiudi con la **×** (per quella versione non torna; pillola e pallino restano). In **Impostazioni › Aggiornamenti** ci sono le novità della versione.
+- **Aggiorna** (Chrome, Edge): Itaca chiede di salvare i documenti modificati, scarica il nuovo file da GitHub, controlla che sia completo e della versione giusta, lo scrive al posto del proprio file e si ricarica. Impostazioni, cartelle e schede restano. Se la cartella aperta è quella che contiene Itaca non chiede altro; altrimenti la prima volta ti chiede di scegliere il file `Itaca Lite.html` che stai usando (e se puoi modificarlo), poi se lo ricorda. Se qualcosa va storto il file non cambia.
+- **Torna alla versione precedente**: la versione sostituita resta salvata nel browser; in **Impostazioni › Aggiornamenti** c’è **Torna alla X.Y.Z**.
+- **Safari e Firefox** (e Itaca aperta da un server web): il browser non può modificare file sul disco, quindi **Aggiorna** scarica il nuovo `Itaca Lite.html` nella cartella Download e spiega come metterlo al posto di quello che usi.
 
 ## Modifica condivisa
 
@@ -307,4 +318,4 @@ Quando passi a **Modifica** o **Markdown** su un documento della cartella, Itaca
 
 La prima versione è **1.0.0**, contrassegnata dal tag Git `v1.0.0`. Le versioni successive seguiranno lo schema `MAJOR.MINOR.PATCH`.
 
-La versione corrente è indicata nel file HTML, nel tag `<meta name="version">`: aggiornala a ogni rilascio insieme al tag Git.
+La versione corrente è indicata nel file HTML, nel tag `<meta name="version">`: aggiornala a ogni rilascio insieme al tag Git. Ogni versione ha anche una **Release** su GitHub con le novità e il file `Itaca Lite.html`: è da lì che Itaca legge gli aggiornamenti.
