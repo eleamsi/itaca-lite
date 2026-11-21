@@ -306,6 +306,14 @@ Le nuove versioni di Itaca sono pubblicate su GitHub, nelle [Release di eleamsi/
 - **Torna alla versione precedente**: la versione sostituita resta salvata nel browser; in **Impostazioni › Aggiornamenti** c’è **Torna alla X.Y.Z**.
 - **Safari e Firefox** (e Itaca aperta da un server web): il browser non può modificare file sul disco, quindi **Aggiorna** scarica il nuovo `Itaca Lite.html` nella cartella Download e spiega come metterlo al posto di quello che usi.
 
+## Segnalazioni
+
+Il pulsante con il fumetto nella barra in basso apre **Segnalazioni**: un problema, un’idea per una nuova funzionalità o una domanda su Itaca.
+
+- **Nuova**: scegli il tipo (**Problema**, **Funzionalità**, **Altro**), scrivi un titolo e una descrizione e premi **Invia** (o `Ctrl/⌘ + Invio` nella descrizione). Si apre su GitHub la segnalazione già compilata: premi **Create** per inviarla (serve un account GitHub gratuito). Con **Includi versione e browser** il testo riporta anche versione di Itaca, browser e sistema operativo; non vengono mai inviati nomi di cartelle, documenti o percorsi.
+- **Le mie**: tutte le segnalazioni inviate da questo browser, con la versione di Itaca da cui le hai mandate e lo **stato** ben visibile: *Da confermare su GitHub* (non hai ancora premuto Create), *Ricevuta*, *In lavorazione*, *Risolta nella X.Y.Z*, *Non prevista* o *Doppione*, più il numero di risposte e il collegamento alla discussione. Se una segnalazione è risolta in una versione più nuova della tua, c’è il collegamento agli **Aggiornamenti**.
+- Lo stato si aggiorna aprendo **Le mie**, con **Aggiorna stato** e, se cerchi gli aggiornamenti all’avvio, anche all’apertura di Itaca. Quando cambia, il pulsante delle segnalazioni ha un pallino e la segnalazione è segnata come **Novità**.
+
 ## Modifica condivisa
 
 Quando passi a **Modifica** o **Markdown** su un documento della cartella, Itaca lo segnala con un piccolo file in `.itaca-locks`, rinnovato ogni 30 secondi e rimosso quando smetti di modificare o chiudi la pagina. Chi apre lo stesso documento da un’altra scheda o da un altro computer che usa la stessa cartella (per esempio una cartella di rete o sincronizzata) lo vede in sola lettura, con l’indicazione **In modifica: nome**.
