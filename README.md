@@ -326,4 +326,4 @@ Quando passi a **Modifica** o **Markdown** su un documento della cartella, Itaca
 
 La prima versione è **1.0.0**, contrassegnata dal tag Git `v1.0.0`. Le versioni successive seguiranno lo schema `MAJOR.MINOR.PATCH`.
 
-La versione corrente è indicata nel file HTML, nel tag `<meta name="version">`: aggiornala a ogni rilascio insieme al tag Git. Ogni versione ha anche una **Release** su GitHub con le novità e il file `Itaca Lite.html`: è da lì che Itaca legge gli aggiornamenti.
+La versione corrente è indicata nel file HTML, nel tag `<meta name="version">`: aggiornala a ogni rilascio insieme al tag Git. Ogni versione ha anche una **Release** su GitHub con le novità e il file `Itaca-Lite-X.Y.Z.zip`, che contiene `Itaca Lite.html`: è da lì che Itaca legge gli aggiornamenti. Il file è dentro uno ZIP perché GitHub non accetta spazi nei nomi degli allegati e scaricato direttamente diventerebbe `Itaca.Lite.html`.
