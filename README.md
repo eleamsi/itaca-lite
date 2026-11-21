@@ -151,6 +151,26 @@ Oltre alle immagini puoi inserire file di qualsiasi tipo (PDF, Word, Excel, arch
 
 Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegamento in **Modifica**) PDF, testi, audio e video si aprono in una nuova scheda; gli altri file vengono scaricati.
 
+### PDF incorporati
+
+I **PDF** si possono leggere direttamente dentro il documento: un PDF incollato, trascinato (dal computer o dall’elenco dei file) o scelto con 📎 compare come un riquadro con il visualizzatore del browser (pagine, zoom, rotazione, scarica, stampa) e, in alto, il titolo e il pulsante **Apri**, che apre il PDF in una nuova scheda.
+
+Trascinando un PDF nel documento una **linea** indica tra quali righe verrà inserito (per gli altri file un cursore lampeggiante indica il punto nel testo).
+
+Il PDF si comporta come un blocco unico: **Backspace** dalla riga sotto (o **Canc** da quella sopra) e le frecce lo **selezionano** (contorno colorato), e una riga vuota accanto viene tolta; solo un secondo Backspace/Canc lo elimina (`Ctrl/⌘ + Z` lo rimette). Con il PDF selezionato **Invio** o la scrittura proseguono nella riga sotto; anche un clic sul titolo lo seleziona.
+
+In **Modifica** c’è anche **Collegamento**, che riporta il PDF a un semplice collegamento; al contrario, il riquadro di un collegamento a un PDF ha il pulsante **Incorpora**. Il riquadro si può allungare o accorciare trascinando l’angolo in basso a destra.
+
+Nel Markdown un PDF incorporato è un’immagine che punta a un PDF, **da sola su una riga** (si può scrivere anche a mano, si trasforma appena chiudi la parentesi):
+
+```markdown
+![Manuale d’uso](_allegati/manuale.pdf)
+![Manuale d’uso](_allegati/manuale.pdf#page=3)
+![[manuale.pdf]]
+```
+
+`#page=3` apre il PDF alla pagina indicata. Nel PDF esportato compare solo il titolo; nel sito HTML esportato il PDF resta incorporato, con il link Apri.
+
 ## Grafo dei collegamenti
 
 Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si collegano tra loro: ogni nodo è un documento, ogni linea un collegamento (in un verso o nell’altro). Il documento aperto ha il colore d’accento del tema, gli altri il colore della loro cartella principale.
