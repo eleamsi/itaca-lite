@@ -97,6 +97,28 @@ La casella **Cerca nei documenti…** in alto nella barra laterale (`Ctrl/⌘ + 
 - Tastiera: **Invio** apre il primo risultato, **↓/↑** scorrono i risultati, **Esc** torna alla casella o la svuota.
 - I file cambiati fuori da Itaca (da un altro programma o da un altro utente) vengono riletti alla ricerca successiva.
 
+## Scrivere in Markdown
+
+In **Modifica** puoi usare la barra di formattazione oppure scrivere direttamente in Markdown e Material per MkDocs: la sintassi diventa formattazione appena è completa e vedi subito il risultato. Se una conversione non ti serve, `Ctrl/⌘ + Z` la riporta al testo scritto.
+
+- **Inizio riga** (dopo lo spazio): `#` … `######` titoli, `-` `*` `+` elenco puntato, `1.` elenco numerato (anche da un altro numero), `>` citazione, `[ ]` / `[x]` casella da spuntare.
+- **Nel testo** (alla chiusura, o al più tardi con lo spazio o la punteggiatura che seguono): `**grassetto**`, `*corsivo*`, `_corsivo_`, `` `codice` ``, `~~barrato~~`, `==evidenziato==`, `^^inserito^^`, `++ctrl+s++` tasti, `H~2~O` pedice, `x^2^` apice, `[testo](indirizzo)`, `![immagine](percorso)`, `[[documento]]`.
+- **Blocchi** (con **Invio**): ` ``` ` o ` ```python ` blocco di codice, `---` linea di separazione, `!!! note "Titolo"` / `??? tip` ammonimenti, `=== "Scheda"` schede, `> [!NOTE]` riquadro, `| Nome | Valore |` tabella con intestazione.
+- **Invio su una riga vuota** in fondo a citazione, riquadro, ammonimento o sezione espandibile esce dal blocco.
+- **Backspace a inizio riga** toglie il segno, come in Obsidian: una casella torna voce d'elenco, una voce torna paragrafo (o sale di un livello), un titolo torna paragrafo, la prima riga di una citazione ne esce. Unendo due righe (Backspace a inizio riga o `Canc` a fine riga) il testo prende il formato della riga sopra. `Ctrl/⌘ + Z` annulla anche questi passaggi.
+- **Tab** e **Maiusc + Tab** in un elenco spostano la voce di un livello più dentro o più fuori.
+- **Uscendo dalla riga** (Invio, frecce, clic altrove) quello che è rimasto scritto in Markdown nella riga in cui hai scritto viene convertito, come in Obsidian (spostarsi soltanto su una riga non la cambia). Se annulli una conversione con `Ctrl/⌘ + Z`, quella riga resta com'è.
+- **Suggerimenti**: scrivendo `[[` compare l'elenco dei documenti (con `#` le loro sezioni); dentro le parentesi di `[testo](` e `![immagine](` l'elenco dei file e delle immagini della cartella. Frecce per scegliere, **Invio** o **Tab** per inserire, **Esc** per chiudere. Il percorso viene scritto relativo al documento aperto, anche con spazi nel nome.
+- **Documenti che non esistono**: un collegamento a un documento mancante è tratteggiato; un clic (in Lettura, o `Ctrl/⌘ + clic` in Modifica) crea il documento nella stessa cartella e lo apre.
+- **Chiudi automaticamente** (Impostazioni › Documenti, spento all'inizio): scrivendo `*`, `_`, `` ` ``, `[` o `(` viene aggiunta subito la chiusura e il cursore resta in mezzo; scrivendo la chiusura la si scavalca, e `Backspace` su una coppia vuota la cancella tutta. Uno spazio subito dopo `*` o `` ` `` toglie la chiusura aggiunta (così `* ` a inizio riga resta un elenco), e ` ```js ` o `***` funzionano come senza chiusura automatica. Con del testo selezionato, il segno lo racchiude (anche `=` e `~`; un secondo `*` fa il grassetto) e la formattazione compare appena sposti il cursore.
+- **Incolla**: un testo in Markdown (per esempio da un editor di codice) viene mostrato già formattato; **Incolla senza formattazione** lo lascia com'è.
+
+**Lettura** serve solo a leggere; **Markdown** mostra e modifica il sorgente, senza anteprima. Si disattiva in **Impostazioni › Documenti › Markdown mentre scrivi**.
+
+## Notifiche
+
+I messaggi (documento salvato, errori, avvisi) compaiono in alto al centro del documento, in una piccola etichetta con un'icona colorata: verde per le operazioni riuscite, ambra per gli avvisi, rossa per gli errori. Se la barra di Lettura/Modifica occupa il centro, l'etichetta si sposta alla sua sinistra (o appena sotto, nelle finestre strette); sopra una finestra aperta compare al centro dello schermo. Scompare da sola dopo qualche secondo.
+
 ## Barra di formattazione
 
 Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Il pulsante **Linea di separazione** inserisce una riga orizzontale (`---`) dopo il paragrafo in cui si trova il cursore. I titoli non hanno più una linea automatica sopra: le separazioni le metti tu dove servono. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
@@ -114,6 +136,8 @@ In **Modifica** un clic su un collegamento apre subito il riquadro per modificar
 - **Testo** è il testo del collegamento: se lo lasci vuoto si usa il nome del file.
 - **Rimuovi** toglie il collegamento lasciando il testo (`Ctrl/⌘ + Z` lo ripristina).
 - **Esc**, **Annulla** o un **clic fuori dal riquadro** chiudono senza cambiare nulla.
+
+**Collegamento o immagine?** Il pulsante 🔗 crea un **collegamento** (anche a un'immagine: nel testo resta una parola cliccabile). Il pulsante **Immagine** apre lo stesso riquadro ma per **mostrare** l'immagine nel documento: la ricerca elenca solo le immagini della cartella (senza ricerca, prima quelle vicine al documento), accetta l'indirizzo di un'immagine sul web e in fondo ha **Scegli un'immagine dal computer…** (copiata in `_allegati` al salvataggio). La casella **Descrizione** è il testo alternativo; se la lasci vuota vale il nome del file.
 
 ## Video
 
@@ -212,7 +236,7 @@ Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del te
 
 - **Aspetto**: tema (Laguna, Salvia, Terracotta o Indaco, ognuno chiaro e scuro), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (Loki, barchetta o nessuna), **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde) e **Marchio**: dimensione del logo (normale, grande, più grande; solo il logo oppure logo e titolo) e posizione della versione (accanto al nome, sotto il nome, in basso nella barra di stato, oppure nascosta).
 - **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno; indice e citazioni si mettono insieme nella barra laterale o in un angolo del documento, il grafo nella barra laterale o nel documento (nello stesso angolo di indice e citazioni se anche loro sono nel documento). **Ordine** decide chi sta sopra. Si possono anche trascinare, vedi **Spostare i pannelli**. L’indice evidenzia la sezione che stai leggendo.
-- **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown) e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
+- **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown), **Markdown mentre scrivi** (acceso all’inizio) e **Chiudi automaticamente** (spento all'inizio), vedi **Scrivere in Markdown**, e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
 - **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti (vale anche per gli spostamenti trascinando), **Documento iniziale** (vedi **Avvio**), **Inserimento rapido** (il varco con il **+** tra due voci dell’elenco, spento all’inizio), il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
 - **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 
