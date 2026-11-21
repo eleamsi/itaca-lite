@@ -121,7 +121,7 @@ I messaggi (documento salvato, errori, avvisi) compaiono in alto al centro del d
 
 ## Barra di formattazione
 
-Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Il pulsante **Linea di separazione** inserisce una riga orizzontale (`---`) dopo il paragrafo in cui si trova il cursore. I titoli non hanno più una linea automatica sopra: le separazioni le metti tu dove servono. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
+Compare in basso quando sei in **Modifica**. I comandi delle tabelle (righe, colonne, allineamento) compaiono solo con il cursore in una tabella; **Blocchi** contiene riquadro, sezione espandibile e i blocchi Material for MkDocs. Il pulsante **Linea di separazione** inserisce una riga orizzontale (`---`) dopo il paragrafo in cui si trova il cursore. I titoli non hanno più una linea automatica sopra: le separazioni le metti tu dove servono. Il pulsante **Casella da spuntare** aggiunge o toglie la casella sulla riga: fuori da una tabella crea una voce di elenco con la casella (`- [ ]`), in una cella di tabella mette la casella nella cella. Sugli schermi stretti la barra è una sola riga che scorre in orizzontale, con il bordo sfumato dove ci sono altri comandi.
 
 ## Collegamenti
 
@@ -182,7 +182,7 @@ Se cambi documento, ricarichi o apri un’altra cartella con modifiche non salva
 
 In alto a destra, da sinistra a destra:
 
-- **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone.
+- **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone. `Ctrl/⌘ + E` passa da **Lettura** a **Modifica** e viceversa (dal **Markdown** torna a **Modifica**).
 - **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
 - **⋯ Altre azioni**: **Esporta PDF…** e, se la cartella è un repository git, **Versioni precedenti…**.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
@@ -212,9 +212,17 @@ In fondo al documento può comparire una piccola animazione in pixel art, a scel
 
 L’animazione non intralcia: non si può cliccare, passa sotto i pannelli, si nasconde in **Modifica** (dove c’è la barra di formattazione) e non compare nel PDF. Si ferma quando la scheda non è visibile e, se nel sistema è attiva la riduzione del movimento, resta ferma (il gatto dorme, la barca è in mezzo al mare).
 
+## Anteprima immagine
+
+Un clic su un’immagine in **Lettura** (o nell’elenco dei file) apre l’anteprima, con lo stesso zoom dell’editor immagini: all’apertura l’immagine è adattata alla finestra e la percentuale indica la grandezza reale (100% = un pixel dell’immagine per pixel dello schermo, fino all’800%).
+
+- `Ctrl/⌘` + rotella o pinch sul trackpad ingrandisce sotto il puntatore; la rotella da sola sposta l’immagine ingrandita, come il trascinamento.
+- I pulsanti − e + in basso, `Ctrl/⌘ + 0` per adattare alla finestra e `Ctrl/⌘ + 1` per il 100%; un clic sulla percentuale passa da una all’altra.
+- **Doppio clic** sull’immagine: 100% sul punto cliccato, o di nuovo adattata.
+
 ## Modifica immagine
 
-Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica immagine**, oppure, in **Modifica**, fai clic sull’immagine nel documento: si apre subito l’editor e, alla chiusura, l’immagine resta selezionata per ridimensionarla.
+Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica immagine**, oppure, in **Modifica**, fai **doppio clic** sull’immagine nel documento. Un clic solo la seleziona: compaiono la maniglia per ridimensionarla e il pulsante **Modifica**.
 
 - **Strumenti**: penna (`P`), evidenziatore (`H`), gomma (`E`), linea (`L`), freccia (`A`), rettangolo (`R`), ellisse (`O`), testo (`T`) e ritaglio (`C`).
 - **Stile**: colori rapidi o un colore a scelta, forme piene (`F`), spessore o dimensione del testo (`[` e `]`). Lo spessore iniziale si adatta alla grandezza dell’immagine.
