@@ -183,8 +183,8 @@ Se cambi documento, ricarichi o apri un’altra cartella con modifiche non salva
 In **Impostazioni › Documenti › Più documenti aperti** scegli come lavorare con più documenti insieme:
 
 - **Uno** (all'inizio): un documento alla volta, come sempre.
-- **Schede**: in alto a sinistra, accanto ai comandi del documento, compare una scheda per ogni documento aperto (nelle finestre strette le schede scendono su una riga propria). Un clic su una scheda la mostra; la **×** o un clic con la rotella la chiude; le frecce **← →** passano da una scheda all'altra.
-- **Affiancati**: i documenti stanno uno accanto all'altro, come le pagine di un libro aperto, e si sfogliano scorrendo in orizzontale (trackpad, `Maiusc` + rotella o la barra di scorrimento). Scorrendo, le colonne si fermano una sull'altra lasciando visibile il **dorso** con il titolo in verticale. Un clic su un documento lo rende **attivo**: è quello che puoi modificare e salvare, con il dorso colorato; gli altri restano in lettura. Un clic su un collegamento in un documento non attivo lo attiva e apre il collegamento.
+- **Schede**: in alto a sinistra, accanto ai comandi del documento, compare una scheda per ogni documento aperto (nelle finestre strette le schede scendono su una riga propria). Un clic su una scheda la mostra; la **×**, un clic con la rotella o `Alt + W` (`⌥W` sul Mac) la chiude; le frecce **← →** passano da una scheda all'altra.
+- **Affiancati**: i documenti stanno uno accanto all'altro, come le pagine di un libro aperto, e si sfogliano scorrendo in orizzontale (trackpad, `Maiusc` + rotella o la barra di scorrimento), con il puntatore in qualunque punto, anche sopra un documento. Una tabella o un blocco di codice più larghi della colonna scorrono prima da soli. `Alt + W` (`⌥W` sul Mac) chiude la colonna attiva, come la **×** sul dorso. Scorrendo, le colonne si fermano una sull'altra lasciando visibile il **dorso** con il titolo in verticale. Un clic su un documento lo rende **attivo**: è quello che puoi modificare e salvare, con il dorso colorato; gli altri restano in lettura. Un clic su un collegamento in un documento non attivo lo attiva e apre il collegamento.
 
 Come si aprono i documenti con le schede o affiancati:
 
@@ -194,6 +194,7 @@ Come si aprono i documenti con le schede o affiancati:
 - Passando da un documento all'altro le **modifiche non salvate restano**: la scheda o il dorso hanno un pallino; si salvano tornando su quel documento. Chiudendo una scheda con modifiche, o cambiando cartella, Itaca chiede se salvarle. Con il **salvataggio automatico** il documento viene salvato quando lo lasci.
 - Ogni documento ricorda il punto in cui eri e il modo (Lettura, Modifica, Markdown).
 - Le schede aperte restano per la cartella: alla riapertura di Itaca tornano com'erano.
+- Anche l’ultima scheda o colonna si può chiudere: non resta aperto nessun documento. `Alt + Maiusc + W` (`⌥⇧W` sul Mac) o **⋯ › Chiudi tutti** chiude tutto in una volta, chiedendo prima di salvare le modifiche.
 
 **Indice, Citato da e grafo** seguono sempre il documento attivo. Con **Schede** restano dove li hai messi; con **Affiancati** vanno nella barra laterale (gli angoli del documento servono alle colonne) e tornano al loro posto scegliendo un'altra modalità.
 
@@ -203,7 +204,7 @@ In alto a destra, da sinistra a destra:
 
 - **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone. `Ctrl/⌘ + E` passa da **Lettura** a **Modifica** e viceversa (dal **Markdown** torna a **Modifica**).
 - **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
-- **⋯ Altre azioni**: **Esporta PDF…** e, se la cartella è un repository git, **Versioni precedenti…**.
+- **⋯ Altre azioni**: **Esporta PDF…**, se la cartella è un repository git **Versioni precedenti…**, **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
 
 Nella barra in basso il percorso del documento è modificabile: un clic sul **nome del documento** o su una delle sue **cartelle** lo trasforma in una casella (con un percorso lungo ogni cartella si accorcia ma resta cliccabile; il nome completo è nel suggerimento); **Invio** rinomina e aggiorna i collegamenti (come indicato in **Impostazioni › File › Aggiorna i collegamenti**), **Esc** o un clic altrove annullano. L’estensione `.md` resta da sola.
