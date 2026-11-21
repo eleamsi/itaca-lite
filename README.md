@@ -182,6 +182,29 @@ Allo stesso modo si possono incorporare i **documenti Word** (`.docx`): incollat
 
 L’anteprima è in sola lettura e preparata da Itaca, senza Word né Internet: caratteri non installati, caselle di testo, forme, revisioni e commenti possono apparire semplificati e le pagine non sempre si interrompono come in Word. I vecchi file **.doc** (Word 97–2003) non si possono mostrare: restano un collegamento. Nel PDF esportato compare solo il titolo; nel sito HTML esportato il riquadro ha il link **Scarica**.
 
+### File di testo incorporati
+
+Anche i **file di testo** si possono incorporare: `.txt`, `.log`, `.csv`, `.tsv`, `.json`, `.xml`, `.yaml`, `.toml`, `.ini`, `.sql` e i file di codice (`.py`, `.js`, `.sh`, `.html`, `.css`…). Incollati, trascinati o scelti con 📎 diventano un riquadro con il contenuto: numeri di riga e colori della sintassi per codice e log, testo a capo per i `.txt`, una **tabella** per CSV e TSV, JSON su una sola riga mostrato indentato. Il riquadro è alto quanto il contenuto (fino a un massimo) e segue il tema chiaro o scuro.
+
+Come per Word ci sono **Apri** (anteprima in una nuova scheda, con **Scarica** in alto), **Scarica** e, in Modifica, **Collegamento**. Anche un clic sul file nell’elenco o su un collegamento apre l’anteprima. Dei file molto grandi il riquadro mostra solo l’inizio.
+
+Per **SVG** e **HTML** in alto c’è anche la scelta **Anteprima / Codice**: l’anteprima mostra l’immagine o la pagina come appare, il codice il sorgente con i colori della sintassi (la scelta vale anche per Apri). La pagina HTML viene mostrata isolata: i suoi script funzionano, ma non possono leggere Itaca né i tuoi documenti; fogli di stile e immagini che la pagina prende da altri file della cartella non vengono caricati.
+
+```markdown
+![Configurazione](_allegati/config.yaml)
+![[registro.log]]
+```
+
+### Schede delle pagine web
+
+Incollando l’indirizzo di una pagina web **su una riga vuota**, sotto compare la scelta **Collegamento** (come prima) o **Scheda**. La scheda è un riquadro compatto con l’icona del sito, il titolo e l’indirizzo: in Lettura un clic la apre in una nuova scheda del browser, in Modifica ci sono **Apri** e **Collegamento** per tornare al semplice link. Anche il riquadro di un collegamento a una pagina web ha il pulsante **Scheda**.
+
+```markdown
+[Documentazione di Python](https://docs.python.org/3/){ .card }
+```
+
+Il titolo proposto viene dall’indirizzo (Itaca non legge la pagina): si cambia con un doppio clic sulla scheda in Modifica o nel Markdown. L’icona è quella del sito, chiesta al sito stesso; se non c’è compare l’iniziale. In MkDocs la riga resta un normale collegamento.
+
 ## Grafo dei collegamenti
 
 Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si collegano tra loro: ogni nodo è un documento, ogni linea un collegamento (in un verso o nell’altro). Il documento aperto ha il colore d’accento del tema, gli altri il colore della loro cartella principale.
