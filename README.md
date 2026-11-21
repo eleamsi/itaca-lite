@@ -171,6 +171,17 @@ Nel Markdown un PDF incorporato è un’immagine che punta a un PDF, **da sola s
 
 `#page=3` apre il PDF alla pagina indicata. Nel PDF esportato compare solo il titolo; nel sito HTML esportato il PDF resta incorporato, con il link Apri.
 
+### Documenti Word incorporati
+
+Allo stesso modo si possono incorporare i **documenti Word** (`.docx`): incollati, trascinati o scelti con 📎 compaiono in un riquadro con un’**anteprima delle pagine** (testo, stili, tabelle, immagini, intestazioni e piè di pagina), rimpicciolite se serve per stare nella larghezza del documento. In alto ci sono **Apri** (l’anteprima in una nuova scheda), **Scarica** (il file `.docx`, per aprirlo con Word) e, in Modifica, **Collegamento**. Anche un semplice collegamento a un `.docx`, o un clic sul file nell’elenco, apre l’anteprima in una nuova scheda, con in alto il pulsante **Scarica**. Cursore, selezione, trascinamento e **Incorpora** funzionano come per i PDF.
+
+```markdown
+![Relazione annuale](_allegati/relazione.docx)
+![[relazione.docx]]
+```
+
+L’anteprima è in sola lettura e preparata da Itaca, senza Word né Internet: caratteri non installati, caselle di testo, forme, revisioni e commenti possono apparire semplificati e le pagine non sempre si interrompono come in Word. I vecchi file **.doc** (Word 97–2003) non si possono mostrare: restano un collegamento. Nel PDF esportato compare solo il titolo; nel sito HTML esportato il riquadro ha il link **Scarica**.
+
 ## Grafo dei collegamenti
 
 Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si collegano tra loro: ogni nodo è un documento, ogni linea un collegamento (in un verso o nell’altro). Il documento aperto ha il colore d’accento del tema, gli altri il colore della loro cartella principale.
