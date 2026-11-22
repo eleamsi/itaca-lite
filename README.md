@@ -1,6 +1,6 @@
 # Itaca Lite
 
-Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalità visuale e una sorgente Markdown, supporta le estensioni di Material for MkDocs e permette di esportare i documenti in PDF o la cartella in un sito HTML statico.
+Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalità visuale e una sorgente Markdown, supporta le estensioni di Material for MkDocs e permette di esportare i documenti in PDF o in Word e la cartella in un sito HTML statico.
 
 ## Avvio
 
@@ -306,7 +306,7 @@ In alto a destra, da sinistra a destra:
 
 - **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone. `Ctrl/⌘ + E` passa da **Lettura** a **Modifica** e viceversa (dal **Markdown** torna a **Modifica**).
 - **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
-- **⋯ Altre azioni**: **Esporta PDF…**, se la cartella è un repository git **Versioni e confronto…** e **Chi ha modificato questo punto…** (vedi [Versioni e confronto con git](#versioni-e-confronto-con-git)), **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
+- **⋯ Altre azioni**: **Esporta PDF…**, **Esporta in Word…** (vedi [Esportare in Word](#esportare-in-word)), se la cartella è un repository git **Versioni e confronto…** e **Chi ha modificato questo punto…** (vedi [Versioni e confronto con git](#versioni-e-confronto-con-git)), **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
 
 Nella barra in basso il percorso del documento è modificabile: un clic sul **nome del documento** o su una delle sue **cartelle** lo trasforma in una casella (con un percorso lungo ogni cartella si accorcia ma resta cliccabile; il nome completo è nel suggerimento); **Invio** rinomina e aggiorna i collegamenti (come indicato in **Impostazioni › File › Aggiorna i collegamenti**), **Esc** o un clic altrove annullano. L’estensione `.md` resta da sola.
@@ -417,6 +417,14 @@ Il pulsante con il fumetto nella barra in basso apre **Segnalazioni**: un proble
 - **Nuova**: scegli il tipo (**Problema**, **Funzionalità**, **Altro**), scrivi un titolo e una descrizione e premi **Invia** (o `Ctrl/⌘ + Invio` nella descrizione). Si apre su GitHub la segnalazione già compilata: premi **Create** per inviarla (serve un account GitHub gratuito). Con **Includi versione e browser** il testo riporta anche versione di Itaca, browser e sistema operativo; non vengono mai inviati nomi di cartelle, documenti o percorsi.
 - **Le mie**: tutte le segnalazioni inviate da questo browser, con la versione di Itaca da cui le hai mandate e lo **stato** ben visibile: *Da confermare su GitHub* (non hai ancora premuto Create), *Ricevuta*, *In lavorazione*, *Risolta nella X.Y.Z*, *Non prevista* o *Doppione*, più il numero di risposte e il collegamento alla discussione. Se una segnalazione è risolta in una versione più nuova della tua, c’è il collegamento agli **Aggiornamenti**.
 - Lo stato si aggiorna aprendo **Le mie**, con **Aggiorna stato** e, se cerchi gli aggiornamenti all’avvio, anche all’apertura di Itaca. Quando cambia, il pulsante delle segnalazioni ha un pallino e la segnalazione è segnata come **Novità**.
+
+## Esportare in Word
+
+**⋯ › Esporta in Word…** salva il documento come file **.docx**, da mandare a chi non usa Itaca o a chi chiede «il Word». Si sceglie dove salvarlo (in Safari e Firefox finisce nella cartella Download). Esporta quello che vedi, anche le modifiche non ancora salvate.
+
+Il file usa gli stili veri di Word, quindi resta comodo da modificare: i titoli sono **Titolo 1–6** (compaiono nel riquadro di spostamento e in un sommario), gli elenchi sono elenchi puntati e numerati di Word, le tabelle hanno l’intestazione che si ripete su ogni pagina e i collegamenti a una sezione del documento portano a quel titolo. Le **note a piè di pagina** diventano note di Word, le **caselle** ☐/☒, le **immagini** sono incorporate (alla larghezza scelta, mai oltre la pagina) e i diagrammi Mermaid diventano immagini. Riquadri (avvisi, note, suggerimenti), citazioni e blocchi di codice stanno in un riquadro colorato; il codice mantiene i colori della sintassi. Le schede (`===`) diventano titoletti seguiti dal loro contenuto e le sezioni espandibili sono aperte. Pagina A4 con margini di 2 cm e numero di pagina in basso.
+
+PDF e file incorporati diventano una riga con il loro nome (un link se sono su Internet); i collegamenti ad altri documenti della cartella restano testo, perché chi riceve il file non ha la cartella. Pages e l’anteprima del Mac mostrano riquadri e tabelle più stretti di come li disegna Word.
 
 ## Versioni e confronto con git
 
