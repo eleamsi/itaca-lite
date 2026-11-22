@@ -152,11 +152,13 @@ I percorsi delle cartelle condivise si scrivono così come sono, `\\server\condi
 
 Incollando nel documento l’indirizzo di un video (**YouTube**, **Vimeo**, **Dailymotion**, **Loom**, **Twitch**, **TikTok** o un file `.mp4`, `.webm`, `.mov`…) Itaca inserisce un collegamento con un testo leggibile, ad esempio «▶ Video su YouTube», invece dell’indirizzo per intero; se prima selezioni del testo, il collegamento va su quel testo. Il video si apre con un clic in **Lettura** (o `Ctrl/⌘ + clic` in **Modifica**). Il testo si cambia come per ogni collegamento.
 
-Itaca è aperta come file (`file://`): da lì i lettori di YouTube e degli altri servizi rifiutano di essere mostrati dentro la pagina, perciò i video restano collegamenti.
+Itaca è aperta come file (`file://`): da lì i lettori di YouTube e degli altri servizi rifiutano di essere mostrati dentro la pagina, perciò i video di questi siti restano collegamenti. I **file** video e audio invece (scaricati nella cartella o indirizzi web che finiscono in `.mp4`, `.mp3`…) si guardano e si ascoltano dentro il documento: vedi [Video e audio incorporati](#video-e-audio-incorporati).
 
 ## Allegati
 
 Oltre alle immagini puoi inserire file di qualsiasi tipo (PDF, Word, Excel, archivi…): **incollali** dopo averli copiati dal Finder o da Esplora risorse, **trascinali** nel punto del testo che vuoi, oppure usa il pulsante 📎 della barra di formattazione. Nel testo compare un collegamento con il nome del file; al salvataggio il file viene copiato in `_allegati` (se il nome è già usato diventa «Nome (2).pdf»).
+
+Sotto il collegamento compare la scelta **Collegamento** (resta com’è) o **Anteprima** — **Lettore** per video e audio: il file diventa una [scheda](#schede-dei-file) o un [lettore](#video-e-audio-incorporati) dentro il documento. Un tasto o un clic altrove chiudono la scelta lasciando il collegamento; la stessa trasformazione si fa dopo con il pulsante **Anteprima** (o **Lettore**) del riquadro del collegamento. PDF, Word e file di testo diventano subito un riquadro incorporato, come spiegato sotto.
 
 Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegamento in **Modifica**) PDF, testi, audio e video si aprono in una nuova scheda; gli altri file vengono scaricati.
 
@@ -209,6 +211,41 @@ Per **SVG** e **HTML** in alto c’è anche la scelta **Anteprima / Codice**: l�
 **Nel documento.** Il pulsante **Nel documento** porta il contenuto dentro il documento, senza più collegamento al file: diventa un **blocco di codice** con il linguaggio giusto e il nome del file come titolo; un CSV o TSV può diventare una **tabella** (ordinabile e filtrabile in Lettura) o restare testo. Per la tabella si sceglie se **la prima riga contiene i titoli delle colonne**: Itaca lo propone da sé guardando la prima riga (celle tutte piene, nomi diversi, nessun numero); se non la spunti anche la prima riga è un dato e le colonne si chiamano «Colonna 1», «Colonna 2» e così via. Il file resta nella cartella; `Ctrl/⌘ + Z` riporta il riquadro. Se il file aveva modifiche non ancora salvate, nel documento finisce la versione modificata e il file non viene toccato.
 
 In Modifica, nei riquadri stretti, i pulsanti mostrano solo l’icona (il nome compare passandoci sopra).
+
+### Video e audio incorporati
+
+I **video** (`.mp4`, `.mov`, `.m4v`, `.webm`, `.mkv`, `.ogv`) si guardano dentro il documento con il lettore del browser: riproduzione, volume, velocità, schermo intero. I file **audio** (`.mp3`, `.wav`, `.m4a`, `.aac`, `.ogg`, `.opus`, `.flac`) hanno un lettore di Itaca con la **forma d’onda** del file: clic o trascinamento sulla forma d’onda per spostarsi, frecce `←/→` per 5 secondi avanti o indietro, `Spazio` per avviare o fermare, il pulsante **1×** cambia la velocità (1,25×, 1,5×, 2×, 0,75×). Suona un lettore alla volta: avviandone uno, gli altri si fermano.
+
+**Il lettore di Itaca.** Un audio avviato continua a suonare anche se apri un altro documento: compare il lettore di Itaca, piccolo, con titolo, documento di provenienza (un clic ci riporta), forma d’onda, tempi e **×** per fermare e chiuderlo. In **Impostazioni › Aspetto › Lettore audio** si sceglie come appare:
+
+- **Nella barra** (predefinito): nella barra laterale, sopra **Cartelle e file**. Se la barra laterale è nascosta passa nell’angolo.
+- **Fluttuante**: sopra al documento, si trascina dove vuoi dalla maniglia a puntini; Itaca ricorda la posizione.
+- **Nell’angolo**: in basso a destra; con la freccia si riduce a un piccolo disco (l’anello mostra l’avanzamento, le barrette si muovono mentre suona) e un clic lo riapre.
+- **Spento**: nessun lettore, l’audio si ferma quando cambi documento.
+
+I tasti multimediali della tastiera (play/pausa) comandano il lettore.
+
+Anche gli **indirizzi web** di file audio e video (`https://…/intervista.mp3`) funzionano: incollati su una riga vuota propongono **Collegamento** o **Lettore**. Le pagine di YouTube e simili restano collegamenti (vedi [Video](#video)).
+
+```markdown
+![Presentazione del progetto](_allegati/presentazione.mp4)
+![Intervista](_allegati/intervista.mp3)
+![Podcast](https://esempio.it/puntata-12.mp3)
+![Dal minuto 1:30](_allegati/lezione.mp4#t=90)
+```
+
+Il browser legge i formati più diffusi; un `.mkv` si vede se il video è H.264, VP9 o AV1 (i casi più comuni). Formati come `.avi`, `.wmv`, `.wma`, `.aiff` o codifiche rare il browser non li sa riprodurre: il riquadro lo dice e **Scarica** porta il file su un programma che li legge. **Apri** mostra il video in una nuova scheda (l’audio non ne ha bisogno: c’è il lettore); cursore, selezione, trascinamento e **Collegamento** funzionano come per i PDF. Nel PDF esportato compare solo il titolo, nel sito HTML esportato il lettore resta.
+
+### Schede dei file
+
+Un file che Itaca non mostra dentro il documento (**archivi ZIP**, Excel, presentazioni, programmi…) può comparire come **scheda**: icona del tipo con l’estensione, titolo, tipo e dimensione del file. Per gli **ZIP** la scheda dice anche quanti file contiene e il pulsante **Contenuto** (in Lettura basta un clic sulla scheda) mostra l’elenco dei file dell’archivio con cartelle e dimensioni, senza estrarlo. **Scarica** scarica il file, **Apri** lo apre nel browser se sa mostrarlo, in Modifica **Collegamento** torna al semplice link.
+
+```markdown
+[Materiale del corso](_allegati/materiale.zip){ .card }
+[Budget 2026](../Finanza/budget.xlsx){ .card }
+```
+
+È la stessa sintassi delle schede delle pagine web, con il percorso di un file al posto dell’indirizzo. In MkDocs la riga resta un normale collegamento.
 
 ### Schede delle pagine web
 
@@ -305,7 +342,7 @@ Come si aprono i documenti con le schede o affiancati:
 In alto a destra, da sinistra a destra:
 
 - **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone. `Ctrl/⌘ + E` passa da **Lettura** a **Modifica** e viceversa (dal **Markdown** torna a **Modifica**).
-- **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
+- **Cerca** (`Ctrl/⌘ + F`, o `Ctrl/⌘ + H` con la sostituzione): trova e sostituisci nel documento. La stessa scorciatoia la chiude (se intanto hai selezionato un altro testo nel documento, cerca quello).
 - **⋯ Altre azioni**: **Esporta PDF…**, **Esporta in Word…** (vedi [Esportare in Word](#esportare-in-word)), se la cartella è un repository git **Versioni e confronto…** e **Chi ha modificato questo punto…** (vedi [Versioni e confronto con git](#versioni-e-confronto-con-git)), **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
 
