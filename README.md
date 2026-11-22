@@ -168,7 +168,7 @@ I **PDF** si possono leggere direttamente dentro il documento: un PDF incollato,
 
 Trascinando un PDF nel documento una **linea** indica tra quali righe verrà inserito (per gli altri file un cursore lampeggiante indica il punto nel testo).
 
-Il PDF si comporta come un blocco unico: **Backspace** dalla riga sotto (o **Canc** da quella sopra) e le frecce lo **selezionano** (contorno colorato), e una riga vuota accanto viene tolta; solo un secondo Backspace/Canc lo elimina (`Ctrl/⌘ + Z` lo rimette). Con il PDF selezionato **Invio** o la scrittura proseguono nella riga sotto; anche un clic sul titolo lo seleziona.
+Il PDF si comporta come un blocco unico: **Backspace** dalla riga sotto (o **Canc** da quella sopra) e le frecce lo **selezionano** (contorno colorato), e una riga vuota accanto viene tolta; solo un secondo Backspace/Canc lo elimina (`Ctrl/⌘ + Z` lo rimette). Con il PDF selezionato **Invio** o la scrittura proseguono nella riga sotto; anche un clic sul titolo lo seleziona. Se ci sono più riquadri uno dopo l'altro (PDF, schede delle pagine web, lettori), le frecce passano dall'uno all'altro senza aggiungere righe vuote in mezzo; una riga creata solo per il cursore sparisce se la lasci vuota.
 
 In **Modifica** c’è anche **Collegamento**, che riporta il PDF a un semplice collegamento; al contrario, il riquadro di un collegamento a un PDF ha il pulsante **Incorpora**. Il riquadro si può allungare o accorciare trascinando l’angolo in basso a destra.
 
