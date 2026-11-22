@@ -139,6 +139,14 @@ In **Modifica** un clic su un collegamento apre subito il riquadro per modificar
 
 **Collegamento o immagine?** Il pulsante 🔗 crea un **collegamento** (anche a un'immagine: nel testo resta una parola cliccabile). Il pulsante **Immagine** apre lo stesso riquadro ma per **mostrare** l'immagine nel documento: la ricerca elenca solo le immagini della cartella (senza ricerca, prima quelle vicine al documento), accetta l'indirizzo di un'immagine sul web e in fondo ha **Scegli un'immagine dal computer…** (copiata in `_allegati` al salvataggio). La casella **Descrizione** è il testo alternativo; se la lasci vuota vale il nome del file.
 
+### Percorsi di rete
+
+I percorsi delle cartelle condivise si scrivono così come sono, `\\server\condivisa\progetto`, oppure tra `< >` se contengono spazi (`<\\server\Progetti 2024\Impianto>`); vanno bene anche gli indirizzi `file://…`. Itaca li mostra con l’icona della rete e in **Lettura** un clic **copia il percorso** (in **Modifica** `Ctrl/⌘ + clic`; un doppio clic lo modifica): il browser non apre le cartelle di rete da una pagina, ma incollato in Esplora file o nel Finder il percorso ci porta subito.
+
+- **Incollando** un percorso di rete (anche tra virgolette, come lo copia Esplora file) diventa subito un percorso cliccabile; scrivendolo a mano si converte alla chiusura di `>` o lasciando la riga.
+- Nel riquadro dei **collegamenti** puoi scrivere `\\server\cartella` o `C:\cartella`: il collegamento diventa `file://…` e anche lui, cliccato, copia il percorso.
+- Nel sito esportato restano collegamenti `file://`.
+
 ## Video
 
 Incollando nel documento l’indirizzo di un video (**YouTube**, **Vimeo**, **Dailymotion**, **Loom**, **Twitch**, **TikTok** o un file `.mp4`, `.webm`, `.mov`…) Itaca inserisce un collegamento con un testo leggibile, ad esempio «▶ Video su YouTube», invece dell’indirizzo per intero; se prima selezioni del testo, il collegamento va su quel testo. Il video si apre con un clic in **Lettura** (o `Ctrl/⌘ + clic` in **Modifica**). Il testo si cambia come per ogni collegamento.
@@ -195,6 +203,12 @@ Per **SVG** e **HTML** in alto c’è anche la scelta **Anteprima / Codice**: l�
 ![[registro.log]]
 ```
 
+**Modificare il file.** In Modifica il pulsante **Modifica** del riquadro apre il contenuto del file in una finestra con i numeri di riga (`Tab` rientra come il resto del file, `Ctrl/⌘ + Invio` o `Ctrl/⌘ + S` applica). Le modifiche si vedono subito nel riquadro ma il file viene **scritto quando salvi il documento**, come il resto delle modifiche: fino ad allora il documento risulta modificato e **Non salvare** le scarta. `Ctrl/⌘ + Z` nel documento riporta il riquadro alla versione di prima (`Ctrl/⌘ + Maiusc + Z` la rifà); se annulli dopo aver salvato e salvi di nuovo, il file torna com’era. Itaca conserva **codifica** (UTF-8, con o senza BOM, oppure Windows-1252 «ANSI», comune negli script di Windows e di iFix) e **fine riga** (CRLF di Windows o LF) del file; se scrivi caratteri che la codifica ANSI non ha, chiede se salvare il file in UTF-8. Se nel frattempo un altro programma ha cambiato il file, prima di sovrascriverlo chiede conferma. Serve la cartella di lavoro aperta con il permesso di scrittura.
+
+**Nel documento.** Il pulsante **Nel documento** porta il contenuto dentro il documento, senza più collegamento al file: diventa un **blocco di codice** con il linguaggio giusto e il nome del file come titolo; un CSV o TSV può diventare una **tabella** (ordinabile e filtrabile in Lettura) o restare testo. Il file resta nella cartella; `Ctrl/⌘ + Z` riporta il riquadro. Se il file aveva modifiche non ancora salvate, nel documento finisce la versione modificata e il file non viene toccato.
+
+In Modifica, nei riquadri stretti, i pulsanti mostrano solo l’icona (il nome compare passandoci sopra).
+
 ### Schede delle pagine web
 
 Incollando l’indirizzo di una pagina web **su una riga vuota**, sotto compare la scelta **Collegamento** (come prima) o **Scheda**. La scheda è un riquadro compatto con l’icona del sito, il titolo e l’indirizzo: in Lettura un clic la apre in una nuova scheda del browser, in Modifica ci sono **Apri** e **Collegamento** per tornare al semplice link. Anche il riquadro di un collegamento a una pagina web ha il pulsante **Scheda**.
@@ -204,6 +218,37 @@ Incollando l’indirizzo di una pagina web **su una riga vuota**, sotto compare 
 ```
 
 Il titolo proposto viene dall’indirizzo (Itaca non legge la pagina): si cambia con un doppio clic sulla scheda in Modifica o nel Markdown. L’icona è quella del sito, chiesta al sito stesso; se non c’è compare l’iniziale. In MkDocs la riga resta un normale collegamento.
+
+## Tabelle
+
+**Da Excel**: copia le celle in Excel (o LibreOffice, Numbers, Fogli Google) e incollale in **Modifica**: diventano una tabella Markdown pulita, con la prima riga come intestazione (se è fatta solo di numeri Itaca aggiunge «Colonna 1, 2…») e le colonne di numeri allineate a destra. Le celle su più righe e le virgolette sono conservate. Incollando **dentro una tabella** le celle riempiono la tabella a partire da quella del cursore, aggiungendo righe e colonne se servono (`Ctrl/⌘ + Z` annulla). Con **Incolla senza formattazione** arriva il testo semplice.
+
+**Tabelle grandi**: oltre 15 righe o con almeno 7 colonne la tabella sta in un riquadro alto al massimo circa mezza pagina, che **scorre** in verticale e in orizzontale; l’intestazione resta ferma in alto e, nelle tabelle larghe, anche la prima colonna resta ferma a sinistra. Le colonne prendono la larghezza del contenuto (fino a un massimo, poi il testo va a capo) invece di schiacciarsi, e le righe sono a colori alterni. Nel PDF la tabella è stampata per intero.
+
+**Con la tastiera, in Modifica**, la tabella si usa come un foglio di calcolo: `Tab` / `Maiusc + Tab` passano alla cella successiva / precedente (selezionandone il contenuto, così si scrive sopra) e `Tab` nell’ultima cella aggiunge una riga; `Invio` scende alla cella sotto, nell’ultima riga aggiunge una riga nuova e un secondo `Invio` sulla riga vuota la toglie ed **esce dalla tabella**; `Maiusc + Invio` va a capo dentro la cella; `↑ ↓` passano alla riga sopra o sotto e oltre il bordo escono dalla tabella.
+
+**In Lettura** un clic sull’intestazione di una colonna la **ordina** (crescente, poi decrescente, la terza volta torna l’ordine originale): numeri anche all’italiana con unità (`1.234,5`, `3,2 bar`, `75 %`), date (`21/11/2026`), testo in ordine alfabetico; le celle vuote restano in fondo. Le tabelle con almeno 6 righe (sulle più corte non serve) hanno sopra una casella per **filtrare** le righe (tutte le colonne o una sola, senza badare ad accenti e maiuscole) e **Azzera**. È comodo per elenchi di tag, allarmi e parametri. Il documento non cambia: tornando in Modifica la tabella è com’era. Si disattiva in Impostazioni › Documenti › **Ordina e filtra le tabelle**.
+
+## Blocchi di codice
+
+Accanto ai tre accenti gravi va il linguaggio, per i colori. Per l’automazione:
+
+- `vba` — VBA di Excel e Access e gli **script di iFix**: oltre a parole chiave e funzioni di VBA riconosce le subroutine di iFix (`OpenPicture`, `ReadValue`, `WriteValue`, `ToggleDigitalPoint`, `AcknowledgeAllAlarms`…), i tag del database (`Fix32.NODO.TAG.F_CV`, anche dentro le stringhe), i nomi delle Sub e le etichette di `On Error GoTo`. Valgono anche `vbs`, `vb6`, `ifix`, `bas`.
+- `sql` (standard), `tsql` (SQL Server: `TOP`, `NOLOCK`, `@variabili`, `[nomi]`, `GO`…), `postgresql`, `mysql`, `plsql` (Oracle).
+
+In **Modifica** il pulsante **Opzioni** del blocco imposta il **titolo** o il **nome del file** mostrato sopra il codice, le **righe evidenziate** (`12-15 20`) e il numero da cui parte la numerazione; un clic su un numero di riga evidenzia la riga, `Maiusc + clic` un intervallo dall’ultimo clic (come per selezionare il testo: un altro `Maiusc + clic` lo allunga o lo accorcia). Nel Markdown sono le opzioni di Material for MkDocs:
+
+````markdown
+```vba title="Pagina1.bas" hl_lines="12-15"
+Private Sub CFixPicture_Initialize()
+    OpenPicture "Panoramica.grf"
+End Sub
+```
+````
+
+Come i PDF, il blocco di codice si cancella in due tempi: `Backspace` dalla riga sotto (o `Canc` da quella sopra) lo **seleziona** con un contorno, e solo un secondo `Backspace`/`Canc` lo elimina (`Ctrl/⌘ + Z` lo rimette); anche un clic sulla sua intestazione lo seleziona. Le frecce invece entrano nel codice.
+
+**Copia** copia il codice senza i numeri di riga; `Maiusc + clic` su **Copia** copia solo le righe evidenziate.
 
 ## Grafo dei collegamenti
 
