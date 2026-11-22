@@ -306,7 +306,7 @@ In alto a destra, da sinistra a destra:
 
 - **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone. `Ctrl/⌘ + E` passa da **Lettura** a **Modifica** e viceversa (dal **Markdown** torna a **Modifica**).
 - **Cerca** (`Ctrl/⌘ + H`): trova e sostituisci nel documento.
-- **⋯ Altre azioni**: **Esporta PDF…**, se la cartella è un repository git **Versioni precedenti…**, **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
+- **⋯ Altre azioni**: **Esporta PDF…**, se la cartella è un repository git **Versioni e confronto…** e **Chi ha modificato questo punto…** (vedi [Versioni e confronto con git](#versioni-e-confronto-con-git)), **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
 
 Nella barra in basso il percorso del documento è modificabile: un clic sul **nome del documento** o su una delle sue **cartelle** lo trasforma in una casella (con un percorso lungo ogni cartella si accorcia ma resta cliccabile; il nome completo è nel suggerimento); **Invio** rinomina e aggiorna i collegamenti (come indicato in **Impostazioni › File › Aggiorna i collegamenti**), **Esc** o un clic altrove annullano. L’estensione `.md` resta da sola.
@@ -331,7 +331,7 @@ In fondo al documento può comparire una piccola animazione in pixel art, a scel
 
 - **Loki**: un gatto bianco e nero che fa quello che vuole: cammina, si ferma, si siede, si lecca una zampa, si sdraia a dormire, ogni tanto esce dallo schermo e poi torna.
 - **Barchetta**: una nave a remi che attraversa lentamente un mare largo quanto il documento, poi sparisce per un po’ e riparte da sinistra.
-- **Slitta**: Babbo Natale sulla sua slitta, tirata da due renne (la prima ha il naso rosso), corre sulla neve da sinistra a destra, poi sparisce e ritorna. Si abbina al tema **Natale**.
+- **Slitta**: Babbo Natale sulla sua slitta, tirata da due renne (la prima ha il naso rosso), corre sulla neve da sinistra a destra, poi sparisce e ritorna. Scegliendo il tema **Natale** parte da sola; lasciando il tema torna l’animazione di prima (se nel frattempo non l’hai cambiata a mano).
 
 L’animazione non intralcia: non si può cliccare, passa sotto i pannelli, si nasconde in **Modifica** (dove c’è la barra di formattazione) e non compare nel PDF. Si ferma quando la scheda non è visibile e, se nel sistema è attiva la riduzione del movimento, resta ferma (il gatto dorme, la barca è in mezzo al mare).
 
@@ -407,6 +407,7 @@ Le nuove versioni di Itaca sono pubblicate su GitHub, nelle [Release di eleamsi/
 - **Se c’è una versione nuova**: la pillola della versione diventa colorata con una freccia (clic = dettagli), sull’icona delle **Impostazioni** e sulla scheda **Aggiornamenti** compare un pallino, e in basso a destra un avviso con **Aggiorna** e **Novità** resta finché non lo chiudi con la **×** (per quella versione non torna; pillola e pallino restano). In **Impostazioni › Aggiornamenti** ci sono le novità della versione.
 - **Aggiorna** (Chrome, Edge): Itaca chiede di salvare i documenti modificati, scarica il nuovo file da GitHub, controlla che sia completo e della versione giusta, lo scrive al posto del proprio file e si ricarica. Impostazioni, cartelle e schede restano. Se la cartella aperta è quella che contiene Itaca non chiede altro; altrimenti la prima volta ti chiede di scegliere il file `Itaca Lite.html` che stai usando (e se puoi modificarlo), poi se lo ricorda. Se qualcosa va storto il file non cambia.
 - **Torna alla versione precedente**: la versione sostituita resta salvata nel browser; in **Impostazioni › Aggiornamenti** c’è **Torna alla X.Y.Z**.
+- **Novità delle versioni**: le note di ogni versione sono dentro il file di Itaca, quindi si leggono anche senza connessione e senza andare su GitHub. Si aprono con un clic sulla pillola della versione accanto al nome (o in basso), oppure da **Impostazioni › Aggiornamenti › Novità delle versioni**: a sinistra l’elenco delle versioni con la data, a destra cosa è cambiato. Dopo un aggiornamento un avviso in basso a destra propone le novità, e le versioni che non avevi ancora visto sono segnate **nuova**.
 - **Safari e Firefox** (e Itaca aperta da un server web): il browser non può modificare file sul disco, quindi **Aggiorna** scarica il nuovo `Itaca Lite.html` nella cartella Download e spiega come metterlo al posto di quello che usi.
 
 ## Segnalazioni
@@ -416,6 +417,19 @@ Il pulsante con il fumetto nella barra in basso apre **Segnalazioni**: un proble
 - **Nuova**: scegli il tipo (**Problema**, **Funzionalità**, **Altro**), scrivi un titolo e una descrizione e premi **Invia** (o `Ctrl/⌘ + Invio` nella descrizione). Si apre su GitHub la segnalazione già compilata: premi **Create** per inviarla (serve un account GitHub gratuito). Con **Includi versione e browser** il testo riporta anche versione di Itaca, browser e sistema operativo; non vengono mai inviati nomi di cartelle, documenti o percorsi.
 - **Le mie**: tutte le segnalazioni inviate da questo browser, con la versione di Itaca da cui le hai mandate e lo **stato** ben visibile: *Da confermare su GitHub* (non hai ancora premuto Create), *Ricevuta*, *In lavorazione*, *Risolta nella X.Y.Z*, *Non prevista* o *Doppione*, più il numero di risposte e il collegamento alla discussione. Se una segnalazione è risolta in una versione più nuova della tua, c’è il collegamento agli **Aggiornamenti**.
 - Lo stato si aggiorna aprendo **Le mie**, con **Aggiorna stato** e, se cerchi gli aggiornamenti all’avvio, anche all’apertura di Itaca. Quando cambia, il pulsante delle segnalazioni ha un pallino e la segnalazione è segnata come **Novità**.
+
+## Versioni e confronto con git
+
+Se la cartella aperta è un repository git (contiene la cartella `.git`), Itaca legge la cronologia da sola, senza programmi esterni: serve quando una procedura cambia e bisogna capire cosa è stato modificato, da chi e quando.
+
+- **⋯ › Versioni e confronto…** apre le versioni del documento. A sinistra c’è la **linea del tempo a nodi**: ogni punto è un commit che ha cambiato il documento, dal più recente; le linee colorate mostrano i rami (un ramo laterale che si riunisce è una modifica fatta in parallelo), i punti cerchiati le unioni, le etichette i rami e i tag. In cima, con il punto tratteggiato, le **modifiche non ancora registrate** (nell’editor o sul disco).
+- **Confronto**: il documento disegnato com’è, con il testo **aggiunto in verde** e quello **tolto in rosso barrato**; una barretta a sinistra segna ogni punto cambiato (grigia se è cambiata solo la formattazione). **↑ ↓** saltano da una modifica all’altra, **Solo le modifiche** nasconde le parti uguali lasciando i titoli. Si confronta la versione scelta con quella da cui deriva (cioè: cosa ha cambiato quel commit); dal menu **con** puoi scegliere il testo di adesso o un’altra versione, oppure **Maiusc + clic** su un’altra versione dell’elenco.
+- **Markdown**: le righe del file cambiate, con i numeri di riga e le parole modificate evidenziate; «mostra» apre le righe uguali nascoste.
+- **Autori** (*chi ha cambiato questa riga*): ogni riga con chi l’ha scritta o cambiata per ultimo, la data e il messaggio del commit; il colore è più pieno per le modifiche recenti. Le righe arrivate da un ramo unito sono attribuite a chi le ha scritte nel ramo. Un clic sull’autore mostra il confronto di quella modifica. **⋯ › Chi ha modificato questo punto…** apre direttamente gli Autori con evidenziata la riga dove si trova il cursore.
+- **Anteprima**: la versione com’era. **Ripristina nell’editor** la mette nell’editor (il file cambia solo premendo Salva).
+- **Tutta la cartella** (anche da **Cartelle e file › Storico git della cartella…**): il grafo di tutti i commit del repository con rami, unioni ed etichette. Un clic su un commit mostra messaggio, autore, data e i **file cambiati** (nuovi, modificati, eliminati): aprendo un file si vede il confronto (per i documenti come nel Confronto, per gli altri file di testo riga per riga, per le immagini prima e dopo affiancate). **Versioni** passa alla cronologia di quel documento, **Apri** lo apre.
+
+Itaca legge il repository e non lo modifica: commit, rami e push si fanno con git o con il programma che usi di solito.
 
 ## Modifica condivisa
 
