@@ -13,7 +13,7 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 
 La barra laterale mostra **tutti i file** della cartella, non solo i documenti Markdown. Ogni tipo ha un’icona e un colore propri per riconoscerlo a colpo d’occhio: immagini, PDF, documenti di testo (Word, ODT, RTF), fogli di calcolo (Excel, CSV), presentazioni, archivi (ZIP, RAR, 7z), audio, video, codice e configurazioni (JS, Python, HTML, JSON, YAML…) e testo semplice; gli altri hanno un’icona generica.
 
-- Clic su un documento Markdown: si apre in Itaca. Clic su un’immagine: anteprima. Clic su PDF, testo, audio o video: si apre in una nuova scheda; gli altri file vengono scaricati.
+- Clic su un documento Markdown: si apre in Itaca. Clic su un’immagine: anteprima. Clic su PDF, testo, audio o video: si apre in una nuova scheda. Gli altri file (ZIP, Excel, presentazioni…) non si scaricano subito: una finestra mostra tipo, dimensione e, per gli ZIP, l’elenco dei file contenuti, e il file si scarica solo con **Scarica**.
 - Il menu **⋯** permette di rinominare (l’estensione resta se non ne scrivi un’altra), spostare, duplicare, eliminare, copiare il percorso e vedere le **Informazioni** di qualsiasi file o cartella (vedi **Gestire file e cartelle**).
 - Passando sopra un file, il suggerimento mostra percorso, dimensione e data dell’ultima modifica.
 - La ricerca nel testo riguarda solo i documenti Markdown.
@@ -182,7 +182,7 @@ Oltre alle immagini puoi inserire file di qualsiasi tipo (PDF, Word, Excel, arch
 
 Sotto il collegamento compare la scelta **Collegamento** (resta com’è) o **Anteprima** — **Lettore** per video e audio: il file diventa una [scheda](#schede-dei-file) o un [lettore](#video-e-audio-incorporati) dentro il documento. Un tasto o un clic altrove chiudono la scelta lasciando il collegamento; la stessa trasformazione si fa dopo con il pulsante **Anteprima** (o **Lettore**) del riquadro del collegamento. PDF, Word e file di testo diventano subito un riquadro incorporato, come spiegato sotto.
 
-Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegamento in **Modifica**) PDF, testi, audio e video si aprono in una nuova scheda; gli altri file vengono scaricati.
+Aprendo il collegamento (clic in **Lettura**, **Apri** nel riquadro del collegamento in **Modifica**) PDF, testi, audio e video si aprono in una nuova scheda; per gli altri file Itaca chiede prima conferma e li scarica solo con **Scarica**.
 
 ### PDF incorporati
 
