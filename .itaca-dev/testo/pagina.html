@@ -1,0 +1,3 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Pagina</title><style>body{font-family:sans-serif;background:#fef6e4;padding:20px} h1{color:#d64235}</style></head>
+<body><h1>Ciao da una pagina HTML</h1><p id="p">Lo script non è ancora partito.</p><a href="https://example.com" target="_blank">Collegamento</a>
+<script>document.getElementById('p').textContent = 'Script eseguito. Accesso a Itaca: ' + (() => { try { return String(!!parent.document); } catch (e) { return 'bloccato'; } })() + ', localStorage: ' + (() => { try { localStorage.length; return 'sì'; } catch (e) { return 'bloccato'; } })();</script></body></html>

@@ -1,0 +1,32 @@
+/* Gatto, barchetta o slitta di Babbo Natale: decorazione pixel art in fondo all'area del documento (Impostazioni › Aspetto) */
+.critters { --px: 2px; position: absolute; z-index: 1; inset: auto 0 0; height: calc(21 * var(--px)); overflow: hidden; pointer-events: none; contain: strict; }
+.critters[data-size='double'] { --px: 4px; }
+.critters[data-mode='sleigh'] { height: calc(24 * var(--px)); }
+/* in Modifica la barra di formattazione occupa il fondo: niente animazioni dietro i comandi */
+.document-area:has(#toolbar:not([hidden])) .critters { display: none; }
+.critters > div { position: absolute; left: 0; bottom: 0; will-change: transform; }
+.critters .sprite { width: calc(var(--fw) * var(--px)); height: calc(var(--fh) * var(--px)); overflow: hidden; }
+.critters .sheet { display: block; width: calc(var(--n, 1) * 100%); height: 100%; background: var(--img) 0 calc(var(--row, 0) * var(--fh) * -1 * var(--px)) / calc(var(--cols) * var(--fw) * var(--px)) auto no-repeat; image-rendering: pixelated; animation: critter-loop var(--t, 1s) steps(var(--n, 1)) infinite; }
+.critters .sheet.alt { animation-name: critter-loop2; }
+.critters .once .sheet { animation: critter-once var(--t, 1s) steps(var(--n, 1), jump-none) both; }
+.critters .once .sheet.alt { animation-name: critter-once2; }
+.critters .back .sheet { animation-direction: reverse; }
+.critters .cat { --fw: 22; --fh: 16; --cols: 8; --img: url(CAT_PNG); }
+:root[data-theme='dark'] .critters .cat { --img: url(CAT_DARK_PNG); }
+.critters .cat-flip.left { transform: scaleX(-1); }
+.critters .boat { --fw: 30; --fh: 20; --cols: 8; --n: 8; --t: 2.8s; --img: url(BOAT_PNG); bottom: calc(-1 * var(--px)); }
+/* mare: una mattonella 16 × 7 ripetuta; la fascia davanti (3 righe) copre chiglia e pale dei remi */
+.critters .sea { --sea: url(SEA_PNG); width: calc(100% + 16 * var(--px)); height: calc(7 * var(--px)); background: var(--sea) 0 100% / calc(16 * var(--px)) calc(7 * var(--px)) repeat-x; image-rendering: pixelated; animation: critter-sea 3.2s steps(16) infinite; }
+.critters .sea.front { height: calc(3 * var(--px)); }
+:root[data-theme='dark'] .critters .sea { --sea: url(SEA_DARK_PNG); }
+/* slitta: Babbo Natale e due renne che corrono sulla neve (ferma: è il terreno) */
+.critters .sleigh { --fw: 66; --fh: 21; --cols: 4; --n: 4; --t: .56s; --img: url(SLEIGH_PNG); bottom: calc(3 * var(--px)); }
+.critters .snow { --snow: url(SNOW_PNG); width: 100%; height: calc(6 * var(--px)); background: var(--snow) 0 100% / calc(32 * var(--px)) calc(6 * var(--px)) repeat-x; image-rendering: pixelated; }
+:root[data-theme='dark'] .critters .snow { --snow: url(SNOW_DARK_PNG); }
+.critters.still .sheet, .critters.still .sea { animation: none; }
+@keyframes critter-loop { to { transform: translateX(-100%); } }
+@keyframes critter-loop2 { to { transform: translateX(-100%); } }
+@keyframes critter-once { to { transform: translateX(calc(100% / var(--n) - 100%)); } }
+@keyframes critter-once2 { to { transform: translateX(calc(100% / var(--n) - 100%)); } }
+@keyframes critter-sea { to { transform: translateX(calc(-16 * var(--px))); } }
+@media print { .critters { display: none; } }
