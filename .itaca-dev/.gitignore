@@ -1,0 +1,10 @@
+# File di sistema
+.DS_Store
+Thumbs.db
+
+# Animazioni: generati da critters/gen.py e critters/build.py
+critters/*.png
+critters/sprites.json
+critters/out.css
+critters/out.html
+critters/preview.html

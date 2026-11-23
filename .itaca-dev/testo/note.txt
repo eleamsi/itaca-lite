@@ -1,0 +1,5 @@
+Note della riunione
+
+Questa è una riga di testo molto lunga che dovrebbe andare a capo da sola nella anteprima del file di testo, senza bisogno di scorrere orizzontalmente.
+- punto uno
+- punto due
