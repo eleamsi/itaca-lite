@@ -609,6 +609,8 @@ button:disabled { opacity: .4; cursor: default; }
 .i-copy { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Crect x='8.5' y='8.5' width='12' height='12' rx='2'/%3E%3Cpath d='M15.5 8.5V5.5a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3'/%3E%3C/svg%3E"); }
 .save-folder[aria-pressed='true'] { color: var(--accent-text); }
 .save-folder[aria-pressed='true'] .i-star { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l2.6 5.3 5.9.86-4.25 4.14 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.66l5.9-.86z'/%3E%3C/svg%3E"); }
+.i-tag { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linejoin='round'%3E%3Cpath d='M2.2 2.2h5.4l6.2 6.2-5.4 5.4-6.2-6.2z'/%3E%3Ccircle cx='5.3' cy='5.3' r='1.1' fill='black' stroke='none'/%3E%3C/svg%3E"); }
+.i-check { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.8'/%3E%3C/svg%3E"); }
 .i-hr { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M3.5 12h17'/%3E%3Cpath d='M7 6.5h10M7 17.5h10' stroke-width='1.6' opacity='.45'/%3E%3C/svg%3E"); }
 .breadcrumb .crumb-part { flex: 0 1 auto; min-width: 2.6em; height: 22px; padding: 0 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-radius: 5px; color: inherit; font: inherit; }
 .breadcrumb .crumb-part:hover:not(:disabled) { background: var(--tint); color: var(--ink); }
@@ -721,6 +723,45 @@ button:disabled { opacity: .4; cursor: default; }
 /* Suggerimenti mentre si scrive [[…]], [testo](…) e ![immagine](…) */
 .md-suggest { position: fixed; z-index: 9; display: flex; flex-direction: column; gap: 4px; width: min(360px, calc(100vw - 20px)); padding: 6px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel); box-shadow: var(--floating-shadow); font: 13px/1.4 var(--sans); }
 .md-suggest[hidden] { display: none; }
+/* Tag dei documenti */
+.doc-tags { position: relative; display: flex; align-items: flex-start; gap: 8px; width: 100%; max-width: var(--paper-width); margin-inline: auto; padding: clamp(18px, 3vw, 30px) clamp(22px, 5vw, 72px) 0; background: var(--paper); font: 12.5px/1.3 var(--sans); }
+.doc-tags[hidden] { display: none; }
+.doc-tags:not([hidden]) + .editor { padding-top: 14px; }
+.doc-tags-icon { width: 15px; height: 15px; margin-top: 5px; color: var(--muted); opacity: .8; }
+.tag-editor { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+.tag-list { display: contents; }
+.tag-chip { display: inline-flex; align-items: center; max-width: 100%; min-height: 24px; border-radius: 999px; background: var(--tint); color: var(--accent-text); font-weight: 560; }
+.tag-chip .tag-name { min-width: 0; padding: 3px 10px; overflow: hidden; border-radius: 999px; color: inherit; font: inherit; text-overflow: ellipsis; white-space: nowrap; }
+.tag-chip .tag-name::before { content: '#'; margin-right: 1px; opacity: .5; }
+.tag-chip button.tag-name:hover:not(:disabled) { background-color: color-mix(in srgb, var(--accent) 14%, transparent); }
+.tag-chip .tag-remove { display: grid; place-items: center; width: 20px; height: 20px; margin: 0 2px 0 -7px; padding: 0; border-radius: 50%; color: inherit; opacity: .6; }
+.tag-chip .tag-remove .icon { width: 11px; height: 11px; }
+.tag-chip .tag-remove:hover:not(:disabled) { opacity: 1; background-color: color-mix(in srgb, var(--accent) 18%, transparent); }
+.tag-add { display: inline-flex; align-items: center; gap: 3px; min-height: 24px; padding: 2px 10px 2px 7px; border: 1px dashed var(--line); border-radius: 999px; color: var(--muted); font-size: 12px; }
+.tag-add .icon { width: 13px; height: 13px; }
+.tag-editor.empty .tag-add { opacity: .75; }
+.tag-add:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-text); opacity: 1; }
+.tag-add[hidden], .tag-input[hidden], .tag-note[hidden] { display: none; }
+.tag-input { flex: 1 1 8em; min-width: 8em; max-width: 16em; height: 24px; padding: 0 4px; border: 0; background: none; color: var(--ink); font: inherit; outline: none; }
+.tag-note { flex-basis: 100%; color: var(--warning-text, var(--muted)); font-size: 11.5px; }
+.tag-field .tag-editor { min-height: 38px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); cursor: text; }
+.tag-field .tag-editor:focus-within { border-color: var(--focus); box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 22%, transparent); }
+dialog .tag-field input.tag-input, dialog .tag-field input.tag-input:focus { width: auto; max-width: none; padding: 0 4px; border: 0; background: none; box-shadow: none; }
+dialog label small { color: var(--muted); font-weight: 400; }
+.tag-suggest { z-index: 30; }
+dialog .folder-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 7px 0 0; color: var(--muted); font-size: 12.5px; }
+dialog .folder-hint[hidden] { display: none; }
+dialog .folder-hint > .icon { width: 14px; height: 14px; color: var(--accent-text); }
+dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-text)); }
+.folder-hint-choice { padding: 2px 9px; border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: 999px; color: var(--accent-text); font-weight: 600; font-size: 12.5px; }
+.folder-hint-choice:hover:not(:disabled) { background-color: var(--tint); }
+.folder-hint small { margin-right: 4px; font-size: 11.5px; }
+.result-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 2px; }
+.result-tag { padding: 0 6px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 12%, transparent); color: var(--muted); font-size: 10.5px; font-weight: 500; line-height: 1.6; }
+.result-tag::before { content: '#'; opacity: .6; }
+.result-tag.hit { background: var(--tint); color: var(--accent-text); font-weight: 650; }
+@media print { .doc-tags { display: none !important; } }
+
 .md-suggest .md-suggest-head { display: flex; align-items: center; gap: 6px; padding: 2px 8px 0; color: var(--muted); font-size: 11px; }
 .md-suggest .md-suggest-head kbd { padding: 0 4px; border: 1px solid var(--line); border-radius: 4px; background: var(--canvas); font: 10.5px var(--sans); }
 .md-suggest .md-suggest-head span { flex: 1; }
@@ -2083,6 +2124,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <p id="startDescription"></p>
             <button type="button" class="primary" id="startAction">Scegli cartella</button>
           </section>
+          <div class="doc-tags" id="docTags" role="group" aria-label="Tag del documento" hidden></div>
           <article id="editor" class="editor paper" contenteditable="false" spellcheck="false" role="document" aria-label="Documento Markdown" hidden></article>
           <div class="source-paper paper" id="sourcePaper" hidden>
             <textarea class="source" id="source" spellcheck="false" aria-label="Sorgente Markdown" readonly></textarea>
@@ -9481,6 +9523,7 @@ function showVisual(markdown) {
   if (!ed.innerHTML) ed.innerHTML = '<p><br></p>';
   applyTextDraftAttributes();
   visualSnapshot = { markdown, canonical: serializeVisualMarkdown() };
+  renderDocTags();
   loadImages();
   loadPdfEmbeds();
   queueFindRefresh();
@@ -10044,24 +10087,84 @@ async function newDoc(folder) {
   const rootLabel = (root?.name || importedFolderName || 'Cartella di lavoro') + ' (principale)';
   const options = folders.map(item => '<option value="' + escapeHtml(item) + '"' + (item === folder ? ' selected' : '') + '>' +
     escapeHtml(item ? item.replaceAll('/', ' › ') : rootLabel) + '</option>').join('');
-  const body = (folders.length > 1 ? '<label>Cartella</label><select name="folder">' + options + '</select>' : '<input type="hidden" name="folder" value="">') +
-    '<label>Nome del documento</label><input name="name" required autocomplete="off" value="' + escapeHtml(freeDocumentName(folder)) + '">' +
-    '<p>Per creare anche una sottocartella scrivi Sottocartella/Nome.</p>';
+  const body = '<label>Nome del documento</label><input name="name" required autocomplete="off" value="' + escapeHtml(freeDocumentName(folder)) + '">' +
+    '<p>Per creare anche una sottocartella scrivi Sottocartella/Nome.</p>' +
+    '<label id="newDocTagsLabel">Tag <small>facoltativi</small></label><div class="tag-field" data-tag-field></div><input type="hidden" name="tags" value="[]">' +
+    (folders.length > 1 ? '<label>Cartella</label><select name="folder">' + options + '</select><p class="folder-hint" hidden></p>' : '<input type="hidden" name="folder" value="">');
   const pending = modal('Nuovo documento', body, 'Crea');
+  const form = $('dialogForm');
   const name = $('dialogBody').querySelector('[name=name]');
   const select = $('dialogBody').querySelector('select[name=folder]');
+  const hint = $('dialogBody').querySelector('.folder-hint');
+  const tagsValue = $('dialogBody').querySelector('[name=tags]');
   let suggested = name.value;
   // Cambiando cartella si aggiorna il nome proposto, se non è stato modificato.
   select?.addEventListener('change', () => {
-    if (name.value !== suggested) return;
-    suggested = name.value = freeDocumentName(select.value);
+    if (name.value === suggested) suggested = name.value = freeDocumentName(select.value);
+    updateFolderHint();
   });
+  // Tag: in base a quelli scritti si suggerisce la cartella che ne contiene di più.
+  const tagEditor = createTagEditor({ tags: [], alwaysOpen: true, placeholder: 'Scrivi un tag e premi Invio…', onChange: tags => {
+    tagsValue.value = JSON.stringify(tags);
+    updateFolderHint();
+  } });
+  tagEditor.input.setAttribute('aria-labelledby', 'newDocTagsLabel');
+  $('dialogBody').querySelector('[data-tag-field]').append(tagEditor.element);
+  function updateFolderHint() {
+    if (!hint) return;
+    const tags = tagEditor.tags;
+    const ranked = tags.length ? suggestFoldersForTags(tags) : [];
+    hint.replaceChildren();
+    hint.hidden = !ranked.length;
+    if (!ranked.length) {
+      if (tags.length && tagIndex().pending) {
+        hint.hidden = false;
+        hint.textContent = 'Cerco le cartelle con questi tag…';
+      }
+      return;
+    }
+    const folderLabel = item => item.folder ? item.folder.replaceAll('/', ' › ') : rootLabel;
+    if (ranked[0].folder === select.value) {
+      hint.classList.add('chosen');
+      hint.append(icon('check'), 'Cartella adatta: ' + folderHintText(ranked[0]) + '.');
+      const other = ranked[1];
+      if (!other) return;
+      hint.append(' Anche ');
+    } else {
+      hint.classList.remove('chosen');
+      hint.append(icon('tag'), 'Suggerita: ');
+    }
+    for (const item of ranked.filter(item => item.folder !== select.value).slice(0, ranked[0].folder === select.value ? 1 : 2)) {
+      const choose = document.createElement('button');
+      choose.type = 'button';
+      choose.className = 'folder-hint-choice';
+      choose.textContent = folderLabel(item);
+      choose.title = folderHintText(item) + ' · clic per sceglierla';
+      choose.onclick = () => {
+        select.value = item.folder;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      };
+      const why = document.createElement('small');
+      why.textContent = folderHintText(item);
+      hint.append(choose, why);
+    }
+  }
+  const listener = () => updateFolderHint();
+  tagIndexListeners.add(listener);
+  const commitTags = () => tagEditor.commit();
+  form.addEventListener('submit', commitTags);
   name.focus();
   name.select();
   const answer = await pending;
+  form.removeEventListener('submit', commitTags);
+  tagIndexListeners.delete(listener);
+  tagEditor.destroy();
+  closeTagSuggest();
   if (!answer) return;
   const typed = answer.name.trim().replace(/\\/g, '/').replace(/^\/+/, '');
-  await createDocument((answer.folder ? answer.folder + '/' : '') + typed);
+  let tags = [];
+  try { tags = JSON.parse(answer.tags || '[]'); } catch {}
+  await createDocument((answer.folder ? answer.folder + '/' : '') + typed, tags);
 }
 
 function freeFolderName(folder, base = 'Nuova cartella') {
@@ -10151,7 +10254,7 @@ async function createFolder(path) {
 }
 
 // Crea il documento e lo apre. Restituisce true se è stato creato.
-async function createDocument(path) {
+async function createDocument(path, tags = []) {
   if (fileActionBusy || documentOpening || folderOpening || loading) return false;
   path = path.trim().replace(/\\/g, '/');
   if (!isMD(path)) path += '.md';
@@ -10167,7 +10270,7 @@ async function createDocument(path) {
   const newTab = multiDocs() && docTabs.length > 0 && Boolean(root);
   if (!newTab && !await guard()) return false;
   const name = path.split('/').pop();
-  const text = '# ' + name.replace(/\.(md|markdown)$/i, '') + '\n\n';
+  const text = frontWithTags('', uniqueTags(tags)) + '# ' + name.replace(/\.(md|markdown)$/i, '') + '\n\n';
   try {
     if (!await allowFolderWrite(root)) return false;
     search.value = '';
@@ -13776,7 +13879,7 @@ function indexMarkdown(markdown) {
     headings.push([at, title]);
     from = at + 1;
   }
-  return { text, folded, headings };
+  return { text, folded, headings, tags: tagsFromFront(metadata) };
 }
 
 let searchImage = null;
@@ -13931,6 +14034,7 @@ function pumpSearchIndex(index) {
       } finally {
         index.active--;
         if (index === searchIndex) {
+          tagIndexChanged();
           queueSearchRender();
           pumpSearchIndex(index);
         }
@@ -13978,7 +14082,7 @@ function getSearchContent(path) {
   return searchIndex.entries.get(path)?.content;
 }
 
-function searchMatches(docs, terms, phrase = '') {
+function searchMatches(docs, terms, phrase = '', tagFilter = null) {
   const index = searchIndex;
   index.queue = docs.filter(path => {
     const handle = files.get(path);
@@ -13995,6 +14099,7 @@ function searchMatches(docs, terms, phrase = '') {
     const content = getSearchContent(path);
     if (hasWorkspaceFolder() && content === undefined) pending++;
     if (content === null) unreadable++;
+    if (tagFilter && !documentHasTags(content, tagFilter)) continue;
     const key = foldSearch(path);
     const name = key.split('/').pop().replace(/\.(md|markdown)$/, '');
     let score = name === terms.join(' ') ? 30 : 0;
@@ -14024,14 +14129,14 @@ function searchMatches(docs, terms, phrase = '') {
       if (phraseAt !== -1) {
         first = phraseAt;
         const count = searchHits(content.folded, [phrase], 1000).length;
-        matches.push({ path, score: score + Math.min(count, 20) / 40, first, content, count, terms: [phrase], phrase: true });
+        matches.push({ path, score: score + Math.min(count, 20) / 40, first, content, count, terms: [phrase], phrase: true, tagFilter });
         continue;
       }
     }
     const count = inText.length ? searchHits(content.folded, inText, 1000).length : 0;
     // A parità di nome, prima i documenti con più occorrenze.
     score += Math.min(count, 20) / 40;
-    matches.push({ path, score, first, content, count, terms: phrase && key.includes(phrase) ? [phrase, ...terms] : terms });
+    matches.push({ path, score, first, content, count, terms: phrase && key.includes(phrase) ? [phrase, ...terms] : terms, tagFilter });
   }
   matches.sort((a, b) => b.score - a.score);
   return { matches, pending, unreadable };
@@ -14111,6 +14216,7 @@ function searchResultLabel(label, path, match, terms) {
     if (end < folded.length) snippet.append('…');
     label.append(snippet);
   }
+  searchResultTags(label, match);
 }
 
 // Con una ricerca attiva, cambiare documento (frecce, cronologia) non cambia i
@@ -14134,6 +14240,596 @@ function markTreeCurrent() {
   }
 }
 
+// ── Tag dei documenti ────────────────────────────────────────────────────────
+// I tag stanno nell'intestazione YAML del documento (tags:), come li usa il plugin
+// dei tag di Material per MkDocs: viaggiano con il file, si vedono in git e nel sito.
+// Itaca li mostra come etichette sopra il documento, li cerca con #tag e li usa per
+// suggerire la cartella di un nuovo documento. Il confronto ignora maiuscole e accenti.
+const tagAdviceLimit = 5;
+function yamlUnquote(value) {
+  value = value.trim();
+  if (/^"(?:[^"\\]|\\.)*"$/.test(value)) {
+    try { return JSON.parse(value); } catch { return value.slice(1, -1); }
+  }
+  if (/^'.*'$/.test(value)) return value.slice(1, -1).replace(/''/g, "'");
+  return value.replace(/\s+#.*$/, '').trim();
+}
+function yamlFlowItems(value) {
+  const items = [];
+  let item = '', quote = '';
+  for (const char of value) {
+    if (quote) {
+      item += char;
+      if (char === quote) quote = '';
+    } else if (char === '"' || char === "'") {
+      quote = char;
+      item += char;
+    } else if (char === ',') {
+      items.push(item);
+      item = '';
+    } else item += char;
+  }
+  items.push(item);
+  return items.map(yamlUnquote);
+}
+function yamlQuote(tag) {
+  const plain = /^[\p{L}\p{N}_][\p{L}\p{N}_ .\/+-]*$/u.test(tag) && !/\s$/.test(tag) &&
+    !/^(?:true|false|yes|no|on|off|null|~|[-+]?\d[\d_.e+-]*)$/i.test(tag);
+  return plain ? tag : JSON.stringify(tag);
+}
+function cleanTag(tag) {
+  return String(tag ?? '').replace(/\s+/g, ' ').trim().replace(/^#+\s*/, '').slice(0, 60);
+}
+function uniqueTags(list) {
+  const seen = new Set(), tags = [];
+  for (const item of list) {
+    const tag = cleanTag(item), key = foldSearch(tag);
+    if (!tag || seen.has(key)) continue;
+    seen.add(key);
+    tags.push(tag);
+  }
+  return tags;
+}
+function sameTags(a, b) {
+  return a.length === b.length && a.every((tag, i) => foldSearch(tag) === foldSearch(b[i]));
+}
+// Righe della chiave tags: nell'intestazione (lines = righe con i --- compresi).
+function frontTagLines(lines) {
+  for (let i = 1; i < lines.length - 1; i++) {
+    const match = /^tags[ \t]*:(.*)$/.exec(lines[i]);
+    if (!match) continue;
+    let value = match[1].trim(), end = i + 1;
+    let tags = [];
+    if (value.startsWith('[')) {
+      while (!value.includes(']') && end < lines.length - 1) value += ' ' + lines[end++].trim();
+      tags = yamlFlowItems(value.slice(1, value.includes(']') ? value.lastIndexOf(']') : undefined));
+    } else if (value && !value.startsWith('#')) {
+      tags = yamlFlowItems(value);
+    } else {
+      while (end < lines.length - 1) {
+        const item = /^[ \t]*-[ \t]*(.*)$/.exec(lines[end]);
+        if (item) tags.push(yamlUnquote(item[1]));
+        else if (lines[end].trim() && !/^[ \t]+#/.test(lines[end])) break;
+        end++;
+      }
+      // Le righe vuote in fondo restano all'intestazione.
+      while (end > i + 1 && !lines[end - 1].trim()) end--;
+    }
+    return { from: i, to: end, tags: uniqueTags(tags) };
+  }
+  return null;
+}
+function frontLines(metadata) {
+  return metadata.replace(/\r?\n$/, '').split(/\r?\n/);
+}
+function tagsFromFront(metadata) {
+  return metadata ? frontTagLines(frontLines(metadata))?.tags || [] : [];
+}
+function frontWithTags(metadata, tags) {
+  const eol = /\r\n/.test(metadata) ? '\r\n' : '\n';
+  const block = tags.length ? ['tags:', ...tags.map(tag => '  - ' + yamlQuote(tag))] : [];
+  if (!metadata) return block.length ? ['---', ...block, '---'].join(eol) + eol : '';
+  const lines = frontLines(metadata);
+  const found = frontTagLines(lines);
+  if (found) lines.splice(found.from, found.to - found.from, ...block);
+  else lines.splice(lines.length - 1, 0, ...block);
+  // Intestazione rimasta vuota: non serve più.
+  if (lines.slice(1, -1).every(line => !line.trim())) return '';
+  return lines.join(eol) + eol;
+}
+
+// Tutti i tag della cartella, dall'indice della ricerca (che legge già ogni documento).
+var tagIndexCache = null;
+var tagIndexListeners = new Set();
+function tagIndex() {
+  const key = searchIndexRevision + ':' + editRevision + ':' + version + ':' + current + ':' + files.size;
+  if (tagIndexCache?.key === key) return tagIndexCache;
+  const tags = new Map();
+  let pending = 0, tagged = 0;
+  const paths = [...files.keys()].filter(isMD);
+  if (current && isMD(current) && !files.has(current)) paths.push(current);
+  for (const path of paths) {
+    const content = getSearchContent(path);
+    if (content === undefined) {
+      pending++;
+      continue;
+    }
+    if (content?.tags?.length) tagged++;
+    for (const tag of content?.tags || []) {
+      const fold = foldSearch(tag);
+      if (!tags.has(fold)) tags.set(fold, { fold, spellings: new Map(), paths: new Set() });
+      const entry = tags.get(fold);
+      entry.paths.add(path);
+      entry.spellings.set(tag, (entry.spellings.get(tag) || 0) + 1);
+    }
+  }
+  for (const entry of tags.values()) entry.name = [...entry.spellings].sort((a, b) => b[1] - a[1])[0][0];
+  tagIndexCache = { key, tags, pending, tagged };
+  return tagIndexCache;
+}
+function tagName(fold) {
+  return tagIndex().tags.get(fold)?.name || fold;
+}
+// Mette in coda i documenti non ancora letti (come fa la ricerca).
+function queueTagIndex() {
+  if (!hasWorkspaceFolder()) return;
+  const index = searchIndex;
+  const waiting = [...files.keys()].filter(path => isMD(path) && !index.entries.has(path));
+  if (!waiting.length) return;
+  index.queue = [...new Set([...index.queue, ...waiting.reverse()])];
+  pumpSearchIndex(index);
+}
+var tagIndexNotice = 0;
+function tagIndexChanged() {
+  if (!tagIndexListeners.size || tagIndexNotice) return;
+  tagIndexNotice = setTimeout(() => {
+    tagIndexNotice = 0;
+    for (const listener of tagIndexListeners) listener();
+  }, 120);
+}
+// Tag che corrispondono a quello che si sta scrivendo: prima quelli che iniziano così, poi gli altri.
+function tagMatches(query, exclude = []) {
+  const wanted = foldSearch(cleanTag(query));
+  const skip = new Set(exclude.map(foldSearch));
+  const found = [];
+  for (const entry of tagIndex().tags.values()) {
+    if (skip.has(entry.fold)) continue;
+    const at = wanted ? entry.fold.indexOf(wanted) : 0;
+    if (at < 0) continue;
+    found.push({ entry, rank: entry.fold === wanted ? 0 : at === 0 ? 1 : 2 });
+  }
+  return found.sort((a, b) => a.rank - b.rank || b.entry.paths.size - a.entry.paths.size || a.entry.name.localeCompare(b.entry.name, 'it'))
+    .map(item => item.entry);
+}
+function documentCount(count) {
+  return count === 1 ? '1 documento' : count + ' documenti';
+}
+
+// ── Suggerimenti dei tag (un solo riquadro per etichette, Nuovo documento e ricerca) ──
+const tagSuggest = document.createElement('div');
+tagSuggest.className = 'md-suggest tag-suggest';
+tagSuggest.hidden = true;
+tagSuggest.innerHTML = '<div class="md-suggest-head"><span>Tag</span><kbd>↑↓</kbd><kbd>↵</kbd><kbd>Esc</kbd></div><ul class="link-suggestions" role="listbox" aria-label="Tag suggeriti"></ul>';
+document.body.append(tagSuggest);
+const tagSuggestList = tagSuggest.querySelector('ul');
+var tagSuggestState = null;
+function closeTagSuggest() {
+  tagSuggest.hidden = true;
+  tagSuggestState?.input.removeAttribute('aria-activedescendant');
+  tagSuggestState = null;
+}
+// items: [{ label, query, count, create, value }]
+// lazy: 'enter' = Invio sceglie solo dopo le frecce (Tab sì); 'all' = né Invio né Tab senza le frecce.
+function showTagSuggest(input, items, choose, title = 'Tag', lazy = '') {
+  if (!items.length) {
+    closeTagSuggest();
+    return;
+  }
+  const holder = input.closest('dialog[open]') || document.body;
+  if (tagSuggest.parentElement !== holder) holder.append(tagSuggest);
+  const previous = tagSuggestState?.input === input ? tagSuggestState.items[tagSuggestState.active]?.value : null;
+  let active = Math.max(0, items.findIndex(item => item.value === previous));
+  tagSuggestState = { input, items, choose, active, lazy, navigated: false };
+  tagSuggest.querySelector('.md-suggest-head span').textContent = title;
+  tagSuggestList.replaceChildren(...items.map((item, i) => {
+    const row = document.createElement('li');
+    row.className = 'link-suggestion' + (item.create ? ' create' : '');
+    row.id = 'tag-suggestion-' + i;
+    row.setAttribute('role', 'option');
+    row.append(icon(item.create ? 'plus' : 'tag'));
+    const name = document.createElement('span');
+    name.className = 'link-suggestion-name';
+    if (item.create) name.textContent = 'Nuovo tag «' + item.label + '»';
+    else highlightSearch(name, item.label, item.query ? [foldSearch(item.query)] : []);
+    row.append(name);
+    if (item.count) {
+      const small = document.createElement('small');
+      small.textContent = documentCount(item.count);
+      row.append(small);
+    }
+    row.addEventListener('mousedown', event => event.preventDefault());
+    row.addEventListener('click', () => {
+      closeTagSuggest();
+      choose(item);
+    });
+    return row;
+  }));
+  markTagSuggestion();
+  tagSuggest.hidden = false;
+  const box = input.getBoundingClientRect();
+  const width = Math.min(320, innerWidth - 20);
+  tagSuggest.style.width = width + 'px';
+  tagSuggest.style.left = Math.max(10, Math.min(box.left, innerWidth - width - 10)) + 'px';
+  const below = box.bottom + 6, height = tagSuggest.offsetHeight;
+  tagSuggest.style.top = (below + height > innerHeight - 10 && box.top - height - 6 > 10 ? box.top - height - 6 : below) + 'px';
+}
+function markTagSuggestion() {
+  const state = tagSuggestState;
+  [...tagSuggestList.children].forEach((row, i) => row.setAttribute('aria-selected', i === state.active));
+  const row = tagSuggestList.children[state.active];
+  if (row) {
+    state.input.setAttribute('aria-activedescendant', row.id);
+    scrollWithin(tagSuggestList, row);
+  }
+}
+// Tasti dei suggerimenti: true se l'evento è stato usato.
+function tagSuggestKey(event) {
+  const state = tagSuggestState;
+  if (!state || tagSuggest.hidden || state.input !== event.target) return false;
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    state.active = (state.active + (event.key === 'ArrowDown' ? 1 : -1) + state.items.length) % state.items.length;
+    state.navigated = true;
+    markTagSuggestion();
+  } else if ((event.key === 'Enter' || event.key === 'Tab') && !state.navigated &&
+      (state.lazy === 'all' || state.lazy === 'enter' && event.key === 'Enter')) {
+    closeTagSuggest();
+    return false;
+  } else if (event.key === 'Enter' || event.key === 'Tab') {
+    const item = state.items[state.active];
+    closeTagSuggest();
+    state.choose(item);
+  } else if (event.key === 'Escape') {
+    closeTagSuggest();
+  } else return false;
+  event.preventDefault();
+  event.stopPropagation();
+  return true;
+}
+addEventListener('resize', closeTagSuggest);
+document.addEventListener('scroll', event => {
+  if (tagSuggestState && !tagSuggest.contains(event.target)) closeTagSuggest();
+}, true);
+
+// ── Campo dei tag: etichette + casella per aggiungerne ─────────────────────
+// options: { tags, editable, alwaysOpen, onChange(tags), onPick(tag), placeholder }
+function createTagEditor(options) {
+  const element = document.createElement('div');
+  element.className = 'tag-editor';
+  const list = document.createElement('span');
+  list.className = 'tag-list';
+  const input = document.createElement('input');
+  input.className = 'tag-input';
+  input.type = 'text';
+  input.autocomplete = 'off';
+  input.spellcheck = false;
+  input.placeholder = options.placeholder || 'Aggiungi tag…';
+  input.setAttribute('aria-label', 'Aggiungi un tag');
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-autocomplete', 'list');
+  input.setAttribute('aria-expanded', 'false');
+  const add = document.createElement('button');
+  add.type = 'button';
+  add.className = 'tag-add';
+  add.append(icon('plus'), 'Tag');
+  add.title = 'Aggiungi un tag al documento';
+  const note = document.createElement('span');
+  note.className = 'tag-note';
+  note.textContent = 'Meglio pochi tag: ' + tagAdviceLimit + ' bastano quasi sempre';
+  element.append(list, input, add, note);
+  let tags = uniqueTags(options.tags || []);
+  let editable = options.editable !== false;
+  let open = Boolean(options.alwaysOpen);
+
+  function render() {
+    list.replaceChildren(...tags.map(tag => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      const name = document.createElement(options.onPick ? 'button' : 'span');
+      name.className = 'tag-name';
+      name.textContent = tag;
+      if (options.onPick) {
+        name.type = 'button';
+        name.title = 'Cerca i documenti con #' + tag;
+        name.onclick = () => options.onPick(tag);
+      }
+      chip.append(name);
+      if (editable) {
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'tag-remove';
+        remove.title = 'Togli il tag ' + tag;
+        remove.setAttribute('aria-label', remove.title);
+        remove.append(icon('close'));
+        remove.onclick = () => {
+          setTags(tags.filter(item => item !== tag), true);
+          if (open) input.focus();
+        };
+        chip.append(remove);
+      }
+      return chip;
+    }));
+    input.hidden = !editable || !open;
+    add.hidden = !editable || open;
+    note.hidden = !editable || tags.length <= tagAdviceLimit;
+    element.classList.toggle('empty', !tags.length);
+  }
+  function setTags(next, changed = false) {
+    next = uniqueTags(next);
+    const different = !sameTags(next, tags) || next.some((tag, i) => tag !== tags[i]);
+    tags = next;
+    render();
+    if (changed && different) options.onChange?.(tags);
+  }
+  function addTag(tag) {
+    tag = cleanTag(tag);
+    input.value = '';
+    closeTagSuggest();
+    if (!tag) return;
+    if (tags.some(item => foldSearch(item) === foldSearch(tag))) {
+      toast('Il tag «' + tag + '» c’è già');
+      return;
+    }
+    setTags([...tags, tag], true);
+  }
+  function suggest() {
+    const typed = cleanTag(input.value);
+    const found = tagMatches(typed, tags).slice(0, 8);
+    const items = found.map(entry => ({ label: entry.name, value: entry.name, query: typed, count: entry.paths.size }));
+    if (typed && !found.some(entry => entry.fold === foldSearch(typed))) items.push({ label: typed, value: typed, create: true });
+    // Senza testo: i tag più usati, ma solo se ce ne sono.
+    showTagSuggest(input, items, item => {
+      addTag(item.value);
+      input.focus();
+    }, typed ? 'Tag' : 'Tag più usati', typed ? '' : 'all');
+    input.setAttribute('aria-expanded', !tagSuggest.hidden);
+  }
+  function commit() {
+    if (cleanTag(input.value)) addTag(input.value);
+  }
+  function close() {
+    commit();
+    closeTagSuggest();
+    if (options.alwaysOpen) return;
+    open = false;
+    render();
+  }
+  add.onclick = () => {
+    open = true;
+    render();
+    input.focus();
+  };
+  input.addEventListener('focus', () => {
+    queueTagIndex();
+    suggest();
+  });
+  input.addEventListener('input', () => {
+    // Virgola o punto e virgola separano i tag (anche incollando un elenco).
+    if (/[,;]/.test(input.value)) {
+      const parts = input.value.split(/[,;]/);
+      const rest = parts.pop();
+      setTags([...tags, ...parts.filter(part => cleanTag(part))], true);
+      input.value = rest.trimStart();
+    }
+    suggest();
+  });
+  input.addEventListener('keydown', event => {
+    if (event.isComposing) return;
+    // Senza testo Invio non sceglie tra i «più usati»: conferma la finestra (o chiude la casella).
+    if (tagSuggestKey(event) || event.key === 'Tab') return;
+    if (event.key === 'Enter' && cleanTag(input.value)) {
+      event.preventDefault();
+      addTag(input.value);
+    } else if (event.key === 'Backspace' && !input.value && tags.length) {
+      event.preventDefault();
+      setTags(tags.slice(0, -1), true);
+      suggest();
+    } else if (event.key === 'Escape' && !options.alwaysOpen) {
+      event.preventDefault();
+      event.stopPropagation();
+      input.value = '';
+      close();
+      add.focus();
+    } else if (event.key === 'Enter' && !options.alwaysOpen) {
+      event.preventDefault();
+      close();
+      add.focus();
+    }
+  });
+  input.addEventListener('blur', () => {
+    setTimeout(() => {
+      if (document.activeElement === input) return;
+      if (tagSuggestState?.input === input) closeTagSuggest();
+      input.setAttribute('aria-expanded', 'false');
+      close();
+    });
+  });
+  const listener = () => {
+    if (tagSuggestState?.input === input && document.activeElement === input) suggest();
+  };
+  tagIndexListeners.add(listener);
+  render();
+  return {
+    element, input,
+    get tags() { return tags; },
+    setTags: next => setTags(next),
+    setEditable(value) {
+      if (editable === value) return;
+      editable = value;
+      if (!editable) open = Boolean(options.alwaysOpen);
+      render();
+    },
+    commit,
+    destroy() { tagIndexListeners.delete(listener); },
+  };
+}
+
+// ── Etichette sopra il documento ───────────────────────────────────────────
+var docTagEditor = null;
+function documentTagsEditable() {
+  return Boolean(current) && editingEnabled && !sourceMode && !loading;
+}
+function renderDocTags() {
+  const bar = $('docTags');
+  if (!bar) return;
+  const tags = current && !sourceMode ? tagsFromFront(front) : [];
+  const editable = documentTagsEditable();
+  if (!docTagEditor) {
+    docTagEditor = createTagEditor({ tags, editable, onChange: setDocumentTags, onPick: searchTag });
+    const label = document.createElement('i');
+    label.className = 'icon i-tag doc-tags-icon';
+    label.setAttribute('aria-hidden', 'true');
+    bar.append(label, docTagEditor.element);
+  }
+  // Mentre si scrive un tag non si ridisegna (si perderebbe il testo).
+  if (!bar.contains(document.activeElement) || !sameTags(docTagEditor.tags, tags)) docTagEditor.setTags(tags);
+  docTagEditor.setEditable(editable);
+  bar.hidden = !current || sourceMode || (!tags.length && !editable);
+  bar.classList.toggle('editable', editable);
+}
+function setDocumentTags(tags) {
+  if (!documentTagsEditable()) return;
+  const saved = frontSplit(original)[0];
+  const next = frontWithTags(front, tags);
+  // Tornati ai tag del file salvato: si rimette l'intestazione com'era, byte per byte.
+  front = sameTags(tags, tagsFromFront(saved)) && next === frontWithTags(saved, tags) ? saved : next;
+  mark(true);
+  renderDocTags();
+}
+function searchTagQuery(tag) {
+  return '#' + (/\s|"/.test(tag) ? '"' + tag.replace(/"/g, '') + '"' : tag);
+}
+function searchTag(tag) {
+  search.value = searchTagQuery(tag);
+  if (sidebar.hidden) setSidebar(true);
+  search.dispatchEvent(new Event('input'));
+  search.focus();
+  search.setSelectionRange(search.value.length, search.value.length);
+}
+
+// ── Ricerca: #tag ──────────────────────────────────────────────────────────
+// «#stampanti #procedure toner» = documenti con entrambi i tag che contengono «toner».
+// I tag con spazi si scrivono tra virgolette: #"stampanti laser".
+function searchQueryParts(query) {
+  const tags = [];
+  const text = query.replace(/(^|\s)#(?:"([^"]*)"?|([^\s"]*))/g, (all, space, quoted, plain) => {
+    const tag = cleanTag(quoted ?? plain ?? '');
+    if (tag) tags.push(foldSearch(tag));
+    return space;
+  });
+  return { text, tags: [...new Set(tags)] };
+}
+// Un tag cercato vale esattamente se esiste; altrimenti (mentre lo si scrive) vale come inizio.
+function searchTagFilter(tags) {
+  if (!tags.length) return null;
+  const known = tagIndex().tags;
+  return tags.map(tag => ({ tag, exact: known.has(tag) }));
+}
+function documentHasTags(content, filter) {
+  const own = (content?.tags || []).map(foldSearch);
+  return filter.every(({ tag, exact }) => own.some(item => exact ? item === tag : item.startsWith(tag)));
+}
+function searchTagContext() {
+  const caret = search.selectionStart;
+  if (caret !== search.selectionEnd) return null;
+  const before = search.value.slice(0, caret);
+  const match = /(^|\s)#("?)([^\s"]*)$/.exec(before) || /(^|\s)#(")([^"]*)$/.exec(before);
+  if (!match) return null;
+  return { start: match.index + match[1].length, end: caret, query: match[3] };
+}
+function updateSearchTagSuggest() {
+  const context = document.activeElement === search ? searchTagContext() : null;
+  if (!context) {
+    if (tagSuggestState?.input === search) closeTagSuggest();
+    return;
+  }
+  queueTagIndex();
+  const already = searchQueryParts(search.value.slice(0, context.start) + search.value.slice(context.end)).tags;
+  const items = tagMatches(context.query, already.map(tagName)).slice(0, 8)
+    .map(entry => ({ label: entry.name, value: entry.name, query: context.query, count: entry.paths.size }));
+  if (!items.length && !tagIndex().tags.size && !tagIndex().pending) {
+    showTagSuggest(search, [{ label: 'Nessun documento ha ancora dei tag', value: '', count: 0 }], () => {}, 'Tag');
+    return;
+  }
+  showTagSuggest(search, items, item => {
+    if (!item.value) return;
+    const value = search.value;
+    const after = value.slice(context.end).replace(/^[^\s]*/, '');
+    const insert = searchTagQuery(item.value) + ' ';
+    search.value = value.slice(0, context.start) + insert + after.replace(/^\s+/, '');
+    const caret = context.start + insert.length;
+    search.setSelectionRange(caret, caret);
+    search.dispatchEvent(new Event('input'));
+    search.focus();
+  }, context.query ? 'Tag' : 'Cerca per tag', 'enter');
+}
+tagIndexListeners.add(() => {
+  if (tagSuggestState?.input === search && document.activeElement === search) updateSearchTagSuggest();
+});
+search.addEventListener('input', updateSearchTagSuggest);
+search.addEventListener('click', updateSearchTagSuggest);
+search.addEventListener('keydown', event => {
+  if (!event.isComposing) tagSuggestKey(event);
+}, true);
+search.addEventListener('keyup', event => {
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'Home' || event.key === 'End') updateSearchTagSuggest();
+});
+search.addEventListener('blur', () => setTimeout(() => {
+  if (document.activeElement !== search && tagSuggestState?.input === search) closeTagSuggest();
+}));
+// Le etichette dei risultati: tutti i tag del documento, evidenziati quelli cercati.
+function searchResultTags(label, match) {
+  const tags = match.content?.tags || [];
+  if (!match.tagFilter || !tags.length) return;
+  const row = document.createElement('span');
+  row.className = 'result-tags';
+  for (const tag of tags) {
+    const chip = document.createElement('span');
+    chip.className = 'result-tag';
+    const fold = foldSearch(tag);
+    if (match.tagFilter.some(({ tag: wanted, exact }) => exact ? fold === wanted : fold.startsWith(wanted))) chip.classList.add('hit');
+    chip.textContent = tag;
+    row.append(chip);
+  }
+  label.append(row);
+}
+
+// ── Cartella suggerita per un nuovo documento ──────────────────────────────
+// Ogni documento con tag in comune vota per la sua cartella; i tag rari contano
+// di più di quelli usati ovunque.
+function suggestFoldersForTags(tags) {
+  const index = tagIndex();
+  const total = Math.max(1, index.tagged);
+  const scores = new Map();
+  for (const tag of uniqueTags(tags)) {
+    const entry = index.tags.get(foldSearch(tag));
+    if (!entry) continue;
+    const weight = Math.log(1 + total / entry.paths.size);
+    for (const path of entry.paths) {
+      if (!files.has(path)) continue;
+      const folder = parent(path);
+      if (!scores.has(folder)) scores.set(folder, { folder, score: 0, docs: new Set(), tags: new Set() });
+      const item = scores.get(folder);
+      item.score += weight;
+      item.docs.add(path);
+      item.tags.add(entry.name);
+    }
+  }
+  return [...scores.values()].sort((a, b) => b.score - a.score || b.docs.size - a.docs.size || a.folder.localeCompare(b.folder, 'it'));
+}
+function folderHintText(item) {
+  return documentCount(item.docs.size) + ' con ' + [...item.tags].map(tag => '#' + tag).join(' ');
+}
+
 function renderTree() {
   noteGraphFiles();
   // Le cartelle si creano solo sul disco (non nelle cartelle importate, che sono una copia).
@@ -14141,9 +14837,11 @@ function renderTree() {
   const tree = $('tree');
   const query = search.value;
   const queryRevision = searchQueryRevision;
-  const terms = searchTerms(query);
-  const phrase = searchPhrase(query);
-  const searching = terms.length > 0;
+  const queryParts = searchQueryParts(query);
+  const terms = searchTerms(queryParts.text);
+  const phrase = searchPhrase(queryParts.text);
+  const tagFilter = searchTagFilter(queryParts.tags);
+  const searching = terms.length > 0 || Boolean(tagFilter);
   const renderKey = searching ? searchRenderKey(query) : null;
   if (searching && !resetSearchScroll && sameSearchRender(renderKey, lastSearchRender) && tree.querySelector('.search-result')) {
     markTreeCurrent();
@@ -14248,7 +14946,7 @@ function renderTree() {
   searchStatus.hidden = !searching;
   let emptyMessage = hasWorkspaceFolder() ? 'La cartella è vuota.' : '';
   if (searching) {
-    const { matches, pending, unreadable } = searchMatches(docs, terms, phrase);
+    const { matches, pending, unreadable } = searchMatches(docs, terms, phrase, tagFilter);
     for (const match of matches.slice(0, searchLimit)) add(match.path, 0, false, match);
     if (matches.length > searchLimit) {
       const more = document.createElement('button');
@@ -14267,11 +14965,12 @@ function renderTree() {
     let status = total === 1 ? '1 risultato' : total + ' risultati';
     const exact = phrase ? matches.filter(match => match.phrase).length : 0;
     if (phrase && total) status += exact === total ? ' con la frase intera' : exact ? ' · ' + exact + ' con la frase intera' : ' · nessuno con la frase intera';
+    if (tagFilter) status += ' con ' + tagFilter.map(({ tag, exact }) => '#' + (exact ? tagName(tag) : tag + '…')).join(' ');
     if (pending) status += ' · Lettura di ' + pending + ' file…';
     if (folderAccessPending) status += ' · Apri la cartella per cercare nel testo';
     if (unreadable) status += ' · ' + unreadable + (unreadable === 1 ? ' file illeggibile' : ' file illeggibili');
     if (searchStatus.textContent !== status) searchStatus.textContent = status;
-    emptyMessage = pending ? 'Ricerca nel testo in corso…' : total ? '' : 'Nessun documento corrispondente.';
+    emptyMessage = pending ? 'Ricerca nel testo in corso…' : total ? '' : tagFilter && !terms.length ? 'Nessun documento con questo tag.' : 'Nessun documento corrispondente.';
   } else {
     const folders = new Set([...folderHandles.keys()].filter(Boolean));
     const children = new Map();
@@ -14732,6 +15431,7 @@ function renderMode() {
   syncEditLock();
   updateFormatButtons();
   renderExtendedControls();
+  renderDocTags();
 }
 
 function renderWorkStart() {
