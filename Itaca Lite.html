@@ -761,6 +761,28 @@ dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-tex
 .result-tag::before { content: '#'; opacity: .6; }
 .result-tag.hit { background: var(--tint); color: var(--accent-text); font-weight: 650; }
 @media print { .doc-tags { display: none !important; } }
+.similar-docs { padding: 4px clamp(22px, 5vw, 72px) 72px; font: 13px/1.4 var(--sans); }
+.similar-docs[hidden] { display: none; }
+.editor.has-similar { min-height: 0; padding-bottom: 40px; }
+.similar-docs h2 { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink); font-size: 13px; font-weight: 650; }
+.similar-docs h2 .icon { width: 15px; height: 15px; color: var(--accent-text); }
+.similar-docs h2 small { margin-left: auto; color: var(--muted); font-size: 11.5px; font-weight: 400; }
+.similar-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.similar-item { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2px 8px; width: 100%; height: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; text-align: left; }
+.similar-item:hover:not(:disabled) { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background-color: var(--hover); }
+.similar-item > .icon { width: 15px; height: 15px; color: var(--muted); }
+.similar-name { min-width: 0; overflow: hidden; color: var(--ink); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.similar-item > .similar-linked { grid-column: 3; width: 14px; height: 14px; color: var(--accent-text); }
+.similar-folder, .similar-tags { grid-column: 2 / -1; min-width: 0; }
+.similar-folder { overflow: hidden; color: var(--muted); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.similar-folder:empty { display: none; }
+.similar-tags { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 3px; }
+.similar-more { margin-top: 8px; padding: 4px 8px; color: var(--accent-text); font-size: 12.5px; font-weight: 600; }
+.similar-more[hidden] { display: none; }
+.graph-tags-toggle[aria-pressed='true'] { background-color: var(--tint); color: var(--accent-text); }
+.graph-legend .graph-legend-tag b { margin-right: 6px; padding: 0 7px; border: 1px solid color-mix(in srgb, var(--muted) 50%, transparent); border-radius: 999px; color: var(--copy); font-size: 11px; font-weight: 600; }
+@media print { .similar-docs { display: none !important; } }
+
 
 .md-suggest .md-suggest-head { display: flex; align-items: center; gap: 6px; padding: 2px 8px 0; color: var(--muted); font-size: 11px; }
 .md-suggest .md-suggest-head kbd { padding: 0 4px; border: 1px solid var(--line); border-radius: 4px; background: var(--canvas); font: 10.5px var(--sans); }
@@ -2103,6 +2125,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <div class="graph-scope" role="group" aria-label="Documenti mostrati nel grafo">
               <button type="button" data-scope="local" aria-pressed="true" title="Il documento aperto e quelli collegati">Locale</button><button type="button" data-scope="all" aria-pressed="false" title="Tutti i documenti della cartella">Tutto</button>
             </div>
+            <button type="button" class="icon-button graph-tags-toggle" data-graph-tags aria-pressed="false" aria-label="Tag nel grafo" title="Mostra i tag nel grafo"><i class="icon i-tag" aria-hidden="true"></i></button>
             <button type="button" class="icon-button" id="graphFit" aria-label="Adatta il grafo" title="Adatta alla finestra (doppio clic sullo sfondo)"><i class="icon i-fit" aria-hidden="true"></i></button>
             <button type="button" class="icon-button" id="graphExpand" aria-label="Apri il grafo grande" title="Apri il grafo grande" aria-haspopup="dialog"><i class="icon i-expand" aria-hidden="true"></i></button>
           </div>
@@ -2126,6 +2149,11 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           </section>
           <div class="doc-tags" id="docTags" role="group" aria-label="Tag del documento" hidden></div>
           <article id="editor" class="editor paper" contenteditable="false" spellcheck="false" role="document" aria-label="Documento Markdown" hidden></article>
+          <section class="similar-docs paper" id="similarDocs" aria-labelledby="similarTitle" hidden>
+            <h2 id="similarTitle"><i class="icon i-tag" aria-hidden="true"></i><span>Documenti simili</span><span class="nav-count" id="similarCount"></span><small>con tag in comune</small></h2>
+            <ul class="similar-list" id="similarList"></ul>
+            <button type="button" class="similar-more" id="similarMore" hidden></button>
+          </section>
           <div class="source-paper paper" id="sourcePaper" hidden>
             <textarea class="source" id="source" spellcheck="false" aria-label="Sorgente Markdown" readonly></textarea>
           </div>
@@ -2503,6 +2531,12 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           </div>
         </div>
         <div class="set-card">
+          <div class="set-row">
+            <label class="set-label" for="setShowSimilar"><b>Documenti simili</b><small>In fondo al documento, quelli con tag in comune</small></label>
+            <input type="checkbox" class="switch" id="setShowSimilar" name="showSimilar">
+          </div>
+        </div>
+        <div class="set-card">
           <div class="set-row" id="panelOrderRow">
             <label class="set-label" for="setPanelOrder"><b>Ordine</b><small>Dall’alto in basso, quando stanno nello stesso posto</small></label>
             <select id="setPanelOrder" name="panelOrder"><option value="outline,backlinks,graph">Indice › Citato da › Grafo</option><option value="outline,graph,backlinks">Indice › Grafo › Citato da</option><option value="backlinks,outline,graph">Citato da › Indice › Grafo</option><option value="backlinks,graph,outline">Citato da › Grafo › Indice</option><option value="graph,outline,backlinks">Grafo › Indice › Citato da</option><option value="graph,backlinks,outline">Grafo › Citato da › Indice</option></select>
@@ -2742,6 +2776,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
       <div class="graph-scope" role="group" aria-label="Documenti mostrati nel grafo">
         <button type="button" data-scope="local" aria-pressed="false" title="Il documento aperto e quelli collegati">Locale</button><button type="button" data-scope="all" aria-pressed="true" title="Tutti i documenti della cartella">Tutto</button>
       </div>
+      <button type="button" class="icon-button graph-tags-toggle" data-graph-tags aria-pressed="false" aria-label="Tag nel grafo" title="Mostra i tag nel grafo"><i class="icon i-tag" aria-hidden="true"></i></button>
       <button type="button" class="icon-button" id="graphDialogFit" aria-label="Adatta il grafo" title="Adatta alla finestra (0)"><i class="icon i-fit" aria-hidden="true"></i></button>
       <button type="button" class="icon-button" id="graphDialogClose" aria-label="Chiudi" title="Chiudi (Esc)"><i class="icon i-close" aria-hidden="true"></i></button>
     </header>
@@ -11637,6 +11672,8 @@ const settingChoices = {
   graphPlacement: ['sidebar', 'document'],
   graphCorner: ['top-right', 'bottom-right', 'top-left', 'bottom-left'],
   graphScope: ['local', 'all'],
+  graphTags: [false, true],
+  showSimilar: [true, false],
   brandSize: ['normal', 'large', 'xlarge'],
   brandTarget: ['both', 'logo'],
   versionPlacement: ['beside', 'below', 'statusbar', 'hidden'],
@@ -11658,7 +11695,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', updateLinks: true, quickInsert: false, liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', critters: 'off', crittersSize: 'normal', audioPlayer: 'docked',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', updateLinks: true, quickInsert: false, liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'beside',
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -11725,6 +11762,7 @@ function syncSettings() {
   settingsForm.panelOrder.value = settings.panelOrder.join(',');
   syncOpenDocsHelp();
   settingsForm.showGraph.checked = settings.showGraph;
+  settingsForm.showSimilar.checked = settings.showSimilar;
   settingsForm.showOutline.checked = settings.showOutline;
   settingsForm.showBacklinks.checked = settings.showBacklinks;
   syncNavSettingControls();
@@ -12243,6 +12281,7 @@ settingsForm.addEventListener('change', event => {
     if (name === 'autosave') scheduleAutosave();
     if (name === 'navPlacement' || name === 'navCorner' || name.startsWith('show') || name === 'graphPlacement' || name === 'graphCorner') placeDocumentNav();
     if (name === 'showGraph') refreshGraph();
+    if (name === 'showSimilar') queueSimilarDocs();
     if (name === 'critters') storeSetting(xmasCrittersKey, null); // scelta a mano: niente ritorno automatico
     if (name === 'critters' || name === 'crittersSize') {
       setCritters(settings.critters, settings.crittersSize);
@@ -14695,6 +14734,7 @@ function renderDocTags() {
   docTagEditor.setEditable(editable);
   bar.hidden = !current || sourceMode || (!tags.length && !editable);
   bar.classList.toggle('editable', editable);
+  queueSimilarDocs();
 }
 function setDocumentTags(tags) {
   if (!documentTagsEditable()) return;
@@ -14704,6 +14744,7 @@ function setDocumentTags(tags) {
   front = sameTags(tags, tagsFromFront(saved)) && next === frontWithTags(saved, tags) ? saved : next;
   mark(true);
   renderDocTags();
+  if (settings.graphTags) queueGraphRefresh();
 }
 function searchTagQuery(tag) {
   return '#' + (/\s|"/.test(tag) ? '"' + tag.replace(/"/g, '') + '"' : tag);
@@ -14829,6 +14870,110 @@ function suggestFoldersForTags(tags) {
 function folderHintText(item) {
   return documentCount(item.docs.size) + ' con ' + [...item.tags].map(tag => '#' + tag).join(' ');
 }
+
+// ── Documenti simili ─────────────────────────────────────────────────────────
+// In fondo al documento: quelli con più tag in comune (i tag rari contano di più).
+// Quelli già collegati hanno il simbolo del collegamento: gli altri sono spesso
+// collegamenti che mancano.
+var similarToken = 0, similarTimer = 0, similarExpanded = '';
+const similarShown = 5;
+function queueSimilarDocs() {
+  clearTimeout(similarTimer);
+  similarTimer = setTimeout(renderSimilarDocs, 150);
+}
+function similarDocuments(path, own) {
+  const index = tagIndex();
+  const total = Math.max(1, index.tagged);
+  const scores = new Map();
+  for (const tag of uniqueTags(own)) {
+    const entry = index.tags.get(foldSearch(tag));
+    if (!entry) continue;
+    const weight = Math.log(1 + total / entry.paths.size);
+    for (const other of entry.paths) {
+      if (other === path || !files.has(other)) continue;
+      if (!scores.has(other)) scores.set(other, { path: other, score: 0, tags: [] });
+      const item = scores.get(other);
+      item.score += weight;
+      item.tags.push(entry.name);
+    }
+  }
+  return [...scores.values()].sort((a, b) => b.score - a.score || b.tags.length - a.tags.length ||
+    a.path.localeCompare(b.path, 'it', { numeric: true }));
+}
+async function renderSimilarDocs() {
+  const section = $('similarDocs');
+  const token = ++similarToken;
+  const path = current;
+  const own = settings.showSimilar && path && isMD(path) && !sourceMode && hasWorkspaceFolder() && !folderAccessPending ? tagsFromFront(front) : [];
+  const hide = () => {
+    section.hidden = true;
+    ed.classList.remove('has-similar');
+  };
+  if (!own.length) return hide();
+  queueTagIndex();
+  const ranked = similarDocuments(path, own);
+  if (!ranked.length) return hide();
+  // Collegamenti in entrambe le direzioni: dal grafo se c'è, altrimenti solo quelli in uscita.
+  const linked = new Set();
+  for (const [a, b] of graphData?.edges || []) {
+    if (a === path) linked.add(b);
+    if (b === path) linked.add(a);
+  }
+  try {
+    const { links } = await documentInfo(path);
+    const index = new Set(files.keys());
+    for (const link of links) {
+      const target = resolveLink(link, path, index).path;
+      if (target) linked.add(target);
+    }
+  } catch {}
+  if (token !== similarToken || path !== current) return;
+  const expanded = similarExpanded === path;
+  const list = $('similarList');
+  list.replaceChildren(...ranked.slice(0, expanded ? 30 : similarShown).map(item => {
+    const row = document.createElement('li');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'similar-item';
+    button.title = item.path;
+    const name = document.createElement('span');
+    name.className = 'similar-name';
+    name.textContent = item.path.split('/').pop().replace(/\.(md|markdown)$/i, '');
+    const where = document.createElement('span');
+    where.className = 'similar-folder';
+    where.textContent = parent(item.path).replaceAll('/', ' › ');
+    const tags = document.createElement('span');
+    tags.className = 'similar-tags';
+    for (const tag of item.tags) tags.append(Object.assign(document.createElement('span'), { className: 'result-tag hit', textContent: tag }));
+    button.append(icon('file'), name);
+    if (linked.has(item.path)) {
+      const link = icon('link');
+      link.classList.add('similar-linked');
+      link.removeAttribute('aria-hidden');
+      link.setAttribute('role', 'img');
+      link.setAttribute('aria-label', 'già collegato');
+      link.title = 'Già collegato a questo documento';
+      button.append(link);
+    }
+    button.append(where, tags);
+    button.onclick = () => openPath(item.path, false, '', null, 'new');
+    row.append(button);
+    return row;
+  }));
+  const more = $('similarMore');
+  more.hidden = ranked.length <= similarShown;
+  more.textContent = expanded ? 'Mostra meno' : 'Mostra tutti (' + ranked.length + ')';
+  more.onclick = () => {
+    similarExpanded = expanded ? '' : path;
+    renderSimilarDocs();
+  };
+  $('similarCount').textContent = ranked.length;
+  section.hidden = false;
+  ed.classList.add('has-similar');
+}
+tagIndexListeners.add(() => {
+  if (settings.showSimilar && current && tagsFromFront(front).length) queueSimilarDocs();
+});
 
 function renderTree() {
   noteGraphFiles();
@@ -16679,6 +16824,7 @@ class LinkGraphView {
     this.empty = empty;
     this.nodes = [];
     this.edges = [];
+    this.tagEdges = [];
     this.byId = new Map();
     this.neighbours = new Map();
     this.scale = 1;
@@ -16720,7 +16866,7 @@ class LinkGraphView {
     if (this.alpha > .002) this.start();
   }
 
-  setData(data, current, local) {
+  setData(data, current, local, showTags = false) {
     let ids = data.paths;
     let edges = data.edges;
     if (local && current && ids.includes(current)) {
@@ -16732,7 +16878,58 @@ class LinkGraphView {
       ids = ids.filter(id => keep.has(id));
       edges = edges.filter(([a, b]) => keep.has(a) && keep.has(b));
     }
-    const structure = ids.join('\n') + '\n\n' + edges.map(edge => edge.join('\n')).join('\n');
+    // Tag: un nodo per ogni tag che unisce almeno due documenti del grafo (un tag
+    // su un solo documento non dice niente sulle relazioni). In Locale: i tag del
+    // documento aperto e i documenti che li condividono: tutti nel grafo grande, nel
+    // riquadro al massimo 12 per tag (i più vicini al documento aperto) e la
+    // pillola dice quanti ne restano fuori («#tag +68»).
+    const tagNodes = [], tagEdges = [];
+    if (showTags && data.tags?.size) {
+      const byTag = new Map();
+      for (const [path, own] of data.tags) {
+        for (const tag of own) {
+          const fold = foldSearch(tag);
+          if (!byTag.has(fold)) byTag.set(fold, { fold, spellings: new Map(), paths: [] });
+          const entry = byTag.get(fold);
+          entry.paths.push(path);
+          entry.spellings.set(tag, (entry.spellings.get(tag) || 0) + 1);
+        }
+      }
+      const shown = new Set(ids);
+      const add = (entry, members, hidden = 0) => {
+        const id = graphTagPrefix + entry.fold;
+        const name = [...entry.spellings].sort((a, b) => b[1] - a[1])[0][0];
+        tagNodes.push({ id, name, count: entry.paths.length, hidden });
+        for (const path of members) tagEdges.push([path, id]);
+      };
+      if (local && current && shown.has(current)) {
+        const own = new Set((data.tags.get(current) || []).map(foldSearch));
+        const linked = new Set(shown);
+        // Vicinanza: prima i documenti con più tag in comune, poi quelli collegati.
+        const common = path => (data.tags.get(path) || []).reduce((total, tag) => total + Number(own.has(foldSearch(tag))), 0);
+        const limit = this.large ? Infinity : 12;
+        for (const fold of own) {
+          const entry = byTag.get(fold);
+          if (!entry || entry.paths.length < 2) continue;
+          const others = entry.paths.filter(path => path !== current)
+            .map(path => ({ path, common: common(path), linked: linked.has(path) }))
+            .sort((a, b) => b.common - a.common || Number(b.linked) - Number(a.linked) || a.path.localeCompare(b.path, 'it', { numeric: true }));
+          const kept = others.slice(0, limit).map(item => item.path);
+          for (const path of kept) shown.add(path);
+          add(entry, [current, ...kept], others.length - kept.length);
+        }
+        ids = data.paths.filter(id => shown.has(id));
+        edges = data.edges.filter(([a, b]) => shown.has(a) && shown.has(b));
+      } else {
+        for (const entry of byTag.values()) {
+          const members = entry.paths.filter(path => shown.has(path));
+          if (members.length >= 2) add(entry, members);
+        }
+      }
+      tagNodes.sort((a, b) => a.id.localeCompare(b.id));
+    }
+    const structure = ids.join('\n') + '\n\n' + edges.map(edge => edge.join('\n')).join('\n') +
+      '\n\n' + tagNodes.map(tag => tag.id + '\t' + tag.name + '\t' + tag.hidden).join('\n') + '\n\n' + tagEdges.map(edge => edge.join('\t')).join('\n');
     const changed = structure !== this.structure;
     this.structure = structure;
     this.current = current;
@@ -16746,10 +16943,17 @@ class LinkGraphView {
     }
     const previous = this.byId;
     const degree = new Map();
-    this.neighbours = new Map(ids.map(id => [id, new Set()]));
+    this.neighbours = new Map([...ids, ...tagNodes.map(tag => tag.id)].map(id => [id, new Set()]));
     for (const [a, b] of edges) {
       degree.set(a, (degree.get(a) || 0) + 1);
       degree.set(b, (degree.get(b) || 0) + 1);
+      this.neighbours.get(a).add(b);
+      this.neighbours.get(b).add(a);
+    }
+    const tagDegree = new Map();
+    for (const [a, b] of tagEdges) {
+      tagDegree.set(a, (tagDegree.get(a) || 0) + 1);
+      tagDegree.set(b, (tagDegree.get(b) || 0) + 1);
       this.neighbours.get(a).add(b);
       this.neighbours.get(b).add(a);
     }
@@ -16759,11 +16963,19 @@ class LinkGraphView {
       node.label = id.split('/').pop().replace(/\.(md|markdown)$/i, '');
       node.folder = data.folders.indexOf(id.includes('/') ? id.split('/')[0] : '');
       node.degree = degree.get(id) || 0;
+      node.tagDegree = tagDegree.get(id) || 0;
       node.r = Math.min(this.large ? 15 : 10, (this.large ? 4.5 : 3.6) + Math.sqrt(node.degree) * (this.large ? 2.3 : 1.7));
       this.byId.set(id, node);
       return node;
     });
+    for (const tag of tagNodes) {
+      const node = previous.get(tag.id) || { id: tag.id, x: NaN, y: NaN, vx: 0, vy: 0 };
+      Object.assign(node, { tag: true, label: tag.name, count: tag.count, hidden: tag.hidden, folder: -1, degree: tagDegree.get(tag.id) || 0, tagDegree: 0, r: this.large ? 7 : 5 });
+      this.byId.set(tag.id, node);
+      this.nodes.push(node);
+    }
     this.edges = edges.map(([a, b]) => [this.byId.get(a), this.byId.get(b)]);
+    this.tagEdges = tagEdges.map(([a, b]) => [this.byId.get(a), this.byId.get(b)]);
     // I nuovi nodi nascono vicino a un vicino già posizionato, gli altri in cerchio.
     let fresh = 0;
     for (const node of this.nodes) {
@@ -16804,7 +17016,8 @@ class LinkGraphView {
           dy = Math.random() - .5;
           d2 = dx * dx + dy * dy;
         }
-        const force = repulsion * alpha / Math.max(d2, 30);
+        // Le pillole dei tag sono larghe: spingono di più, così non coprono i nomi.
+        const force = repulsion * (a.tag || b.tag ? 2 : 1) * alpha / Math.max(d2, 30);
         a.vx -= dx * force;
         a.vy -= dy * force;
         b.vx += dx * force;
@@ -16822,6 +17035,21 @@ class LinkGraphView {
       b.vy -= dy * pull * bias;
       a.vx += dx * pull * (1 - bias);
       a.vy += dy * pull * (1 - bias);
+    }
+    // I tag tirano piano: avvicinano i documenti che li condividono senza
+    // stravolgere la forma data dai collegamenti. Si muove soprattutto il tag.
+    const tagLength = length * 1.35;
+    for (const [doc, tag] of this.tagEdges) {
+      const dx = tag.x + tag.vx - doc.x - doc.vx;
+      const dy = tag.y + tag.vy - doc.y - doc.vy;
+      const distance = Math.hypot(dx, dy) || 1;
+      const pull = (distance - tagLength) / distance * alpha * .9;
+      const docShare = .18 / Math.max(1, doc.tagDegree + doc.degree / 2);
+      const tagShare = .7 / Math.max(1, Math.sqrt(tag.degree));
+      tag.vx -= dx * pull * tagShare;
+      tag.vy -= dy * pull * tagShare;
+      doc.vx += dx * pull * docShare;
+      doc.vy += dy * pull * docShare;
     }
     const dragged = this.drag?.node;
     for (const node of nodes) {
@@ -16906,6 +17134,13 @@ class LinkGraphView {
     for (const node of this.nodes) {
       const p = this.screen(node);
       const distance = Math.hypot(point.x - p.x, point.y - p.y);
+      if (node.tag && node.box) {
+        if (Math.abs(point.x - p.x) <= node.box.w / 2 + 3 && Math.abs(point.y - p.y) <= node.box.h / 2 + 3 && distance < bestDistance) {
+          best = node;
+          bestDistance = distance;
+        }
+        continue;
+      }
       if (distance <= Math.max(9, this.radius(node) + 5) && distance < bestDistance) {
         best = node;
         bestDistance = distance;
@@ -16918,7 +17153,9 @@ class LinkGraphView {
     if (node === this.hover) return;
     this.hover = node;
     this.canvas.style.cursor = node ? 'pointer' : '';
-    this.canvas.title = node ? node.id : '';
+    this.canvas.title = !node ? '' : !node.tag ? node.id : node.hidden
+      ? '#' + node.label + ' · ' + (node.count - node.hidden) + ' di ' + documentCount(node.count) + ' mostrati · clic per vederli tutti'
+      : '#' + node.label + ' · ' + documentCount(node.count) + ' · clic per vederli nella ricerca';
     this.draw();
   }
 
@@ -17005,6 +17242,62 @@ class LinkGraphView {
     event.preventDefault();
   }
 
+  // Tag = pillole «#nome» come le etichette del documento. Con poco spazio (zoom
+  // basso e molti tag) diventano rombi piccoli e il nome compare passandoci sopra.
+  drawTags(focus, lit, theme) {
+    const { ctx, width: w, height: h } = this;
+    const tags = this.nodes.filter(node => node.tag);
+    if (!tags.length) return;
+    const size = this.large ? 11.5 : 10.5;
+    const roomy = this.scale >= .9 || this.large && tags.length <= 30;
+    const near = focus ? this.neighbours.get(focus.id) : null;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    for (const node of tags) {
+      const p = this.screen(node);
+      if (p.x < -120 || p.y < -30 || p.x > w + 120 || p.y > h + 30) {
+        node.box = null;
+        continue;
+      }
+      const active = node === focus;
+      const related = active || (near && near.has(node.id));
+      ctx.globalAlpha = lit(node) ? 1 : .22;
+      const stroke = related ? theme.accent : theme.muted;
+      if (roomy || related) {
+        const label = '#' + (node.label.length > 24 ? node.label.slice(0, 23) + '…' : node.label) + (node.hidden ? ' +' + node.hidden : '');
+        ctx.font = `${active ? 700 : 600} ${size}px ${theme.font}`;
+        const boxW = ctx.measureText(label).width + 14, boxH = size + 9;
+        node.box = { w: boxW, h: boxH };
+        ctx.beginPath();
+        ctx.roundRect(p.x - boxW / 2, p.y - boxH / 2, boxW, boxH, boxH / 2);
+        ctx.fillStyle = theme.paper;
+        ctx.fill();
+        ctx.fillStyle = graphRgba(stroke, theme.dark ? (related ? .22 : .1) : (related ? .14 : .07));
+        ctx.fill();
+        ctx.lineWidth = active ? 1.4 : 1;
+        ctx.strokeStyle = graphRgba(stroke, related ? .9 : .5);
+        ctx.stroke();
+        ctx.fillStyle = related ? theme.ink : theme.copy;
+        ctx.fillText(label, p.x, p.y + .5);
+      } else {
+        const r = this.large ? 5 : 4;
+        node.box = { w: r * 2 + 6, h: r * 2 + 6 };
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y - r);
+        ctx.lineTo(p.x + r, p.y);
+        ctx.lineTo(p.x, p.y + r);
+        ctx.lineTo(p.x - r, p.y);
+        ctx.closePath();
+        ctx.fillStyle = theme.paper;
+        ctx.fill();
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = graphRgba(stroke, .7);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
   draw() {
     const { ctx, width: w, height: h } = this;
     if (!w || !h) return;
@@ -17031,6 +17324,35 @@ class LinkGraphView {
     const lit = node => !focus || node === focus || near.has(node.id);
 
     ctx.lineCap = 'round';
+    // Archi dei tag: tratteggiati e tenui, sotto i collegamenti veri.
+    if (this.tagEdges.length) {
+      ctx.setLineDash([2.5, 4]);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = graphRgba(theme.muted, focus ? .1 : theme.dark ? .3 : .32);
+      ctx.beginPath();
+      for (const [a, b] of this.tagEdges) {
+        if (focus && (a === focus || b === focus)) continue;
+        const p = this.screen(a);
+        const q = this.screen(b);
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+      }
+      ctx.stroke();
+      if (focus) {
+        ctx.lineWidth = 1.3;
+        ctx.strokeStyle = graphRgba(theme.accent, .7);
+        ctx.beginPath();
+        for (const [a, b] of this.tagEdges) {
+          if (a !== focus && b !== focus) continue;
+          const p = this.screen(a);
+          const q = this.screen(b);
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+        }
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
     ctx.lineWidth = 1;
     ctx.strokeStyle = graphRgba(theme.muted, focus ? .14 : theme.dark ? .38 : .42);
     ctx.beginPath();
@@ -17058,6 +17380,7 @@ class LinkGraphView {
 
     const glow = this.nodes.length < 400;
     for (const node of this.nodes) {
+      if (node.tag) continue;
       const p = this.screen(node);
       const r = this.radius(node);
       if (p.x < -40 || p.y < -40 || p.x > w + 40 || p.y > h + 40) continue;
@@ -17095,6 +17418,7 @@ class LinkGraphView {
       ctx.fill();
     }
     ctx.globalAlpha = 1;
+    this.drawTags(focus, lit, theme);
 
     // Etichette: sempre per il documento aperto e per quello sotto il puntatore
     // con i suoi vicini; le altre compaiono quando c'è spazio (zoom).
@@ -17104,6 +17428,7 @@ class LinkGraphView {
     const size = this.large ? 12 : 11;
     const crowd = this.large ? .75 : 1.25;
     for (const node of this.nodes) {
+      if (node.tag) continue;
       const isCurrent = node.id === this.current;
       const highlighted = node === focus || isCurrent || (near && near.has(node.id));
       if (!highlighted && (focus || this.scale < crowd && !(this.large && node.degree >= 4 && this.scale > .45))) continue;
@@ -17130,7 +17455,14 @@ var graphTimer = 0;
 var graphToken = 0;
 var graphFilesKey = '';
 
+const graphTagPrefix = '\u0001tag:';
 function openGraphPath(path) {
+  if (path.startsWith(graphTagPrefix)) {
+    const fold = path.slice(graphTagPrefix.length);
+    const node = graphPanelView.byId.get(path) || graphDialogView.byId.get(path);
+    searchTag(node?.label || fold);
+    return;
+  }
   if (path === current) return;
   openPath(path, false, '', null, 'new');
   closeSidebarOnNarrow();
@@ -17158,8 +17490,10 @@ async function collectLinkGraph() {
     paths.push(current);
   }
   const edges = new Set();
+  const tags = new Map();
   await forEachLimited(paths, 6, async path => {
-    const { links } = await documentInfo(path);
+    const { links, tags: own = [] } = await documentInfo(path);
+    if (own.length) tags.set(path, own);
     for (const link of links) {
       if (link.kind === 'image') continue;
       const target = resolveLink(link, path, index).path;
@@ -17171,7 +17505,7 @@ async function collectLinkGraph() {
   paths.sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
   const folders = [...new Set(paths.map(path => path.includes('/') ? path.split('/')[0] : ''))]
     .sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
-  return { paths, folders, edges: [...edges].sort().map(edge => edge.split('\n')) };
+  return { paths, folders, tags, edges: [...edges].sort().map(edge => edge.split('\n')) };
 }
 
 async function refreshGraph() {
@@ -17209,18 +17543,27 @@ function noteGraphFiles() {
 
 function graphCountText(view) {
   const links = view.edges.length;
-  return view.nodes.length + (view.nodes.length === 1 ? ' documento' : ' documenti') + ' · ' + links + (links === 1 ? ' collegamento' : ' collegamenti');
+  const tags = view.nodes.filter(node => node.tag).length;
+  const docs = view.nodes.length - tags;
+  return docs + (docs === 1 ? ' documento' : ' documenti') + ' · ' + links + (links === 1 ? ' collegamento' : ' collegamenti') +
+    (tags ? ' · ' + tags + (tags === 1 ? ' tag' : ' tag') : '');
 }
 
 function renderGraphViews() {
   if (!graphData) return;
   const local = settings.graphScope === 'local';
-  graphPanelView.setData(graphData, current, local);
-  $('graphNavCount').textContent = graphPanelView.nodes.length || '';
+  const tags = settings.graphTags;
+  for (const button of document.querySelectorAll('[data-graph-tags]')) {
+    button.setAttribute('aria-pressed', tags);
+    button.title = tags ? 'Nascondi i tag nel grafo' : 'Mostra i tag nel grafo: avvicinano i documenti che li condividono';
+  }
+  renderGraphViewsDone();
+  graphPanelView.setData(graphData, current, local, tags);
+  $('graphNavCount').textContent = graphPanelView.nodes.filter(node => !node.tag).length || '';
   $('graphNavCount').title = graphCountText(graphPanelView);
   for (const button of graphNav.querySelectorAll('.graph-scope button')) button.setAttribute('aria-pressed', button.dataset.scope === settings.graphScope);
   if (!graphDialog.open) return;
-  graphDialogView.setData(graphData, current, local);
+  graphDialogView.setData(graphData, current, local, tags);
   $('graphDialogCount').textContent = graphCountText(graphDialogView);
   for (const button of graphDialog.querySelectorAll('.graph-scope button')) button.setAttribute('aria-pressed', button.dataset.scope === settings.graphScope);
   const theme = graphTheme();
@@ -17237,7 +17580,21 @@ function renderGraphViews() {
   graphData.folders.forEach((folder, index) => {
     if (shown.has(index) && legend.length < 12) item(folder || 'Cartella principale', graphFolderColor(index, theme));
   });
+  if (graphDialogView.nodes.some(node => node.tag)) {
+    const span = document.createElement('span');
+    span.className = 'graph-legend-tag';
+    span.append(Object.assign(document.createElement('b'), { textContent: '#tag' }), 'Tag in comune (clic per cercarli)');
+    legend.push(span);
+  } else if (tags && graphData.tags?.size === 0) {
+    const span = document.createElement('span');
+    span.className = 'graph-legend-tag';
+    span.textContent = 'Nessun documento ha ancora dei tag';
+    legend.push(span);
+  }
   $('graphLegend').replaceChildren(...legend);
+}
+function renderGraphViewsDone() {
+  if (settings.showSimilar && current) queueSimilarDocs();
 }
 
 graphNav.addEventListener('toggle', () => {
@@ -17258,6 +17615,14 @@ function setGraphScope(scope) {
   renderGraphViews();
 }
 graphNav.querySelector('.graph-scope').addEventListener('click', event => setGraphScope(event.target.closest('button')?.dataset.scope));
+function toggleGraphTags() {
+  settings.graphTags = !settings.graphTags;
+  storeSettings();
+  graphPanelView.userView = false;
+  graphDialogView.userView = false;
+  renderGraphViews();
+}
+for (const button of document.querySelectorAll('[data-graph-tags]')) button.onclick = toggleGraphTags;
 $('graphFit').onclick = () => graphPanelView.fit();
 $('graphExpand').onclick = () => {
   if (document.querySelector('dialog[open]')) return;
@@ -25359,10 +25724,10 @@ function invalidateLinkIndex() {
 async function documentInfo(path) {
   if (path === current && (dirty || !files.has(path))) {
     const text = getMarkdown();
-    return { links: scanMarkdownLinks(text), headings: markdownHeadings(text) };
+    return { links: scanMarkdownLinks(text), headings: markdownHeadings(text), tags: tagsFromFront(frontSplit(text)[0]) };
   }
   const handle = files.get(path);
-  if (!handle) return { links: [], headings: [] };
+  if (!handle) return { links: [], headings: [], tags: [] };
   const cached = linkInfoCache.get(path);
   // Spostandosi in fretta tra documenti non serve ricontrollare ogni file sul disco.
   if (cached && cached.handle === handle && Date.now() - cached.checked < 5000) return cached;
@@ -25372,7 +25737,7 @@ async function documentInfo(path) {
     return cached;
   }
   const text = await file.text();
-  const info = { handle, modified: file.lastModified, size: file.size, checked: Date.now(), links: scanMarkdownLinks(text), headings: markdownHeadings(text) };
+  const info = { handle, modified: file.lastModified, size: file.size, checked: Date.now(), links: scanMarkdownLinks(text), headings: markdownHeadings(text), tags: tagsFromFront(frontSplit(text)[0]) };
   linkInfoCache.set(path, info);
   return info;
 }
