@@ -18,7 +18,7 @@ La barra laterale mostra **tutti i file** della cartella, non solo i documenti M
 - Passando sopra un file, il suggerimento mostra percorso, dimensione e data dell’ultima modifica.
 - La ricerca nel testo riguarda solo i documenti Markdown.
 
-L’elenco **si aggiorna da solo**: file e cartelle creati, rinominati o eliminati fuori da Itaca compaiono o spariscono in pochi secondi, e subito quando torni sulla finestra. Il pulsante **Aggiorna** accanto al nome della cartella resta per forzare una nuova lettura (e per ricaricare le cartelle importate, che sono una copia e non si aggiornano da sole).
+L’elenco **si aggiorna da solo**: file e cartelle creati, rinominati o eliminati fuori da Itaca compaiono o spariscono in pochi secondi (su Windows entro una ventina di secondi, e più di rado se la cartella è lenta, per esempio di rete), e subito quando torni sulla finestra. Il pulsante **Aggiorna** accanto al nome della cartella resta per forzare una nuova lettura (e per ricaricare le cartelle importate, che sono una copia e non si aggiornano da sole).
 
 ## Gestire file e cartelle
 
@@ -88,6 +88,16 @@ Se lavori spesso con le stesse cartelle, salvale per riaprirle senza cercarle og
 - Con una cartella aperta, premi la **stella** accanto al suo nome in cima all’elenco. La stella piena indica che è già salvata; premila di nuovo per toglierla.
 - Il menu **Cartelle e file**, in basso nella barra laterale, elenca le cartelle salvate: clic sul nome per aprirla. Passando sopra una voce compaiono **Modifica** (cambia il nome nell’elenco o, con **Cambia cartella…**, la cartella sul disco) e **×**, che la toglie dall’elenco senza toccare i file.
 - Il browser può chiedere di nuovo il permesso quando apri una cartella salvata.
+- Due cartelle con lo stesso nome in posti diversi si possono salvare entrambe: la seconda compare come «Nome (2)». I nomi nell’elenco devono essere tutti diversi.
+- Se una cartella salvata **non risponde** (il browser conserva un riferimento alla cartella che, per esempio dopo un cambio di rete, può rovinarsi), Itaca propone di **sceglierla di nuovo** — la voce salvata viene aggiornata — o di toglierla dall’elenco. Se l’elenco non si riesce a salvare, Itaca trova le voci rovinate e propone di toglierle, conservando le altre.
+
+### Cartelle di rete
+
+Itaca funziona anche con le cartelle condivise (`\\server\condivisione`). Se la rete è lenta o cambia (per esempio passando dall’ethernet alla WiFi):
+
+- **Cartelle e file** si apre sempre, e puoi scegliere un’altra cartella anche mentre una è in apertura;
+- un file che non risponde entro 30 secondi mostra un avviso invece di bloccare Itaca;
+- durante un cambio di rete Itaca sospende per qualche secondo le letture automatiche.
 
 ## Ricerca nei documenti
 
