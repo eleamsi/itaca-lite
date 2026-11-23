@@ -782,6 +782,17 @@ dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-tex
 .graph-tags-toggle[aria-pressed='true'] { background-color: var(--tint); color: var(--accent-text); }
 .graph-legend .graph-legend-tag b { margin-right: 6px; padding: 0 7px; border: 1px solid color-mix(in srgb, var(--muted) 50%, transparent); border-radius: 999px; color: var(--copy); font-size: 11px; font-weight: 600; }
 @media print { .similar-docs { display: none !important; } }
+.search-tag-manage { display: flex; align-items: center; gap: 6px; margin: -2px 12px 6px; padding: 4px 8px; color: var(--accent-text); font-size: 12px; font-weight: 600; text-align: left; }
+.search-tag-manage[hidden] { display: none; }
+.search-tag-manage .icon { width: 13px; height: 13px; }
+dialog .tag-rename-note { display: flex; align-items: flex-start; gap: 6px; min-height: 1.4em; color: var(--copy); }
+dialog .tag-rename-note.merge { color: var(--accent-text); }
+dialog .tag-rename-note .icon { width: 14px; height: 14px; margin-top: 2px; }
+dialog .tag-skipped { margin: 6px 0; padding-left: 20px; color: var(--copy); font-size: 13px; }
+dialog .tag-skipped li { margin: 3px 0; }
+dialog .tag-skipped span { color: var(--muted); }
+.print-document .export-tags { margin: -.2em 0 1.2em; color: #666; font: 9.5pt/1.4 var(--sans); }
+
 
 
 .md-suggest .md-suggest-head { display: flex; align-items: center; gap: 6px; padding: 2px 8px 0; color: var(--muted); font-size: 11px; }
@@ -2106,6 +2117,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           <button type="button" class="icon-button new-folder" id="newFolder" aria-label="Nuova cartella" title="Nuova cartella" hidden><i class="icon i-folder-plus" aria-hidden="true"></i></button>
         </div>
         <p class="search-status" id="searchStatus" role="status" hidden></p>
+        <button type="button" class="search-tag-manage" id="searchTagManage" hidden><i class="icon i-edit" aria-hidden="true"></i><span></span></button>
         <div class="tree" id="tree"></div>
       </nav>
       <details class="outline-nav" id="outlineNav" open hidden>
@@ -14578,9 +14590,13 @@ function createTagEditor(options) {
       name.textContent = tag;
       if (options.onPick) {
         name.type = 'button';
-        name.title = 'Cerca i documenti con #' + tag;
+        name.title = 'Cerca i documenti con #' + tag + (options.onManage ? '\nTasto destro: rinomina, unisci o togli il tag in tutti i documenti' : '');
         name.onclick = () => options.onPick(tag);
       }
+      if (options.onManage) name.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        options.onManage(tag);
+      });
       chip.append(name);
       if (editable) {
         const remove = document.createElement('button');
@@ -14723,7 +14739,7 @@ function renderDocTags() {
   const tags = current && !sourceMode ? tagsFromFront(front) : [];
   const editable = documentTagsEditable();
   if (!docTagEditor) {
-    docTagEditor = createTagEditor({ tags, editable, onChange: setDocumentTags, onPick: searchTag });
+    docTagEditor = createTagEditor({ tags, editable, onChange: setDocumentTags, onPick: searchTag, onManage: manageTag });
     const label = document.createElement('i');
     label.className = 'icon i-tag doc-tags-icon';
     label.setAttribute('aria-hidden', 'true');
@@ -14975,6 +14991,249 @@ tagIndexListeners.add(() => {
   if (settings.showSimilar && current && tagsFromFront(front).length) queueSimilarDocs();
 });
 
+// ── Rinominare, unire o togliere un tag in tutti i documenti ─────────────────
+// Si apre dalla ricerca di un solo tag (#tag) o con il tasto destro su un'etichetta.
+// Cambia solo la chiave tags: dell'intestazione; il resto dei file resta com'è.
+function retaggedList(tags, fromFold, to) {
+  if (!tags.some(tag => foldSearch(tag) === fromFold)) return null;
+  const next = [];
+  for (const tag of tags) next.push(foldSearch(tag) === fromFold ? to : tag);
+  return uniqueTags(next.filter(Boolean));
+}
+function retagMarkdown(text, fromFold, to) {
+  const [metadata, body] = frontSplit(text);
+  const next = retaggedList(tagsFromFront(metadata), fromFold, to);
+  return next ? frontWithTags(metadata, next) + body : null;
+}
+// Aspetta che l'indice abbia letto tutti i documenti (al massimo ms millisecondi).
+function tagIndexReady(ms = 20000) {
+  queueTagIndex();
+  if (!tagIndex().pending) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const done = value => {
+      tagIndexListeners.delete(check);
+      clearTimeout(timer);
+      resolve(value);
+    };
+    const check = () => { if (!tagIndex().pending) done(true); };
+    const timer = setTimeout(() => done(false), ms);
+    tagIndexListeners.add(check);
+  });
+}
+var tagManaging = false;
+async function manageTag(tag) {
+  tag = cleanTag(tag);
+  if (!tag || tagManaging || $('dialog').open || fileActionBusy || loading || documentOpening || folderOpening) return;
+  if (!hasWorkspaceFolder() || folderAccessPending) {
+    toast('Apri una cartella di lavoro per cambiare i tag in tutti i documenti.');
+    return;
+  }
+  const fromFold = foldSearch(tag);
+  startLoading('Lettura dei tag…', 0);
+  let ready;
+  try {
+    // I file cambiati fuori da Itaca si rileggono, così il conteggio è quello vero.
+    searchValidatedAt = 0;
+    await revalidateSearchIndex();
+    ready = await tagIndexReady();
+  } finally { stopLoading(); }
+  if (!ready) {
+    toast('La lettura dei documenti non è finita: riprova tra poco.', 'warning');
+    return;
+  }
+  const index = tagIndex();
+  const entry = index.tags.get(fromFold);
+  const count = entry ? entry.paths.size : 0;
+  if (!count) {
+    toast('Nessun documento ha il tag «' + tag + '».');
+    return;
+  }
+  const name = entry.name;
+  const dialog = $('dialog');
+  const remove = document.createElement('button');
+  remove.value = 'remove';
+  remove.className = 'outline danger-text discard-button';
+  remove.formNoValidate = true;
+  remove.textContent = 'Togli da tutti';
+  dialog.querySelector('.dialog-actions').prepend(remove);
+  const closed = new Promise(resolve => dialog.addEventListener('close', () => resolve(dialog.returnValue), { once: true }));
+  modal('Tag #' + name,
+    '<p>Usato in <strong>' + documentCount(count) + '</strong>' + (entry.spellings.size > 1 ? ', scritto come ' + [...entry.spellings.keys()].map(item => '«' + escapeHtml(item) + '»').join(', ') : '') + '.</p>' +
+    '<label>Nuovo nome</label><input name="name" required autocomplete="off" spellcheck="false" value="' + escapeHtml(name) + '">' +
+    '<p class="tag-rename-note" aria-live="polite"></p>' +
+    '<p class="tag-rename-help">Itaca cambia solo l’intestazione dei documenti: il testo resta com’è.</p>', 'Rinomina');
+  const input = $('dialogBody').querySelector('[name=name]');
+  const note = $('dialogBody').querySelector('.tag-rename-note');
+  const accept = $('dialogOK');
+  const update = () => {
+    const typed = cleanTag(input.value);
+    const target = index.tags.get(foldSearch(typed));
+    note.replaceChildren();
+    note.classList.remove('merge');
+    if (!typed || typed === name) {
+      accept.disabled = true;
+      accept.textContent = 'Rinomina';
+      return;
+    }
+    accept.disabled = false;
+    if (target && target.fold !== fromFold) {
+      const both = [...entry.paths].filter(path => target.paths.has(path)).length;
+      accept.textContent = 'Unisci';
+      note.classList.add('merge');
+      note.append(icon('info'), '#' + target.name + ' esiste già in ' + documentCount(target.paths.size) +
+        ': i due tag diventano uno solo, #' + target.name + (both ? ' (' + (both === 1 ? '1 documento li ha' : both + ' documenti li hanno') + ' entrambi)' : '') + '.');
+    } else {
+      accept.textContent = 'Rinomina';
+      note.textContent = '#' + name + ' diventa #' + typed + ' in ' + documentCount(count) + '.';
+    }
+  };
+  input.addEventListener('input', update);
+  update();
+  input.focus();
+  input.select();
+  const choice = await closed;
+  remove.remove();
+  accept.disabled = false;
+  if (choice === 'remove') {
+    const sure = await modal('Togliere #' + name + '?', '<p>Il tag viene tolto dall’intestazione di <strong>' + documentCount(count) + '</strong>. I documenti restano dove sono.</p>', 'Togli il tag', true);
+    if (sure) await applyTagChange(fromFold, '', name);
+    return;
+  }
+  if (choice !== 'ok') return;
+  const typed = cleanTag(input.value);
+  if (!typed || typed === name) return;
+  const target = index.tags.get(foldSearch(typed));
+  await applyTagChange(fromFold, target && target.fold !== fromFold ? target.name : typed, name);
+}
+
+// Un documento in modifica da un'altra persona non si tocca: la sua copia aperta
+// riscriverebbe il file con il tag vecchio. Un file che cambia mentre lo si aggiorna
+// (un altro programma, la sincronizzazione) viene riletto e riprovato.
+async function applyTagChange(fromFold, to, name, only = null) {
+  if (!hasWorkspaceFolder() || folderAccessPending) return;
+  const directory = root;
+  if (directory && !await allowFolderWrite(directory)) return;
+  const paths = (only || [...(tagIndex().tags.get(fromFold)?.paths || [])]).filter(path => files.has(path));
+  const result = { changed: 0, skipped: [] };
+  tagManaging = fileActionBusy = true;
+  updateHistoryButtons();
+  startLoading((to ? 'Aggiornamento' : 'Rimozione') + ' del tag in ' + documentCount(paths.length) + '…', 0);
+  try {
+    for (const path of paths) {
+      const skip = reason => result.skipped.push({ path, reason });
+      try {
+        if (directory) {
+          const lock = await readLock(path, directory);
+          if (lockLiveFor(lock)) {
+            skip('in modifica da ' + lockOwnerName(lock));
+            continue;
+          }
+        }
+        const handle = files.get(path);
+        let text = null, written = false;
+        for (let attempt = 0; attempt < 3 && !written; attempt++) {
+          const file = await handle.getFile();
+          text = retagMarkdown(await file.text(), fromFold, to);
+          if (text === null) break;
+          if (!directory) {
+            files.set(path, markdownSnapshot(path, text));
+            written = true;
+            break;
+          }
+          const latest = await handle.getFile();
+          if (latest.lastModified !== file.lastModified || latest.size !== file.size) continue;
+          try {
+            await writeSavedFile(handle, text);
+            written = true;
+          } catch (error) {
+            // Un altro programma lo sta scrivendo proprio ora: si riprova.
+            if (error?.name !== 'NoModificationAllowedError' && error?.name !== 'InvalidStateError') throw error;
+            await new Promise(resolve => setTimeout(resolve, 300));
+          }
+        }
+        if (text !== null && !written) {
+          skip('continua a cambiare mentre lo aggiorno (forse lo sta modificando un altro programma)');
+          continue;
+        }
+        if (written) {
+          invalidateSearchPath(path);
+          result.changed++;
+        }
+        // Il documento aperto (e le schede con modifiche non salvate) ricevono lo stesso cambio.
+        if (path === current) applyTagChangeToEditor(fromFold, to, written ? text : null);
+        for (const tab of docTabs || []) {
+          if (tab.path !== path || !tab.draft || path === current) continue;
+          tab.draft.text = retagMarkdown(tab.draft.text, fromFold, to) ?? tab.draft.text;
+          if (written) tab.draft.original = text;
+        }
+      } catch (error) {
+        skip(error?.name === 'NotFoundError' ? 'non si trova più' : 'non si può scrivere' + (error?.message ? ': ' + error.message : ''));
+      }
+    }
+  } finally {
+    tagManaging = fileActionBusy = false;
+    stopLoading();
+    updateHistoryButtons();
+  }
+  tagIndexCache = null;
+  // Una ricerca del vecchio tag passa al nuovo.
+  const query = searchQueryParts(search.value);
+  if (to && query.tags.includes(fromFold) && !query.text.trim() && query.tags.length === 1) search.value = searchTagQuery(to);
+  renderTree();
+  renderDocTags();
+  queueGraphRefresh();
+  tagIndexChanged();
+  const what = to ? (foldSearch(name) === foldSearch(to) ? '#' + name + ' ora si scrive #' + to : '#' + name + ' → #' + to) : '#' + name + ' tolto';
+  if (!result.skipped.length) {
+    if (result.changed) toast(what + ' in ' + documentCount(result.changed) + '.', 'success');
+    else toast('Nessun documento da cambiare.');
+    return;
+  }
+  // Documenti saltati: elenco con il motivo e «Riprova» (per esempio quando l'altra persona ha chiuso il documento).
+  const dialog = $('dialog');
+  const closed = new Promise(resolve => dialog.addEventListener('close', () => resolve(dialog.returnValue), { once: true }));
+  modal(result.changed ? 'Tag aggiornato in parte' : 'Tag non aggiornato',
+    '<p>' + (result.changed ? escapeHtml(what) + ' in ' + documentCount(result.changed) + '. ' : '') +
+    (result.skipped.length === 1 ? 'Questo documento è rimasto com’era:' : 'Questi ' + result.skipped.length + ' documenti sono rimasti com’erano:') + '</p>' +
+    '<ul class="tag-skipped">' + result.skipped.map(item => '<li><strong>' + escapeHtml(item.path.split('/').pop().replace(/\.(md|markdown)$/i, '')) +
+      '</strong> <span>' + escapeHtml(item.reason) + '</span></li>').join('') + '</ul>' +
+    '<p>Puoi riprovare più tardi, quando il documento è stato chiuso o salvato.</p>', 'Riprova');
+  const choice = await closed;
+  if (choice === 'ok') await applyTagChange(fromFold, to, name, result.skipped.map(item => item.path));
+}
+
+function applyTagChangeToEditor(fromFold, to, diskText) {
+  if (!dirty) {
+    if (diskText === null) return;
+    const scroll = workspace.scrollTop;
+    original = diskText;
+    if (sourceMode) src.value = diskText;
+    else {
+      showVisual(diskText);
+      savedVisualMarkdown = visualSnapshot.canonical;
+    }
+    updateSavedVisit();
+    renderMode();
+    mark(false);
+    workspace.scrollTop = scroll;
+    return;
+  }
+  if (diskText !== null) {
+    original = diskText;
+    savedVisualMarkdown = undefined;
+    updateSavedVisit();
+  }
+  if (sourceMode) {
+    const next = retagMarkdown(src.value, fromFold, to);
+    if (next !== null) src.value = next;
+  } else {
+    const next = retaggedList(tagsFromFront(front), fromFold, to);
+    if (next) front = frontWithTags(front, next);
+  }
+  renderDocTags();
+  mark();
+}
+
 function renderTree() {
   noteGraphFiles();
   // Le cartelle si creano solo sul disco (non nelle cartelle importate, che sono una copia).
@@ -15089,6 +15348,7 @@ function renderTree() {
   }
 
   searchStatus.hidden = !searching;
+  if (!searching) $('searchTagManage').hidden = true;
   let emptyMessage = hasWorkspaceFolder() ? 'La cartella è vuota.' : '';
   if (searching) {
     const { matches, pending, unreadable } = searchMatches(docs, terms, phrase, tagFilter);
@@ -15115,6 +15375,15 @@ function renderTree() {
     if (folderAccessPending) status += ' · Apri la cartella per cercare nel testo';
     if (unreadable) status += ' · ' + unreadable + (unreadable === 1 ? ' file illeggibile' : ' file illeggibili');
     if (searchStatus.textContent !== status) searchStatus.textContent = status;
+    // Un solo tag cercato: si può rinominare, unire o togliere in tutti i documenti.
+    const single = tagFilter?.length === 1 && tagFilter[0].exact && !terms.length && total && hasWorkspaceFolder() && !folderAccessPending;
+    const manage = $('searchTagManage');
+    manage.hidden = !single;
+    if (single) {
+      const name = tagName(tagFilter[0].tag);
+      manage.querySelector('span').textContent = 'Rinomina, unisci o togli #' + name + '…';
+      manage.onclick = () => manageTag(name);
+    }
     emptyMessage = pending ? 'Ricerca nel testo in corso…' : total ? '' : tagFilter && !terms.length ? 'Nessun documento con questo tag.' : 'Nessun documento corrispondente.';
   } else {
     const folders = new Set([...folderHandles.keys()].filter(Boolean));
@@ -18258,10 +18527,10 @@ function renderHighlightedCode(code, text, language) {
 const exportPdfButton = $('exportPdf');
 const pdfDateFormats = [['none', 'Nascosta'], ['date', 'Solo data'], ['date-time', 'Data e ora']];
 const pdfOptionsKey = 'itaca-pdf-options';
-let pdfOptions = { title: true, date: 'none', path: false, pageNumbers: true };
+let pdfOptions = { title: true, date: 'none', path: false, pageNumbers: true, tags: false };
 try {
   const saved = JSON.parse(localStorage.getItem(pdfOptionsKey));
-  for (const key of ['title', 'path', 'pageNumbers']) {
+  for (const key of ['title', 'path', 'pageNumbers', 'tags']) {
     if (typeof saved?.[key] === 'boolean') pdfOptions[key] = saved[key];
   }
   if (pdfDateFormats.some(([value]) => value === saved?.date)) pdfOptions.date = saved.date;
@@ -18299,12 +18568,16 @@ async function choosePdfOptions() {
         <label><input name="path" type="checkbox" ${pdfOptions.path ? 'checked' : ''}> Percorso relativo del documento</label>
         <label><input name="pageNumbers" type="checkbox" ${pdfOptions.pageNumbers ? 'checked' : ''}> Numero di pagina</label>
       </fieldset>
+      <fieldset>
+        <legend>Documento</legend>
+        <label><input name="tags" type="checkbox" ${pdfOptions.tags ? 'checked' : ''}> Tag sotto il titolo <small>(anche in Word)</small></label>
+      </fieldset>
       ${instructions}
     </div>`, 'Apri anteprima');
   $('dialog').dataset.backdrop = 'close';
   const options = await asked;
   if (!options) return null;
-  pdfOptions = { title: Boolean(options.title), date: options.date, path: Boolean(options.path), pageNumbers: Boolean(options.pageNumbers) };
+  pdfOptions = { title: Boolean(options.title), date: options.date, path: Boolean(options.path), pageNumbers: Boolean(options.pageNumbers), tags: Boolean(options.tags) };
   try { localStorage.setItem(pdfOptionsKey, JSON.stringify(pdfOptions)); } catch {}
   return pdfOptions;
 }
@@ -18353,6 +18626,24 @@ function applyLightThemeVariables(element) {
       }
     }
   }
+}
+
+// Tag del documento aperto (anche con modifiche non salvate).
+function exportTags() {
+  return tagsFromFront(sourceMode ? frontSplit(src.value)[0] : front);
+}
+// Riga «Tag: …» sotto il primo titolo (o in cima): per PDF e Word, se scelta nelle opzioni.
+function addExportTags(container) {
+  const tags = exportTags();
+  if (!pdfOptions.tags || !tags.length) return;
+  const line = document.createElement('p');
+  line.className = 'export-tags';
+  const em = document.createElement('em');
+  em.textContent = 'Tag: ' + tags.join(' · ');
+  line.append(em);
+  const first = container.firstElementChild;
+  if (first?.tagName === 'H1') first.after(line);
+  else container.prepend(line);
 }
 
 function pdfContent() {
@@ -18404,6 +18695,7 @@ exportPdfButton.onclick = async () => {
     article.className = 'editor print-document';
     applyLightThemeVariables(article);
     article.append(pdfContent());
+    addExportTags(article);
     decorateCheckboxes(article);
     for (const code of article.querySelectorAll('pre code')) {
       renderHighlightedCode(code, code.textContent, codeLanguage(code));
@@ -23347,6 +23639,12 @@ async function showEntryInfo({ path, isFolder }) {
       });
       if (contained.length) add('Dimensione', formatBytes(size));
       if (latest) add('Ultima modifica', formatWhen(latest));
+      if (docs && await tagIndexReady(5000)) {
+        const counts = [...tagIndex().tags.values()].map(entry => [entry.name, [...entry.paths].filter(inside).length])
+          .filter(([, n]) => n).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'it'));
+        add('Tag più usati', counts.length ? counts.slice(0, 6).map(([tag, n]) => '#' + tag + ' (' + n + ')').join(' · ') +
+          (counts.length > 6 ? ' e altri ' + (counts.length - 6) : '') : 'Nessuno');
+      }
     } else {
       const handle = files.get(path);
       const file = handle ? await handle.getFile() : null;
@@ -23367,6 +23665,8 @@ async function showEntryInfo({ path, isFolder }) {
         const words = (text.replace(/```[\s\S]*?```/g, ' ').match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) || []).length;
         add('Parole', number(words) + (words >= 200 ? ' · circa ' + Math.round(words / 200) + ' min di lettura' : ''));
         add('Titoli', number(markdownHeadings(text).length));
+        const tags = tagsFromFront(frontSplit(text)[0]);
+        add('Tag', tags.length ? tags.map(tag => '#' + tag).join(' · ') : 'Nessuno');
         const links = scanMarkdownLinks(text);
         add('Collegamenti', number(links.filter(link => link.kind !== 'image').length));
         add('Immagini', number(links.filter(link => link.kind === 'image').length));
@@ -28817,7 +29117,7 @@ async function wordImageData(blob) {
   }
 }
 
-async function buildWordDocument(content, { title, path, index }) {
+async function buildWordDocument(content, { title, path, index, keywords = [] }) {
   const media = [];
   const parts = { document: [], footnotes: [] };
   let rels = parts.document;
@@ -29301,6 +29601,7 @@ async function buildWordDocument(content, { title, path, index }) {
   const coreXml = xmlHead + '<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" ' +
     'xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' +
     '<dc:title>' + wordEscape(title) + '</dc:title>' + (userName ? '<dc:creator>' + wordEscape(userName) + '</dc:creator>' : '') +
+    (keywords.length ? '<cp:keywords>' + wordEscape(keywords.join(', ')) + '</cp:keywords>' : '') +
     '<dcterms:created xsi:type="dcterms:W3CDTF">' + now + '</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">' + now + '</dcterms:modified></cp:coreProperties>';
   const appXml = xmlHead + '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Itaca Lite ' + wordEscape(APP_VERSION) + '</Application></Properties>';
   const main = 'application/vnd.openxmlformats-officedocument.wordprocessingml.';
@@ -29338,6 +29639,7 @@ async function buildWordDocument(content, { title, path, index }) {
 function wordContent() {
   const holder = document.createElement('div');
   holder.append(pdfContent());
+  addExportTags(holder);
   decorateCheckboxes(holder);
   return holder;
 }
@@ -29372,7 +29674,7 @@ async function exportWord() {
     startLoading('Esportazione in Word…', 0);
     let blob;
     try {
-      blob = await buildWordDocument(content, { title, path, index: files });
+      blob = await buildWordDocument(content, { title, path, index: files, keywords: exportTags() });
     } finally {
       stopLoading();
     }
