@@ -28,7 +28,7 @@ Tutto quello che serve per organizzare la cartella si fa dall’elenco, senza pu
 - **Selezione multipla**: `Ctrl + clic` (`⌘ + clic` su Mac) aggiunge o toglie un elemento, `Maiusc + clic` o `Maiusc + ↑/↓` prende un intervallo, `Ctrl/⌘ + A` tutti quelli visibili. Sotto l’elenco compare una barra con il numero degli elementi e i pulsanti **Sposta…** ed **Elimina**; anche `M` e `Canc` (`⌘ + Backspace` su Mac) agiscono su tutti, e trascinandone uno si spostano (o con **Alt** si copiano) tutti insieme. Le cartelle selezionate portano con sé il contenuto. Per eliminare più elementi la seconda conferma chiede di scriverne il numero. `Esc` o un clic semplice annullano la selezione.
 - **Trascina file e cartelle dal computer** (Finder, Esplora risorse) sull’elenco: vengono copiati nella cartella sotto il puntatore, con tutte le sottocartelle. Se un nome è già usato il nuovo diventa «Nome (2).pdf». Gli elementi aggiunti lampeggiano per un attimo. Lo stesso fa **⋯ › Aggiungi file qui…**.
 - **Trascina un file dall’elenco nel documento** (in Modifica): diventa un collegamento nel punto di rilascio, oppure un’immagine se è un’immagine.
-- **Informazioni** (**⋯** o `Ctrl/⌘ + I`): tipo, dimensione, data dell’ultima modifica e posizione; per i documenti anche parole e tempo di lettura, titoli, collegamenti, immagini e quanti documenti li citano; per le immagini le dimensioni in pixel; per le cartelle quanti documenti, file e sottocartelle contengono e lo spazio occupato.
+- **Informazioni** (**⋯** o `Ctrl/⌘ + I`): tipo, dimensione, data dell’ultima modifica e posizione; per i documenti anche parole e tempo di lettura, titoli, tag, collegamenti, immagini e quanti documenti li citano; per le immagini le dimensioni in pixel; per le cartelle quanti documenti, file e sottocartelle contengono, lo spazio occupato e i tag più usati.
 - **Duplica** crea «Nome copia.md» accanto all’originale (anche per le cartelle, con tutto il contenuto).
 
 Con una voce selezionata nell’elenco (clic, oppure `Ctrl/⌘ + Maiusc + E` per andarci dalla tastiera):
@@ -49,7 +49,7 @@ Le stesse scorciatoie sono indicate a destra nel menu **⋯** e nel **Glossario*
 
 ## Nuovo documento
 
-- **Nuovo documento** in alto nella barra laterale chiede la **Cartella** (proposta: quella del documento aperto) e il nome. Scrivendo `Sottocartella/Nome` crei anche la sottocartella.
+- **Nuovo documento** in alto nella barra laterale chiede il nome, i **Tag** (facoltativi) e la **Cartella** (proposta: quella del documento aperto). Scrivendo `Sottocartella/Nome` crei anche la sottocartella. Mentre scrivi i tag, sotto la cartella compare quella **suggerita**: la cartella con più documenti che hanno gli stessi tag (i tag rari contano di più), con il motivo («3 documenti con #stampanti»). Un clic la sceglie; se la cartella scelta è già la più adatta compare una spunta.
 - **Inserimento rapido** (da accendere in **Impostazioni › File**, spento all’inizio): fermati con il puntatore tra due voci dell’elenco. Una linea di puntini si carica dal centro e dopo un secondo l’elenco si apre come un varco nella griglia di puntini del grafo, nei colori del tema, con un **+** al centro; le voci sotto scendono per fare posto. Clicca, scrivi il nome e premi **Invio** (**Esc** annulla). Il documento va nella cartella della voce sopra, oppure dentro di essa se è una cartella aperta. Allontanandoti il varco si richiude.
 - Anche il menu **⋯** di una cartella o di un documento ha **Nuovo documento qui**.
 
@@ -107,6 +107,7 @@ La casella **Cerca nei documenti…** in alto nella barra laterale (`Ctrl/⌘ + 
 - Ogni risultato mostra la sezione in cui si trova (§ titolo), quante volte compare e un estratto. Clic sul risultato per aprirlo sulla prima occorrenza; clic di nuovo per passare alla successiva.
 - Tastiera: **Invio** apre il primo risultato, **↓/↑** scorrono i risultati, **Esc** torna alla casella o la svuota.
 - I file cambiati fuori da Itaca (da un altro programma o da un altro utente) vengono riletti alla ricerca successiva.
+- **Tag**: `#stampanti` trova i documenti con quel tag; si può unire al testo (`#stampanti toner`) o ad altri tag (`#stampanti #milano`, servono tutti). I tag con spazi vanno tra virgolette: `#"guasti comuni"`. Scrivendo `#` compaiono i tag esistenti con il numero di documenti; **Tab** completa quello evidenziato. Sotto ogni risultato si vedono i suoi tag. Vedi **Tag**.
 
 ## Scrivere in Markdown
 
@@ -300,6 +301,35 @@ Come i PDF, il blocco di codice si cancella in due tempi: `Backspace` dalla riga
 
 **Copia** copia il codice senza i numeri di riga; `Maiusc + clic` su **Copia** copia solo le righe evidenziate.
 
+## Tag
+
+I **tag** dicono di cosa parla un documento: `stampanti`, `procedure`, `milano`. Stanno nel file, nell’intestazione all’inizio del documento (la stessa che usa il plugin dei tag di Material per MkDocs):
+
+```markdown
+---
+tags:
+  - stampanti
+  - procedure
+---
+# Sostituzione del toner
+```
+
+**Collegamenti o tag?** Servono a cose diverse e si usano insieme.
+
+- Un **collegamento** dice «questo documento rimanda a *quello*»: lo scrivi in un punto preciso del testo, quando conosci l’altro documento («per il toner vedi [Sostituzione toner]»).
+- Un **tag** dice «questo documento parla di *questo argomento*». Non serve sapere quali altri documenti esistono: tutti quelli con lo stesso tag formano un gruppo da soli, anche quelli scritti domani. Venti procedure sulle stampanti non hanno bisogno di 190 collegamenti tra loro: basta il tag `stampanti`.
+- Un documento sta in **una sola cartella**, ma può avere **più tag**: «Stampante dell’ufficio di Milano» va in `Stampanti/` e ha anche il tag `milano`, così lo ritrovi da entrambe le parti.
+
+Come si usano:
+
+- **Etichette**: i tag compaiono sopra il documento. In **Lettura** un clic cerca tutti i documenti con quel tag. In **Modifica** ogni etichetta ha la **×** per toglierla e **+ Tag** ne aggiunge uno: mentre scrivi compaiono i tag già usati nella cartella; **Invio** o la virgola lo aggiungono, **Backspace** sulla casella vuota toglie l’ultimo. Non serve scrivere l’intestazione a mano (in **Markdown** la vedi e la puoi cambiare). Maiuscole e accenti non contano: `Stampanti` e `stampanti` sono lo stesso tag. Bastano pochi tag: oltre 5 Itaca lo fa notare.
+- **Ricerca**: `#tag` nella ricerca (vedi **Ricerca nei documenti**).
+- **Nuovo documento**: i tag scritti suggeriscono la cartella (vedi **Nuovo documento**).
+- **Documenti simili**: in fondo al documento, quelli con più tag in comune; i tag rari contano di più. Il simbolo del collegamento indica quelli già collegati: gli altri sono spesso collegamenti che mancano. Si spegne in **Impostazioni › Pannelli**.
+- **Grafo**: il pulsante a forma di etichetta mostra i tag anche nel grafo (vedi **Grafo dei collegamenti**).
+- **Rinominare, unire o togliere un tag** in tutti i documenti: cerca il tag (`#stampante`) e scegli **Rinomina, unisci o togli #stampante…** sotto il numero dei risultati, oppure tasto destro su un’etichetta. Scrivendo un nome che esiste già i due tag diventano uno solo (**Unisci**); **Togli da tutti** lo elimina dall’intestazione dei documenti. Cambia solo l’intestazione, il testo resta com’è. I documenti in modifica da un’altra persona non vengono toccati e un file che cambia mentre Itaca lo aggiorna viene riletto: alla fine Itaca dice quali documenti sono rimasti com’erano e propone **Riprova**.
+- **Informazioni** mostra i tag di un documento e i tag più usati in una cartella; nell’esportazione in **Word** i tag diventano le parole chiave del file e, a scelta, una riga sotto il titolo anche nel PDF.
+
 ## Grafo dei collegamenti
 
 Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si collegano tra loro: ogni nodo è un documento, ogni linea un collegamento (in un verso o nell’altro). Il documento aperto ha il colore d’accento del tema, gli altri il colore della loro cartella principale.
@@ -308,6 +338,7 @@ Il riquadro **Grafo dei collegamenti** mostra come i documenti della cartella si
 - Trascina un nodo: i documenti collegati lo seguono. Trascina lo sfondo per spostare la vista, usa la rotella per lo zoom, doppio clic sullo sfondo (o `0`) per adattare.
 - Passando sopra un nodo si evidenziano i suoi collegamenti; un clic apre il documento.
 - **⤢** apre il grafo grande in una finestra, con la legenda delle cartelle.
+- **Tag** (il pulsante a forma di etichetta, spento all’inizio) aggiunge al grafo i tag che uniscono almeno due documenti: pillole `#tag` con linee tratteggiate, più leggere dei collegamenti, che avvicinano un po’ i documenti dello stesso argomento senza cambiare la forma data dai collegamenti. Passando sopra un tag si illuminano i suoi documenti; un clic lo cerca. In **Locale** compaiono i tag del documento aperto e i documenti che li condividono, anche se non sono collegati: nel grafo grande tutti, nel riquadro i 12 più vicini (prima quelli con più tag in comune) e la pillola dice quanti ne restano fuori (`#procedure +28`). Nel riquadro piccolo, con poco spazio, i tag sono piccoli rombi e il nome compare zoomando o passandoci sopra.
 
 Come gli altri pannelli, si accende e si sposta da **Impostazioni › Pannelli** oppure trascinandolo (vedi **Spostare i pannelli**).
 
@@ -413,10 +444,10 @@ Al primo avvio: nessuna animazione, tema automatico, barra laterale a sinistra, 
 Apri **Impostazioni** dall’icona in basso a destra, accanto al pulsante del tema, oppure con `Ctrl+,` (`Cmd+,` su Mac). Si chiude con **Esc**, con la **×** o con un clic fuori dalla finestra. Le sezioni sono a sinistra; ogni riga ha a destra il suo comando (interruttore, scelta o menu) e le opzioni compaiono solo quando servono, per esempio l’angolo solo se il riquadro sta nel documento. Le scelte restano salvate nel browser.
 
 - **Aspetto**: tema (Laguna, Salvia, Terracotta, Indaco, Oceano, Ambra, Prugna, Rosa antico, Ardesia ognuno chiaro e scuro, e lo speciale **Natale**, sempre scuro: verde abete, rosso e la neve che cade nella barra laterale e si accumula in fondo, fino a un certo punto; il cumulo riparte da zero a ogni avvio o quando si torna al tema), modalità automatica/chiara/scura, dimensione del testo (80–140%), carattere del documento (con grazie, senza grazie, monospaziato), larghezza della colonna (stretta, media, larga, piena), **animazione** in fondo al documento (Loki, barchetta, slitta di Babbo Natale o nessuna, normale o doppia), **barra laterale** a sinistra o a destra (`Ctrl+Maiusc+B`, `Cmd+Maiusc+B` su Mac, la mostra o la nasconde) e **Marchio**: dimensione del logo (normale, grande, più grande; solo il logo oppure logo e titolo) e posizione della versione (accanto al nome, sotto il nome, in basso nella barra di stato, oppure nascosta).
-- **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno; indice e citazioni si mettono insieme nella barra laterale o in un angolo del documento, il grafo nella barra laterale o nel documento (nello stesso angolo di indice e citazioni se anche loro sono nel documento). **Ordine** decide chi sta sopra. Si possono anche trascinare, vedi **Spostare i pannelli**. L’indice evidenzia la sezione che stai leggendo.
+- **Pannelli**: **Indice del documento**, **Citato da** e **Grafo dei collegamenti** si accendono e spengono uno per uno; indice e citazioni si mettono insieme nella barra laterale o in un angolo del documento, il grafo nella barra laterale o nel documento (nello stesso angolo di indice e citazioni se anche loro sono nel documento). **Ordine** decide chi sta sopra. Si possono anche trascinare, vedi **Spostare i pannelli**. L’indice evidenzia la sezione che stai leggendo. **Documenti simili** (acceso all’inizio) mostra in fondo al documento quelli con tag in comune (vedi **Tag**).
 - **Documenti**: come si apre un documento (lettura, modifica o sorgente Markdown), **Più documenti aperti** (uno, schede o affiancati: vedi **Più documenti aperti**), **Markdown mentre scrivi** (acceso all’inizio) e **Chiudi automaticamente** (spento all'inizio), vedi **Scrivere in Markdown**, e salvataggio automatico dopo una pausa di 2 s, 5 s, 15 s o 1 minuto. Il salvataggio automatico vale per i documenti già presenti sul disco. I documenti nuovi, quelli con immagini incollate non ancora salvate e quelli con sintassi avanzata si salvano ancora con **Salva**.
 - **File**: conferma dell’eliminazione (conferma e nome digitato, oppure solo conferma), preselezione di «Aggiorna i collegamenti» quando rinomini o sposti (vale anche per gli spostamenti trascinando), **Documento iniziale** (vedi **Avvio**), **Inserimento rapido** (il varco con il **+** tra due voci dell’elenco, spento all’inizio), il tuo nome, mostrato agli altri quando stai modificando un documento (se non l’hai mai scritto, Itaca lo ricava dall’utente del computer quando lo trova nel percorso della cartella; altrimenti resta vuoto), e **Icona di Itaca** (vedi sotto).
-- **PDF**: intestazione, piè di pagina e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
+- **PDF**: intestazione, piè di pagina, **Tag sotto il titolo** (vale anche per Word, spento all’inizio) e se mostrare le opzioni a ogni esportazione. Il PDF usa sempre i colori chiari della tavolozza scelta, anche quando lavori con il tema scuro.
 - **Aggiornamenti**: la versione che usi, **Controlla ora**, le novità dell’ultima versione e se cercare gli aggiornamenti **all’avvio** (all’inizio) o **solo a mano** (vedi **Aggiornamenti**).
 
 I menu a tendina (stile del paragrafo, Blocchi, Stili, scelte nelle finestre) usano la grafica di Itaca nei colori del tema invece del menu di sistema; sui dispositivi touch resta il selettore di sistema.
@@ -469,7 +500,7 @@ Il pulsante con il fumetto nella barra in basso apre **Segnalazioni**: un proble
 
 **⋯ › Esporta in Word…** salva il documento come file **.docx**, da mandare a chi non usa Itaca o a chi chiede «il Word». Si sceglie dove salvarlo (in Safari e Firefox finisce nella cartella Download). Esporta quello che vedi, anche le modifiche non ancora salvate.
 
-Il file usa gli stili veri di Word, quindi resta comodo da modificare: i titoli sono **Titolo 1–6** (compaiono nel riquadro di spostamento e in un sommario), gli elenchi sono elenchi puntati e numerati di Word, le tabelle hanno l’intestazione che si ripete su ogni pagina e i collegamenti a una sezione del documento portano a quel titolo. Le **note a piè di pagina** diventano note di Word, le **caselle** ☐/☒, le **immagini** sono incorporate (alla larghezza scelta, mai oltre la pagina) e i diagrammi Mermaid diventano immagini. Riquadri (avvisi, note, suggerimenti), citazioni e blocchi di codice stanno in un riquadro colorato; il codice mantiene i colori della sintassi. Le schede (`===`) diventano titoletti seguiti dal loro contenuto e le sezioni espandibili sono aperte. Pagina A4 con margini di 2 cm e numero di pagina in basso.
+Il file usa gli stili veri di Word, quindi resta comodo da modificare: i titoli sono **Titolo 1–6** (compaiono nel riquadro di spostamento e in un sommario), gli elenchi sono elenchi puntati e numerati di Word, le tabelle hanno l’intestazione che si ripete su ogni pagina e i collegamenti a una sezione del documento portano a quel titolo. Le **note a piè di pagina** diventano note di Word, le **caselle** ☐/☒, le **immagini** sono incorporate (alla larghezza scelta, mai oltre la pagina) e i diagrammi Mermaid diventano immagini. Riquadri (avvisi, note, suggerimenti), citazioni e blocchi di codice stanno in un riquadro colorato; il codice mantiene i colori della sintassi. Le schede (`===`) diventano titoletti seguiti dal loro contenuto e le sezioni espandibili sono aperte. Pagina A4 con margini di 2 cm e numero di pagina in basso. I **tag** del documento diventano le **parole chiave** del file: le vedi in Word (File › Informazioni) e la ricerca di Windows le trova; con **Tag sotto il titolo** acceso nelle opzioni PDF compaiono anche come riga sotto il titolo.
 
 PDF e file incorporati diventano una riga con il loro nome (un link se sono su Internet); i collegamenti ad altri documenti della cartella restano testo, perché chi riceve il file non ha la cartella. Pages e l’anteprima del Mac mostrano riquadri e tabelle più stretti di come li disegna Word.
 
