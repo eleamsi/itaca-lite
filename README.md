@@ -392,6 +392,7 @@ Come si aprono i documenti con le schede o affiancati:
 - Un **collegamento** con **Affiancati** apre il documento nella colonna a destra; con **Schede** lo apre nella stessa scheda (`Ctrl/⌘ + clic` in Lettura o clic con la rotella: in una scheda nuova).
 - Un **nuovo documento** si apre in una scheda nuova.
 - Passando da un documento all'altro le **modifiche non salvate restano**: la scheda o il dorso hanno un pallino; si salvano tornando su quel documento. Chiudendo una scheda con modifiche, o cambiando cartella, Itaca chiede se salvarle. Con il **salvataggio automatico** il documento viene salvato quando lo lasci.
+- **Cambiare l'ordine**: trascina una scheda, o il dorso di una colonna, nel punto in cui la vuoi; una linea colorata indica dove andrà (`Esc` annulla). In alternativa **⋯ › Sposta a sinistra / Sposta a destra** sposta il documento attivo di un posto. L'ordine viene ricordato con le schede aperte.
 - Ogni documento ricorda il punto in cui eri e il modo (Lettura, Modifica, Markdown).
 - Le schede aperte restano per la cartella: alla riapertura di Itaca tornano com'erano.
 - Anche l’ultima scheda o colonna si può chiudere: non resta aperto nessun documento. `Alt + Maiusc + W` (`⌥⇧W` sul Mac) o **⋯ › Chiudi tutti** chiude tutto in una volta, chiedendo prima di salvare le modifiche.
