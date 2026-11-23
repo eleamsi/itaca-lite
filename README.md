@@ -392,7 +392,7 @@ Un clic su un’immagine in **Lettura** (o nell’elenco dei file) apre l’ante
 
 ## Modifica immagine
 
-Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica immagine**, oppure, in **Modifica**, fai **doppio clic** sull’immagine nel documento. Un clic solo la seleziona: compaiono la maniglia per ridimensionarla e il pulsante **Modifica**.
+Per annotare un’immagine PNG, JPEG o WebP statica, aprila e scegli **Modifica immagine**, oppure, in **Modifica**, fai **doppio clic** sull’immagine nel documento. Un clic solo la seleziona: compaiono la maniglia per ridimensionarla e il pulsante **Modifica**. Con l’immagine selezionata, `Ctrl/⌘ + C` la **copia** (si incolla anche in Word, Paint o nella posta; incollata in Itaca diventa un riferimento allo stesso file, senza doppioni), `Ctrl/⌘ + X` la **taglia**, `Canc` o `Backspace` la **eliminano** (`Ctrl/⌘ + Z` la rimette) ed `Esc` toglie la selezione.
 
 - **Strumenti**: penna (`P`), evidenziatore (`H`), gomma (`E`), linea (`L`), freccia (`A`), rettangolo (`R`), ellisse (`O`), testo (`T`) e ritaglio (`C`).
 - **Stile**: colori rapidi o un colore a scelta, forme piene (`F`), spessore o dimensione del testo (`[` e `]`). Lo spessore iniziale si adatta alla grandezza dell’immagine.
