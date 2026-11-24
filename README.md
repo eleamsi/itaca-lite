@@ -258,9 +258,20 @@ I **video** (`.mp4`, `.mov`, `.m4v`, `.webm`, `.mkv`, `.ogv`) si guardano dentro
 - **Nella barra** (predefinito): nella barra laterale, sopra **Cartelle e file**. Se la barra laterale è nascosta passa nell’angolo.
 - **Fluttuante**: sopra al documento, si trascina dove vuoi dalla maniglia a puntini; Itaca ricorda la posizione.
 - **Nell’angolo**: in basso a destra; con la freccia si riduce a un piccolo disco (l’anello mostra l’avanzamento, le barrette si muovono mentre suona) e un clic lo riapre.
-- **Spento**: nessun lettore, l’audio si ferma quando cambi documento.
+- **Spento**: nessun lettore, l’audio si ferma quando cambi documento (una radio resta comunque nell’angolo).
 
-I tasti multimediali della tastiera (play/pausa) comandano il lettore.
+I tasti multimediali della tastiera (play/pausa) comandano il lettore. Il lettore distingue a colpo d’occhio un **file** (forma d’onda, tempi, velocità) da una **radio in diretta** (logo della stazione, etichetta rossa **LIVE**, da quanto ascolti).
+
+### Radio online
+
+Il pulsante **Radio** nella barra in basso apre l’elenco delle stazioni in diretta di tutto il mondo, da [radio-browser.info](https://www.radio-browser.info/): un archivio libero, senza registrazione. Serve la connessione a internet; funziona anche con Itaca aperta come file.
+
+- **Cerca**: scrivi il nome della stazione e filtra per **genere** e **paese** (insieme). Senza ricerca compaiono le più ascoltate; **Altre stazioni** carica le successive.
+- **A caso**: con un genere scelto, ascolta una stazione a caso di quel genere (e di quel paese, se scelto). Mentre suona, il pulsante con le frecce incrociate nel lettore passa a un’altra stazione dello stesso genere; anche il tasto «traccia successiva» della tastiera.
+- **Preferite**: la stella accanto a una stazione (o nel lettore) la mette tra le preferite. **Recenti**: le ultime stazioni ascoltate, con **Svuota**.
+- Un clic sulla stazione la ascolta, un altro la ferma. Il lettore di Itaca mostra la diretta come per i file audio e continua a suonare cambiando documento; un clic sul nome della stazione apre il suo sito.
+
+Fermare una diretta la stacca: riprendendo, si ascolta quello che va in onda in quel momento. Se una stazione cambia indirizzo, Itaca usa quello nuovo da sola; se non risponde o trasmette in un formato che il browser non sa riprodurre, un messaggio lo dice e la stazione è segnata come **Non raggiungibile**. Preferite e recenti restano nel browser. Per nascondere il pulsante: **Impostazioni › Aspetto › Radio online**.
 
 Anche gli **indirizzi web** di file audio e video (`https://…/intervista.mp3`) funzionano: incollati su una riga vuota propongono **Collegamento** o **Lettore**. Le pagine di YouTube e simili restano collegamenti (vedi [Video](#video)).
 
