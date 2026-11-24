@@ -13,7 +13,7 @@ Itaca Lite è un editor Markdown locale in un unico file HTML. Offre una modalit
 
 La barra laterale mostra **tutti i file** della cartella, non solo i documenti Markdown. Ogni tipo ha un’icona e un colore propri per riconoscerlo a colpo d’occhio: immagini, PDF, documenti di testo (Word, ODT, RTF), fogli di calcolo (Excel, CSV), presentazioni, archivi (ZIP, RAR, 7z), audio, video, codice e configurazioni (JS, Python, HTML, JSON, YAML…) e testo semplice; gli altri hanno un’icona generica.
 
-- Clic su un documento Markdown: si apre in Itaca. Clic su un’immagine: anteprima. Clic su PDF, testo, audio o video: si apre in una nuova scheda. Gli altri file (ZIP, Excel, presentazioni…) non si scaricano subito: una finestra mostra tipo, dimensione e, per gli ZIP, l’elenco dei file contenuti, e il file si scarica solo con **Scarica**.
+- Clic su un documento Markdown: si apre in Itaca. Clic su un’immagine: anteprima. Clic su PDF, Word, Excel, PowerPoint, testo, audio o video: si apre in una nuova scheda. Gli altri file (ZIP, vecchi .xls e .ppt, programmi…) non si scaricano subito: una finestra mostra tipo, dimensione e, per gli ZIP, l’elenco dei file contenuti, e il file si scarica solo con **Scarica**.
 - Il menu **⋯** permette di rinominare (l’estensione resta se non ne scrivi un’altra), spostare, duplicare, eliminare, copiare il percorso e vedere le **Informazioni** di qualsiasi file o cartella (vedi **Gestire file e cartelle**).
 - Passando sopra un file, il suggerimento mostra percorso, dimensione e data dell’ultima modifica.
 - La ricerca nel testo riguarda solo i documenti Markdown.
@@ -215,6 +215,20 @@ Allo stesso modo si possono incorporare i **documenti Word** (`.docx`): incollat
 
 L’anteprima è in sola lettura e preparata da Itaca, senza Word né Internet: caratteri non installati, caselle di testo, forme, revisioni e commenti possono apparire semplificati e le pagine non sempre si interrompono come in Word. I vecchi file **.doc** (Word 97–2003) non si possono mostrare: restano un collegamento. Nel PDF esportato compare solo il titolo; nel sito HTML esportato il riquadro ha il link **Scarica**.
 
+### Fogli Excel e presentazioni PowerPoint incorporati
+
+Nello stesso modo si incorporano i **fogli Excel** (`.xlsx`, `.xlsm`) e le **presentazioni PowerPoint** (`.pptx`), con gli stessi pulsanti **Apri**, **Scarica** e **Collegamento**; un clic sul file nell’elenco apre l’anteprima in una nuova scheda.
+
+```markdown
+![Budget 2026](_allegati/budget.xlsx)
+![Riunione di reparto](_allegati/riunione.pptx)
+```
+
+- **Excel**: i fogli come in Excel, con le lettere delle colonne e i numeri delle righe sempre visibili e le **schede dei fogli** in basso. Numeri, date e percentuali con il formato del file, celle unite, larghezze delle colonne, collegamenti; passando sopra una cella compare la **formula**, e le celle con un commento hanno l’angolino rosso. I valori sono quelli salvati dal file (Itaca non ricalcola). Colori e caratteri delle celle non si vedono. Nel riquadro le prime 2000 righe, nella scheda a sé fino a 20 000.
+- **PowerPoint**: le diapositive una sotto l’altra, numerate, con sfondi e colori del tema, titoli ed elenchi, immagini, forme, frecce, tabelle e SmartArt. Grafici, oggetti incorporati, animazioni e video non si vedono (un riquadro lo dice); caratteri e posizioni possono differire un po’ da PowerPoint.
+
+Le anteprime sono in sola lettura e preparate da Itaca, senza Office né Internet. I vecchi **.xls** e **.ppt** non si possono mostrare: restano un collegamento.
+
 ### File di testo incorporati
 
 Anche i **file di testo** si possono incorporare: `.txt`, `.log`, `.csv`, `.tsv`, `.json`, `.xml`, `.yaml`, `.toml`, `.ini`, `.sql` e i file di codice (`.py`, `.js`, `.sh`, `.html`, `.css`…). Incollati, trascinati o scelti con 📎 diventano un riquadro con il contenuto: numeri di riga e colori della sintassi per codice e log, testo a capo per i `.txt`, una **tabella** per CSV e TSV, JSON su una sola riga mostrato indentato. Il riquadro è alto quanto il contenuto (fino a un massimo) e segue il tema chiaro o scuro.
@@ -260,7 +274,7 @@ Il browser legge i formati più diffusi; un `.mkv` si vede se il video è H.264,
 
 ### Schede dei file
 
-Un file che Itaca non mostra dentro il documento (**archivi ZIP**, Excel, presentazioni, programmi…) può comparire come **scheda**: icona del tipo con l’estensione, titolo, tipo e dimensione del file. Per gli **ZIP** la scheda dice anche quanti file contiene e il pulsante **Contenuto** (in Lettura basta un clic sulla scheda) mostra l’elenco dei file dell’archivio con cartelle e dimensioni, senza estrarlo. **Scarica** scarica il file, **Apri** lo apre nel browser se sa mostrarlo, in Modifica **Collegamento** torna al semplice link.
+Un file che Itaca non mostra dentro il documento (**archivi ZIP**, vecchi .xls e .ppt, programmi…) può comparire come **scheda**: icona del tipo con l’estensione, titolo, tipo e dimensione del file. Per gli **ZIP** la scheda dice anche quanti file contiene e il pulsante **Contenuto** (in Lettura basta un clic sulla scheda) mostra l’elenco dei file dell’archivio con cartelle e dimensioni, senza estrarlo. **Scarica** scarica il file, **Apri** lo apre nel browser se sa mostrarlo, in Modifica **Collegamento** torna al semplice link.
 
 ```markdown
 [Materiale del corso](_allegati/materiale.zip){ .card }
@@ -346,7 +360,7 @@ Come si usano:
 Oltre ai tag, un documento può avere **uno stato**, che dice a che punto è il lavoro: **Pianificato** (c’è solo il titolo o una traccia), **Da finire**, **Da revisionare**, **Nuovo** e **Obsoleto**. A differenza dei tag lo stato è uno solo e cambia nel tempo.
 
 - In **Modifica** si sceglie con **+ Stato** sopra il documento (o con un clic sullo stato già messo); **Nessuno stato** lo toglie. In **Lettura** un clic mostra tutti i documenti con lo stesso stato.
-- Nell’elenco dei file un **pallino colorato** accanto al nome mostra lo stato di ogni documento; lo stato compare anche in **Informazioni**.
+- Nell’elenco dei file un **pallino colorato** accanto al nome mostra lo stato di ogni documento; lo stato compare anche in **Informazioni**. I pallini compaiono appena apri la cartella: Itaca ricorda gli stati dell’ultima volta e li aggiorna leggendo i documenti in sottofondo.
 - Si cerca con `stato:` (vedi **Ricerca nei documenti**).
 - Sta nell’intestazione come `status: da-revisionare`, la stessa chiave che usa Material per MkDocs: `new` e `deprecated` (Nuovo e Obsoleto) il sito li mostra già con un’icona; per gli altri stati basta aggiungerli in `extra.status` di `mkdocs.yml`.
 
@@ -506,7 +520,7 @@ Le nuove versioni di Itaca sono pubblicate su GitHub, nelle [Release di eleamsi/
 - **Se c’è una versione nuova**: la pillola della versione diventa colorata con una freccia (clic = dettagli), sull’icona delle **Impostazioni** e sulla scheda **Aggiornamenti** compare un pallino, e in basso a destra un avviso con **Aggiorna** e **Novità** resta finché non lo chiudi con la **×** (per quella versione non torna; pillola e pallino restano). In **Impostazioni › Aggiornamenti** ci sono le novità della versione.
 - **Aggiorna** (Chrome, Edge): Itaca chiede di salvare i documenti modificati, scarica il nuovo file da GitHub, controlla che sia completo e della versione giusta, lo scrive al posto del proprio file e si ricarica. Impostazioni, cartelle e schede restano. Se la cartella aperta è quella che contiene Itaca non chiede altro; altrimenti la prima volta ti chiede di scegliere il file `Itaca Lite.html` che stai usando (e se puoi modificarlo), poi se lo ricorda. Mentre lavora mostra a quale dei quattro passaggi è arrivato (controllo del file, download, copia di riserva, scrittura). Ogni passaggio ha un tempo massimo: se uno non risponde (cartella di rete lenta, dati del browser rovinati, GitHub irraggiungibile) Itaca dice dove si è fermata e perché, se il file è rimasto com’era, e propone **Aggiorna a mano**. Se qualcosa va storto il file non cambia.
 - **Torna alla versione precedente**: la versione sostituita resta salvata nel browser; in **Impostazioni › Aggiornamenti** c’è **Torna alla X.Y.Z** Se il browser non riesce a salvarla, Itaca lo chiede prima di aggiornare (**Aggiorna senza copia** o **Annulla**); la versione precedente resta comunque scaricabile da GitHub.
-- **Novità delle versioni**: le note di ogni versione sono dentro il file di Itaca, quindi si leggono anche senza connessione e senza andare su GitHub. Si aprono con un clic sulla pillola della versione accanto al nome (o in basso), oppure da **Impostazioni › Aggiornamenti › Novità delle versioni**: a sinistra l’elenco delle versioni con la data, a destra cosa è cambiato. Dopo un aggiornamento un avviso in basso a destra propone le novità, e le versioni che non avevi ancora visto sono segnate **nuova**.
+- **Novità delle versioni**: le note di ogni versione sono dentro il file di Itaca, quindi si leggono anche senza connessione e senza andare su GitHub. Si aprono con un clic sulla pillola della versione accanto al nome (o in basso), oppure da **Impostazioni › Aggiornamenti › Novità delle versioni**: a sinistra le versioni raggruppate per **serie** (1.36, 1.35…) e per mese, ognuna con il titolo della novità principale; a destra una serie alla volta, con **Precedente** e **Successiva** in fondo. La casella **Cerca nelle note** trova una parola o una frase in tutte le versioni ed evidenzia i risultati. Dopo un aggiornamento un avviso in basso a destra propone le novità: la voce **Da quando hai aggiornato** le mostra tutte insieme, e le versioni che non avevi ancora visto hanno un pallino.
 - **Safari e Firefox** (e Itaca aperta da un server web): il browser non può modificare file sul disco, quindi **Aggiorna** scarica il nuovo `Itaca Lite.html` nella cartella Download e spiega come metterlo al posto di quello che usi.
 
 ## Segnalazioni
