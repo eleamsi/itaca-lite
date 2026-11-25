@@ -19996,7 +19996,7 @@ function renderWorkStart() {
   title.textContent = folderName || 'Cartella di lavoro';
   if (hasIndex) {
     description.textContent = folderAccessPending
-      ? 'Scegli un documento dall’ultimo elenco disponibile. Il browser potrebbe chiederti il permesso di aprirlo.'
+      ? 'Scegli un documento dall’ultimo elenco disponibile. Il browser potrebbe chiederti il permesso di aprirlo.' + persistentPermissionHint()
       : 'Scegli un documento dalla barra laterale.';
     action.textContent = 'Mostra documenti';
     action.onclick = () => setSidebar(true, true);
@@ -20005,7 +20005,7 @@ function renderWorkStart() {
     action.textContent = 'Nuovo documento';
     action.onclick = newDoc;
   } else if (folderAccessPending) {
-    description.textContent = 'Consenti l’accesso per vedere i documenti di questa cartella.';
+    description.textContent = 'Consenti l’accesso per vedere i documenti di questa cartella.' + persistentPermissionHint();
     action.textContent = 'Consenti accesso';
     action.onclick = () => chooseFolder(true);
   } else {
@@ -26524,6 +26524,24 @@ const previousFolderKey = workspaceUrl.pathname.endsWith('/Itaca%20Lite.html') ?
 const readAccess = { mode: 'read' };
 const writeAccess = { mode: 'readwrite' };
 
+// Chrome/Edge dalla 122: riaprendo un handle ricordato, la domanda del browser offre
+// «Consenti a ogni visita» → il permesso resta anche dopo la chiusura del browser.
+// (funzione: renderWorkStart può girare prima di questa riga)
+function persistentPermissionHint() {
+  const chromium = navigator.userAgentData?.brands?.some(item => item.brand === 'Chromium' && Number(item.version) >= 122);
+  return chromium ? ' Se il browser lo propone, scegli «Consenti a ogni visita»: non te lo chiederà più.' : '';
+}
+
+// L'archivio del browser (IndexedDB) conserva il riferimento alla cartella: chiedere che
+// sia «persistente» evita che venga cancellato quando il disco è quasi pieno.
+// Chrome ed Edge rispondono da soli, senza domande.
+let folderStorageAsked = false;
+function keepFolderStorage() {
+  if (folderStorageAsked || !navigator.storage?.persist) return;
+  folderStorageAsked = true;
+  navigator.storage.persisted().then(done => done || navigator.storage.persist()).catch(() => {});
+}
+
 async function allowFolderWrite(directory) {
   if (!directory?.requestPermission || await directory.requestPermission(writeAccess) === 'granted') return true;
   toast('Il browser non ha concesso la scrittura. I file della cartella sono ancora consultabili.');
@@ -26741,8 +26759,10 @@ async function folderPreference(record) {
   }
 }
 
-function rememberFolderIndex() {
-  return folderPreference({ handle: root, paths: [...files.keys()].filter(isMD) });
+async function rememberFolderIndex() {
+  const result = await folderPreference({ handle: root, paths: [...files.keys()].filter(isMD) });
+  keepFolderStorage();
+  return result;
 }
 
 function clearWorkingFolder() {
@@ -26862,9 +26882,16 @@ async function restoreFolder() {
     renderTree();
     mark(false);
     // Una cartella di rete che non risponde non deve lasciare Itaca in attesa: si chiede di riaprirla.
-    const permission = await withTimeout(handle.queryPermission(readAccess), handleCheckTimeoutMs).catch(() => 'prompt');
+    // Prima lettura e scrittura (permesso «a ogni visita» o PWA): così niente domande al primo
+    // salvataggio e il salvataggio automatico funziona subito.
+    const ask = mode => withTimeout(handle.queryPermission(mode), handleCheckTimeoutMs).catch(() => 'prompt');
+    const write = await ask(writeAccess);
+    const permission = write === 'granted' ? write : await ask(readAccess);
     if (permission === 'granted' && canSwitch()) {
-      if (await showFolder(handle, canSwitch)) await rememberFolderIndex();
+      if (await showFolder(handle, canSwitch)) {
+        await rememberFolderIndex();
+        if (write !== 'granted') allowWriteOnFirstInteraction(handle);
+      }
     } else if (canSwitch()) {
       reopenOnFirstInteraction();
     }
@@ -26894,6 +26921,24 @@ function reopenOnFirstInteraction() {
     chooseFolder(true);
   }
   events.forEach(type => addEventListener(type, reopen, true));
+}
+
+// Cartella riaperta con la sola lettura: la scrittura si chiede al primo gesto (il browser
+// la concede solo durante un clic o un tasto), così il salvataggio automatico non resta
+// fermo in silenzio fino al primo «Salva».
+function allowWriteOnFirstInteraction(handle) {
+  const events = ['pointerdown', 'keydown'];
+  const stop = () => events.forEach(type => removeEventListener(type, ask, true));
+  function ask(event) {
+    if (root !== handle) return stop();
+    if (event.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta', 'Tab', 'Escape'].includes(event.key)) return;
+    if (event.target?.closest?.('#welcome, dialog')) return;
+    stop();
+    handle.requestPermission(writeAccess).then(state => {
+      if (state !== 'granted' && root === handle) toast('Il browser non ha concesso la scrittura: Itaca la chiederà di nuovo al primo salvataggio.');
+    }).catch(() => {});
+  }
+  events.forEach(type => addEventListener(type, ask, true));
 }
 
 // Scelta di cartella in corso: una scelta esplicita nuova (selettore, cartella salvata)
@@ -37539,7 +37584,7 @@ function renderWelcome() {
   if (known) {
     $('welcomeMainLabel').textContent = 'Riprendi il viaggio';
     detail.textContent = 'Ultima rotta: ' + name;
-    main.title = folderAccessPending ? 'Riapre «' + name + '»: il browser potrebbe chiedere il permesso' : 'Entra in «' + name + '»';
+    main.title = folderAccessPending ? 'Riapre «' + name + '»: il browser potrebbe chiedere il permesso.' + persistentPermissionHint() : 'Entra in «' + name + '»';
   } else {
     $('welcomeMainLabel').textContent = window.showDirectoryPicker || !canImportFolder ? 'Scegli la cartella' : 'Importa una cartella';
     main.title = localFolderName ? 'Consigliata: la cartella «' + localFolderName + '», quella che contiene Itaca' : 'La cartella dei tuoi documenti Markdown';
