@@ -32175,6 +32175,7 @@ async function checkFolderLinks() {
 // (evidenze = CSS Custom Highlight, scheda in uno shadow DOM): l'annulla resta valido.
 const mediaTimePattern = /^((?:\d{1,2}:)?[0-5]?\d:[0-5]\d)(?=[\s ]|$)/;
 var mediaNoteBoxes = [];
+var mediaInputHandlers = new WeakMap();
 let mediaNotesTimer = 0;
 let mediaFlashTimer = 0;
 
@@ -32268,13 +32269,17 @@ function pauseMedia(box) {
   else if (isNowPlaying(box.querySelector('.audio-player')?.dataset.track)) itacaAudio.pause();
 }
 
-// Appunto del momento: l'ultimo con il minuto già passato.
+// Appunto del momento: il primo (nell'ordine del documento) con il minuto già passato più
+// vicino. Più appunti allo stesso minuto formano un gruppo e si mostrano tutti.
 function currentMediaNote(notes, time) {
   let found = -1;
   notes.forEach((note, index) => {
-    if (note.time <= time + .25 && (found < 0 || note.time >= notes[found].time)) found = index;
+    if (note.time <= time + .25 && (found < 0 || note.time > notes[found].time)) found = index;
   });
   return found;
+}
+function mediaNoteGroup(notes, index) {
+  return index < 0 ? [] : notes.filter(note => note.time === notes[index].time);
 }
 
 function mediaNotesEditable(box) {
@@ -32308,7 +32313,7 @@ function paintMediaNotes() {
     for (const note of notes) times.push(note.range);
     const clock = mediaClock(box);
     const index = clock.time > 0 || clock.playing ? currentMediaNote(notes, clock.time) : -1;
-    if (index >= 0) now.push(noteBodyRange(notes[index].li));
+    for (const note of mediaNoteGroup(notes, index)) now.push(noteBodyRange(note.li));
   }
   CSS.highlights.set('media-time', new Highlight(...times));
   CSS.highlights.set('media-now', new Highlight(...now));
@@ -32345,6 +32350,7 @@ svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width:
 .time { flex: none; padding: 1px 7px; border-radius: 99px; background: var(--tint, #eef); color: var(--accent-text, #2b6cb0); font: 600 12px/1.5 var(--mono, ui-monospace, monospace); }
 .text { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .hint { color: var(--muted, #666); }
+.more { flex: none; padding: 0 6px; border-radius: 99px; border: 1px solid var(--line, #ddd); color: var(--muted, #666); font-size: 11.5px; }
 .count { flex: none; color: var(--muted, #666); font-size: 12px; padding: 0 4px; font-variant-numeric: tabular-nums; }
 .add { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border: 1px solid var(--line, #ddd); color: var(--accent-text, #2b6cb0); font-weight: 550; }
 .add:hover { border-color: var(--accent, #2b6cb0); background: var(--tint, #eef); }
@@ -32355,6 +32361,7 @@ svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width:
 .list { flex: 1; min-height: 0; overflow: auto; margin: 0; padding: 6px; list-style: none; }
 .list li button { display: flex; gap: 10px; align-items: baseline; width: 100%; padding: 7px 10px; text-align: left; }
 .list li button:hover { background: var(--tint, rgba(0,0,0,.06)); }
+.list .text { display: block; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
 .list li.now button { background: color-mix(in srgb, var(--accent, #2b6cb0) 16%, transparent); }
 .list li.now .time { background: var(--accent, #2b6cb0); color: var(--paper, #fff); }
 .list .empty { padding: 18px 12px; color: var(--muted, #666); text-align: center; }
@@ -32363,11 +32370,14 @@ svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width:
 .write small { display: block; margin-top: 6px; color: var(--muted, #666); font-size: 11.5px; }
 .postit { position: fixed; left: 24px; bottom: 84px; z-index: 2; display: flex; align-items: flex-start; gap: 8px; max-width: min(460px, 70vw); padding: 10px 12px; border-radius: 10px;
   background: rgb(18 20 24 / 78%); color: #f2f3f5; font: 14px/1.45 var(--sans, system-ui, sans-serif); box-shadow: 0 8px 28px rgb(0 0 0 / 35%); backdrop-filter: blur(6px); }
+.postit .notes { flex: 1; min-width: 0; max-height: 42vh; overflow: auto; display: grid; gap: 6px; }
+.postit .row { display: flex; align-items: baseline; gap: 8px; }
+.postit .row .text { display: block; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
 .postit .time { background: rgb(255 255 255 / 16%); color: #fff; }
-.postit .text { -webkit-line-clamp: 4; }
 .postit .icon { color: #d7dade; width: 26px; height: 26px; }
 .postit .icon:hover { background: rgb(255 255 255 / 14%); color: #fff; }
-.postit.empty .note { display: none; }
+.postit.empty { background: rgb(18 20 24 / 55%); }
+.postit.empty .notes { display: none; }
 `;
 
 function ensureMediaCard(host) {
@@ -32376,7 +32386,7 @@ function ensureMediaCard(host) {
   shadow.innerHTML = '<style>' + mediaCardCss + '</style>' +
     '<div class="bar" hidden>' +
       '<button type="button" class="icon prev" title="Appunto precedente">' + mediaIcon('prev') + '</button>' +
-      '<button type="button" class="note" title="Mostra l’appunto nel documento"><span class="time"></span><span class="text"></span></button>' +
+      '<button type="button" class="note" title="Mostra l’appunto nel documento"><span class="time"></span><span class="text"></span><span class="more" hidden></span></button>' +
       '<button type="button" class="icon next" title="Appunto successivo">' + mediaIcon('next') + '</button>' +
       '<span class="count"></span>' +
       '<button type="button" class="add" title="Scrive un appunto al minuto attuale e mette in pausa">' + mediaIcon('add') + '<span>Appunto</span></button>' +
@@ -32390,7 +32400,7 @@ function ensureMediaCard(host) {
       '<form class="write"><input type="text" autocomplete="off" spellcheck="true"><small>Il video si ferma mentre scrivi e riparte con Invio.</small></form>' +
     '</section>' +
     '<div class="postit" hidden>' +
-      '<button type="button" class="note" tabindex="-1"><span class="time"></span><span class="text"></span></button>' +
+      '<div class="notes"></div>' +
       '<button type="button" class="icon list-button" title="Mostra tutti gli appunti a lato">' + mediaIcon('list') + '</button>' +
     '</div>';
   const box = () => host.closest('[data-ext="pdf"]');
@@ -32430,21 +32440,25 @@ function ensureMediaCard(host) {
     delete panel.dataset.floating;
     renderMediaCard(entry());
   };
-  shadow.querySelector('.postit .note').onclick = () => {
-    delete panel.dataset.floating;
-    renderMediaCard(entry());
-  };
   const input = shadow.querySelector('.write input');
   const write = { time: null, resume: false };
-  input.addEventListener('input', () => {
+  // Chiamato dall'ascoltatore in cattura su document (vedi sotto): un ascoltatore sul campo
+  // non verrebbe mai raggiunto, perché l'evento si ferma prima di arrivare all'editor.
+  mediaInputHandlers.set(input, () => {
     const target = box();
     if (write.time === null && input.value.trim()) {
+      // Primo carattere: il minuto dell'appunto è questo, e il video si ferma.
       const clock = mediaClock(target);
       write.time = clock.time;
       write.resume = clock.playing;
       pauseMedia(target);
       renderMediaCard(entry());
-    } else if (!input.value.trim()) write.time = null;
+    } else if (write.time !== null && !input.value.trim()) {
+      // Testo cancellato: niente appunto, il video riprende se andava.
+      if (write.resume) seekMedia(target, mediaClock(target).time, true);
+      write.time = null;
+      write.resume = false;
+    }
   });
   shadow.querySelector('.write').addEventListener('submit', event => {
     event.preventDefault();
@@ -32461,13 +32475,6 @@ function ensureMediaCard(host) {
     write.time = null;
     write.resume = false;
   });
-  input.addEventListener('keydown', event => {
-    if (event.key !== 'Escape' || !input.value) return;
-    // Esc con del testo scritto: lo cancella (il secondo Esc esce dallo schermo intero).
-    event.preventDefault();
-    input.value = '';
-    write.time = null;
-  });
   return shadow;
 }
 
@@ -32480,6 +32487,7 @@ function renderMediaCard(entry) {
   const clock = mediaClock(box);
   const started = clock.time > 0 || clock.playing;
   const index = started ? currentMediaNote(notes, clock.time) : -1;
+  const group = mediaNoteGroup(notes, index);
   const sorted = [...notes].sort((a, b) => a.time - b.time);
   const full = document.fullscreenElement === box;
   const video = mediaNotesKind(box) === 'video';
@@ -32495,6 +32503,12 @@ function renderMediaCard(entry) {
   bar.dataset.current = shown ? String(notes.indexOf(shown)) : '';
   const time = bar.querySelector('.time'), text = bar.querySelector('.text');
   const noteButton = bar.querySelector('.note');
+  const more = bar.querySelector('.more');
+  // Più appunti allo stesso minuto: il primo e «+N» (tutti nel suggerimento).
+  const together = index >= 0 ? group : shown ? notes.filter(note => note.time === shown.time) : [];
+  more.hidden = together.length < 2;
+  more.textContent = '+' + (together.length - 1);
+  noteButton.title = together.length > 1 ? together.map(note => note.label + ' ' + mediaNoteText(note)).join('\n') : 'Mostra l’appunto nel documento';
   if (shown) {
     time.hidden = false;
     time.textContent = shown.label;
@@ -32533,20 +32547,30 @@ function renderMediaCard(entry) {
       }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: editable ? 'Scrivi qui sotto il primo appunto.' : 'Nessun appunto.' })]));
     }
     [...list.children].forEach((item, i) => {
-      const now = sorted[i] && sorted[i] === notes[index];
+      const now = Boolean(sorted[i]) && group.includes(sorted[i]);
+      if (now && item.classList.contains('now')) return;
       if (item.classList.contains('now') !== now) {
         item.classList.toggle('now', now);
-        if (now) item.scrollIntoView({ block: 'nearest' });
+        if (now && sorted[i] === group[0]) item.scrollIntoView({ block: 'nearest' });
       }
     });
     const write = shadow.querySelector('.write');
     write.hidden = !editable;
     const input = write.querySelector('input');
     if (!input.value) input.placeholder = 'Appunto a ' + formatMediaTime(clock.time) + '… (Invio)';
-    const current = notes[index];
-    postit.classList.toggle('empty', !current);
-    postit.querySelector('.time').textContent = current?.label || '';
-    postit.querySelector('.text').textContent = current ? mediaNoteText(current) : '';
+    postit.classList.toggle('empty', !group.length);
+    const rows = postit.querySelector('.notes');
+    const postKey = group.map(note => note.label + '\u0001' + mediaNoteText(note)).join('\u0002');
+    if (rows.dataset.key !== postKey) {
+      rows.dataset.key = postKey;
+      rows.replaceChildren(...group.map(note => {
+        const row = Object.assign(document.createElement('div'), { className: 'row' });
+        row.append(Object.assign(document.createElement('span'), { className: 'time', textContent: note.label }),
+          Object.assign(document.createElement('span'), { className: 'text', textContent: mediaNoteText(note) }));
+        return row;
+      }));
+      rows.scrollTop = 0;
+    }
   }
 }
 
@@ -32688,6 +32712,12 @@ ed.addEventListener('mousemove', event => {
   });
 }, { passive: true });
 
+// Uscendo dall'editor con il puntatore su un minuto, il suggerimento non deve restare.
+ed.addEventListener('mouseleave', () => {
+  ed.classList.remove('over-media-time');
+  if (ed.title.startsWith('Vai a ') || ed.title.startsWith('Sposta ')) ed.removeAttribute('title');
+});
+
 ed.addEventListener('click', event => {
   if (event.button !== 0 || event.detail > 1) return;
   const hit = mediaTimeAt(event.clientX, event.clientY);
@@ -32717,8 +32747,40 @@ document.addEventListener('fullscreenchange', () => {
     renderMediaCard(entry);
   }
   const box = document.fullscreenElement;
-  if (box && mediaNotesKind(box)) setTimeout(() => box.querySelector(':scope > .media-notes')?.shadowRoot?.querySelector('.write input')?.focus({ preventScroll: true }), 50);
+  if (box && mediaNotesKind(box)) setTimeout(() => embedViewer(box)?.focus({ preventScroll: true }), 50);
 });
+// Clic sull'immagine del video = play/pausa, come nei lettori. Dentro l'editor il browser non
+// lo fa (e con il riquadro selezionato il clic diventava l'inizio di un trascinamento): se dopo
+// il clic lo stato non è cambiato da sé, lo cambia Itaca. La barra dei comandi in basso resta
+// del browser.
+let mediaClickState = null;
+ed.addEventListener('mousedown', event => {
+  mediaClickState = null;
+  if (!(event.target instanceof HTMLVideoElement) || event.button !== 0) return;
+  const video = event.target;
+  const box = video.closest('[data-ext="pdf"]');
+  const selection = getSelection();
+  if (box && selection.rangeCount && !selection.isCollapsed && selection.getRangeAt(0).intersectsNode(box)) {
+    selection.removeAllRanges();
+    updatePdfSelectionRing();
+  }
+  const rect = video.getBoundingClientRect();
+  if (event.clientY < rect.bottom - 56) mediaClickState = { video, paused: video.paused, x: event.clientX, y: event.clientY };
+}, true);
+ed.addEventListener('click', event => {
+  const state = mediaClickState;
+  mediaClickState = null;
+  if (!state || event.target !== state.video || Math.hypot(event.clientX - state.x, event.clientY - state.y) > 6) return;
+  setTimeout(() => {
+    const { video } = state;
+    if (video.paused !== state.paused || !video.isConnected) return;
+    if (video.paused) {
+      pauseOtherMedia(video);
+      video.play().catch(() => {});
+    } else video.pause();
+  }, 0);
+}, true);
+
 // Doppio clic sul video (il suo schermo intero è stato tolto): quello con gli appunti.
 ed.addEventListener('dblclick', event => {
   const video = event.target instanceof HTMLVideoElement ? event.target : null;
@@ -32731,7 +32793,9 @@ ed.addEventListener('dblclick', event => {
 for (const type of ['keydown', 'keyup', 'keypress', 'beforeinput', 'input', 'paste', 'copy', 'cut']) {
   document.addEventListener(type, event => {
     const target = event.composedPath()[0];
-    if (target instanceof HTMLInputElement && target.getRootNode()?.host?.classList.contains('media-notes')) event.stopPropagation();
+    if (!(target instanceof HTMLInputElement) || !target.getRootNode()?.host?.classList.contains('media-notes')) return;
+    if (type === 'input') mediaInputHandlers.get(target)?.(event);
+    event.stopPropagation();
   }, true);
 }
 
