@@ -145,6 +145,18 @@
 .settings-tabs .icon { width: 16px; height: 16px; color: var(--muted); }
 .settings-tabs button[aria-selected='true'] { background: var(--paper); color: var(--ink); font-weight: 620; box-shadow: 0 0 0 1px var(--line-soft), 0 1px 2px #17212b14; }
 .settings-tabs button[aria-selected='true'] .icon { color: var(--accent-text); }
+.settings-search { margin: 0 0 12px; }
+#settings .settings-search input { height: 32px; padding: 0 34px 0 31px; font-size: 12.5px; }
+.settings-tabs .search-count { margin-left: auto; padding: 0 6px; border-radius: 9px; background: var(--tint); color: var(--accent-text); font-size: 11px; font-weight: 620; font-variant-numeric: tabular-nums; line-height: 18px; }
+.settings-dialog.searching .settings-tabs button[aria-selected] { background: none; box-shadow: none; font-weight: 500; }
+.settings-dialog.searching .settings-tabs button.search-none { opacity: .45; }
+.settings-dialog.searching .settings-body > section[role=tabpanel] + section[role=tabpanel]:not([hidden]) { margin-top: 26px; }
+.settings-dialog.searching .settings-body > section > h3 { display: block; font-size: 15px; }
+.settings-dialog .search-miss { display: none !important; }
+.settings-dialog.searching .set-card > .set-row.search-first { border-top: 0; }
+.settings-search-status { margin: 0 0 16px; color: var(--muted); font-size: 12.5px; }
+.settings-search-status.empty { margin-top: 40px; text-align: center; font-size: 13.5px; }
+::highlight(settings-search) { background-color: color-mix(in srgb, var(--accent) 26%, transparent); color: inherit; }
 .settings-reset { margin: auto 6px 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); color: var(--copy); font-size: 12px; font-weight: 550; text-align: left; }
 .settings-reset:hover:not(:disabled) { border-color: color-mix(in srgb, var(--line) 50%, var(--muted)); color: var(--ink); }
 .settings-about { padding: 0 10px; color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
@@ -283,7 +295,7 @@ button:disabled { opacity: .4; cursor: default; }
 .app { display: flex; height: 100vh; height: 100dvh; overflow: hidden; }
 .sidebar {
   --side-x: 12px;
-  width: 272px;
+  width: var(--sidebar-width, 272px);
   flex: 0 0 auto;
   padding: 0;
   display: flex;
@@ -298,6 +310,17 @@ button:disabled { opacity: .4; cursor: default; }
 /* Barra laterale a destra (Impostazioni › Aspetto) */
 .app.sidebar-right .sidebar { order: 2; border-right: 0; border-left: 1px solid var(--line-soft); }
 .app.sidebar-right #toggle { order: 1; }
+/* Maniglia per allargare la barra laterale: larga 0, l'area da afferrare sborda di 4 px per lato */
+.sidebar-resizer { position: relative; z-index: 3; flex: 0 0 0; width: 0; outline: none; }
+.sidebar-resizer::before { content: ''; position: absolute; inset: 0 -4px; cursor: col-resize; }
+.sidebar-resizer::after { content: ''; position: absolute; inset: 0 -1px; background: var(--accent); opacity: 0; transition: opacity .12s ease; pointer-events: none; }
+.sidebar-resizer:hover::after { opacity: .45; transition-delay: .25s; }
+.sidebar-resizer:focus-visible::after, .resizing-sidebar .sidebar-resizer::after { opacity: 1; transition-delay: 0s; }
+.app.sidebar-right .sidebar-resizer { order: 1; }
+.sidebar[hidden] + .sidebar-resizer { display: none; }
+.resizing-sidebar, .resizing-sidebar * { cursor: col-resize !important; user-select: none !important; }
+.resizing-sidebar iframe { pointer-events: none; }
+@media (max-width: 760px) { .sidebar-resizer { display: none; } }
 .app.sidebar-right .sidebar-toggle .icon { transform: scaleX(-1); }
 
 /* Testata: marchio + ricerca */
@@ -2416,6 +2439,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
         <p class="folder-access-note" id="folderAccessNote" role="status" hidden></p>
       </div>
     </aside>
+    <div class="sidebar-resizer" id="sidebarResizer" role="separator" tabindex="0" aria-controls="sidebar" aria-orientation="vertical" aria-label="Larghezza della barra laterale" title="Trascina per allargare o stringere la barra laterale · doppio clic: larghezza normale"></div>
 
     <main class="main" id="main">
       <div class="document-area">
@@ -2699,6 +2723,11 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
     <form method="dialog">
       <nav class="settings-nav">
         <h2 id="settingsTitle">Impostazioni</h2>
+        <div class="search-box settings-search">
+          <i class="icon i-search" aria-hidden="true"></i>
+          <input type="search" id="settingsSearch" placeholder="Cerca…" autocomplete="off" spellcheck="false" aria-label="Cerca nelle impostazioni" aria-controls="settingsSearchStatus" aria-keyshortcuts="Control+F Meta+F">
+          <button type="button" class="search-clear" id="settingsSearchClear" aria-label="Svuota la ricerca" title="Svuota la ricerca (Esc)"><i class="icon i-close" aria-hidden="true"></i></button>
+        </div>
         <div class="settings-tabs" role="tablist" aria-label="Sezioni delle impostazioni" aria-orientation="vertical">
           <button type="button" role="tab" id="settingsTab-appearance" aria-controls="settingsPanel-appearance" aria-selected="true"><i class="icon si-appearance" aria-hidden="true"></i><span>Aspetto</span></button>
           <button type="button" role="tab" id="settingsTab-panels" aria-controls="settingsPanel-panels" aria-selected="false" tabindex="-1"><i class="icon si-panels" aria-hidden="true"></i><span>Pannelli</span></button>
@@ -2714,6 +2743,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
       <div class="settings-main">
       <button value="close" class="icon-button settings-close" aria-label="Chiudi" title="Chiudi (Esc)"><i class="icon i-close" aria-hidden="true"></i></button>
       <div class="settings-body">
+      <p class="settings-search-status" id="settingsSearchStatus" role="status" hidden></p>
       <section role="tabpanel" id="settingsPanel-appearance" aria-labelledby="settingsTab-appearance">
         <h3>Aspetto</h3>
         <div class="set-card">
@@ -2737,7 +2767,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <div class="segmented" role="radiogroup" aria-labelledby="themeModeLabel"><label><input type="radio" name="themeMode" value="auto"><span>Automatico</span></label><label><input type="radio" name="themeMode" value="light"><span>Chiaro</span></label><label><input type="radio" name="themeMode" value="dark"><span>Scuro</span></label></div>
           </div>
           <div class="set-row">
-            <span class="set-label" id="sidebarSideLabel"><b>Barra laterale</b><small><span class="mod-key">Ctrl</span> + Maiusc + B la mostra o la nasconde</small></span>
+            <span class="set-label" id="sidebarSideLabel"><b>Barra laterale</b><small><span class="mod-key">Ctrl</span> + Maiusc + B la mostra o la nasconde; trascina il suo bordo per allargarla (doppio clic: larghezza normale)</small></span>
             <div class="segmented" role="radiogroup" aria-labelledby="sidebarSideLabel"><label><input type="radio" name="sidebarSide" value="left"><span>A sinistra</span></label><label><input type="radio" name="sidebarSide" value="right"><span>A destra</span></label></div>
           </div>
           <div class="set-row">
@@ -14048,9 +14078,200 @@ settingsTabs.addEventListener('keydown', event => {
   showSettingsTab(tabs[(index + step + tabs.length) % tabs.length], true);
 });
 
+// ── Ricerca nelle Impostazioni ──
+// Filtra le righe di tutte le schede insieme: ogni riga si confronta con il suo
+// testo (titolo, spiegazione, scelte), il titolo del gruppo e il nome della
+// scheda. Le righe trovate sono i comandi veri: si cambiano direttamente lì.
+// Le righe nascoste dalle altre impostazioni (attributo hidden) restano nascoste.
+const settingsSearch = $('settingsSearch');
+const settingsBody = settingsDialog.querySelector('.settings-body');
+const settingsSearchStatus = $('settingsSearchStatus');
+var settingsSearchPanel = null, settingsSearchRow = null;
+function settingsSearchTerms() {
+  return [...new Set(foldSearch(settingsSearch.value.trim()).split(/\s+/).filter(Boolean))];
+}
+function settingsUnitText(element) {
+  const extra = [...element.querySelectorAll('[title], [aria-label]')]
+    .map(item => (item.getAttribute('title') || '') + ' ' + (item.getAttribute('aria-label') || ''));
+  return foldSearch(element.textContent + ' ' + extra.join(' ') + ' ' + (element.dataset.keywords || ''));
+}
+function highlightSettingsTerms(elements, terms) {
+  if (!window.CSS?.highlights || typeof Highlight !== 'function') return;
+  CSS.highlights.delete('settings-search');
+  if (!terms.length) return;
+  const ranges = [];
+  for (const element of elements) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.parentElement.closest('option, select, script, style')) continue;
+      // Testo ripiegato carattere per carattere, per ritrovare le posizioni originali.
+      const chars = [...node.data];
+      let folded = '';
+      const map = [];
+      let offset = 0;
+      for (const char of chars) {
+        const piece = foldSearch(char);
+        for (let i = 0; i < piece.length; i++) map.push(offset);
+        folded += piece;
+        offset += char.length;
+      }
+      map.push(offset);
+      for (const term of terms) {
+        for (let at = folded.indexOf(term); at >= 0; at = folded.indexOf(term, at + term.length)) {
+          const range = new Range();
+          range.setStart(node, map[at]);
+          range.setEnd(node, map[at + term.length]);
+          ranges.push(range);
+        }
+      }
+    }
+  }
+  if (ranges.length) CSS.highlights.set('settings-search', new Highlight(...ranges));
+}
+function runSettingsSearch() {
+  const terms = settingsSearchTerms();
+  const searching = terms.length > 0;
+  const wasSearching = settingsDialog.classList.contains('searching');
+  settingsDialog.classList.toggle('searching', searching);
+  for (const element of settingsBody.querySelectorAll('.search-miss, .search-first')) element.classList.remove('search-miss', 'search-first');
+  for (const count of settingsTabs.querySelectorAll('.search-count')) count.remove();
+  for (const tab of settingsTabs.querySelectorAll('[role=tab]')) tab.classList.remove('search-none');
+  if (!searching) {
+    highlightSettingsTerms([], []);
+    settingsSearchStatus.hidden = true;
+    if (wasSearching) {
+      // Si torna alla scheda in cui si è cambiato qualcosa, o a quella di prima.
+      const panel = settingsSearchPanel, row = settingsSearchRow;
+      settingsSearchPanel = settingsSearchRow = null;
+      const tab = (panel && settingsTabs.querySelector(`[aria-controls="${panel.id}"]`)) || settingsTabs.querySelector('[aria-selected=true]');
+      showSettingsTab(tab);
+      if (row && panel?.contains(row) && !row.hidden) row.scrollIntoView({ block: 'center' });
+    }
+    return;
+  }
+  const matches = text => terms.every(term => text.includes(term));
+  const shown = [];
+  let total = 0;
+  for (const panel of settingsBody.querySelectorAll('[role=tabpanel]')) {
+    const tab = settingsTabs.querySelector(`[aria-controls="${panel.id}"]`);
+    const context = foldSearch(tab.textContent);
+    let heading = '';
+    let hits = 0;
+    for (const child of panel.children) {
+      if (child.matches('h3')) continue;
+      if (child.matches('h4')) { heading = foldSearch(child.textContent); continue; }
+      if (child.hidden) continue;
+      if (child.matches('.set-card')) {
+        let first = true, cardHits = 0;
+        for (const unit of child.children) {
+          if (unit.hidden) continue;
+          // I paragrafi d'aiuto dentro un gruppo (icona) seguono la riga che li apre.
+          if (!unit.matches('.set-row')) { if (!cardHits) unit.classList.add('search-miss'); continue; }
+          const ok = matches(context + ' ' + heading + ' ' + settingsUnitText(unit));
+          unit.classList.toggle('search-miss', !ok);
+          if (!ok) continue;
+          if (first) unit.classList.add('search-first');
+          first = false;
+          cardHits++;
+          shown.push(unit);
+        }
+        child.classList.toggle('search-miss', !cardHits);
+        hits += cardHits;
+      } else {
+        const ok = matches(context + ' ' + heading + ' ' + settingsUnitText(child));
+        child.classList.toggle('search-miss', !ok);
+        if (ok) { shown.push(child); hits++; }
+      }
+    }
+    // Un titolo di gruppo resta se dopo di lui (fino al prossimo) c'è qualcosa.
+    let pending = null;
+    for (const child of panel.children) {
+      if (child.matches('h4')) { if (pending) pending.classList.add('search-miss'); pending = child; continue; }
+      if (child.matches('h3') || child.hidden || child.classList.contains('search-miss')) continue;
+      pending = null;
+    }
+    if (pending) pending.classList.add('search-miss');
+    panel.hidden = !hits;
+    tab.classList.toggle('search-none', !hits);
+    if (hits) {
+      const count = document.createElement('span');
+      count.className = 'search-count';
+      count.textContent = hits;
+      count.setAttribute('aria-label', hits === 1 ? '1 risultato' : `${hits} risultati`);
+      tab.append(count);
+    }
+    total += hits;
+  }
+  settingsSearchStatus.hidden = false;
+  settingsSearchStatus.classList.toggle('empty', !total);
+  settingsSearchStatus.textContent = total
+    ? (total === 1 ? '1 impostazione trovata' : `${total} impostazioni trovate`)
+    : `Nessuna impostazione per «${settingsSearch.value.trim()}»`;
+  highlightSettingsTerms(shown, terms);
+  if (!wasSearching) settingsBody.scrollTop = 0;
+}
+settingsSearch.addEventListener('input', event => {
+  event.stopPropagation();
+  runSettingsSearch();
+});
+settingsSearch.addEventListener('change', event => event.stopPropagation());
+settingsSearch.addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    // Il modulo è method=dialog: Invio chiuderebbe le Impostazioni.
+    event.preventDefault();
+    const first = settingsBody.querySelector('[role=tabpanel]:not([hidden]) .set-row:not(.search-miss, [hidden]) :is(input, select, textarea, button):not([disabled])');
+    first?.focus();
+  } else if (event.key === 'Escape' && settingsSearch.value) {
+    event.preventDefault();
+    event.stopPropagation();
+    settingsSearch.value = '';
+    runSettingsSearch();
+  } else if (event.key === 'ArrowDown') {
+    const first = settingsBody.querySelector('[role=tabpanel]:not([hidden]) .set-row:not(.search-miss, [hidden]) :is(input, select, textarea, button):not([disabled])');
+    if (first) { event.preventDefault(); first.focus(); }
+  }
+});
+$('settingsSearchClear').addEventListener('click', () => {
+  settingsSearch.value = '';
+  runSettingsSearch();
+  settingsSearch.focus();
+});
+// Le righe cambiate durante la ricerca: svuotandola si resta su quella scheda.
+for (const type of ['input', 'change', 'click']) {
+  settingsBody.addEventListener(type, event => {
+    if (!settingsDialog.classList.contains('searching')) return;
+    const panel = event.target.closest?.('[role=tabpanel]');
+    if (!panel) return;
+    settingsSearchPanel = panel;
+    settingsSearchRow = event.target.closest('.set-row');
+  }, true);
+}
+// Le altre impostazioni mostrano o nascondono righe: la ricerca si rifà.
+settingsForm.addEventListener('change', () => {
+  if (settingsDialog.classList.contains('searching')) setTimeout(runSettingsSearch, 0);
+});
+// Durante la ricerca un clic su una scheda la apre e svuota la ricerca.
+settingsTabs.addEventListener('click', event => {
+  const tab = event.target.closest('[role=tab]');
+  if (!tab || !settingsDialog.classList.contains('searching')) return;
+  settingsSearch.value = '';
+  settingsSearchPanel = $(tab.getAttribute('aria-controls'));
+  settingsSearchRow = null;
+  runSettingsSearch();
+}, true);
+settingsDialog.addEventListener('keydown', event => {
+  if ((event.ctrlKey || event.metaKey) && !event.altKey && event.code === 'KeyF') {
+    event.preventDefault();
+    event.stopPropagation();
+    settingsSearch.focus();
+    settingsSearch.select();
+  }
+});
+
 function openSettings(section = '') {
   if (settingsDialog.open || document.querySelector('dialog[open]')) return;
   syncSettings();
+  if (settingsSearch.value) { settingsSearch.value = ''; runSettingsSearch(); }
   showSettingsTab((section && $('settingsTab-' + section)) || settingsTabs.querySelector('[role=tab]'));
   settingsDialog.showModal();
 }
@@ -14058,7 +14279,7 @@ function openSettings(section = '') {
 // Ripristina le impostazioni del primo avvio. Non tocca ciò che è «critico» o
 // personale: cartella di lavoro e cartelle salvate (IndexedDB), percorsi delle
 // cartelle, nome utente, blocchi di modifica, documenti e bozze.
-const resettableKeys = [settingsKey, 'itaca-palette', 'itaca-text-scale', 'quaderno-theme', 'itaca-pdf-options', 'itaca-critters-before-xmas', 'itaca-drawio-config'];
+const resettableKeys = [settingsKey, 'itaca-palette', 'itaca-text-scale', 'quaderno-theme', 'itaca-pdf-options', 'itaca-critters-before-xmas', 'itaca-drawio-config', 'itaca-sidebar-width'];
 $('settingsReset').onclick = async () => {
   const ok = await modal('Ripristinare le impostazioni predefinite?',
     '<p>Aspetto, pannelli, documenti, file, PDF e diagrammi tornano come al primo avvio.</p>' +
@@ -14066,6 +14287,7 @@ $('settingsReset').onclick = async () => {
   if (!ok) return;
   const openDocs = settings.openDocs;
   for (const key of resettableKeys) storeSetting(key, null);
+  applySidebarWidth();
   for (const key of Object.keys(settings)) delete settings[key];
   Object.assign(settings, structuredClone(defaultSettings));
   // Con documenti non salvati in altre schede le schede restano.
@@ -14967,6 +15189,8 @@ const shortcutGroups = [
     ['Mostra o nascondi la barra laterale', 'Mod Shift B'],
     ['Vai all’elenco dei file', 'Mod Shift E'],
     ['Apri le Impostazioni', 'Mod ,'],
+    ['Cerca nelle Impostazioni (con le Impostazioni aperte)', 'Mod F'],
+    ['Allarga o stringi la barra laterale (trascina il bordo)', 'trascina'],
     ['Apri il Glossario', 'Mod /'],
     ['Salva il documento', 'Mod S'],
     ['Passa da Lettura a Modifica e viceversa', 'Mod E'],
@@ -16202,6 +16426,97 @@ function setSidebar(open, moveFocus = false) {
   $('toggle').setAttribute('aria-label', open ? 'Nascondi navigazione' : 'Mostra navigazione');
   if (moveFocus) $(overlay ? 'closeSidebar' : 'toggle').focus();
 }
+
+// ── Larghezza della barra laterale ──
+// Si trascina la maniglia sul bordo (o si usano le frecce quando ha il fuoco).
+// Limiti: da 220 a 560 px, e mai più del 45 % della finestra. Doppio clic = 272.
+// Salvata in localStorage «itaca-sidebar-width» (tolta da Ripristina predefinite).
+var sidebarWidthDefault = 272, sidebarWidthMin = 220, sidebarWidthMax = 560;
+function sidebarWidthLimit() {
+  return Math.max(sidebarWidthMin, Math.min(sidebarWidthMax, Math.round(innerWidth * .45)));
+}
+function storedSidebarWidth() {
+  let value = NaN;
+  try { value = Number(localStorage.getItem('itaca-sidebar-width')); } catch {}
+  return Number.isFinite(value) && value > 0 ? value : sidebarWidthDefault;
+}
+// Mostra la larghezza (ridotta se la finestra è stretta, senza cambiare quella salvata).
+function applySidebarWidth(width = storedSidebarWidth()) {
+  const shown = Math.round(Math.min(sidebarWidthLimit(), Math.max(sidebarWidthMin, width)));
+  const app = $('app');
+  if (shown === sidebarWidthDefault) app.style.removeProperty('--sidebar-width');
+  else app.style.setProperty('--sidebar-width', shown + 'px');
+  const handle = $('sidebarResizer');
+  handle.setAttribute('aria-valuemin', sidebarWidthMin);
+  handle.setAttribute('aria-valuemax', sidebarWidthLimit());
+  handle.setAttribute('aria-valuenow', shown);
+  handle.setAttribute('aria-valuetext', shown + ' pixel');
+  return shown;
+}
+function storeSidebarWidth(width) {
+  const value = Math.round(Math.min(sidebarWidthMax, Math.max(sidebarWidthMin, width)));
+  storeSetting('itaca-sidebar-width', value === sidebarWidthDefault ? null : value);
+  applySidebarWidth(value);
+}
+(() => {
+  const handle = $('sidebarResizer');
+  let drag = null, frame = 0;
+  const widthAt = clientX => {
+    const box = sidebar.getBoundingClientRect();
+    return $('app').classList.contains('sidebar-right') ? box.right - clientX : clientX - box.left;
+  };
+  const finish = commit => {
+    if (!drag) return;
+    cancelAnimationFrame(frame);
+    document.documentElement.classList.remove('resizing-sidebar');
+    if (handle.hasPointerCapture?.(drag.pointer)) handle.releasePointerCapture(drag.pointer);
+    if (commit && drag.moved) storeSidebarWidth(drag.width);
+    else applySidebarWidth();
+    drag = null;
+  };
+  handle.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || narrowLayout.matches) return;
+    event.preventDefault();
+    handle.setPointerCapture(event.pointerId);
+    // Distanza tra il puntatore e il bordo: la barra non «salta» sotto il puntatore.
+    const start = sidebar.getBoundingClientRect().width;
+    drag = { pointer: event.pointerId, offset: start - widthAt(event.clientX), width: start, moved: false };
+    document.documentElement.classList.add('resizing-sidebar');
+  });
+  handle.addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.pointer) return;
+    const width = Math.min(sidebarWidthLimit(), Math.max(sidebarWidthMin, widthAt(event.clientX) + drag.offset));
+    if (Math.abs(width - drag.width) < 1) return;
+    drag.width = width;
+    drag.moved = true;
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => applySidebarWidth(width));
+  });
+  handle.addEventListener('pointerup', () => finish(true));
+  handle.addEventListener('pointercancel', () => finish(false));
+  handle.addEventListener('lostpointercapture', () => finish(true));
+  handle.addEventListener('dblclick', () => {
+    storeSidebarWidth(sidebarWidthDefault);
+    toast('Barra laterale alla larghezza normale');
+  });
+  handle.addEventListener('keydown', event => {
+    if (drag && event.key === 'Escape') { event.preventDefault(); finish(false); return; }
+    const now = sidebar.getBoundingClientRect().width;
+    const outward = $('app').classList.contains('sidebar-right') ? -1 : 1;
+    const step = event.shiftKey ? 64 : 16;
+    let width = null;
+    if (event.key === 'ArrowRight') width = now + step * outward;
+    else if (event.key === 'ArrowLeft') width = now - step * outward;
+    else if (event.key === 'Home') width = sidebarWidthMin;
+    else if (event.key === 'End') width = sidebarWidthLimit();
+    else if (event.key === 'Enter' || event.key === ' ') width = sidebarWidthDefault;
+    if (width === null) return;
+    event.preventDefault();
+    storeSidebarWidth(Math.min(sidebarWidthLimit(), width));
+  });
+  addEventListener('resize', () => { if (!drag) applySidebarWidth(); });
+  applySidebarWidth();
+})();
 
 function closeSidebarOnNarrow(focus = false) {
   if (narrowLayout.matches && !sidebar.hidden) setSidebar(false, focus);
