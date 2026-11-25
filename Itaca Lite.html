@@ -7,6 +7,7 @@
   <meta name="version" content="1.40.0">
   <title>Itaca Lite</title>
   <link id="appIcon" rel="icon" type="image/svg+xml" href="data:,">
+  <script>try { if (JSON.parse(localStorage.getItem('itaca-settings') || '{}').welcomePage !== false && !sessionStorage.getItem('itaca-welcome-seen')) document.documentElement.classList.add('welcome-pending'); } catch {}</script>
   <style>
 :root {
   color-scheme: light;
@@ -2414,8 +2415,9 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 .itaca-logo .lg-w3 { animation-duration: 4.4s; animation-delay: -.6s; }
 .itaca-logo .lg-w4 { animation-duration: 3.2s; animation-delay: -1.9s; }
 .itaca-logo .lg-w5 { animation-duration: 3.4s; animation-delay: -2.9s; }
-.itaca-logo .lg-sail { transform-box: view-box; transform-origin: 380px 80px; transition: transform .7s cubic-bezier(.3, 1.5, .5, 1); }
-.itaca-logo.sailing .lg-sail { transition-delay: .35s; transform: translateX(8px) scale(1.17, 1.05); }
+/* la vela è legata al pennone: col vento resta ferma in alto e si gonfia in basso (inclinazione attorno al pennone) */
+.itaca-logo .lg-sail { transform-box: view-box; transform-origin: 380px 73px; transition: transform .7s cubic-bezier(.3, 1.5, .5, 1); }
+.itaca-logo.sailing .lg-sail { transition-delay: .35s; transform: skewX(8deg) scaleY(1.05); }
 .itaca-logo .lg-wind path { stroke: var(--lg-wind); stroke-dasharray: 110 400; stroke-dashoffset: 110; opacity: 0; }
 .itaca-logo.sailing .lg-wind path { animation: lg-gust .9s ease-in 2; }
 .itaca-logo.sailing .lg-wind path:nth-child(2) { animation-delay: .12s; }
@@ -2429,6 +2431,95 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 /* fermo: «Logo animato» spento o «riduci movimento» del sistema; in pausa: Itaca non è in primo piano */
 .itaca-logo.is-still, .itaca-logo.is-still * { animation: none !important; transition: none !important; }
 .itaca-logo.is-idle, .itaca-logo.is-idle * { animation-play-state: paused !important; }
+
+/* ── Pagina di benvenuto (idea e disegno di Erevs26, issue #33) ──
+   <dialog> modale a tutto schermo: sta nel livello superiore, blocca Tab e scorciatoie dell'app.
+   La scena è un clone del logo della testata (stesse animazioni .itaca-logo). Cielo e mare sono
+   livelli propri della pagina (non dentro la scena: il volo verso il logo sposterà solo il disegno). */
+html.welcome-pending #app { visibility: hidden; animation: welcome-reveal 0s 4s forwards; }
+@keyframes welcome-reveal { to { visibility: visible; } }
+#welcome {
+  --wl-sky1: #f6f1e6; --wl-sky2: #efe5d0; --wl-sky3: #e6dcc3; --wl-sea1: #e9e0c8; --wl-sea2: #d9d3b8; --wl-cloud: #fbf8f1;
+  --wl-text: #3e4130; --wl-muted: #7a7b62; --wl-btn: #535540; --wl-btn-text: #f6f1e6; --wl-chip: #53554014; --wl-chip-hover: #53554024;
+  position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0;
+  border: 0; border-radius: 0; box-shadow: none; overflow: hidden; isolation: isolate; cursor: pointer; user-select: none;
+  color: var(--wl-text); background: none; font-family: var(--sans);
+}
+/* cielo e mare sono livelli propri: nel volo sfumano, mentre il disegno vola sul logo della testata */
+.wl-bg { position: absolute; z-index: -2; inset: 0; pointer-events: none; background: linear-gradient(var(--wl-sky1), var(--wl-sky2) 58%, var(--wl-sky3)); }
+:root[data-theme='dark'] #welcome {   /* «Notte di luna» */
+  --wl-sky1: #0d161d; --wl-sky2: #15242c; --wl-sky3: #1d2f33; --wl-sea1: #18292f; --wl-sea2: #22383a; --wl-cloud: #2a3b40;
+  --wl-text: #eee6cc; --wl-muted: #a6a58c; --wl-btn: #cfc6a6; --wl-btn-text: #15242c; --wl-chip: #cfc6a61a; --wl-chip-hover: #cfc6a62e;
+}
+#welcome[open] { display: grid; grid-template-rows: minmax(0, 1fr) auto; justify-items: center; }
+#welcome::backdrop { background: transparent; }
+#welcome:focus { outline: none; }
+.wl-sky { position: absolute; z-index: -1; inset: 0 0 auto; height: var(--wl-horizon, 45%); overflow: hidden; pointer-events: none; }
+.wl-sea { position: absolute; z-index: -1; inset: var(--wl-horizon, 45%) 0 0; pointer-events: none; background: linear-gradient(var(--wl-sea1), var(--wl-sea2)); }
+.wl-cloud { position: absolute; height: 26px; border-radius: 26px; background: var(--wl-cloud); opacity: .9; animation: wl-cloud 70s linear infinite; }
+.wl-cloud::before, .wl-cloud::after { content: ''; position: absolute; bottom: 8px; border-radius: 50%; background: inherit; }
+.wl-cloud::before { left: 18%; width: 42%; aspect-ratio: 1; }
+.wl-cloud::after { left: 48%; width: 30%; aspect-ratio: 1; }
+.wl-cloud.c1 { top: 22%; width: 150px; animation-delay: -20s; }
+.wl-cloud.c2 { top: 55%; width: 100px; animation-duration: 95s; animation-delay: -62s; opacity: .7; }
+.wl-cloud.c3 { top: 8%; width: 120px; animation-duration: 85s; animation-delay: -5s; opacity: .6; }
+:root[data-theme='dark'] .wl-cloud { opacity: .35; }
+.wl-star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #f3ead0; opacity: .5; animation: wl-twinkle 3.5s ease-in-out infinite; }
+:root:not([data-theme='dark']) .wl-star { display: none; }
+@keyframes wl-cloud { from { transform: translateX(110vw); } to { transform: translateX(-30vw); } }
+@keyframes wl-twinkle { 0%, 100% { opacity: .15; } 50% { opacity: .9; } }
+.wl-stage { align-self: end; width: min(88vw, 760px, calc((100dvh - 420px) * 1.536)); min-width: 200px; margin-bottom: -1vh; transform-origin: 0 0; }
+.wl-scene { display: block; width: 100%; height: auto; overflow: visible; }
+:root[data-theme='dark'] .wl-scene .lg-sun { filter: drop-shadow(0 0 18px #ebdcae99); }
+.wl-copy { display: grid; justify-items: center; gap: 8px; width: min(100%, 680px); padding: 0 16px max(3.5vh, 18px); text-align: center; cursor: default; }
+.wl-title { margin: 0; font: 700 clamp(32px, 5.4vw, 64px)/1.05 var(--serif); letter-spacing: -.01em; }
+.wl-title small { display: block; margin-top: 10px; font: 700 13px/1 var(--sans); letter-spacing: .3em; text-transform: uppercase; opacity: .85; }
+.wl-tag { margin: 2px 0 10px; font: italic 400 clamp(15px, 2vw, 19px)/1.4 var(--serif); color: var(--wl-muted); }
+.wl-tag b { font-style: normal; color: var(--wl-text); }
+.wl-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+#welcome .wl-btn { display: grid; align-content: center; gap: 3px; min-width: 190px; max-width: 320px; min-height: 48px; padding: 10px 20px; border-radius: 12px; border: 2px solid var(--wl-btn);
+  background: transparent; color: var(--wl-text); font: 650 15px/1.15 var(--sans); cursor: pointer; transition: transform .15s, background-color .15s; }
+#welcome .wl-btn:hover { transform: translateY(-2px); background-color: var(--wl-chip-hover); }
+#welcome .wl-btn.primary { background-color: var(--wl-btn); color: var(--wl-btn-text); }
+#welcome .wl-btn.primary:hover { background-color: color-mix(in srgb, var(--wl-btn) 88%, #000); }
+#welcome #welcomeMain { min-width: 240px; }
+#welcome .wl-btn small { overflow: hidden; font-weight: 450; font-size: 12px; opacity: .85; text-overflow: ellipsis; white-space: nowrap; }
+#welcome .wl-btn:focus-visible, #welcome .wl-chip:focus-visible, #welcome .wl-link:focus-visible { outline: 2px solid var(--wl-btn); outline-offset: 3px; }
+.wl-routes { display: grid; justify-items: center; gap: 8px; width: 100%; margin-top: 8px; }
+.wl-routes .wl-label { display: flex; align-items: center; gap: 10px; font: 700 10.5px/1 var(--sans); letter-spacing: .22em; text-transform: uppercase; }
+.wl-routes .wl-label::before, .wl-routes .wl-label::after { content: ''; width: 28px; border-top: 1px solid currentColor; opacity: .5; }
+.wl-route-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 620px; }
+.wl-routes[hidden], .wl-news[hidden], #welcome .wl-btn[hidden] { display: none; }
+#welcome .wl-chip { display: inline-flex; align-items: center; gap: 7px; max-width: 220px; min-height: 34px; padding: 6px 15px; border: 0; border-radius: 999px;
+  background: var(--wl-chip); color: var(--wl-text); font: 550 13px/1.2 var(--sans); cursor: pointer; }
+#welcome .wl-chip:hover { background: var(--wl-chip-hover); }
+#welcome .wl-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#welcome .wl-chip .icon { flex: none; width: 15px; height: 15px; opacity: .75; }
+.wl-label { color: var(--wl-muted); font-size: 12.5px; }
+/* versione e tema chiaro/scuro nello stesso angolo dell'app: il pulsante sta esattamente sopra #themeToggle
+   (--wl-corner-* da placeWelcomeHorizon). Su schermi stretti sale in alto, per non coprire le scritte. */
+.wl-top { position: absolute; right: var(--wl-corner-right, 10px); bottom: var(--wl-corner-bottom, 8px); display: flex; align-items: center; gap: 8px; cursor: default; }
+@media (max-width: 640px) { .wl-top { top: 14px; bottom: auto; right: 14px; } }
+.wl-version { padding: 4px 11px; border-radius: 999px; background: var(--wl-chip); color: var(--wl-text); font: 650 12px/1.3 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+#welcome .wl-theme { display: grid; place-items: center; width: var(--wl-theme-size, 32px); height: var(--wl-theme-size, 32px); padding: 0; border: 0; border-radius: 50%; background: var(--wl-chip); color: var(--wl-text); cursor: pointer; }
+#welcome .wl-theme:hover { background: var(--wl-chip-hover); }
+#welcome .wl-theme:disabled { opacity: .45; cursor: default; }
+#welcome .wl-theme:focus-visible { outline: 2px solid var(--wl-btn); outline-offset: 3px; }
+.wl-news { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--wl-muted); font-size: 13px; }
+.wl-news::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--wl-btn); }
+#welcome .wl-link { padding: 0; border: 0; background: none; color: var(--wl-text); font: 650 13px/1.3 var(--sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.wl-hint { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-top: 6px; color: var(--wl-muted); font-size: 12.5px; }
+.wl-hint kbd { font: inherit; padding: 0 6px; border: 1px solid currentColor; border-radius: 5px; }
+#welcome .wl-hint .wl-link { color: inherit; font-weight: 450; }
+/* uscita: il disegno vola sul logo della testata (flyWelcomeScene); senza logo visibile, dissolvenza */
+html.welcome-landing #itacaLogo { visibility: hidden; }
+#welcome.flying { pointer-events: none; }
+#welcome.flying .wl-stage { will-change: transform; }
+#welcome.leaving { pointer-events: none; opacity: 0; transition: opacity .4s ease-in; }
+#welcome.still .wl-cloud, #welcome.still .wl-star { animation: none; }
+@media (prefers-reduced-motion: reduce) { #welcome .wl-btn, #welcome .wl-btn:hover { transform: none; } }
+@media (max-width: 600px) { #welcome .wl-btn { min-width: 0; flex: 1 1 100%; } .wl-cloud.c1 { width: 100px; } }
+@media (max-height: 560px) { .wl-tag, .wl-title small { display: none; } }
 </style>
 </head>
 <body>
@@ -2436,7 +2527,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
     <button type="button" class="backdrop" id="backdrop" tabindex="-1" aria-label="Chiudi navigazione" hidden></button>
     <aside class="sidebar" id="sidebar" aria-label="Navigazione documenti">
       <header class="brand">
-        <svg class="brandmark itaca-logo" id="itacaLogo" viewBox="0 10 860 560" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><circle cx="585" cy="62" r="52" class="lg-sun" style="fill:var(--lg-sun)" /><g class="lg-island"><path d="M137,238 L260,191 C275,186 290,188 300,186 L500,121 C506,118 512,118 516,122 L578,160 L650,118 C656,115 662,115 668,118 L735,163 C745,168 760,163 772,168 C780,171 785,176 790,180 L842,236 Z" style="fill:var(--lg-sand)" /><path d="M655,118 L735,163 C745,168 760,163 772,168 C780,171 785,176 790,180 L842,236 L700,236 L640,188 C650,170 655,145 655,118 Z" style="fill:var(--lg-shade)" /><path d="M520,236 L585,196 L605,201 L640,188 L700,236" fill="none" stroke-width="9" style="stroke:var(--lg-hill)" /><path d="M137,238 L260,191 C275,186 290,188 300,186 L500,121 C506,118 512,118 516,122 L578,160 L650,118 C656,115 662,115 668,118 L735,163 C745,168 760,163 772,168 C780,171 785,176 790,180 L842,236 Z" fill="none" stroke-width="11" style="stroke:var(--lg-hill)" /><path d="M505,263 H592 M535,288 H597 M662,262 H735" stroke-width="11" style="stroke:var(--lg-glint)" /></g><g class="lg-wind" fill="none" stroke-width="13"><path d="M-20,110 H285" /><path d="M-30,160 H300" /><path d="M-10,210 H290" /></g><g class="lg-surge"><g class="lg-boat"><g class="lg-sail"><path d="M283,105 L470,57 C500,120 505,230 458,303 C445,295 420,287 380,288 C345,289 310,300 282,315 C305,260 312,170 283,105 Z" style="fill:var(--lg-sage)" /><path d="M283,105 C305,160 312,250 282,315" fill="none" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M470,57 C500,120 505,230 458,303 L440,352" fill="none" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M208,354 C260,320 320,290 380,288 C420,287 445,295 458,303" fill="none" stroke-width="11" style="stroke:var(--lg-ink)" /></g><path d="M380,22 V357" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M255,106 L485,45" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M30,262 C28,345 60,405 150,455 C260,458 360,470 430,466 C470,463 470,448 500,450 C530,452 540,468 565,466 C595,463 600,446 630,444 C655,443 672,446 688,446 C662,432 648,415 648,385 L648,375 L190,375 C100,372 46,330 44,262 Z" style="fill:var(--lg-hull)" /><path d="M236,398 H640 L652,420 H214 Z" style="fill:var(--lg-deck)" /><path d="M201,433 H660 L686,446 C600,446 560,470 520,462 C480,455 470,462 430,466 L172,462 Z" style="fill:var(--lg-deck)" /><path class="lg-detail" d="M196,427 H655" stroke-width="12" style="stroke:var(--lg-ink)" /><path class="lg-detail" d="M236,398 L169,465 M303,398 L236,465 M370,398 L303,465 M438,398 L371,465 M506,398 L439,465" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M30,262 C28,345 60,405 150,455 C260,458 360,470 430,466 C470,463 470,448 500,450 C530,452 540,468 565,466 C595,463 600,446 630,444 C655,443 672,446 688,446" fill="none" stroke-width="12" style="stroke:var(--lg-ink)" /><path d="M647,380 C650,425 690,445 745,462" fill="none" stroke-width="12" style="stroke:var(--lg-ink)" /><path d="M90,249 C94,258 108,258 114,250 C116,246 116,242 116,238 C117,220 104,206 82,206 C55,206 42,230 44,262 C46,330 100,372 190,375 L500,375" fill="none" stroke-width="40" stroke-linecap="round" style="stroke:var(--lg-ink)" /><path d="M104,256 C109,254 113,250 115,246 C116,243 116,240 116,238 C117,220 104,206 82,206 C55,206 42,230 44,262 C46,330 100,372 190,375 L500,375" fill="none" stroke-width="16" stroke-linecap="round" style="stroke:var(--lg-sand)" /><path d="M480,390 H645" stroke-width="14" stroke-linecap="butt" style="stroke:var(--lg-ink)" /><path d="M626,272 H641 V383 H480 V367 C595,362 624,330 626,272 Z" style="fill:var(--lg-sand)" /><path d="M636,282 C630,340 600,372 540,383 L637,383 Z" style="fill:var(--lg-sand2)" /><path d="M632,276 V380" stroke-width="9" stroke-linecap="butt" style="stroke:var(--lg-sand)" /><path d="M606,262 H653 V385 H641 V272 H626 C624,330 595,362 480,367 L480,355 C575,350 606,330 606,262 Z" style="fill:var(--lg-ink)" /><g class="lg-detail" style="fill:var(--lg-ink)"><circle cx="237" cy="382" r="12" /><circle cx="305" cy="382" r="12" /><circle cx="372" cy="382" r="12" /><circle cx="440" cy="382" r="12" /><circle cx="505" cy="382" r="12" /></g><g class="lg-oars" stroke-width="5" style="fill:var(--lg-ink);stroke:var(--lg-ink)"><path d="M234,464 L242,470 L222,521 L184,521 L214,478 Z" /><path d="M301,464 L309,470 L289,521 L251,521 L281,478 Z" /><path d="M369,464 L377,470 L357,521 L319,521 L349,478 Z" /><path d="M437,464 L445,470 L425,521 L387,521 L417,478 Z" /></g><path d="M215,307 L146,440" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M124,443 L144,437 L148,447 L121,519 L76,519 Z" stroke-width="9" style="fill:var(--lg-sand);stroke:var(--lg-ink)" /></g></g><g fill="none" stroke-width="11" style="stroke:var(--lg-sea)" class="lg-sea"><path d="M17,456 C35,462 55,463 75,458 C95,453 105,448 118,446" class="lg-wave lg-w1" /><path d="M447,513 C480,500 520,497 550,502 C580,507 590,516 615,514 C645,511 665,500 682,493" class="lg-wave lg-w2" /><path d="M257,552 C290,535 340,530 380,538 C410,545 425,556 450,554 C490,550 520,535 575,537" class="lg-wave lg-w3" /><path d="M690,505 C712,496 740,496 762,503" class="lg-wave lg-w4" /><path d="M40,515 C62,507 92,507 114,514" class="lg-wave lg-w5" /></g></svg>
+        <svg class="brandmark itaca-logo" id="itacaLogo" viewBox="0 10 860 560" aria-hidden="true" stroke-linecap="round" stroke-linejoin="round"><circle cx="585" cy="62" r="52" class="lg-sun" style="fill:var(--lg-sun)" /><g class="lg-island"><path d="M137,238 L260,191 C275,186 290,188 300,186 L500,121 C506,118 512,118 516,122 L578,160 L650,118 C656,115 662,115 668,118 L735,163 C745,168 760,163 772,168 C780,171 785,176 790,180 L842,236 Z" style="fill:var(--lg-sand)" /><path d="M655,118 L735,163 C745,168 760,163 772,168 C780,171 785,176 790,180 L842,236 L700,236 L640,188 C650,170 655,145 655,118 Z" style="fill:var(--lg-shade)" /><path d="M520,236 L585,196 L605,201 L640,188 L700,236" fill="none" stroke-width="9" style="stroke:var(--lg-hill)" /><path d="M137,238 L260,191 C275,186 290,188 300,186 L500,121 C506,118 512,118 516,122 L578,160 L650,118 C656,115 662,115 668,118 L735,163 C745,168 760,163 772,168 C780,171 785,176 790,180 L842,236 Z" fill="none" stroke-width="11" style="stroke:var(--lg-hill)" /><path d="M505,263 H592 M535,288 H597 M662,262 H735" stroke-width="11" style="stroke:var(--lg-glint)" /></g><g class="lg-wind" fill="none" stroke-width="13"><path d="M-20,110 H285" /><path d="M-30,160 H300" /><path d="M-10,210 H290" /></g><g class="lg-surge"><g class="lg-boat"><g class="lg-sail"><path d="M283,95 L470,46 C500,120 505,230 458,303 C445,295 420,287 380,288 C345,289 310,300 282,315 C305,260 312,170 283,95 Z" style="fill:var(--lg-sage)" /><path d="M283,98.6 C305,160 312,250 282,315" fill="none" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M470,49 C500,120 505,230 458,303 L440,352" fill="none" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M208,354 C260,320 320,290 380,288 C420,287 445,295 458,303" fill="none" stroke-width="11" style="stroke:var(--lg-ink)" /></g><path d="M380,22 V357" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M255,106 L485,45" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M30,262 C28,345 60,405 150,455 C260,458 360,470 430,466 C470,463 470,448 500,450 C530,452 540,468 565,466 C595,463 600,446 630,444 C655,443 672,446 688,446 C662,432 648,415 648,385 L648,375 L190,375 C100,372 46,330 44,262 Z" style="fill:var(--lg-hull)" /><path d="M236,398 H640 L652,420 H214 Z" style="fill:var(--lg-deck)" /><path d="M201,433 H660 L686,446 C600,446 560,470 520,462 C480,455 470,462 430,466 L172,462 Z" style="fill:var(--lg-deck)" /><path class="lg-detail" d="M196,427 H655" stroke-width="12" style="stroke:var(--lg-ink)" /><path class="lg-detail" d="M236,398 L169,465 M303,398 L236,465 M370,398 L303,465 M438,398 L371,465 M506,398 L439,465" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M30,262 C28,345 60,405 150,455 C260,458 360,470 430,466 C470,463 470,448 500,450 C530,452 540,468 565,466 C595,463 600,446 630,444 C655,443 672,446 688,446" fill="none" stroke-width="12" style="stroke:var(--lg-ink)" /><path d="M647,380 C650,425 690,445 745,462" fill="none" stroke-width="12" style="stroke:var(--lg-ink)" /><path d="M90,249 C94,258 108,258 114,250 C116,246 116,242 116,238 C117,220 104,206 82,206 C55,206 42,230 44,262 C46,330 100,372 190,375 L500,375" fill="none" stroke-width="40" stroke-linecap="round" style="stroke:var(--lg-ink)" /><path d="M104,256 C109,254 113,250 115,246 C116,243 116,240 116,238 C117,220 104,206 82,206 C55,206 42,230 44,262 C46,330 100,372 190,375 L500,375" fill="none" stroke-width="16" stroke-linecap="round" style="stroke:var(--lg-sand)" /><path d="M480,390 H645" stroke-width="14" stroke-linecap="butt" style="stroke:var(--lg-ink)" /><path d="M626,272 H641 V383 H480 V367 C595,362 624,330 626,272 Z" style="fill:var(--lg-sand)" /><path d="M636,282 C630,340 600,372 540,383 L637,383 Z" style="fill:var(--lg-sand2)" /><path d="M632,276 V380" stroke-width="9" stroke-linecap="butt" style="stroke:var(--lg-sand)" /><path d="M606,262 H653 V385 H641 V272 H626 C624,330 595,362 480,367 L480,355 C575,350 606,330 606,262 Z" style="fill:var(--lg-ink)" /><g class="lg-detail" style="fill:var(--lg-ink)"><circle cx="237" cy="382" r="12" /><circle cx="305" cy="382" r="12" /><circle cx="372" cy="382" r="12" /><circle cx="440" cy="382" r="12" /><circle cx="505" cy="382" r="12" /></g><g class="lg-oars" stroke-width="5" style="fill:var(--lg-ink);stroke:var(--lg-ink)"><path d="M234,464 L242,470 L222,521 L184,521 L214,478 Z" /><path d="M301,464 L309,470 L289,521 L251,521 L281,478 Z" /><path d="M369,464 L377,470 L357,521 L319,521 L349,478 Z" /><path d="M437,464 L445,470 L425,521 L387,521 L417,478 Z" /></g><path d="M215,307 L146,440" stroke-width="11" style="stroke:var(--lg-ink)" /><path d="M124,443 L144,437 L148,447 L121,519 L76,519 Z" stroke-width="9" style="fill:var(--lg-sand);stroke:var(--lg-ink)" /></g></g><g fill="none" stroke-width="11" style="stroke:var(--lg-sea)" class="lg-sea"><path d="M17,456 C35,462 55,463 75,458 C95,453 105,448 118,446" class="lg-wave lg-w1" /><path d="M447,513 C480,500 520,497 550,502 C580,507 590,516 615,514 C645,511 665,500 682,493" class="lg-wave lg-w2" /><path d="M257,552 C290,535 340,530 380,538 C410,545 425,556 450,554 C490,550 520,535 575,537" class="lg-wave lg-w3" /><path d="M690,505 C712,496 740,496 762,503" class="lg-wave lg-w4" /><path d="M40,515 C62,507 92,507 114,514" class="lg-wave lg-w5" /></g></svg>
         <span class="brand-text"><strong class="brand-name">Itaca</strong><span class="brand-sub">Lite <span class="app-version" id="appVersion"></span></span></span>
         <button type="button" class="icon-button close-sidebar" id="closeSidebar" aria-label="Chiudi navigazione" title="Chiudi navigazione"><i class="icon i-close" aria-hidden="true"></i></button>
       </header>
@@ -2698,6 +2789,24 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
   <input type="file" id="folderInput" webkitdirectory multiple hidden>
   <input type="file" id="attachInput" multiple hidden>
   <input type="file" id="imageInput" accept="image/png,image/jpeg,image/gif,image/webp,image/bmp,image/avif" hidden>
+  <dialog class="welcome" id="welcome" aria-labelledby="welcomeTitle">
+    <div class="wl-bg" aria-hidden="true"></div>
+    <div class="wl-sky" aria-hidden="true"><i class="wl-cloud c1"></i><i class="wl-cloud c2"></i><i class="wl-cloud c3"></i></div>
+    <div class="wl-sea" aria-hidden="true"></div>
+    <div class="wl-stage" id="welcomeStage"></div>
+    <div class="wl-top"><span class="wl-version" id="welcomeVersion"></span><button type="button" class="wl-theme" id="welcomeTheme" aria-label="Tema scuro" aria-pressed="false"><i class="icon i-theme" aria-hidden="true"></i></button></div>
+    <div class="wl-copy">
+      <h1 class="wl-title" id="welcomeTitle">Benvenuto su Itaca<small>Lite</small></h1>
+      <p class="wl-tag">Il dono della conoscenza si ottiene dopo un lungo viaggio.<br><b>Salpiamo!</b></p>
+      <div class="wl-actions">
+        <button type="button" class="wl-btn primary" id="welcomeMain"><span id="welcomeMainLabel">Scegli la cartella</span><small id="welcomeMainDetail" hidden></small></button>
+        <button type="button" class="wl-btn" id="welcomeOther" hidden>Un’altra cartella…</button>
+      </div>
+      <div class="wl-routes" id="welcomeChips" hidden><span class="wl-label">Rotte salvate</span><div class="wl-route-list" id="welcomeRouteList"></div></div>
+      <p class="wl-news" id="welcomeNews" hidden><span id="welcomeNewsText"></span><button type="button" class="wl-link" id="welcomeNewsAction"></button></p>
+      <p class="wl-hint"><span>Clicca ovunque per entrare · <kbd>Esc</kbd></span><button type="button" class="wl-link" id="welcomeOff">Non mostrare all’avvio</button></p>
+    </div>
+  </dialog>
   <div class="update-notice" id="updateNotice" popover="manual" role="status" aria-live="polite">
     <span class="update-notice-icon"><i class="icon si-update" aria-hidden="true"></i></span>
     <span><b id="updateNoticeTitle">Nuova versione di Itaca</b><small id="updateNoticeText">Pronta da installare</small></span>
@@ -2882,6 +2991,10 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
         </div>
         <h4>Apertura</h4>
         <div class="set-card">
+          <div class="set-row" data-keywords="benvenuto pagina iniziale avvio inizio galea">
+            <label class="set-label" for="setWelcomePage"><b>Pagina di benvenuto</b><small>All’apertura di Itaca in una scheda nuova: riprendi l’ultima cartella o scegline un’altra</small></label>
+            <input type="checkbox" class="switch" id="setWelcomePage" name="welcomePage">
+          </div>
           <div class="set-row">
             <span class="set-label" id="openModeLabel"><b>Apri i documenti in</b></span>
             <div class="segmented" role="radiogroup" aria-labelledby="openModeLabel"><label><input type="radio" name="openMode" value="read"><span>Lettura</span></label><label><input type="radio" name="openMode" value="edit"><span>Modifica</span></label><label><input type="radio" name="openMode" value="source"><span>Markdown</span></label></div>
@@ -7891,6 +8004,8 @@ function toast(text, tone = toastTone(String(text))) {
   element.classList.remove('leaving', 'entering');
   try {
     // Sempre in cima al livello superiore: sopra anche le finestre modali aperte dopo.
+    // Durante la pagina di benvenuto le notifiche aspettano: compaiono appena si entra.
+    if (welcomeShowing()) { welcomeToasts.push([text, tone]); return; }
     if (element.matches(':popover-open')) element.hidePopover();
     element.showPopover();
   } catch {
@@ -14144,6 +14259,7 @@ const settingChoices = {
   brandTarget: ['both', 'logo'],
   versionPlacement: ['below', 'statusbar', 'hidden'],
   logoMotion: [true, false],
+  welcomePage: [true, false],
   showOutline: [true, false],
   showBacklinks: [true, false],
   critters: ['cat', 'boat', 'sleigh', 'off'],
@@ -14167,7 +14283,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
 const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
-  brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true,
+  brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
 try {
@@ -14241,6 +14357,7 @@ function syncSettings() {
   settingsForm.showSimilar.checked = settings.showSimilar;
   settingsForm.radio.checked = settings.radio;
   settingsForm.logoMotion.checked = settings.logoMotion;
+  settingsForm.welcomePage.checked = settings.welcomePage;
   settingsForm.showOutline.checked = settings.showOutline;
   settingsForm.showBacklinks.checked = settings.showBacklinks;
   syncNavSettingControls();
@@ -14698,7 +14815,8 @@ function renderUpdateState() {
   if (updatePrevious) $('updateRollbackTitle').textContent = 'Torna alla ' + updatePrevious.version;
   // Avviso persistente: resta finché non lo si chiude con la ×, una volta per versione.
   const notice = $('updateNotice');
-  const show = Boolean(info) && !updateInstalling && localStorageValue(updateDismissedKey) !== info.version;
+  const show = Boolean(info) && !updateInstalling && localStorageValue(updateDismissedKey) !== info.version && !welcomeShowing();
+  renderWelcome();
   if (show) {
     $('updateNoticeTitle').textContent = 'Itaca Lite ' + info.version + ' è disponibile';
     $('updateNoticeText').textContent = 'Stai usando la ' + APP_VERSION + '.';
@@ -15224,14 +15342,16 @@ function logoMoving() { return !!settings.logoMotion && !logoMotionQuery.matches
 function logoAwake() { return logoMoving() && !document.hidden && document.hasFocus(); }
 function applyLogoMotion() {
   if (!itacaLogo) return;   // applyAppearance gira anche prima di questo modulo
-  itacaLogo.classList.toggle('is-still', !logoMoving());
-  itacaLogo.classList.toggle('is-idle', logoMoving() && !logoAwake());
-  if (!logoMoving()) itacaLogo.classList.remove('sailing');
+  for (const logo of document.querySelectorAll('.itaca-logo')) {
+    logo.classList.toggle('is-still', !logoMoving());
+    logo.classList.toggle('is-idle', logoMoving() && !logoAwake());
+    if (!logoMoving()) logo.classList.remove('sailing');
+  }
   scheduleLogoGust();
 }
 function scheduleLogoGust() {
   clearTimeout(logoGustTimer);
-  if (logoAwake()) logoGustTimer = setTimeout(() => { logoGust(itacaLogo); scheduleLogoGust(); }, 25000 + Math.random() * 45000);
+  if (logoAwake()) logoGustTimer = setTimeout(() => { if (!welcomeShowing()) logoGust(itacaLogo); scheduleLogoGust(); }, 25000 + Math.random() * 45000);
 }
 // Una folata su un logo (la testata, e in futuro la pagina di benvenuto): vela, strappo e mare che accelera.
 function logoGust(logo) {
@@ -16229,7 +16349,7 @@ $('whatsNewNoticeClose').onclick = hideWhatsNewNotice;
     $('whatsNewNoticeTitle').textContent = 'Itaca è aggiornata alla ' + APP_VERSION;
     $('whatsNewNoticeText').textContent = 'Prima usavi la ' + seen + '. Guarda cosa è cambiato.';
     setTimeout(() => {
-      if (localStorageValue(seenVersionKey) === seen && !$('updateNotice').matches(':popover-open')) $('whatsNewNotice').showPopover();
+      if (localStorageValue(seenVersionKey) === seen && !$('updateNotice').matches(':popover-open') && !welcomeShowing()) $('whatsNewNotice').showPopover();
     }, 1500);
   }
 }
@@ -19863,6 +19983,7 @@ function renderMode() {
 }
 
 function renderWorkStart() {
+  renderWelcome();
   const hasIndex = folderAccessPending ? rememberedPaths.length > 0 : [...files.keys()].some(isMD);
   const folderName = root?.name || importedFolderName || (folderAccessPending ? rememberedFolder.name : localFolderName);
   const title = $('startTitle');
@@ -26761,6 +26882,7 @@ function reopenOnFirstInteraction() {
   function reopen(event) {
     if (!folderAccessPending || hasWorkspaceFolder()) return stop();
     if (event.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta', 'Tab', 'Escape'].includes(event.key)) return;
+    if (event.target?.closest?.('#welcome')) return;   // la pagina di benvenuto ha i suoi pulsanti
     if (event.target?.closest?.('#openDir, #importFolder, dialog')) return stop();
     // These controls already reopen the folder themselves (a document link also opens that document).
     // «Cartelle e file» serve anche a scegliere un altro percorso: non riapre la cartella ricordata.
@@ -37388,10 +37510,272 @@ document.addEventListener('keydown', event => {
   else openFind(key === 'h');
 }, true);
 
+// ── Pagina di benvenuto ─────────────────────────────────────────────────────
+// Idea e disegno di Erevs26 (issue #33). Compare una volta per scheda (sessionStorage), se attiva
+// in Impostazioni › Documenti › Apertura. È utile, non solo bella: il pulsante principale riprende
+// l'ultima cartella (permesso compreso, il clic è il gesto che serve al browser) o fa sceglierne
+// una; sotto le cartelle salvate e le bozze; una riga per una versione nuova o appena installata.
+// Mentre è aperta niente le si sovrappone: notifiche in coda, avvisi rimandati alla chiusura.
+var welcomeDialog = $('welcome');
+var welcomeScene = null, welcomeGustTimer = 0, welcomeLeaving = false;
+var welcomePreset = '';          // cartella ricordata letta prima di mostrare la pagina (il pulsante non cambia dopo)
+var welcomeHeaderPaused = [];    // animazioni del logo della testata ferme durante il volo
+var welcomeToasts = [];
+var welcomeSeenKey = 'itaca-welcome-seen';
+function welcomeShowing() {
+  return Boolean(welcomeDialog?.open);
+}
+function welcomeFolderName() {
+  return root?.name || importedFolderName || (folderAccessPending ? rememberedFolder?.name : '') || welcomePreset;
+}
+function renderWelcome() {
+  if (!welcomeShowing()) return;
+  const name = welcomeFolderName();
+  const main = $('welcomeMain'), detail = $('welcomeMainDetail');
+  const known = Boolean(name);
+  if (known) {
+    $('welcomeMainLabel').textContent = 'Riprendi il viaggio';
+    detail.textContent = 'Ultima rotta: ' + name;
+    main.title = folderAccessPending ? 'Riapre «' + name + '»: il browser potrebbe chiedere il permesso' : 'Entra in «' + name + '»';
+  } else {
+    $('welcomeMainLabel').textContent = window.showDirectoryPicker || !canImportFolder ? 'Scegli la cartella' : 'Importa una cartella';
+    main.title = localFolderName ? 'Consigliata: la cartella «' + localFolderName + '», quella che contiene Itaca' : 'La cartella dei tuoi documenti Markdown';
+    detail.textContent = localFolderName ? 'Consigliata: «' + localFolderName + '»' : '';
+  }
+  detail.hidden = !detail.textContent;
+  $('welcomeOther').hidden = !known || !(window.showDirectoryPicker || canImportFolder);
+  const theme = $('themeToggle');
+  $('welcomeTheme').disabled = theme.disabled;
+  $('welcomeTheme').title = $('welcomeTheme').ariaLabel = theme.title;
+  $('welcomeTheme').setAttribute('aria-pressed', theme.getAttribute('aria-pressed'));
+  $('welcomeVersion').textContent = APP_VERSION ? 'Itaca Lite ' + APP_VERSION : '';
+  // novità: una versione da installare o appena installata
+  const news = $('welcomeNews');
+  if (updateInfo && !updateInstalling) {
+    $('welcomeNewsText').textContent = 'È disponibile Itaca Lite ' + updateInfo.version + '.';
+    $('welcomeNewsAction').textContent = 'Vedi e aggiorna';
+    news.dataset.kind = 'update';
+    news.hidden = false;
+  } else if (whatsNewSince && localStorageValue(seenVersionKey) === whatsNewSince) {
+    $('welcomeNewsText').textContent = 'Itaca è aggiornata alla ' + APP_VERSION + '.';
+    $('welcomeNewsAction').textContent = 'Guarda le novità';
+    news.dataset.kind = 'whatsnew';
+    news.hidden = false;
+  } else news.hidden = true;
+}
+// Cartelle salvate (tranne quella che si riprende) e bozze: scelte rapide.
+async function renderWelcomeChips() {
+  const box = $('welcomeChips');
+  const list = window.showDirectoryPicker ? await loadSavedFolders().catch(() => []) : [];
+  // la cartella delle bozze si legge dopo l'avvio: se non è ancora arrivata la si chiede qui
+  if (!draftsFolder && window.showDirectoryPicker) {
+    const handle = await workspaceRecord(draftsKey).catch(() => null);
+    if (handle?.kind === 'directory') draftsFolder = handle;
+  }
+  if (!welcomeShowing()) return;
+  const skip = welcomeFolderName();
+  const chip = (label, icon, title, run) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'wl-chip';
+    button.title = title;
+    button.innerHTML = '<i class="icon ' + icon + '" aria-hidden="true"></i><span></span>';
+    button.querySelector('span').textContent = label;
+    button.onclick = () => { run(); leaveWelcome(); };
+    return button;
+  };
+  const chips = list.filter(item => item.handle.name !== skip).slice(0, 5)
+    .map(item => chip(item.name, 'i-folder-solid', 'Apri la cartella salvata «' + item.name + '»', () => chooseFolder(false, '', item)));
+  if (draftsFolder && !draftsOpen()) chips.push(chip('Le mie bozze', 'i-folder-solid', 'Le tue bozze personali, che vedi solo tu', () => chooseFolder(false, '', { id: 'drafts', name: 'Bozze', handle: draftsFolder })));
+  $('welcomeRouteList').replaceChildren(...chips);
+  box.hidden = !chips.length;
+  placeWelcomeHorizon();
+}
+async function showWelcome() {
+  let seen = false;
+  try {
+    seen = Boolean(sessionStorage.getItem(welcomeSeenKey));
+    if (settings.welcomePage && !seen) sessionStorage.setItem(welcomeSeenKey, '1');
+  } catch {}
+  if (!settings.welcomePage || seen) return document.documentElement.classList.remove('welcome-pending');
+  // Prima di mostrarla si legge la cartella ricordata (pochi ms; al massimo mezzo secondo):
+  // così il pulsante principale nasce già giusto e non cambia sotto gli occhi.
+  if (window.showDirectoryPicker && !welcomeFolderName()) {
+    const record = await Promise.race([folderPreference().catch(() => null), new Promise(resolve => setTimeout(resolve, 500))]);
+    const handle = record?.handle || record;
+    if (handle?.kind === 'directory') welcomePreset = handle.name;
+  }
+  document.documentElement.classList.remove('welcome-pending');
+  // La scena è un clone del logo della testata: un solo disegno, stesse animazioni.
+  welcomeScene = itacaLogo.cloneNode(true);
+  welcomeScene.removeAttribute('id');
+  welcomeScene.classList.remove('brandmark', 'sailing');
+  welcomeScene.classList.add('wl-scene');
+  $('welcomeStage').replaceChildren(welcomeScene);
+  const sky = welcomeDialog.querySelector('.wl-sky');
+  for (let i = 0; i < 70; i++) {
+    const star = document.createElement('i');
+    star.className = 'wl-star';
+    star.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 96}%;animation-delay:${-Math.random() * 3.5}s`;
+    if (Math.random() < .2) star.style.width = star.style.height = '3px';
+    sky.append(star);
+  }
+  welcomeDialog.classList.toggle('still', !logoMoving());
+  welcomeDialog.showModal();
+  renderWelcome();
+  renderWelcomeChips();
+  placeWelcomeHorizon();
+  // la scena si sposta quando cambiano le scritte sotto (caratteri, rotte, novità): l'orizzonte la segue
+  const follow = new ResizeObserver(placeWelcomeHorizon);
+  for (const element of [welcomeDialog, $('welcomeStage'), welcomeDialog.querySelector('.wl-copy')]) follow.observe(element);
+  document.fonts?.ready.then(placeWelcomeHorizon);
+  applyLogoMotion();
+  scheduleWelcomeGust(2500);
+}
+// Orizzonte = base dell'isola nel disegno (y 238 nel viewBox 10…570): cielo sopra, mare sotto.
+function placeWelcomeHorizon() {
+  if (!welcomeScene) return;
+  const scene = welcomeScene.getBoundingClientRect(), page = welcomeDialog.getBoundingClientRect();
+  welcomeDialog.style.setProperty('--wl-horizon', (scene.top - page.top + scene.height * (238 - 10) / 560) + 'px');
+  const toggle = $('themeToggle').getBoundingClientRect();
+  if (toggle.width) {
+    welcomeDialog.style.setProperty('--wl-corner-right', Math.max(2, page.right - toggle.right) + 'px');
+    welcomeDialog.style.setProperty('--wl-corner-bottom', Math.max(2, page.bottom - toggle.bottom) + 'px');
+    welcomeDialog.style.setProperty('--wl-theme-size', Math.round(Math.max(28, toggle.width)) + 'px');
+  }
+}
+function scheduleWelcomeGust(delay = 5000 + Math.random() * 5000) {
+  clearTimeout(welcomeGustTimer);
+  if (!welcomeShowing() || welcomeLeaving) return;
+  welcomeGustTimer = setTimeout(() => {
+    if (logoAwake()) logoGust(welcomeScene);
+    scheduleWelcomeGust();
+  }, delay);
+}
+function leaveWelcome() {
+  if (!welcomeShowing() || welcomeLeaving) return;
+  welcomeLeaving = true;
+  clearTimeout(welcomeGustTimer);
+  if (!logoMoving()) return welcomeDialog.close();
+  const target = itacaLogo.getBoundingClientRect();
+  const visible = !$('sidebar').hidden && target.width >= 8 && target.right > 0 && target.left < innerWidth && target.bottom > 0;
+  if (welcomeScene && visible) return flyWelcomeScene(target);
+  welcomeDialog.classList.add('leaving');
+  setTimeout(() => welcomeDialog.close(), 400);
+}
+// Volo (FLIP): un solo logo in ogni momento. Il logo della testata si nasconde e si porta nella
+// stessa fase dell'ondeggiamento della scena; entrambe le animazioni si fermano, il disegno vola
+// (solo transform, sul compositore) lungo un arco e, all'arrivo, nello stesso fotogramma la
+// testata ricompare, la pagina si chiude e l'ondeggiamento riparte.
+function flyWelcomeScene(target) {
+  const scene = welcomeScene, stage = $('welcomeStage');
+  clearTimeout(scene.gustEnd);
+  scene.classList.remove('sailing');
+  scene.rushId = (scene.rushId || 0) + 1;
+  for (const animation of scene.getAnimations({ subtree: true })) {
+    if (animation instanceof CSSTransition) animation.finish();
+    else animation.updatePlaybackRate(1);
+  }
+  const sceneParts = [scene, ...scene.querySelectorAll('*')];
+  const headerParts = [itacaLogo, ...itacaLogo.querySelectorAll('*')];
+  welcomeHeaderPaused = [];
+  sceneParts.forEach((part, i) => {
+    const header = headerParts[i]?.getAnimations() || [];
+    for (const animation of part.getAnimations()) {
+      animation.pause();
+      const twin = header.find(other => other.animationName === animation.animationName);
+      if (!twin) continue;
+      twin.pause();
+      twin.currentTime = animation.currentTime;
+      welcomeHeaderPaused.push(twin);
+    }
+  });
+  document.documentElement.classList.add('welcome-landing');
+  welcomeDialog.classList.add('flying');
+  const from = scene.getBoundingClientRect();
+  const scale = target.width / from.width, dx = target.left - from.left, dy = target.top - from.top;
+  // arco: in verticale si sale prima (ease-out), in orizzontale si va a passo costante;
+  // la scala diminuisce in proporzione (k^u) e sembra regolare all'occhio
+  const frames = [];
+  for (let i = 0; i <= 24; i++) {
+    const u = i / 24;
+    frames.push({ offset: u, transform: `translate(${dx * u}px, ${dy * (1 - (1 - u) ** 2)}px) scale(${scale ** u})` });
+  }
+  const duration = 1050;
+  const flight = stage.animate(frames, { duration, easing: 'cubic-bezier(.45, .05, .3, 1)', fill: 'forwards' });
+  for (const layer of welcomeDialog.querySelectorAll('.wl-copy, .wl-top')) layer.animate({ opacity: [1, 0] }, { duration: 260, easing: 'ease-in', fill: 'forwards' });
+  for (const layer of welcomeDialog.querySelectorAll('.wl-bg, .wl-sky, .wl-sea')) layer.animate({ opacity: [1, 0] }, { duration: 620, delay: 180, easing: 'ease-in-out', fill: 'forwards' });
+  flight.finished.then(() => welcomeDialog.close(), () => welcomeDialog.close());
+}
+// Chiusura (anche quella diretta del browser, che con Esc può non chiedere il permesso a 'cancel').
+welcomeDialog.addEventListener('close', () => {
+  // atterraggio: logo vero visibile e di nuovo in moto, nello stesso fotogramma in cui la pagina sparisce
+  document.documentElement.classList.remove('welcome-landing');
+  for (const animation of welcomeHeaderPaused) animation.play();
+  welcomeHeaderPaused = [];
+  for (const animation of welcomeDialog.getAnimations({ subtree: true })) if (!(animation instanceof CSSAnimation)) animation.cancel();
+  welcomeDialog.classList.remove('leaving', 'flying');
+  applyLogoMotion();
+  welcomeLeaving = false;
+  clearTimeout(welcomeGustTimer);
+  $('welcomeStage').replaceChildren();
+  welcomeDialog.querySelectorAll('.wl-star').forEach(star => star.remove());
+  welcomeScene = null;
+  afterWelcome();
+});
+addEventListener('resize', placeWelcomeHorizon);
+// Dopo l'ingresso: le notifiche rimaste in coda (solo l'ultima, le altre sono superate) e gli avvisi.
+function afterWelcome() {
+  const last = welcomeToasts.at(-1);
+  welcomeToasts = [];
+  renderUpdateState();
+  if (whatsNewSince && localStorageValue(seenVersionKey) === whatsNewSince && !$('updateNotice').matches(':popover-open')) $('whatsNewNotice').showPopover();
+  if (last) toast(...last);
+  scheduleLogoGust();
+}
+$('welcomeMain').onclick = () => {
+  if (folderAccessPending && !hasWorkspaceFolder()) chooseFolder(true);
+  else if (!welcomeFolderName()) {
+    if (window.showDirectoryPicker) chooseFolder();
+    else if (canImportFolder) pickImportedFolder();
+  }
+  leaveWelcome();
+};
+$('welcomeTheme').onclick = () => {
+  $('themeToggle').click();
+  renderWelcome();
+};
+$('welcomeOther').onclick = () => {
+  if (window.showDirectoryPicker) chooseFolder();
+  else pickImportedFolder();
+  leaveWelcome();
+};
+$('welcomeNewsAction').onclick = () => {
+  const kind = $('welcomeNews').dataset.kind;
+  leaveWelcome();
+  if (kind === 'update') setTimeout(showUpdateSettings, 420);
+  else setTimeout(() => openWhatsNew('since'), 420);
+};
+$('welcomeOff').onclick = () => {
+  settings.welcomePage = false;
+  storeSettings();
+  leaveWelcome();
+  setTimeout(() => toast('Pagina di benvenuto disattivata: la riattivi in Impostazioni › Documenti › Apertura'), 450);
+};
+// Un clic fuori dai pulsanti (e fuori dalle scritte) entra; Esc entra subito.
+welcomeDialog.addEventListener('click', event => {
+  if (!event.target.closest('button, .wl-copy, .wl-top')) leaveWelcome();
+});
+welcomeDialog.addEventListener('cancel', event => {
+  event.preventDefault();
+  leaveWelcome();
+});
+
 resetDoc('', '');
 restoreDraft().then(restored => {
   if (!restored) restoreFolder();
 }).catch(() => restoreFolder());
+showWelcome();
 </script>
 </body>
 </html>

@@ -113,3 +113,36 @@ Come è fatta:
 - **Testata.** È un contenitore (`cqw`), quindi a 220 px logo e nome si riducono senza uscire.
 
 Prossimo: Fase 2 (pagina di benvenuto). Per il benvenuto la scena si potrà clonare da `#itacaLogo`.
+
+**Fase 2 fatta (25/11/2026).**
+- **Struttura.** `<dialog id="welcome">` modale a tutto schermo, nel livello superiore: blocca Tab e scorciatoie. La scena è un clone di `#itacaLogo`, quindi c'è un solo disegno con le stesse animazioni. Cielo (nuvole di giorno, stelle di notte) e mare sono livelli propri, separati dalla scena; l'orizzonte è calcolato dalla base dell'isola.
+- **Pulsante principale.** «Riprendi il viaggio · Ultima rotta: cartella · documento» riapre la cartella, chiedendo il permesso con quel clic. Senza cartella ricordata diventa «Scegli la cartella» (consigliata quella di Itaca), oppure «Importa una cartella» senza File System Access. In più «Un'altra cartella…».
+- **Scelte rapide.** «Rotte salvate» mostra le cartelle salvate (massimo 5) e «Le mie bozze».
+- **Riga novità.** Una sola, per un aggiornamento disponibile («Vedi e aggiorna») o appena installato («Guarda le novità»).
+- **Niente sovrapposizioni.** Le notifiche aspettano: alla chiusura compare solo l'ultima. Gli avvisi di aggiornamento e di Novità compaiono dopo l'ingresso. `reopenOnFirstInteraction` ignora i clic nella pagina.
+- **Prima del disegno.** Uno script in testa nasconde `#app` (classe `welcome-pending`, con rete di sicurezza di 4 s), così l'app non lampeggia prima della pagina.
+- **Come si entra e come si spegne.**
+  - Clic fuori dalle scritte o Esc per entrare.
+  - Si spegne con «Non mostrare all'avvio» oppure in Impostazioni › Documenti › Apertura › Pagina di benvenuto (`settings.welcomePage`).
+  - Compare una volta per scheda (sessionStorage `itaca-welcome-seen`).
+- **Da provare dall'utente:** da file:// con una cartella ricordata deve comparire un solo permesso del browser.
+
+Correzioni dopo la prova dell'utente:
+- Le montagne «fluttuavano»: l'orizzonte veniva calcolato una volta sola e la scena saliva quando le scritte sotto crescevano (rotte, novità). Ora un ResizeObserver su pagina, scena e scritte, più `fonts.ready`, lo ricalcola.
+- «Riprendi il viaggio» cambiava dimensione: la riga mostra solo la cartella (niente documento), e prima di aprire la pagina si legge la cartella ricordata (`welcomePreset`, al massimo 0,5 s). Il pulsante nasce già giusto e ha una larghezza minima.
+- Rotte salvate: titolo centrato tra due trattini, pulsanti più ariosi. La cartella delle bozze ora c'è: veniva letta dopo l'avvio, adesso, se manca, la si chiede direttamente.
+- In alto a destra: versione «Itaca Lite X.Y.Z» e pulsante del tema chiaro/scuro (`#welcomeTheme` usa `#themeToggle`; disattivo con Natale).
+
+**Fase 3 fatta (25/11/2026)**, come nella sezione 3:
+- Il logo della testata si nasconde (`html.welcome-landing`), poi le animazioni di scena e testata si fermano nella stessa fase (stesso `currentTime`).
+- Il disegno vola lungo un arco: 24 fotogrammi WAAPI, solo `transform`, 1,05 s. Cielo, mare e scritte sono livelli propri che sfumano.
+- All'atterraggio, nello stesso fotogramma: chiusura del dialog, logo vero visibile, animazioni che ripartono.
+- Senza logo visibile (barra chiusa, finestra stretta): dissolvenza.
+- Verificato: fasi identiche (es. lg-bob 1483 ms in entrambi) e un solo logo per tutto il volo.
+
+Resta la **Fase 4** (verifica generale). Da provare dall'utente: da file:// con una cartella ricordata, un solo permesso.
+
+Ritocchi dopo la seconda prova:
+- **Vela «bucata» in alto.** Il bordo superiore stava 6–8 unità sotto il pennone (fessura chiara). Ora la vela sale sotto il pennone (283,95 → 470,46) e i bordi partono dal suo centro (283,98.6 e 470,49).
+- **Vela col vento.** Prima si allargava dal centro (`scale(1.17, 1.05)`) e si staccava. Ora è legata al pennone: `skewX(8deg) scaleY(1.05)` attorno a 380,73, ferma in alto e gonfia in basso. Icona di Finder rigenerata.
+- **Versione e tema.** Stanno in basso a destra, come nell'app: il pulsante del tema coincide con `#themeToggle` (`--wl-corner-*` calcolate da `placeWelcomeHorizon`). Sotto 640 px salgono in alto, per non coprire le scritte.
