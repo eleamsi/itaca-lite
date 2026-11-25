@@ -136,8 +136,8 @@
 .gl-copy .icon { width: 14px; height: 14px; }
 .i-settings { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M4 6h9M19 6h1M4 12h1M11 12h9M4 18h11'/%3E%3Ccircle cx='16' cy='6' r='2.4'/%3E%3Ccircle cx='8' cy='12' r='2.4'/%3E%3Ccircle cx='18' cy='18' r='2.4'/%3E%3C/svg%3E"); }
 .app-version { color: var(--muted); font-variant-numeric: tabular-nums; opacity: .8; }
-.settings-dialog { width: 760px; max-width: min(94vw, 760px); padding: 0; overflow: hidden; }
-.settings-dialog form { position: relative; display: grid; grid-template-columns: 188px minmax(0, 1fr); height: min(86vh, 600px); }
+.settings-dialog { width: 820px; max-width: min(94vw, 820px); padding: 0; overflow: hidden; }
+.settings-dialog form { position: relative; display: grid; grid-template-columns: 196px minmax(0, 1fr); height: min(88vh, 660px); }
 .settings-nav { display: flex; flex-direction: column; min-height: 0; padding: 20px 10px 14px; border-right: 1px solid var(--line-soft); background: var(--canvas); }
 .settings-dialog h2 { margin: 0 0 14px; padding: 0 10px; font-size: 17px; }
 .settings-tabs { display: grid; gap: 2px; }
@@ -154,19 +154,24 @@
 .settings-dialog.searching .settings-body > section > h3 { display: block; font-size: 15px; }
 .settings-dialog .search-miss { display: none !important; }
 .settings-dialog.searching .set-card > .set-row.search-first { border-top: 0; }
-.settings-search-status { margin: 0 0 16px; color: var(--muted); font-size: 12.5px; }
+.settings-search-status { margin: 20px 0 0; color: var(--muted); font-size: 12.5px; }
 .settings-search-status.empty { margin-top: 40px; text-align: center; font-size: 13.5px; }
 ::highlight(settings-search) { background-color: color-mix(in srgb, var(--accent) 26%, transparent); color: inherit; }
 .settings-reset { margin: auto 6px 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); color: var(--copy); font-size: 12px; font-weight: 550; text-align: left; }
 .settings-reset:hover:not(:disabled) { border-color: color-mix(in srgb, var(--line) 50%, var(--muted)); color: var(--ink); }
 .settings-about { padding: 0 10px; color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 .settings-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
-.settings-close { position: absolute; z-index: 1; top: 12px; right: 12px; }
-.settings-body { flex: 1; min-height: 0; overflow: auto; padding: 20px 26px 22px; scrollbar-width: thin; }
-.settings-body > section > h3 { margin: 0 0 14px; color: var(--ink); font: 600 17px/1.3 var(--display); letter-spacing: -.01em; }
+.settings-close { position: absolute; z-index: 3; top: 12px; right: 12px; }
+.settings-body { flex: 1; min-height: 0; overflow: auto; padding: 0 26px 22px; scrollbar-width: thin; }
+/* Titolo della scheda fisso in cima: il contenuto scorre sotto, la × resta libera */
+.settings-body > section > h3 { position: sticky; z-index: 2; top: 0; margin: 0 -26px 2px; padding: 20px 60px 12px 26px; background: var(--settings-bg, var(--paper)); color: var(--ink); font: 600 17px/1.3 var(--display); letter-spacing: -.01em; }
+.settings-body > section > h3 + h4 { margin-top: 6px; }
 .settings-body > section > h4 { margin: 20px 0 8px 2px; color: var(--muted); font-size: 12px; font-weight: 600; }
 .set-card { margin: 0 0 14px; border: 1px solid var(--line-soft); border-radius: 10px; background: color-mix(in srgb, var(--canvas) 55%, var(--paper)); }
-.set-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; min-height: 50px; padding: 9px 14px; border-top: 1px solid var(--line-soft); }
+/* Se lo spazio non basta il comando va a capo sotto la spiegazione (a destra), invece di stringerla su 3–4 righe */
+.set-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 18px; min-height: 50px; padding: 9px 14px; border-top: 1px solid var(--line-soft); }
+.set-row:not(.wide) > .set-label { flex: 1 1 200px; }
+.set-row:not(.wide) > :not(.set-label) { margin-left: auto; }
 .set-card > .set-row:first-child, .set-card > [hidden] + .set-row:not([hidden]) { border-top: 0; }
 .set-row.wide { display: grid; justify-content: stretch; gap: 10px; padding-block: 12px; }
 .swatch { height: 34px; border-radius: 5px; box-shadow: inset 0 0 0 1px #17212b1a; background:
@@ -1158,6 +1163,23 @@ dialog .tag-skipped span { color: var(--muted); }
 .audio-dock.playing:not(.buffering) .ad-signal i { background: var(--accent); opacity: .8; animation: ad-level var(--t, 1s) ease-in-out var(--d, 0s) infinite alternate; }
 .ad-elapsed { flex: none; min-width: 2.9em; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
 .ad-shuffle[hidden] { display: none; }
+/* Volume di Itaca: pulsante a fine riga e riga con il cursore */
+.ad-vol { flex: none; margin-left: -2px; }
+.audio-dock :is(.ad-vol, .ad-mute) .vol-icon { width: 15px; height: 15px; }
+.audio-dock .vol-x, .audio-dock [data-level='0'] :is(.vol-w1, .vol-w2), .audio-dock [data-level='1'] .vol-w2 { display: none; }
+.audio-dock [data-level='0'] .vol-x { display: inline; }
+.audio-dock [data-level='2'] .vol-w2 { opacity: .45; }
+.ad-vol[aria-expanded='true'] { background: var(--hover); color: var(--accent-text); }
+.ad-volrow { display: flex; align-items: center; gap: 8px; min-height: 30px; padding-top: 4px; margin-top: 4px; border-top: 1px solid var(--line-soft); }
+.ad-volrow[hidden] { display: none; }
+.ad-mute[aria-pressed='true'] { color: var(--accent-text); }
+.ad-volume { --fill: 100%; flex: 1; min-width: 50px; height: 18px; margin: 0; background: none; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.ad-volume::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--accent) var(--fill), color-mix(in srgb, var(--muted) 28%, transparent) var(--fill)); }
+.ad-volume::-webkit-slider-thumb { width: 13px; height: 13px; margin-top: -4.5px; border: 0; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--paper); -webkit-appearance: none; appearance: none; }
+.ad-volume::-moz-range-track { height: 4px; border-radius: 2px; background: color-mix(in srgb, var(--muted) 28%, transparent); }
+.ad-volume::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--accent); }
+.ad-volume::-moz-range-thumb { width: 13px; height: 13px; border: 0; border-radius: 50%; background: var(--accent); }
+.ad-volvalue { flex: none; min-width: 2.6em; color: var(--copy); font-variant-numeric: tabular-nums; text-align: right; }
 .audio-dock :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ad-mini { display: none; }
 @keyframes ad-spin { to { transform: rotate(1turn); } }
@@ -2730,14 +2752,15 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
         </div>
         <div class="settings-tabs" role="tablist" aria-label="Sezioni delle impostazioni" aria-orientation="vertical">
           <button type="button" role="tab" id="settingsTab-appearance" aria-controls="settingsPanel-appearance" aria-selected="true"><i class="icon si-appearance" aria-hidden="true"></i><span>Aspetto</span></button>
-          <button type="button" role="tab" id="settingsTab-panels" aria-controls="settingsPanel-panels" aria-selected="false" tabindex="-1"><i class="icon si-panels" aria-hidden="true"></i><span>Pannelli</span></button>
           <button type="button" role="tab" id="settingsTab-documents" aria-controls="settingsPanel-documents" aria-selected="false" tabindex="-1"><i class="icon si-document" aria-hidden="true"></i><span>Documenti</span></button>
+          <button type="button" role="tab" id="settingsTab-panels" aria-controls="settingsPanel-panels" aria-selected="false" tabindex="-1"><i class="icon si-panels" aria-hidden="true"></i><span>Barra e pannelli</span></button>
           <button type="button" role="tab" id="settingsTab-files" aria-controls="settingsPanel-files" aria-selected="false" tabindex="-1"><i class="icon si-files" aria-hidden="true"></i><span>File</span></button>
+          <button type="button" role="tab" id="settingsTab-audio" aria-controls="settingsPanel-audio" aria-selected="false" tabindex="-1"><i class="icon i-radio" aria-hidden="true"></i><span>Audio e radio</span></button>
           <button type="button" role="tab" id="settingsTab-pdf" aria-controls="settingsPanel-pdf" aria-selected="false" tabindex="-1"><i class="icon si-pdf" aria-hidden="true"></i><span>PDF</span></button>
           <button type="button" role="tab" id="settingsTab-diagrams" aria-controls="settingsPanel-diagrams" aria-selected="false" tabindex="-1"><i class="icon si-diagram" aria-hidden="true"></i><span>Diagrammi</span></button>
           <button type="button" role="tab" id="settingsTab-updates" aria-controls="settingsPanel-updates" aria-selected="false" tabindex="-1"><i class="icon si-update" aria-hidden="true"></i><span>Aggiornamenti</span><i class="update-dot" id="updateTabDot" hidden></i></button>
         </div>
-        <button type="button" class="settings-reset" id="settingsReset" title="Aspetto, pannelli, documenti, file, PDF e diagrammi tornano come al primo avvio. Restano la cartella di lavoro, le cartelle salvate, i percorsi, il tuo nome e i documenti.">Ripristina predefinite</button>
+        <button type="button" class="settings-reset" id="settingsReset" title="Aspetto, documenti, barra e pannelli, file, audio, PDF e diagrammi tornano come al primo avvio. Restano la cartella di lavoro, le cartelle salvate, i percorsi, il tuo nome e i documenti.">Ripristina predefinite</button>
         <span class="settings-about" id="settingsAbout"></span>
       </nav>
       <div class="settings-main">
@@ -2766,28 +2789,8 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <span class="set-label" id="themeModeLabel"><b>Tema</b><small id="themeModeNote" hidden>Il tema Natale è sempre scuro</small></span>
             <div class="segmented" role="radiogroup" aria-labelledby="themeModeLabel"><label><input type="radio" name="themeMode" value="auto"><span>Automatico</span></label><label><input type="radio" name="themeMode" value="light"><span>Chiaro</span></label><label><input type="radio" name="themeMode" value="dark"><span>Scuro</span></label></div>
           </div>
-          <div class="set-row">
-            <span class="set-label" id="sidebarSideLabel"><b>Barra laterale</b><small><span class="mod-key">Ctrl</span> + Maiusc + B la mostra o la nasconde; trascina il suo bordo per allargarla (doppio clic: larghezza normale)</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="sidebarSideLabel"><label><input type="radio" name="sidebarSide" value="left"><span>A sinistra</span></label><label><input type="radio" name="sidebarSide" value="right"><span>A destra</span></label></div>
-          </div>
-          <div class="set-row">
-            <span class="set-label" id="crittersLabel"><b>Animazione</b><small>Piccola decorazione in fondo al documento; la slitta di Babbo Natale corre sulla neve</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="crittersLabel"><label><input type="radio" name="critters" value="off"><span>Nessuna</span></label><label><input type="radio" name="critters" value="cat"><span>Loki</span></label><label><input type="radio" name="critters" value="boat"><span>Barchetta</span></label><label><input type="radio" name="critters" value="sleigh"><span>Slitta</span></label></div>
-          </div>
-          <div class="set-row" id="crittersSizeRow">
-            <span class="set-label" id="crittersSizeLabel"><b>Dimensione dell’animazione</b><small>Doppia: due volte più grande</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="crittersSizeLabel"><label><input type="radio" name="crittersSize" value="normal"><span>Normale</span></label><label><input type="radio" name="crittersSize" value="double"><span>Doppia ×2</span></label></div>
-          </div>
-          <div class="set-row">
-            <span class="set-label" id="audioPlayerLabel"><b>Lettore audio</b><small>L’audio continua mentre cambi documento. Spento: si ferma</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="audioPlayerLabel"><label><input type="radio" name="audioPlayer" value="docked"><span>Nella barra</span></label><label><input type="radio" name="audioPlayer" value="floating"><span>Fluttuante</span></label><label><input type="radio" name="audioPlayer" value="corner"><span>Nell’angolo</span></label><label><input type="radio" name="audioPlayer" value="off"><span>Spento</span></label></div>
-          </div>
-          <div class="set-row">
-            <label class="set-label" for="setRadio"><b>Radio online</b><small>Pulsante nella barra in basso: stazioni in diretta da radio-browser.info</small></label>
-            <input type="checkbox" class="switch" id="setRadio" name="radio">
-          </div>
         </div>
-        <h4>Marchio</h4>
+        <h4>Logo</h4>
         <div class="set-card">
           <div class="set-row">
             <span class="set-label" id="brandSizeLabel"><b>Dimensione</b><small>Logo in alto nella barra laterale</small></span>
@@ -2802,7 +2805,21 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <div class="segmented" role="radiogroup" aria-labelledby="versionPlacementLabel"><label><input type="radio" name="versionPlacement" value="beside"><span>Accanto al nome</span></label><label><input type="radio" name="versionPlacement" value="below"><span>Sotto il nome</span></label><label><input type="radio" name="versionPlacement" value="statusbar"><span>In basso</span></label><label><input type="radio" name="versionPlacement" value="hidden"><span>Nascosta</span></label></div>
           </div>
         </div>
-        <h4>Testo del documento</h4>
+        <h4>Animazione</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <span class="set-label" id="crittersLabel"><b>Animazione</b><small>Piccola decorazione in fondo al documento; la slitta di Babbo Natale corre sulla neve</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="crittersLabel"><label><input type="radio" name="critters" value="off"><span>Nessuna</span></label><label><input type="radio" name="critters" value="cat"><span>Loki</span></label><label><input type="radio" name="critters" value="boat"><span>Barchetta</span></label><label><input type="radio" name="critters" value="sleigh"><span>Slitta</span></label></div>
+          </div>
+          <div class="set-row" id="crittersSizeRow">
+            <span class="set-label" id="crittersSizeLabel"><b>Dimensione dell’animazione</b><small>Doppia: due volte più grande</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="crittersSizeLabel"><label><input type="radio" name="crittersSize" value="normal"><span>Normale</span></label><label><input type="radio" name="crittersSize" value="double"><span>Doppia ×2</span></label></div>
+          </div>
+        </div>
+      </section>
+      <section role="tabpanel" id="settingsPanel-documents" aria-labelledby="settingsTab-documents" hidden>
+        <h3>Documenti</h3>
+        <h4>Testo</h4>
         <div class="set-card">
           <div class="set-row">
             <span class="set-label" id="docFontLabel"><b>Carattere</b></span>
@@ -2822,9 +2839,79 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           </div>
           <p class="settings-sample" aria-hidden="true">Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura</p>
         </div>
+        <h4>Apertura</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <span class="set-label" id="openModeLabel"><b>Apri i documenti in</b></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="openModeLabel"><label><input type="radio" name="openMode" value="read"><span>Lettura</span></label><label><input type="radio" name="openMode" value="edit"><span>Modifica</span></label><label><input type="radio" name="openMode" value="source"><span>Markdown</span></label></div>
+          </div>
+          <div class="set-row">
+            <span class="set-label" id="openDocsLabel"><b>Più documenti aperti</b><small id="openDocsHelp">Un documento alla volta, come sempre</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="openDocsLabel"><label><input type="radio" name="openDocs" value="single"><span>Uno</span></label><label><input type="radio" name="openDocs" value="tabs"><span>Schede</span></label><label><input type="radio" name="openDocs" value="stack"><span>Affiancati</span></label></div>
+          </div>
+          <div class="set-row">
+            <label class="set-label" for="setStartDocument"><b>Documento iniziale</b><small id="startDocumentHint">Aperto quando Itaca apre la cartella</small></label>
+            <div class="start-doc-field"><input type="text" id="setStartDocument" autocomplete="off" spellcheck="false" placeholder="index.md (predefinito)" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="startDocSuggestions"><ul class="link-suggestions start-doc-suggestions" id="startDocSuggestions" role="listbox" aria-label="Documenti" hidden></ul></div>
+          </div>
+        </div>
+        <h4>Scrittura</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <label class="set-label" for="setAutosave"><b>Salvataggio automatico</b><small>Solo per i documenti già salvati sul disco</small></label>
+            <select name="autosave" id="setAutosave">
+              <option value="0">Disattivato</option>
+              <option value="2">Dopo 2 secondi</option>
+              <option value="5">Dopo 5 secondi</option>
+              <option value="15">Dopo 15 secondi</option>
+              <option value="60">Dopo 1 minuto</option>
+            </select>
+          </div>
+          <div class="set-row">
+            <label class="set-label" for="setLiveMarkdown"><b>Markdown mentre scrivi</b><small>In Modifica la sintassi Markdown e Material (titoli, elenchi, grassetto, blocchi…) diventa subito formattazione</small></label>
+            <input type="checkbox" class="switch" id="setLiveMarkdown" name="liveMarkdown">
+          </div>
+          <div class="set-row">
+            <label class="set-label" for="setAutoPair"><b>Chiudi automaticamente</b><small>Scrivendo <code>*</code> <code>_</code> <code>`</code> <code>[</code> <code>(</code> aggiunge subito la chiusura; con del testo selezionato lo racchiude</small></label>
+            <input type="checkbox" class="switch" id="setAutoPair" name="autoPair">
+          </div>
+        </div>
+        <h4>Lettura</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <label class="set-label" for="setTableTools"><b>Ordina e filtra le tabelle</b><small>In Lettura un clic sull’intestazione ordina la colonna e le tabelle lunghe hanno una casella per filtrare le righe. Il documento non cambia</small></label>
+            <input type="checkbox" class="switch" id="setTableTools" name="tableTools">
+          </div>
+        </div>
       </section>
       <section role="tabpanel" id="settingsPanel-panels" aria-labelledby="settingsTab-panels" hidden>
-        <h3>Pannelli</h3>
+        <h3>Barra e pannelli</h3>
+        <h4>Barra laterale</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <span class="set-label" id="sidebarSideLabel"><b>Posizione</b><small><span class="mod-key">Ctrl</span> + Maiusc + B la mostra o la nasconde</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="sidebarSideLabel"><label><input type="radio" name="sidebarSide" value="left"><span>A sinistra</span></label><label><input type="radio" name="sidebarSide" value="right"><span>A destra</span></label></div>
+          </div>
+          <div class="set-row" id="sidebarWidthRow">
+            <span class="set-label"><b>Larghezza</b><small id="sidebarWidthNote">Trascina il bordo della barra per allargarla o stringerla</small></span>
+            <button type="button" class="outline" id="sidebarWidthReset">Larghezza normale</button>
+          </div>
+        </div>
+        <h4>Elenco dei file</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <span class="set-label" id="treeLabelsLabel"><b>Documenti mostrati con</b><small>Anche in schede, percorso e pannelli. Titolo = <code>title:</code> dell’intestazione o primo titolo, come in MkDocs; i nomi dei file non cambiano</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="treeLabelsLabel"><label><input type="radio" name="treeLabels" value="name"><span>Nome del file</span></label><label><input type="radio" name="treeLabels" value="title"><span>Titolo</span></label></div>
+          </div>
+          <div class="set-row" id="treeOrderRow" hidden>
+            <span class="set-label" id="treeOrderLabel"><b>Ordine dei documenti</b><small>Per nome del file se lo usi per decidere l’ordine (<code>01-introduzione.md</code>, <code>02-…</code>), come fa MkDocs</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="treeOrderLabel"><label><input type="radio" name="treeOrder" value="title"><span>Per titolo</span></label><label><input type="radio" name="treeOrder" value="name"><span>Per nome del file</span></label></div>
+          </div>
+          <div class="set-row">
+            <label class="set-label" for="setQuickInsert"><b>Inserimento rapido</b><small>Fermati un attimo col puntatore tra due righe dell’elenco: si apre un varco con il «+» per un nuovo documento o una nuova cartella</small></label>
+            <input type="checkbox" class="switch" id="setQuickInsert" name="quickInsert">
+          </div>
+        </div>
+        <h4>Pannelli del documento</h4>
         <div class="set-card">
           <div class="set-row">
             <label class="set-label" for="setShowOutline"><b>Indice del documento</b></label>
@@ -2871,43 +2958,9 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
         </div>
         <p class="settings-foot">Puoi anche <b>trascinare</b> un pannello tenendo premuto il suo titolo: le zone tratteggiate mostrano dove lasciarlo e una linea dove finirà rispetto agli altri. Indice e citazioni si spostano insieme; nel documento il grafo li segue. Nelle finestre strette i pannelli tornano nella barra laterale.</p>
       </section>
-      <section role="tabpanel" id="settingsPanel-documents" aria-labelledby="settingsTab-documents" hidden>
-        <h3>Documenti</h3>
-        <div class="set-card">
-          <div class="set-row">
-            <span class="set-label" id="openModeLabel"><b>Apri i documenti in</b></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="openModeLabel"><label><input type="radio" name="openMode" value="read"><span>Lettura</span></label><label><input type="radio" name="openMode" value="edit"><span>Modifica</span></label><label><input type="radio" name="openMode" value="source"><span>Markdown</span></label></div>
-          </div>
-          <div class="set-row">
-            <span class="set-label" id="openDocsLabel"><b>Più documenti aperti</b><small id="openDocsHelp">Un documento alla volta, come sempre</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="openDocsLabel"><label><input type="radio" name="openDocs" value="single"><span>Uno</span></label><label><input type="radio" name="openDocs" value="tabs"><span>Schede</span></label><label><input type="radio" name="openDocs" value="stack"><span>Affiancati</span></label></div>
-          </div>
-          <div class="set-row">
-            <label class="set-label" for="setAutosave"><b>Salvataggio automatico</b><small>Solo per i documenti già salvati sul disco</small></label>
-            <select name="autosave" id="setAutosave">
-              <option value="0">Disattivato</option>
-              <option value="2">Dopo 2 secondi</option>
-              <option value="5">Dopo 5 secondi</option>
-              <option value="15">Dopo 15 secondi</option>
-              <option value="60">Dopo 1 minuto</option>
-            </select>
-          </div>
-          <div class="set-row">
-            <label class="set-label" for="setAutoPair"><b>Chiudi automaticamente</b><small>Scrivendo <code>*</code> <code>_</code> <code>`</code> <code>[</code> <code>(</code> aggiunge subito la chiusura; con del testo selezionato lo racchiude</small></label>
-            <input type="checkbox" class="switch" id="setAutoPair" name="autoPair">
-          </div>
-          <div class="set-row">
-            <label class="set-label" for="setLiveMarkdown"><b>Markdown mentre scrivi</b><small>In Modifica la sintassi Markdown e Material (titoli, elenchi, grassetto, blocchi…) diventa subito formattazione</small></label>
-            <input type="checkbox" class="switch" id="setLiveMarkdown" name="liveMarkdown">
-          </div>
-          <div class="set-row">
-            <label class="set-label" for="setTableTools"><b>Ordina e filtra le tabelle</b><small>In Lettura un clic sull’intestazione ordina la colonna e le tabelle lunghe hanno una casella per filtrare le righe. Il documento non cambia</small></label>
-            <input type="checkbox" class="switch" id="setTableTools" name="tableTools">
-          </div>
-        </div>
-      </section>
       <section role="tabpanel" id="settingsPanel-files" aria-labelledby="settingsTab-files" hidden>
         <h3>File</h3>
+        <h4>Rinominare, spostare, eliminare</h4>
         <div class="set-card">
           <div class="set-row">
             <span class="set-label" id="deleteConfirmLabel"><b>Prima di eliminare</b><small>L’eliminazione è definitiva</small></span>
@@ -2917,23 +2970,8 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <label class="set-label" for="setUpdateLinks"><b>Aggiorna i collegamenti</b><small>Quando rinomini o sposti un file</small></label>
             <input type="checkbox" class="switch" id="setUpdateLinks" name="updateLinks">
           </div>
-          <div class="set-row">
-            <label class="set-label" for="setStartDocument"><b>Documento iniziale</b><small id="startDocumentHint">Aperto quando Itaca apre la cartella</small></label>
-            <div class="start-doc-field"><input type="text" id="setStartDocument" autocomplete="off" spellcheck="false" placeholder="index.md (predefinito)" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="startDocSuggestions"><ul class="link-suggestions start-doc-suggestions" id="startDocSuggestions" role="listbox" aria-label="Documenti" hidden></ul></div>
-          </div>
-          <div class="set-row">
-            <span class="set-label" id="treeLabelsLabel"><b>Documenti mostrati con</b><small>Nell’elenco, nelle schede, nel percorso e nei pannelli. Il titolo è <code>title:</code> dell’intestazione o il primo titolo del documento, come nel menu di MkDocs. Collegamenti e nomi dei file non cambiano</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="treeLabelsLabel"><label><input type="radio" name="treeLabels" value="name"><span>Nome del file</span></label><label><input type="radio" name="treeLabels" value="title"><span>Titolo</span></label></div>
-          </div>
-          <div class="set-row" id="treeOrderRow" hidden>
-            <span class="set-label" id="treeOrderLabel"><b>Ordine dei documenti</b><small>Per nome del file se lo usi per decidere l’ordine (<code>01-introduzione.md</code>, <code>02-…</code>), come fa MkDocs</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="treeOrderLabel"><label><input type="radio" name="treeOrder" value="title"><span>Per titolo</span></label><label><input type="radio" name="treeOrder" value="name"><span>Per nome del file</span></label></div>
-          </div>
-          <div class="set-row">
-            <label class="set-label" for="setQuickInsert"><b>Inserimento rapido</b><small>Fermati un attimo col puntatore tra due righe dell’elenco: si apre un varco con il «+» per un nuovo documento o una nuova cartella</small></label>
-            <input type="checkbox" class="switch" id="setQuickInsert" name="quickInsert">
-          </div>
         </div>
+        <h4>Bozze</h4>
         <div class="set-card">
           <div class="set-row">
             <label class="set-label" for="setDrafts"><b>Bozze personali</b><small>Una cartella solo tua, fuori da quelle condivise: i documenti che scrivi lì non li vede nessuno finché non li pubblichi</small></label>
@@ -2944,6 +2982,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <button type="button" class="outline" id="draftsChange">Cambia…</button>
           </div>
         </div>
+        <h4>Tu e la cartella</h4>
         <div class="set-card">
           <div class="set-row">
             <label class="set-label" for="setUserName"><b>Il tuo nome</b><small id="userNameHint">Mostrato agli altri mentre modifichi</small></label>
@@ -2954,6 +2993,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
             <input type="text" id="setFolderPath" name="folderPath" autocomplete="off" spellcheck="false" placeholder="Apri una cartella">
           </div>
         </div>
+        <h4>Icona</h4>
         <div class="set-card">
           <div class="set-row">
             <span class="set-label"><b>Icona di Itaca</b><small>Per il file di Itaca o un collegamento</small></span>
@@ -2961,6 +3001,27 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
           </div>
           <p class="icon-help" data-for="png" hidden>Seleziona <b>Itaca Lite.html</b> nel Finder e premi <kbd>⌘</kbd> <kbd>I</kbd>. Apri l’immagine scaricata, copiala (<kbd>⌘</kbd> <kbd>A</kbd>, <kbd>⌘</kbd> <kbd>C</kbd>), clicca l’icona piccola in alto nella finestra Informazioni e incolla (<kbd>⌘</kbd> <kbd>V</kbd>).</p>
           <p class="icon-help" data-for="ico" hidden>Su Windows un file .html non può avere un’icona propria: tasto destro su <b>Itaca Lite.html</b> › <i>Mostra altre opzioni</i> › <i>Crea collegamento</i>. Poi tasto destro sul collegamento › <i>Proprietà</i> › <i>Cambia icona…</i> › <i>Sfoglia</i> e scegli il file .ico scaricato.</p>
+        </div>
+      </section>
+      <section role="tabpanel" id="settingsPanel-audio" aria-labelledby="settingsTab-audio" hidden>
+        <h3>Audio e radio</h3>
+        <h4>Lettore</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <span class="set-label" id="audioPlayerLabel"><b>Lettore audio</b><small>L’audio continua mentre cambi documento. Spento: si ferma</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="audioPlayerLabel"><label><input type="radio" name="audioPlayer" value="docked"><span>Nella barra</span></label><label><input type="radio" name="audioPlayer" value="floating"><span>Fluttuante</span></label><label><input type="radio" name="audioPlayer" value="corner"><span>Nell’angolo</span></label><label><input type="radio" name="audioPlayer" value="off"><span>Spento</span></label></div>
+          </div>
+          <div class="set-row" id="audioVolumeRow">
+            <span class="set-label"><b>Volume di Itaca</b><small id="audioVolumeNote">Si regola dall’altoparlante del lettore, indipendente da quello del computer</small></span>
+            <button type="button" class="outline" id="audioVolumeForget">Dimentica</button>
+          </div>
+        </div>
+        <h4>Radio</h4>
+        <div class="set-card">
+          <div class="set-row">
+            <label class="set-label" for="setRadio"><b>Radio online</b><small>Pulsante nella barra in basso: stazioni in diretta da radio-browser.info</small></label>
+            <input type="checkbox" class="switch" id="setRadio" name="radio">
+          </div>
         </div>
       </section>
       <section role="tabpanel" id="settingsPanel-pdf" aria-labelledby="settingsTab-pdf" hidden>
@@ -9441,6 +9502,10 @@ const rateLabel = () => String(audioRate).replace('.', ',') + '×';
 const playIcons = '<svg class="start" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 2.6v10.8c0 .5.6.8 1 .5l8.3-5.4a.6.6 0 0 0 0-1L5.5 2.1c-.4-.3-1 0-1 .5z"/></svg>' +
   '<svg class="pause" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="2.5" width="3.2" height="11" rx="1"/><rect x="9.3" y="2.5" width="3.2" height="11" rx="1"/></svg>';
 const stopIcon = '<svg class="stop" viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="3.5" width="9" height="9" rx="1.6"/></svg>';
+// Altoparlante: le onde si vedono secondo il livello (data-level 0–3 sul pulsante).
+const volumeIcons = '<svg class="vol-icon" viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' +
+  '<path class="vol-body" d="M2.5 6.2h2.2L8 3.4v9.2L4.7 9.8H2.5z" fill="currentColor"/><path class="vol-w1" d="M10.3 6.3a2.4 2.4 0 0 1 0 3.4"/>' +
+  '<path class="vol-w2" d="M12.1 4.6a4.8 4.8 0 0 1 0 6.8"/><path class="vol-x" d="m10.6 6.2 3.6 3.6m0-3.6-3.6 3.6"/></svg>';
 
 const audioPlayerCss = `
 :host { display: block; }
@@ -9577,12 +9642,14 @@ function startItacaSource(track) {
     if (radioNeedsHlsJs(track)) {
       itacaAudio.removeAttribute('src');
       itacaAudio.load();
+      applyItacaVolume(track);
       radioPlayHls(track, attempt);
       return;
     }
   }
   itacaAudio.src = track.src;
   itacaAudio.defaultPlaybackRate = itacaAudio.playbackRate = track.live ? 1 : audioRate;
+  applyItacaVolume(track);
   itacaAudio.play().catch(() => {});
 }
 
@@ -9864,7 +9931,11 @@ audioDock.innerHTML = '<button type="button" class="ad-mini" aria-label="Mostra 
   '<span class="ad-now">0:00</span><div class="ad-wave" role="slider" tabindex="0" aria-label="Posizione"><canvas></canvas></div><span class="ad-total">–:––</span>' +
   '<button type="button" class="ad-speed" title="Velocità di riproduzione">1×</button>' +
   '<span class="ad-live"><span class="ad-badge">LIVE</span><span class="ad-signal" aria-hidden="true">' + liveBars + '</span><span class="ad-elapsed" title="Da quanto ascolti"></span>' +
-  '<button type="button" class="icon-button ad-shuffle" hidden><i class="icon i-shuffle" aria-hidden="true"></i></button></span></div></div>';
+  '<button type="button" class="icon-button ad-shuffle" hidden><i class="icon i-shuffle" aria-hidden="true"></i></button></span>' +
+  '<button type="button" class="icon-button ad-vol" aria-expanded="false" aria-label="Volume" title="Volume di Itaca">' + volumeIcons + '</button></div>' +
+  '<div class="ad-volrow" hidden><button type="button" class="icon-button ad-mute" aria-pressed="false" aria-label="Silenzia" title="Silenzia">' + volumeIcons + '</button>' +
+  '<input type="range" class="ad-volume" min="0" max="100" step="1" aria-label="Volume di Itaca">' +
+  '<output class="ad-volvalue"></output></div></div>';
 document.body.append(audioDock);
 const dockPart = selector => audioDock.querySelector(selector);
 
@@ -9959,6 +10030,10 @@ function renderAudioDock() {
   setDockText('.ad-title', nowPlaying.title);
   renderDockArt(live);
   dockPart('.ad-radio').hidden = !settings.radio;
+  if (!dockPart('.ad-volrow').hidden || dockPart('.ad-vol').dataset.key !== nowPlaying.key) {
+    dockPart('.ad-vol').dataset.key = nowPlaying.key;
+    renderAudioVolume();
+  }
   if (live) {
     renderLiveDock(playing, buffering);
     return;
@@ -10035,6 +10110,115 @@ bindWaveSeek(dockPart('.ad-wave'), seekItacaAudio, () => true, hover => {
 dockPart('.ad-wave').addEventListener('keydown', event => {
   if (waveKey(event, true, toggleItacaAudio)) event.preventDefault();
 });
+
+// ── Volume di Itaca ──
+// Indipendente da quello del computer: le radio trasmettono a livelli molto diversi
+// (e con il computer al minimo alcune restano forti). Il cursore va da 0 a 100 e il
+// volume vero è il suo quadrato: nella parte bassa ci sono più passi fini.
+// Le radio non si possono «normalizzare» (Web Audio ammutolirebbe uno stream di
+// un'altra origine): Itaca ricorda invece il volume di ogni stazione.
+// localStorage «itaca-audio-volume» = {level, muted, stations: {chiave: livello}}.
+var audioVolumeKey = 'itaca-audio-volume';
+var audioVolume = { level: 100, muted: false, stations: {} };
+try {
+  const stored = JSON.parse(localStorage.getItem(audioVolumeKey));
+  if (stored && Number.isFinite(stored.level)) audioVolume = { level: stored.level, muted: Boolean(stored.muted), stations: stored.stations && typeof stored.stations === 'object' ? stored.stations : {} };
+} catch {}
+function storeAudioVolume() {
+  // Al massimo 200 stazioni ricordate (le più recenti restano in fondo all'oggetto).
+  const keys = Object.keys(audioVolume.stations);
+  for (const key of keys.slice(0, Math.max(0, keys.length - 200))) delete audioVolume.stations[key];
+  try { localStorage.setItem(audioVolumeKey, JSON.stringify(audioVolume)); } catch {}
+}
+function trackVolumeLevel(track = nowPlaying) {
+  const own = track?.live ? audioVolume.stations[track.key] : undefined;
+  return Math.min(100, Math.max(0, Number.isFinite(own) ? own : audioVolume.level));
+}
+function applyItacaVolume(track = nowPlaying) {
+  const level = trackVolumeLevel(track);
+  itacaAudio.volume = (level / 100) ** 2;
+  itacaAudio.muted = audioVolume.muted;
+}
+function setItacaVolume(level) {
+  level = Math.round(Math.min(100, Math.max(0, level)));
+  if (nowPlaying?.live) {
+    delete audioVolume.stations[nowPlaying.key];
+    audioVolume.stations[nowPlaying.key] = level;
+  }
+  // L'ultimo volume scelto vale anche per i file e per le stazioni nuove.
+  audioVolume.level = level;
+  if (level > 0) audioVolume.muted = false;
+  storeAudioVolume();
+  applyItacaVolume();
+  renderAudioVolume();
+}
+function toggleItacaMute() {
+  audioVolume.muted = !audioVolume.muted;
+  if (!audioVolume.muted && trackVolumeLevel() === 0) return setItacaVolume(30);
+  storeAudioVolume();
+  applyItacaVolume();
+  renderAudioVolume();
+}
+function renderAudioVolume() {
+  const level = trackVolumeLevel();
+  const silent = audioVolume.muted || level === 0;
+  const icon = silent ? 0 : level < 34 ? 1 : level < 67 ? 2 : 3;
+  const text = silent ? 'Silenziato' : level + '%';
+  for (const button of [dockPart('.ad-vol'), dockPart('.ad-mute')]) {
+    if (button.dataset.level !== String(icon)) button.dataset.level = icon;
+  }
+  const vol = dockPart('.ad-vol');
+  const title = 'Volume di Itaca: ' + text;
+  if (vol.title !== title) vol.title = title;
+  const mute = dockPart('.ad-mute');
+  mute.setAttribute('aria-pressed', String(audioVolume.muted));
+  const muteLabel = audioVolume.muted ? 'Riattiva l’audio' : 'Silenzia';
+  if (mute.title !== muteLabel) mute.title = muteLabel, mute.setAttribute('aria-label', muteLabel);
+  const range = dockPart('.ad-volume');
+  if (document.activeElement !== range || Number(range.value) !== level) range.value = level;
+  range.style.setProperty('--fill', (audioVolume.muted ? 0 : level) + '%');
+  range.setAttribute('aria-valuetext', text);
+  setDockText('.ad-volvalue', audioVolume.muted ? '0%' : level + '%');
+}
+function showVolumeRow(open = dockPart('.ad-volrow').hidden) {
+  dockPart('.ad-volrow').hidden = !open;
+  dockPart('.ad-vol').setAttribute('aria-expanded', String(open));
+  audioDock.classList.toggle('volume-open', open);
+  renderAudioVolume();
+  if (audioDock.dataset.style === 'floating') positionFloatingDock(audioDock.offsetLeft, audioDock.offsetTop);
+}
+dockPart('.ad-vol').addEventListener('click', () => {
+  showVolumeRow();
+  if (!dockPart('.ad-volrow').hidden) dockPart('.ad-volume').focus({ preventScroll: true });
+});
+dockPart('.ad-mute').addEventListener('click', toggleItacaMute);
+// Un clic fuori dal lettore chiude la riga del volume (come un menu).
+document.addEventListener('pointerdown', event => {
+  if (dockPart('.ad-volrow').hidden || audioDock.contains(event.target)) return;
+  showVolumeRow(false);
+}, true);
+dockPart('.ad-volume').addEventListener('input', event => setItacaVolume(Number(event.target.value)));
+dockPart('.ad-volume').addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    event.stopPropagation();
+    showVolumeRow(false);
+    dockPart('.ad-vol').focus({ preventScroll: true });
+  } else if (event.key.toLowerCase() === 'm') {
+    event.preventDefault();
+    toggleItacaMute();
+  }
+});
+// Rotella sull'altoparlante o sul cursore: ±5.
+for (const target of [dockPart('.ad-vol'), dockPart('.ad-volrow')]) {
+  target.addEventListener('wheel', event => {
+    if (!event.deltaY || event.ctrlKey) return;
+    event.preventDefault();
+    setItacaVolume(trackVolumeLevel() + (event.deltaY < 0 ? 5 : -5));
+  }, { passive: false });
+}
+itacaAudio.addEventListener('volumechange', () => { if (!audioDock.hidden) renderAudioVolume(); });
+applyItacaVolume();
 // Fluttuante: si trascina dalla maniglia o da un punto vuoto della testata.
 audioDock.addEventListener('pointerdown', event => {
   if (audioDock.dataset.style !== 'floating' || event.button !== 0 || !event.target.closest('.ad-head') || event.target.closest('button')) return;
@@ -14268,9 +14452,34 @@ settingsDialog.addEventListener('keydown', event => {
   }
 });
 
+// Righe informative: larghezza della barra laterale e volumi ricordati delle stazioni.
+function syncSettingsExtras() {
+  const width = Math.round(sidebar.getBoundingClientRect().width) || storedSidebarWidth();
+  const custom = storedSidebarWidth() !== sidebarWidthDefault;
+  $('sidebarWidthNote').textContent = 'Trascina il bordo della barra per allargarla o stringerla · ora ' + (sidebar.hidden ? storedSidebarWidth() : width) + ' px';
+  $('sidebarWidthReset').disabled = !custom;
+  const stations = Object.keys(audioVolume.stations).length;
+  $('audioVolumeNote').textContent = 'Si regola dall’altoparlante del lettore, indipendente da quello del computer. ' +
+    (stations ? 'Itaca ricorda il volume di ' + (stations === 1 ? '1 stazione' : stations + ' stazioni') + '.' : 'Ricorda il volume di ogni stazione.');
+  $('audioVolumeForget').disabled = !stations;
+}
+$('sidebarWidthReset').addEventListener('click', () => {
+  storeSidebarWidth(sidebarWidthDefault);
+  syncSettingsExtras();
+});
+$('audioVolumeForget').addEventListener('click', () => {
+  audioVolume.stations = {};
+  storeAudioVolume();
+  if (nowPlaying) applyItacaVolume();
+  renderAudioVolume();
+  syncSettingsExtras();
+  toast('Volumi delle stazioni dimenticati');
+});
+
 function openSettings(section = '') {
   if (settingsDialog.open || document.querySelector('dialog[open]')) return;
   syncSettings();
+  syncSettingsExtras();
   if (settingsSearch.value) { settingsSearch.value = ''; runSettingsSearch(); }
   showSettingsTab((section && $('settingsTab-' + section)) || settingsTabs.querySelector('[role=tab]'));
   settingsDialog.showModal();
@@ -14282,12 +14491,13 @@ function openSettings(section = '') {
 const resettableKeys = [settingsKey, 'itaca-palette', 'itaca-text-scale', 'quaderno-theme', 'itaca-pdf-options', 'itaca-critters-before-xmas', 'itaca-drawio-config', 'itaca-sidebar-width'];
 $('settingsReset').onclick = async () => {
   const ok = await modal('Ripristinare le impostazioni predefinite?',
-    '<p>Aspetto, pannelli, documenti, file, PDF e diagrammi tornano come al primo avvio.</p>' +
+    '<p>Aspetto, documenti, barra e pannelli, file, audio, PDF e diagrammi tornano come al primo avvio.</p>' +
     '<p>Restano la cartella di lavoro, le cartelle salvate, i percorsi delle cartelle, il tuo nome e i documenti.</p>', 'Ripristina');
   if (!ok) return;
   const openDocs = settings.openDocs;
   for (const key of resettableKeys) storeSetting(key, null);
   applySidebarWidth();
+  syncSettingsExtras();
   for (const key of Object.keys(settings)) delete settings[key];
   Object.assign(settings, structuredClone(defaultSettings));
   // Con documenti non salvati in altre schede le schede restano.
@@ -37013,7 +37223,8 @@ document.addEventListener('keydown', event => {
     setTimeout(() => { plainPasteRequested = false; }, 1000);
   }
   if (!modifier || event.altKey || event.shiftKey || (key !== 'h' && key !== 'f')) return;
-  if (!current || $('dialog').open || panel.open || $('imagePreview').open || imagePaint.open) return;
+  // Con una finestra aperta (Impostazioni, Glossario…) Ctrl/⌘+F appartiene a quella.
+  if (!current || document.querySelector('dialog[open]')) return;
   event.preventDefault();
   // La stessa scorciatoia apre e chiude la barra. Se però nel documento è stato selezionato
   // un testo nuovo, la barra resta aperta e cerca quello.
