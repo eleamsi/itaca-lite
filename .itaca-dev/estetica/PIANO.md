@@ -88,12 +88,12 @@ Soluzione (FLIP con Web Animations):
   - [ ] Cartelle salvate, bozze, Novità/aggiornamento nella pagina; avvisi rimandati finché è aperta.
   - [ ] Cielo/stelle/nuvole come da proposta; mare fuori dallo stage.
 - [ ] **Fase 3 — Volo** (sezione 3).
-- [ ] **Fase 4 — Verifica**
-  - [ ] Temi chiaro e scuro, tutte le tavolozze, Natale.
-  - [ ] Barra a destra, barra chiusa, finestra stretta, riduci movimento.
-  - [ ] Ripristina, ricerca nelle Impostazioni.
-  - [ ] Da file:// con una cartella ricordata (un solo prompt).
-  - [ ] Shortcut, glossario, changelog 2.0.0, chiudere #33 con la milestone.
+- [x] **Fase 4 — Verifica**
+  - [x] Temi chiaro e scuro, tutte le tavolozze, Natale.
+  - [x] Barra a destra, barra chiusa, finestra stretta, riduci movimento.
+  - [x] Ripristina, ricerca nelle Impostazioni.
+  - [ ] Da file:// con una cartella ricordata (un solo prompt): da provare dall'utente.
+  - [ ] Changelog 2.0.0 e chiusura di #33 con la milestone: al rilascio.
 
 ## 7. Stato
 
@@ -146,3 +146,18 @@ Ritocchi dopo la seconda prova:
 - **Vela «bucata» in alto.** Il bordo superiore stava 6–8 unità sotto il pennone (fessura chiara). Ora la vela sale sotto il pennone (283,95 → 470,46) e i bordi partono dal suo centro (283,98.6 e 470,49).
 - **Vela col vento.** Prima si allargava dal centro (`scale(1.17, 1.05)`) e si staccava. Ora è legata al pennone: `skewX(8deg) scaleY(1.05)` attorno a 380,73, ferma in alto e gonfia in basso. Icona di Finder rigenerata.
 - **Versione e tema.** Stanno in basso a destra, come nell'app: il pulsante del tema coincide con `#themeToggle` (`--wl-corner-*` calcolate da `placeWelcomeHorizon`). Sotto 640 px salgono in alto, per non coprire le scritte.
+
+**Fase 4 fatta (25/11/2026).** Problemi trovati e corretti:
+- **Barra laterale a destra.** Il pulsante del tema dell'app non è nell'angolo: versione e tema del benvenuto finivano a metà in basso, addosso a «Non mostrare all'avvio». Ora, se `#themeToggle` dista più di 48 px dal bordo destro, la pagina usa l'angolo (stessa distanza dal fondo).
+- **Nuvole e stelle.** Seguivano il logo solo all'apertura: con la finestra in secondo piano o «riduci movimento» acceso dopo continuavano. Ora `applyLogoMotion()` mette `.still` anche sul benvenuto (`!logoAwake()`), e `.still` mette in pausa invece di togliere l'animazione (prima le nuvole tornavano tutte sul bordo sinistro).
+- **Tastiera.** Il fuoco iniziale andava sul pulsante del tema (primo nel codice): Invio cambiava tema invece di entrare. Ora `autofocus` su «Riprendi / Scegli la cartella» e `.wl-top` sta dopo le scritte (ordine del Tab = ordine visivo).
+- **Ricerca nelle Impostazioni.** «intro», «schermata», «introduzione» trovano la Pagina di benvenuto.
+
+Verificato senza problemi: tutte le tavolozze in chiaro e scuro (logo con colori propri, leggibile su ogni barra laterale), Natale (solo scuro: tema del benvenuto disattivato come `#themeToggle`), volo verso la barra a destra, Ripristina (welcomePage, logoMotion, brandSize tornano ai predefiniti), console senza errori.
+
+**Remi (25/11/2026, richiesta dell'utente).** Prima: 5 scalmi e 5 aste, ma solo 4 pale, spostate di un posto (l'asta di sinistra senza pala), più ripide delle aste; le aste partivano sotto i buchi.
+- Ogni remo è un pezzo unico `g.lg-oar` dentro `.lg-oars`: asta (`lg-detail`, dal centro dello scalmo) + pala affusolata sullo stesso asse (pendenza −0,55, punta a y 522, come prima). Pala davanti al timone con un margine anche a fine colpo.
+- Scalmi `.lg-ports`: buco scuro r 11 con bordo `--lg-sand2`, così il remo sembra entrare nello scafo.
+- Niente voga: provata (rotazione attorno allo scalmo) e tolta su richiesta dell'utente. I remi restano fermi e seguono solo l'ondeggiamento della barca.
+- Favicon e icone piccole: solo le pale (asta e scalmi sono `lg-detail`). Icona di Finder rigenerata.
+
