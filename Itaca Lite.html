@@ -22034,6 +22034,9 @@ const graphDialogView = new LinkGraphView($('graphDialogCanvas'), {
 });
 
 function graphAvailable() {
+  // Scelto «nel documento»: senza documento aperto non c'è, anche quando la finestra
+  // stretta (o la barra laterale allargata) lo ha portato nella barra laterale.
+  if (settings.graphPlacement === 'document' && !current) return false;
   return settings.showGraph && hasWorkspaceFolder() && !folderAccessPending && [...files.keys()].some(isMD);
 }
 
