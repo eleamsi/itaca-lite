@@ -2054,6 +2054,11 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 .link-report li code { overflow-wrap: anywhere; font: 12px/1.5 var(--mono); color: var(--ink); }
 .link-report .reason { display: block; color: var(--danger-text); font: 11.5px/1.4 var(--sans); }
 .link-report .kind { color: var(--muted); }
+.link-report-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 14px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--tint); font-size: 13px; }
+.link-report .link-fix { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 12px 9px 182px; color: var(--muted); font-size: 12px; }
+.link-report li .link-fix button { display: inline-flex; align-items: center; gap: 4px; width: auto; padding: 3px 9px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; text-align: left; }
+.link-report li .link-fix button:hover { border-color: var(--accent); color: var(--accent-text); }
+.link-report li .link-fix code { font-size: 11.5px; }
 .report-ok { padding: 30px; text-align: center; font-size: 14px; }
 /* Versioni e confronto (git): grafo dei commit, confronto visivo, autori delle righe */
 .i-git-graph { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='4' cy='3.5' r='1.8'/%3E%3Ccircle cx='4' cy='12.5' r='1.8'/%3E%3Ccircle cx='12' cy='6.5' r='1.8'/%3E%3Cpath d='M4 5.3v5.4M12 8.3c0 2.4-3 2.2-6.4 3.4'/%3E%3C/svg%3E"); }
@@ -2243,6 +2248,7 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 .export-actions { display: flex; gap: 8px; margin-top: 8px; }
 @media (max-width: 700px) {
   .link-report li button { grid-template-columns: 1fr; gap: 2px; }
+  .link-report .link-fix { padding-left: 12px; }
 }
 
 .print-document { display: none; }
@@ -2543,7 +2549,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <h2 id="rootName">Documenti</h2>
           <span class="drafts-badge" id="draftsBadge" title="Le tue bozze personali: nessun altro le vede finché non le pubblichi" hidden>solo tu</span>
           <button type="button" class="icon-button save-folder" id="saveFolder" aria-pressed="false" aria-label="Salva cartella" title="Salva questa cartella tra le cartelle salvate" hidden><i class="icon i-star" aria-hidden="true"></i></button>
-          <button type="button" class="icon-button" id="checkLinks" aria-label="Verifica collegamenti" title="Verifica collegamenti e immagini della cartella"><i class="icon i-link" aria-hidden="true"></i></button>
+          <button type="button" class="icon-button" id="checkLinks" aria-label="Verifica collegamenti" title="Verifica collegamenti e immagini della cartella e propone le correzioni"><i class="icon i-link" aria-hidden="true"></i></button>
           <button type="button" class="icon-button" id="exportSite" aria-label="Esporta in HTML" title="Esporta la cartella in HTML statico"><i class="icon i-book" aria-hidden="true"></i></button>
           <button type="button" class="icon-button" id="refresh" aria-label="Aggiorna cartella" title="Aggiorna cartella · l’elenco si aggiorna anche da solo"><i class="icon i-refresh" aria-hidden="true"></i></button>
         </div>
@@ -12184,9 +12190,11 @@ const fileReadTimeoutMs = 30000, handleCheckTimeoutMs = 4000;
 async function scanFolder(directory) {
   const found = new Map();
   const folders = new Map();
+  const backups = new Map();   // cartella → handle della sua .itaca-backup (per la pulizia)
   async function walk(directory, path = '') {
     folders.set(path, directory);
     for await (const [name, handle] of directory.entries()) {
+      if (name === '.itaca-backup' && handle.kind === 'directory') backups.set(path, handle);
       if (name.startsWith('.') || name === 'node_modules') continue;
       const key = path ? path + '/' + name : name;
       if (handle.kind === 'directory') await walk(handle, key);
@@ -12194,7 +12202,7 @@ async function scanFolder(directory) {
     }
   }
   await walk(directory);
-  return { found, folders };
+  return { found, folders, backups };
 }
 
 async function scan() {
@@ -22202,6 +22210,125 @@ new MutationObserver(() => {
   if (graphDialog.open) renderGraphViews();
 }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-palette'] });
 
+// ── Pulizia delle cartelle nascoste di Itaca ────────────────────────────────
+// .itaca-locks (chi sta modificando), .itaca-edits (chi ha modificato per ultimo) e
+// .itaca-backup (originali delle immagini modificate) restano piccole solo se ogni tanto
+// si tolgono i file che non servono più: blocchi rimasti dopo la chiusura del browser,
+// registri di documenti spariti o cambiati da altri programmi, copie di immagini eliminate.
+// Una volta per cartella e per sessione, 15 s dopo l'apertura, solo con la scrittura già
+// concessa (nessuna domanda) e quando Itaca è ferma: su una cartella di rete ogni
+// operazione sui file fa aspettare le altre.
+const hiddenCleanupDelayMs = 15000;
+const hiddenOrphanGraceMs = 7 * 86400000;    // un collega potrebbe aver appena creato il documento
+const hiddenLockOldMs = 86400000;
+var hiddenCleanupDone = new WeakSet();
+var hiddenCleanupTimer = 0;
+var hiddenCleanupLast = null;               // ultimo risultato (per le prove e per Informazioni)
+
+function scheduleHiddenCleanup(directory, backups = new Map(), delay = hiddenCleanupDelayMs) {
+  clearTimeout(hiddenCleanupTimer);
+  if (!directory || hiddenCleanupDone.has(directory)) return;
+  hiddenCleanupTimer = setTimeout(() => {
+    if (root !== directory) return;
+    // Itaca occupata: si riprova più tardi.
+    if (document.hidden || networkSettling() || fileActionBusy || folderOpening || loading || imagePaint.open) {
+      scheduleHiddenCleanup(directory, backups, 60000);
+      return;
+    }
+    cleanHiddenFolders(directory, backups).catch(() => {});
+  }, delay);
+}
+
+async function hiddenEntries(folder) {
+  const list = [];
+  if (!folder) return list;
+  for await (const [name, handle] of folder.entries()) if (handle.kind === 'file') list.push([name, handle]);
+  return list;
+}
+
+async function readHiddenRecord(handle) {
+  const file = await withTimeout(handle.getFile(), 10000);
+  let data = null;
+  try { data = JSON.parse(await file.text()); } catch {}
+  return { file, data: data && typeof data === 'object' ? data : null };
+}
+
+async function cleanHiddenFolders(directory, backups = new Map()) {
+  if (root !== directory || importedFolderName) return null;
+  const permission = await withTimeout(directory.queryPermission(writeAccess), 4000).catch(() => 'prompt');
+  if (permission !== 'granted') return null;
+  hiddenCleanupDone.add(directory);
+  const alive = () => root === directory;
+  const known = new Set(files.keys());
+  const now = Date.now();
+  const removed = { locks: 0, edits: 0, backups: 0, bytes: 0 };
+  const drop = async (folder, name, kind, size = 0) => {
+    try {
+      await withTimeout(folder.removeEntry(name), 10000);
+      removed[kind]++;
+      removed.bytes += size;
+    } catch {}
+  };
+
+  // 1. Blocchi: valgono 150 s dall'ultimo battito. Quelli di documenti che non esistono
+  // più si tolgono subito; gli altri dopo un giorno (non danno fastidio, ma restano).
+  const locks = await lockFolder(directory, false);
+  for (const [name, handle] of await hiddenEntries(locks)) {
+    if (!alive()) return null;
+    const { file, data } = await readHiddenRecord(handle).catch(() => ({}));
+    if (!file || data?.owner === lockSession) continue;
+    const age = now - (Number(data?.beat) || file.lastModified);
+    if (age > hiddenLockOldMs || (age > lockStaleMs && !known.has(data?.path))) await drop(locks, name, 'locks', file.size);
+  }
+
+  // 2. «Chi ha modificato»: il nome vale solo se data e dimensione coincidono ancora col
+  // file. Se il file è cambiato fuori da Itaca il registro non tornerà mai valido.
+  const edits = await editFolder(directory, false);
+  const editList = await hiddenEntries(edits);
+  await forEachLimited(editList, 3, async ([name, handle]) => {
+    if (!alive()) return;
+    const { file, data } = await readHiddenRecord(handle).catch(() => ({}));
+    if (!file) return;
+    const path = typeof data?.path === 'string' ? data.path : '';
+    if (!path || !known.has(path)) {
+      if (now - file.lastModified > hiddenOrphanGraceMs) await drop(edits, name, 'edits', file.size);
+      return;
+    }
+    const target = await withTimeout(files.get(path).getFile(), 10000).catch(() => null);
+    if (target && (target.lastModified !== data.time || target.size !== data.size)) await drop(edits, name, 'edits', file.size);
+  });
+
+  // 3. Originali delle immagini: servono a «Ripristina originale» finché l'immagine c'è.
+  for (const [folderPath, backupFolder] of backups) {
+    if (!alive() || imagePaint.open) return null;
+    const list = await hiddenEntries(backupFolder);
+    let left = list.length;
+    for (const [name, handle] of list) {
+      if (known.has(folderPath ? folderPath + '/' + name : name)) continue;
+      const size = await handle.getFile().then(file => file.size, () => 0);
+      await drop(backupFolder, name, 'backups', size);
+      left--;
+    }
+    // Cartella rimasta vuota: si toglie anche lei.
+    if (!left && list.length) {
+      try { await folderHandles.get(folderPath)?.removeEntry(paintBackupFolder); } catch {}
+    }
+  }
+  hiddenCleanupLast = { folder: directory.name, time: Date.now(), ...removed };
+  return hiddenCleanupLast;
+}
+
+// Eliminando un'immagine da Itaca la sua copia originale non serve più.
+async function forgetPaintBackup(folder, name) {
+  try {
+    const backups = await folder.getDirectoryHandle(paintBackupFolder);
+    await backups.removeEntry(name);
+    let empty = true;
+    for await (const _ of backups.keys()) { empty = false; break; }
+    if (empty) await folder.removeEntry(paintBackupFolder);
+  } catch {}
+}
+
 // ── Blocco della modifica: un solo editor per file ──────────────────────────
 // Chi modifica un documento scrive .itaca-locks/<percorso>.json nella cartella
 // e lo rinnova ogni 30 s; gli altri (altre schede, altri computer sulla stessa
@@ -26830,7 +26957,7 @@ function remapStartDocument(from, to, isFolder) {
   if (isFolder ? inFolder(chosen, from) : chosen === from) storeStartDocument(to + chosen.slice(from.length));
 }
 
-async function showFolderIndex(name, { found, folders }, canSwitch, requestedPath = '', directory = null) {
+async function showFolderIndex(name, { found, folders, backups }, canSwitch, requestedPath = '', directory = null) {
   const paths = [...found.keys()].filter(isMD).sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
   const savedTabs = !requestedPath && directory && settings.openDocs !== 'single' ? savedOpenTabs(name, paths) : null;
   const path = requestedPath || savedTabs?.paths[savedTabs.active] || startDocumentFor(name, paths) || paths.find(name => /^readme\.(md|markdown)$/i.test(name)) || paths[0];
@@ -26865,6 +26992,7 @@ async function showFolderIndex(name, { found, folders }, canSwitch, requestedPat
     resetDoc(text, path, handle);
     restoreOpenTabs(savedTabs);
   }
+  if (directory) scheduleHiddenCleanup(directory, backups);
   return true;
 }
 
@@ -27011,6 +27139,7 @@ async function chooseFolder(reopen = false, requestedPath = '', saved = null) {
         const fresh = await step(chooseStaleFolderAgain(saved, handle));
         if (!fresh) return;
         handle = fresh;
+        forgetFolderBasePath(fresh.name);
         if (!saved) rememberedFolder = fresh;
         if (saved?.id === 'drafts') storeDraftsFolder(fresh);
       } else if (state !== 'granted') {
@@ -27053,6 +27182,7 @@ async function chooseFolder(reopen = false, requestedPath = '', saved = null) {
       return;
     }
     if (saved && error.name === 'NotFoundError') {
+      forgetFolderBasePath(saved.handle?.name || saved.name);
       toast('La cartella «' + saved.name + '» non si trova più: modificala o toglila dalle cartelle salvate (Cartelle e file).');
       return;
     }
@@ -27571,6 +27701,7 @@ async function editSavedFolder(id) {
       if (error.name !== 'AbortError') toast('Selettore della cartella: ' + error.message);
       return;
     }
+    forgetFolderBasePath(handle.name);
     const other = (await matchSavedFolder(handle)).item;
     if (other && other.id !== item.id) return toast('Questa cartella è già salvata come «' + other.name + '».');
     const before = { name: item.name, handle: item.handle };
@@ -28180,9 +28311,20 @@ function storedFolderPaths() {
 
 function folderBasePath() {
   if (!root) return '';
+  // La cartella che contiene Itaca: il percorso vero è quello della pagina, anche dopo
+  // averla spostata (quello ricordato sarebbe il vecchio).
+  if (pageFolderPath && root.name === localFolderName) return systemPath(pageFolderPath);
   const stored = storedFolderPaths()[root.name];
-  if (typeof stored === 'string' && stored) return stored;
-  return pageFolderPath && root.name === localFolderName ? systemPath(pageFolderPath) : '';
+  return typeof stored === 'string' ? stored : '';
+}
+
+// La cartella è stata spostata o scelta di nuovo: il percorso ricordato per quel nome
+// potrebbe essere quello vecchio. Si dimentica e «Copia percorso» lo chiederà di nuovo.
+function forgetFolderBasePath(name) {
+  const paths = storedFolderPaths();
+  if (!(name in paths)) return;
+  delete paths[name];
+  storeSetting('itaca-folder-paths', Object.keys(paths).length ? JSON.stringify(paths) : null);
 }
 
 function storeFolderBasePath(path) {
@@ -29399,6 +29541,7 @@ async function manageEntry({ path, isFolder }, action, preset = null) {
       } else {
         files.delete(path);
         invalidateSearchPath(path);
+        forgetPaintBackup(sourceFolder, name);
         if (current === path) await selectAfterDeletion();
       }
       removeMissingHistory();
@@ -31737,6 +31880,122 @@ function revealLinkProblem(link) {
   src.scrollTop = Math.max(0, (link.line - 1) * parseFloat(getComputedStyle(src).lineHeight) - src.clientHeight / 3);
 }
 
+// ── Collegamenti da correggere: proposte e correzione ───────────────────────
+// Un collegamento che non trova il file (cartelle spostate o rinominate fuori da Itaca,
+// percorso assoluto scritto su un altro computer o prima di spostare la cartella) viene
+// confrontato con i file della cartella: prima la «coda» più lunga del percorso
+// (cartelle + nome), poi il solo nome. Una proposta sola = «Correggi»; più proposte =
+// si sceglie. Il collegamento corretto è sempre relativo al documento.
+function linkPathSegments(value) {
+  const text = decodeSafe(value.split('?')[0]).replace(/^file:\/\/(?:localhost)?/i, '').replaceAll('\\', '/');
+  return text.split('/').filter(part => part && part !== '.' && part !== '..' && !/^[a-z]:$/i.test(part));
+}
+
+function absoluteFileLink(link) {
+  if (link.wiki) return false;
+  const { path } = linkParts(link);
+  return /^file:/i.test(path) || /^[a-z]:[\\/]/i.test(path);
+}
+
+function linkFixCandidates(link, from, all) {
+  const segments = linkPathSegments(linkParts(link).path);
+  if (!segments.length) return [];
+  const image = link.kind === 'image';
+  const lower = new Map();
+  for (const item of all) if (item !== from || !isMD(item)) lower.set(item.toLowerCase(), item);
+  const variants = tail => {
+    const list = [tail];
+    if (!image && !/\.[^./]+$/.test(tail)) list.push(tail + '.md', tail + '.markdown');
+    return list;
+  };
+  const absolute = absoluteFileLink(link);
+  if (absolute && root) {
+    // …/NomeDellaCartella/sotto/file.md → sotto/file.md
+    const at = segments.map(part => part.toLowerCase()).lastIndexOf(root.name.toLowerCase());
+    if (at >= 0 && at < segments.length - 1) {
+      const hit = variants(segments.slice(at + 1).join('/').toLowerCase()).map(key => lower.get(key)).find(Boolean);
+      if (hit) return [hit];
+    }
+  }
+  // Senza il nome della cartella, per un percorso assoluto servono almeno cartella + nome.
+  for (let size = segments.length; size >= (absolute ? 2 : 1); size--) {
+    const keys = variants(segments.slice(-size).join('/').toLowerCase());
+    const hits = [...lower].filter(([key]) => keys.some(tail => key === tail || key.endsWith('/' + tail))).map(([, item]) => item);
+    if (hits.length) return hits.sort((a, b) => a.localeCompare(b, 'it', { numeric: true })).slice(0, 5);
+  }
+  return [];
+}
+
+function applyLinkFixes(text, from, fixes, all) {
+  let output = text, count = 0;
+  const used = new Set();
+  for (const link of scanMarkdownLinks(text).reverse()) {
+    const fix = fixes.find(item => !used.has(item) && item.link.dest === link.dest && item.link.line === link.line &&
+      item.link.kind === link.kind && Boolean(item.link.wiki) === Boolean(link.wiki) && Boolean(item.link.html) === Boolean(link.html));
+    if (!fix) continue;
+    used.add(fix);
+    const replacement = movedLinkDestination(link, null, fix.target, from, all);
+    if (!replacement || replacement === link.dest) continue;
+    output = output.slice(0, link.start) + replacement + output.slice(link.start + link.dest.length);
+    count++;
+  }
+  return { text: output, count };
+}
+
+// fixes = [{ path (documento), link, target (file giusto) }]
+async function fixFolderLinks(fixes, all) {
+  const result = { links: 0, documents: 0, failed: [] };
+  const byDoc = new Map();
+  for (const fix of fixes) byDoc.set(fix.path, [...(byDoc.get(fix.path) || []), fix]);
+  if ([...byDoc.keys()].some(path => path !== current || files.has(path)) && !await allowFolderWrite(root)) return result;
+  for (const [path, list] of byDoc) {
+    try {
+      // Documento aperto con modifiche non salvate: si corregge nell'editor, si salva con Salva.
+      if (path === current && (dirty || !files.has(path))) {
+        const { text, count } = applyLinkFixes(getMarkdown(), path, list, all);
+        if (count) {
+          if (sourceMode) src.value = text;
+          else {
+            showVisual(text);
+            renderMode();
+          }
+          mark();
+          result.links += count;
+          result.documents++;
+        }
+        continue;
+      }
+      const lock = await readLock(path);
+      if (lockLiveFor(lock)) throw new Error(lockOwnerName(lock) + ' lo sta modificando');
+      const handle = files.get(path);
+      const file = await handle.getFile();
+      const { text, count } = applyLinkFixes(await file.text(), path, list, all);
+      if (!count) continue;
+      const latest = await handle.getFile();
+      if (latest.lastModified !== file.lastModified || latest.size !== file.size) throw new Error('Documento modificato');
+      await writeSavedFile(handle, text);
+      invalidateSearchPath(path);
+      if (path === current) applyMovedLinksToEditor(path, path, new Map(), all, all, text);
+      result.links += count;
+      result.documents++;
+    } catch {
+      result.failed.push(path.split('/').pop());
+    }
+  }
+  invalidateLinkIndex();
+  return result;
+}
+
+async function runLinkFixes(fixes, all) {
+  if (!fixes.length) return;
+  const result = await fixFolderLinks(fixes, all);
+  const done = result.links ? (result.links === 1 ? '1 collegamento corretto' : result.links + ' collegamenti corretti') +
+    ' in ' + (result.documents === 1 ? '1 documento' : result.documents + ' documenti') : 'Nessun collegamento cambiato';
+  toast(done + (result.failed.length ? '. Non corretti: ' + result.failed.join(', ') + ' (in uso o cambiati nel frattempo).' : '.'),
+    result.failed.length ? 'warning' : result.links ? 'success' : undefined);
+  if (panel.open) checkFolderLinks();
+}
+
 async function checkFolderLinks() {
   if (!hasWorkspaceFolder() || folderAccessPending) {
     toast('Apri una cartella di lavoro per verificare i collegamenti.');
@@ -31766,14 +32025,20 @@ async function checkFolderLinks() {
     for (const link of info.links) {
       total++;
       const target = resolveLink(link, path, all);
-      if (target.external) continue;
+      if (target.external) {
+        // Percorso assoluto di un file della cartella: funziona solo finché la cartella
+        // resta lì e su questo computer. Si propone il collegamento relativo.
+        const candidates = absoluteFileLink(link) ? linkFixCandidates(link, path, all) : [];
+        if (candidates.length) problems.push({ link, candidates, reason: 'Percorso assoluto: smette di funzionare se sposti la cartella o la apri da un altro computer' });
+        continue;
+      }
       if (target.self) {
         if (target.anchor && !hasHeading(info.headings, target.anchor)) problems.push({ link, reason: 'Sezione «' + decodeSafe(target.anchor) + '» non trovata nel documento' });
         continue;
       }
       if (target.missing) {
         if (!link.wiki && link.kind !== 'image' && folders.has(resolvePath(target.clean, path))) continue;
-        problems.push({ link, reason: target.ambiguous ? 'Nome ambiguo: più documenti hanno questo nome' :
+        problems.push({ link, candidates: linkFixCandidates(link, path, all), reason: target.ambiguous ? 'Nome ambiguo: più documenti hanno questo nome' :
           link.kind === 'image' ? 'Immagine non trovata' : 'File non trovato' });
         continue;
       }
@@ -31793,6 +32058,23 @@ async function checkFolderLinks() {
   }
   const container = document.createElement('div');
   container.className = 'link-report';
+  const canFix = Boolean(root) && !importedFolderName;
+  const sure = canFix ? report.flatMap(({ path, problems }) => problems.filter(item => item.candidates?.length === 1)
+    .map(item => ({ path, link: item.link, target: item.candidates[0] }))) : [];
+  if (sure.length) {
+    const bar = document.createElement('div');
+    bar.className = 'link-report-actions';
+    const note = document.createElement('span');
+    note.textContent = sure.length === 1 ? 'Per 1 collegamento c’è una sola correzione possibile.' :
+      'Per ' + sure.length + ' collegamenti c’è una sola correzione possibile.';
+    const fixAll = document.createElement('button');
+    fixAll.type = 'button';
+    fixAll.className = 'primary';
+    fixAll.textContent = sure.length === 1 ? 'Correggi' : 'Correggi tutti (' + sure.length + ')';
+    fixAll.onclick = () => runLinkFixes(sure, all);
+    bar.append(note, fixAll);
+    container.append(bar);
+  }
   for (const { path, problems } of report) {
     const section = document.createElement('section');
     const heading = document.createElement('h3');
@@ -31826,6 +32108,25 @@ async function checkFolderLinks() {
         revealLinkProblem(link);
       };
       item.append(button);
+      const candidates = canFix ? problems.find(problem => problem.link === link).candidates || [] : [];
+      if (candidates.length) {
+        const fix = document.createElement('div');
+        fix.className = 'link-fix';
+        const label = document.createElement('span');
+        label.textContent = candidates.length === 1 ? 'Forse è:' : 'Forse è uno di questi:';
+        fix.append(label);
+        for (const candidate of candidates) {
+          const choice = document.createElement('button');
+          choice.type = 'button';
+          choice.title = 'Il collegamento punterà a ' + candidate;
+          const code = document.createElement('code');
+          code.textContent = candidate;
+          choice.append('Correggi → ', code);
+          choice.onclick = () => runLinkFixes([{ path, link, target: candidate }], all);
+          fix.append(choice);
+        }
+        item.append(fix);
+      }
       list.append(item);
     }
     section.append(heading, list);
