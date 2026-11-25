@@ -1094,6 +1094,19 @@ dialog .tag-skipped span { color: var(--muted); }
 .editor [data-ext='pdf'][data-embed-kind='video'][data-pdf-state='ready'] .pdf-frame { background: #000; }
 .pdf-frame > video { display: block; width: 100%; max-height: 72vh; background: #000; }
 .pdf-frame > :is(video, .audio-player, .file-list)[hidden] { display: none; }
+/* Appunti a tempo sotto video e audio */
+.editor [data-ext='pdf'] > .media-notes { display: block; }
+.editor.over-media-time { cursor: pointer; }
+::highlight(media-time) { color: var(--accent-text); background-color: var(--tint); text-decoration: underline dotted 1px; text-underline-offset: 3px; }
+::highlight(media-now) { background-color: color-mix(in srgb, var(--accent) 20%, transparent); }
+::highlight(media-flash) { background-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+.editor [data-ext='pdf']:fullscreen { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr); margin: 0; border: 0; border-radius: 0; background: #000; }
+.editor [data-ext='pdf']:fullscreen > .pdf-head { display: none; }
+.editor [data-ext='pdf']:fullscreen > .pdf-frame { height: 100% !important; min-height: 0; background: #000; }
+.editor [data-ext='pdf']:fullscreen > .pdf-frame > video { height: 100%; max-height: none; object-fit: contain; border-radius: 0; }
+.editor [data-ext='pdf']:fullscreen > .media-notes { height: 100%; min-height: 0; }
+@media print { .editor [data-ext='pdf'] > .media-notes { display: none !important; } }
+
 .audio-player { display: block; min-height: 54px; }
 .editor [data-ext='pdf'][data-embed-kind='audio']:not([data-pdf-state='ready']) .audio-player { display: none; }
 .editor [data-ext='pdf'][data-embed-kind='audio'] .pdf-status { padding: 4px 16px 14px; text-align: left; }
@@ -8170,7 +8183,12 @@ const embedNouns = { pdf: 'PDF', word: 'documento Word', sheet: 'foglio Excel', 
 // o elenco dei file (ZIP).
 const embedViewer = box => box.querySelector(':scope > .pdf-frame > :is(iframe, video, .audio-player, .file-list)');
 function embedViewerElement(kind) {
-  if (kind === 'video') return Object.assign(document.createElement('video'), { controls: true, preload: 'metadata', playsInline: true });
+  if (kind === 'video') {
+    // Schermo intero del browser tolto: quello di Itaca mostra anche gli appunti (doppio clic, ⛶).
+    const video = Object.assign(document.createElement('video'), { controls: true, preload: 'metadata', playsInline: true });
+    video.setAttribute('controlslist', 'nofullscreen');
+    return video;
+  }
   if (kind === 'audio') return Object.assign(document.createElement('span'), { className: 'audio-player' });
   if (kind === 'file') return Object.assign(document.createElement('div'), { className: 'file-list' });
   return Object.assign(document.createElement('iframe'), { loading: 'lazy' });
@@ -8353,6 +8371,10 @@ function decoratePdfEmbeds(container, editable) {
       continue;
     }
     if (kind === 'audio') ensureAudioPlayer(box.querySelector('.audio-player'));
+    // Scheda degli appunti a tempo (contenuto in uno shadow DOM: vedi «Appunti a tempo»).
+    if ((kind === 'video' || kind === 'audio') && !box.querySelector(':scope > .media-notes')) {
+      box.append(Object.assign(document.createElement('span'), { className: 'media-notes' }));
+    }
     const office = isOfficeKind(kind) ? officeTexts[kind] : null;
     const word = Boolean(office);
     const media = kind === 'video' || kind === 'audio';
@@ -15829,6 +15851,7 @@ const glossaryMarkdown = [
     ['Presentazione PowerPoint incorporata', 'Come il Word incorporato, ma con un file .pptx: Itaca mostra le diapositive una sotto l’altra, con testi, immagini, forme e tabelle (sola lettura; grafici, animazioni e video non si vedono, e caratteri e posizioni possono differire un po’ da PowerPoint). I vecchi .ppt non si possono mostrare.', '![Presentazione](_allegati/riunione.pptx)'],
     ['File di testo incorporato', 'Come il PDF incorporato, ma con un file di testo (.txt, .log, .csv, .json, .xml, .yaml, codice…): Itaca ne mostra il contenuto con i numeri di riga e i colori della sintassi; i CSV diventano una tabella. Per SVG e HTML si sceglie se vedere l’anteprima (come appare) o il codice. Apri lo mostra in una nuova scheda, Scarica scarica il file. In Modifica: Modifica cambia il contenuto del file (scritto quando salvi il documento, Ctrl/⌘ + Z torna alla versione di prima) e Nel documento porta il testo dentro il documento come blocco di codice (i CSV come tabella), senza più collegamento al file.', '![Configurazione](_allegati/config.yaml)'],
     ['Video incorporato', 'Come il PDF incorporato, ma con un video (.mp4, .mov, .webm, .mkv…): si guarda nel documento con il lettore del browser (schermo intero, velocità). Vale anche per l’indirizzo web di un file video. Le pagine di YouTube e simili restano collegamenti. Alcuni formati (.avi, .wmv) o codifiche il browser non li legge: in quel caso il riquadro lo dice e Scarica apre il file con un altro programma.', '![Presentazione del progetto](_allegati/presentazione.mp4)'],
+    ['Appunti a tempo (video e audio)', 'Un elenco subito sotto un video o un audio, con il minuto all’inizio di ogni voce. In Itaca il minuto si clicca e il video va lì; mentre scorre, l’appunto del momento è evidenziato e compare sotto il video. In Modifica «Appunto» scrive il minuto attuale (e mette in pausa), Invio in fondo a un appunto ne crea uno nuovo con il minuto. Schermo intero (doppio clic sul video): gli appunti a lato o sopra il video, e si scrivono senza uscire. In MkDocs resta un elenco.', '![Lezione](_allegati/lezione.mp4)\n\n- 0:00 Introduzione\n- 1:23 **Punto chiave**: la valvola si chiude prima\n- 4:10 Esempio pratico'],
     ['Audio incorporato', 'Come il video, ma con un file audio (.mp3, .wav, .m4a, .ogg, .flac…): lettore con forma d’onda (clic per spostarsi, frecce ±5 secondi, velocità). Anche l’indirizzo web di un file audio funziona. L’audio continua cambiando documento, nel lettore di Itaca (nella barra laterale, fluttuante o nell’angolo: Impostazioni › Aspetto).', '![Intervista](_allegati/intervista.mp3)'],
     ['Scheda di un file', 'Un collegamento a un file della cartella (ZIP, Excel, presentazione…) da solo su una riga, con { .card } dopo: Itaca lo mostra come una scheda con il tipo, la dimensione e Scarica; per gli ZIP anche il numero di file e Contenuto, l’elenco dei file dell’archivio. In MkDocs resta un collegamento. Incollando o trascinando un file si sceglie Collegamento o Anteprima (Lettore per video e audio).', '[Materiale del corso](_allegati/materiale.zip){ .card }'],
     ['Scheda di una pagina web', 'Un collegamento a una pagina web da solo su una riga, con { .card } dopo: Itaca lo mostra come una scheda (icona del sito, titolo, indirizzo, Apri). Incollando un indirizzo su una riga vuota si sceglie Collegamento o Scheda.', '[Documentazione di Python](https://docs.python.org/3/){ .card }'],
@@ -32134,6 +32157,596 @@ async function checkFolderLinks() {
   }
   body.replaceChildren(container);
 }
+
+// ── Appunti a tempo per video e audio (issue #22) ───────────────────────────
+// Gli appunti sono Markdown normale: un elenco subito sotto il video (o l'audio) con il
+// minuto all'inizio di ogni voce.
+//
+//     ![Lezione](_allegati/lezione.mp4)
+//
+//     - 0:00 Introduzione
+//     - 1:23 **Punto chiave**: …
+//
+// In MkDocs resta un elenco. In Itaca: i minuti si cliccano (il video va lì), mentre il video
+// scorre l'appunto del momento è evidenziato e compare in una scheda sotto il video; «Appunto»
+// scrive il minuto attuale e mette in pausa; Invio in fondo a un appunto ne crea uno nuovo con
+// il minuto attuale; a schermo intero gli appunti stanno a lato (o fluttuano sul video) e si
+// possono scrivere senza uscire. Niente cambia nell'HTML dell'editor mentre il video scorre
+// (evidenze = CSS Custom Highlight, scheda in uno shadow DOM): l'annulla resta valido.
+const mediaTimePattern = /^((?:\d{1,2}:)?[0-5]?\d:[0-5]\d)(?=[\s ]|$)/;
+var mediaNoteBoxes = [];
+let mediaNotesTimer = 0;
+let mediaFlashTimer = 0;
+
+const parseMediaTime = text => text.split(':').reduce((total, part) => total * 60 + Number(part), 0);
+const mediaNotesKind = box => {
+  const kind = box && boxKind(box);
+  return kind === 'video' || kind === 'audio' ? kind : '';
+};
+
+function mediaNoteList(box) {
+  const list = box.nextElementSibling;
+  return list?.matches('ul, ol') ? list : null;
+}
+
+// Minuto all'inizio della voce: il primo testo vero (non quello delle sottovoci o delle caselle).
+function mediaNoteTime(li) {
+  const list = li.parentElement;
+  const walker = document.createTreeWalker(li, NodeFilter.SHOW_TEXT, {
+    // (in Lettura tutto l'editor è contenteditable=false: contano solo le caselle dentro la voce)
+    acceptNode: node => node.parentElement.closest('ul, ol') === list && !li.contains(node.parentElement.closest('[contenteditable="false"]'))
+      ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
+  });
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const start = node.data.search(/[^\s ​]/);
+    if (start < 0) continue;
+    const match = mediaTimePattern.exec(node.data.slice(start));
+    if (!match) return null;
+    const range = document.createRange();
+    range.setStart(node, start);
+    range.setEnd(node, start + match[1].length);
+    return { time: parseMediaTime(match[1]), label: match[1], range, node };
+  }
+  return null;
+}
+
+function mediaNotes(box) {
+  const list = mediaNoteList(box);
+  if (!list) return [];
+  const notes = [];
+  for (const li of list.children) {
+    if (li.tagName !== 'LI') continue;
+    const found = mediaNoteTime(li);
+    if (found) notes.push({ li, ...found });
+  }
+  return notes;
+}
+
+function mediaNoteText(note) {
+  const copy = note.li.cloneNode(true);
+  copy.querySelectorAll('ul, ol, [contenteditable="false"]').forEach(node => node.remove());
+  return copy.textContent.replace(/​/g, '').replace(/[\s ]+/g, ' ').trim().replace(mediaTimePattern, '').trim();
+}
+
+function mediaClock(box) {
+  if (mediaNotesKind(box) === 'video') {
+    const video = embedViewer(box);
+    return { time: video?.currentTime || 0, playing: Boolean(video && !video.paused), duration: video?.duration };
+  }
+  const host = box.querySelector('.audio-player');
+  const live = Boolean(host) && isNowPlaying(host.dataset.track);
+  return { time: live ? itacaAudio.currentTime || 0 : 0, playing: live && !itacaAudio.paused,
+    duration: live ? itacaAudio.duration : audioPlayers.get(host)?.audio.duration };
+}
+
+function seekMedia(box, time, play) {
+  if (mediaNotesKind(box) === 'video') {
+    const video = embedViewer(box);
+    if (!video) return;
+    video.currentTime = time;
+    if (play && video.paused) {
+      pauseOtherMedia(video);
+      video.play().catch(() => {});
+    }
+    return;
+  }
+  const host = box.querySelector('.audio-player');
+  if (!host) return;
+  if (isNowPlaying(host.dataset.track)) {
+    itacaAudio.currentTime = time;
+    if (play && itacaAudio.paused) itacaAudio.play().catch(() => {});
+    refreshAudioViews();
+    return;
+  }
+  // L'audio non suona ancora: parte da quel punto (serve la durata per il lettore di Itaca).
+  const duration = audioPlayers.get(host)?.audio.duration;
+  startBoxAudio(host, Number.isFinite(duration) && duration > 0 ? Math.min(.999, time / duration) : null);
+}
+
+function pauseMedia(box) {
+  if (mediaNotesKind(box) === 'video') embedViewer(box)?.pause();
+  else if (isNowPlaying(box.querySelector('.audio-player')?.dataset.track)) itacaAudio.pause();
+}
+
+// Appunto del momento: l'ultimo con il minuto già passato.
+function currentMediaNote(notes, time) {
+  let found = -1;
+  notes.forEach((note, index) => {
+    if (note.time <= time + .25 && (found < 0 || note.time >= notes[found].time)) found = index;
+  });
+  return found;
+}
+
+function mediaNotesEditable(box) {
+  return canEditVisual() && ed.contains(box);
+}
+
+function scanMediaNotes() {
+  clearTimeout(mediaNotesTimer);
+  mediaNoteBoxes = [...ed.querySelectorAll('[data-ext="pdf"]')].filter(mediaNotesKind).map(box => ({ box, notes: mediaNotes(box) }));
+  paintMediaNotes();
+  for (const entry of mediaNoteBoxes) renderMediaCard(entry);
+}
+
+function queueMediaNotes(delay = 150) {
+  clearTimeout(mediaNotesTimer);
+  mediaNotesTimer = setTimeout(scanMediaNotes, delay);
+}
+
+function noteBodyRange(li) {
+  const range = document.createRange();
+  range.selectNodeContents(li);
+  const nested = li.querySelector(':scope > ul, :scope > ol');
+  if (nested) range.setEndBefore(nested);
+  return range;
+}
+
+function paintMediaNotes() {
+  if (!globalThis.CSS?.highlights || typeof Highlight !== 'function') return;
+  const times = [], now = [];
+  for (const { box, notes } of mediaNoteBoxes) {
+    for (const note of notes) times.push(note.range);
+    const clock = mediaClock(box);
+    const index = clock.time > 0 || clock.playing ? currentMediaNote(notes, clock.time) : -1;
+    if (index >= 0) now.push(noteBodyRange(notes[index].li));
+  }
+  CSS.highlights.set('media-time', new Highlight(...times));
+  CSS.highlights.set('media-now', new Highlight(...now));
+}
+
+function flashMediaNote(li) {
+  if (!globalThis.CSS?.highlights || typeof Highlight !== 'function') return;
+  clearTimeout(mediaFlashTimer);
+  CSS.highlights.set('media-flash', new Highlight(noteBodyRange(li)));
+  mediaFlashTimer = setTimeout(() => CSS.highlights.delete('media-flash'), 1400);
+}
+
+// ── Scheda sotto il video (e pannello a schermo intero), in uno shadow DOM ──
+const mediaCardIcons = {
+  prev: '<path d="M10 3 5 8l5 5"/>', next: '<path d="m6 3 5 5-5 5"/>', add: '<path d="M8 3v10M3 8h10"/>',
+  full: '<path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3"/>', exit: '<path d="M6 3v3H3M13 6h-3V3M10 13v-3h3M3 10h3v3"/>',
+  float: '<rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M6.5 10h5"/>', list: '<path d="M5.5 4.5h8M5.5 8h8M5.5 11.5h8M2.5 4.5h.01M2.5 8h.01M2.5 11.5h.01"/>',
+};
+const mediaIcon = name => '<svg viewBox="0 0 16 16" aria-hidden="true">' + mediaCardIcons[name] + '</svg>';
+const mediaCardCss = `
+:host { display: block; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; border-radius: 6px; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent, #2b6cb0); outline-offset: 1px; }
+svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; border-top: 1px solid var(--line, #ddd); font: 13px/1.35 var(--sans, system-ui, sans-serif); color: var(--ink, #222); }
+.bar[hidden], .panel[hidden], .postit[hidden], [hidden] { display: none !important; }
+.icon { display: inline-grid; place-items: center; width: 28px; height: 28px; color: var(--muted, #666); }
+.icon:hover:not(:disabled) { background: var(--tint, rgba(0,0,0,.06)); color: var(--ink, #222); }
+.icon:disabled { opacity: .35; cursor: default; }
+.note { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding: 4px 8px; text-align: left; }
+.note:hover:not(:disabled) { background: var(--tint, rgba(0,0,0,.06)); }
+.note:disabled { cursor: default; }
+.time { flex: none; padding: 1px 7px; border-radius: 99px; background: var(--tint, #eef); color: var(--accent-text, #2b6cb0); font: 600 12px/1.5 var(--mono, ui-monospace, monospace); }
+.text { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.hint { color: var(--muted, #666); }
+.count { flex: none; color: var(--muted, #666); font-size: 12px; padding: 0 4px; font-variant-numeric: tabular-nums; }
+.add { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border: 1px solid var(--line, #ddd); color: var(--accent-text, #2b6cb0); font-weight: 550; }
+.add:hover { border-color: var(--accent, #2b6cb0); background: var(--tint, #eef); }
+.panel { display: flex; flex-direction: column; width: min(360px, 34vw); height: 100%; background: var(--paper, #fff); color: var(--ink, #222); font: 13.5px/1.45 var(--sans, system-ui, sans-serif); border-left: 1px solid var(--line, #ddd); }
+.panel header { display: flex; align-items: center; gap: 4px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--line, #ddd); }
+.panel header b { flex: 1; font-size: 14px; }
+.panel header small { color: var(--muted, #666); font-weight: 400; margin-left: 6px; }
+.list { flex: 1; min-height: 0; overflow: auto; margin: 0; padding: 6px; list-style: none; }
+.list li button { display: flex; gap: 10px; align-items: baseline; width: 100%; padding: 7px 10px; text-align: left; }
+.list li button:hover { background: var(--tint, rgba(0,0,0,.06)); }
+.list li.now button { background: color-mix(in srgb, var(--accent, #2b6cb0) 16%, transparent); }
+.list li.now .time { background: var(--accent, #2b6cb0); color: var(--paper, #fff); }
+.list .empty { padding: 18px 12px; color: var(--muted, #666); text-align: center; }
+.write { padding: 10px; border-top: 1px solid var(--line, #ddd); }
+.write input { width: 100%; padding: 9px 11px; border: 1px solid var(--line, #ccc); border-radius: 8px; background: var(--canvas, #fafafa); color: inherit; font: inherit; }
+.write small { display: block; margin-top: 6px; color: var(--muted, #666); font-size: 11.5px; }
+.postit { position: fixed; left: 24px; bottom: 84px; z-index: 2; display: flex; align-items: flex-start; gap: 8px; max-width: min(460px, 70vw); padding: 10px 12px; border-radius: 10px;
+  background: rgb(18 20 24 / 78%); color: #f2f3f5; font: 14px/1.45 var(--sans, system-ui, sans-serif); box-shadow: 0 8px 28px rgb(0 0 0 / 35%); backdrop-filter: blur(6px); }
+.postit .time { background: rgb(255 255 255 / 16%); color: #fff; }
+.postit .text { -webkit-line-clamp: 4; }
+.postit .icon { color: #d7dade; width: 26px; height: 26px; }
+.postit .icon:hover { background: rgb(255 255 255 / 14%); color: #fff; }
+.postit.empty .note { display: none; }
+`;
+
+function ensureMediaCard(host) {
+  if (host.shadowRoot?.querySelector('.bar')) return host.shadowRoot;
+  const shadow = host.shadowRoot || host.attachShadow({ mode: 'open' });
+  shadow.innerHTML = '<style>' + mediaCardCss + '</style>' +
+    '<div class="bar" hidden>' +
+      '<button type="button" class="icon prev" title="Appunto precedente">' + mediaIcon('prev') + '</button>' +
+      '<button type="button" class="note" title="Mostra l’appunto nel documento"><span class="time"></span><span class="text"></span></button>' +
+      '<button type="button" class="icon next" title="Appunto successivo">' + mediaIcon('next') + '</button>' +
+      '<span class="count"></span>' +
+      '<button type="button" class="add" title="Scrive un appunto al minuto attuale e mette in pausa">' + mediaIcon('add') + '<span>Appunto</span></button>' +
+      '<button type="button" class="icon full" title="Schermo intero con gli appunti">' + mediaIcon('full') + '</button>' +
+    '</div>' +
+    '<section class="panel" hidden aria-label="Appunti">' +
+      '<header><b>Appunti<small class="total"></small></b>' +
+        '<button type="button" class="icon float" title="Solo l’appunto del momento, sopra il video">' + mediaIcon('float') + '</button>' +
+        '<button type="button" class="icon exit" title="Esci dallo schermo intero (Esc)">' + mediaIcon('exit') + '</button></header>' +
+      '<ol class="list"></ol>' +
+      '<form class="write"><input type="text" autocomplete="off" spellcheck="true"><small>Il video si ferma mentre scrivi e riparte con Invio.</small></form>' +
+    '</section>' +
+    '<div class="postit" hidden>' +
+      '<button type="button" class="note" tabindex="-1"><span class="time"></span><span class="text"></span></button>' +
+      '<button type="button" class="icon list-button" title="Mostra tutti gli appunti a lato">' + mediaIcon('list') + '</button>' +
+    '</div>';
+  const box = () => host.closest('[data-ext="pdf"]');
+  const entry = () => mediaNoteBoxes.find(item => item.box === box()) || { box: box(), notes: mediaNotes(box()) };
+  const step = direction => {
+    const { box: target, notes } = entry();
+    if (!target || !notes.length) return;
+    const time = mediaClock(target).time;
+    const sorted = [...notes].sort((a, b) => a.time - b.time);
+    let next;
+    if (direction > 0) next = sorted.find(note => note.time > time + .3);
+    else {
+      const index = currentMediaNote(sorted, time);
+      // Più di 2 secondi dentro l'appunto: si torna al suo inizio, come «indietro» nei lettori.
+      next = index >= 0 && time - sorted[index].time > 2 ? sorted[index] : sorted[index - 1] || sorted[0];
+    }
+    if (next) seekMedia(target, next.time, mediaClock(target).playing);
+  };
+  shadow.querySelector('.prev').onclick = () => step(-1);
+  shadow.querySelector('.next').onclick = () => step(1);
+  shadow.querySelector('.bar .note').onclick = () => {
+    const { notes } = entry();
+    const note = notes[Number(shadow.querySelector('.bar').dataset.current)];
+    if (!note) return;
+    note.li.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    flashMediaNote(note.li);
+  };
+  shadow.querySelector('.add').onclick = () => addMediaNote(box());
+  shadow.querySelector('.full').onclick = () => toggleMediaFullscreen(box());
+  shadow.querySelector('.exit').onclick = () => document.exitFullscreen?.().catch(() => {});
+  const panel = shadow.querySelector('.panel');
+  shadow.querySelector('.float').onclick = () => {
+    panel.dataset.floating = 'true';
+    renderMediaCard(entry());
+  };
+  shadow.querySelector('.list-button').onclick = () => {
+    delete panel.dataset.floating;
+    renderMediaCard(entry());
+  };
+  shadow.querySelector('.postit .note').onclick = () => {
+    delete panel.dataset.floating;
+    renderMediaCard(entry());
+  };
+  const input = shadow.querySelector('.write input');
+  const write = { time: null, resume: false };
+  input.addEventListener('input', () => {
+    const target = box();
+    if (write.time === null && input.value.trim()) {
+      const clock = mediaClock(target);
+      write.time = clock.time;
+      write.resume = clock.playing;
+      pauseMedia(target);
+      renderMediaCard(entry());
+    } else if (!input.value.trim()) write.time = null;
+  });
+  shadow.querySelector('.write').addEventListener('submit', event => {
+    event.preventDefault();
+    const target = box();
+    const text = input.value.trim();
+    if (!text) return;
+    if (!mediaNotesEditable(target)) {
+      toast('Per scrivere appunti passa a Modifica.');
+      return;
+    }
+    addMediaNote(target, { time: write.time ?? mediaClock(target).time, text });
+    input.value = '';
+    if (write.resume) seekMedia(target, mediaClock(target).time, true);
+    write.time = null;
+    write.resume = false;
+  });
+  input.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !input.value) return;
+    // Esc con del testo scritto: lo cancella (il secondo Esc esce dallo schermo intero).
+    event.preventDefault();
+    input.value = '';
+    write.time = null;
+  });
+  return shadow;
+}
+
+function renderMediaCard(entry) {
+  const { box, notes } = entry;
+  const host = box?.querySelector(':scope > .media-notes');
+  if (!host) return;
+  const shadow = ensureMediaCard(host);
+  const editable = mediaNotesEditable(box);
+  const clock = mediaClock(box);
+  const started = clock.time > 0 || clock.playing;
+  const index = started ? currentMediaNote(notes, clock.time) : -1;
+  const sorted = [...notes].sort((a, b) => a.time - b.time);
+  const full = document.fullscreenElement === box;
+  const video = mediaNotesKind(box) === 'video';
+  const bar = shadow.querySelector('.bar');
+  const panel = shadow.querySelector('.panel');
+  const postit = shadow.querySelector('.postit');
+  const floating = full && panel.dataset.floating === 'true';
+  bar.hidden = full || (!notes.length && !editable);
+  panel.hidden = !full || floating;
+  postit.hidden = !floating;
+  // Scheda sotto il video: l'appunto del momento (o il primo, prima di partire).
+  const shown = index >= 0 ? notes[index] : sorted[0];
+  bar.dataset.current = shown ? String(notes.indexOf(shown)) : '';
+  const time = bar.querySelector('.time'), text = bar.querySelector('.text');
+  const noteButton = bar.querySelector('.note');
+  if (shown) {
+    time.hidden = false;
+    time.textContent = shown.label;
+    text.textContent = mediaNoteText(shown) || '(appunto vuoto)';
+    text.className = 'text' + (index < 0 ? ' hint' : '');
+    noteButton.disabled = false;
+  } else {
+    time.hidden = true;
+    text.textContent = 'Nessun appunto: premi «Appunto» mentre ' + (video ? 'guardi il video' : 'ascolti') + ' per segnare il minuto.';
+    text.className = 'text hint';
+    noteButton.disabled = true;
+  }
+  const position = sorted.indexOf(shown);
+  bar.querySelector('.prev').disabled = !notes.length;
+  bar.querySelector('.next').disabled = !sorted.some(note => note.time > clock.time + .3);
+  bar.querySelector('.count').textContent = notes.length ? (index >= 0 ? position + 1 : '–') + ' / ' + notes.length : '';
+  bar.querySelector('.add').hidden = !editable;
+  bar.querySelector('.add').title = 'Scrive un appunto a ' + formatMediaTime(clock.time) + ' e mette in pausa';
+  bar.querySelector('.full').hidden = !video;
+  if (full) {
+    shadow.querySelector('.total').textContent = notes.length ? ' · ' + notes.length : '';
+    const list = shadow.querySelector('.list');
+    const key = sorted.map(note => note.time + '\u0001' + mediaNoteText(note)).join('\u0002');
+    if (list.dataset.key !== key) {
+      list.dataset.key = key;
+      list.replaceChildren(...(sorted.length ? sorted.map(note => {
+        const item = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.innerHTML = '<span class="time"></span><span class="text"></span>';
+        button.querySelector('.time').textContent = note.label;
+        button.querySelector('.text').textContent = mediaNoteText(note);
+        button.onclick = () => seekMedia(box, note.time, true);
+        item.append(button);
+        return item;
+      }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: editable ? 'Scrivi qui sotto il primo appunto.' : 'Nessun appunto.' })]));
+    }
+    [...list.children].forEach((item, i) => {
+      const now = sorted[i] && sorted[i] === notes[index];
+      if (item.classList.contains('now') !== now) {
+        item.classList.toggle('now', now);
+        if (now) item.scrollIntoView({ block: 'nearest' });
+      }
+    });
+    const write = shadow.querySelector('.write');
+    write.hidden = !editable;
+    const input = write.querySelector('input');
+    if (!input.value) input.placeholder = 'Appunto a ' + formatMediaTime(clock.time) + '… (Invio)';
+    const current = notes[index];
+    postit.classList.toggle('empty', !current);
+    postit.querySelector('.time').textContent = current?.label || '';
+    postit.querySelector('.text').textContent = current ? mediaNoteText(current) : '';
+  }
+}
+
+function refreshMediaBox(box) {
+  const entry = mediaNoteBoxes.find(item => item.box === box);
+  if (!entry) return;
+  paintMediaNotes();
+  renderMediaCard(entry);
+}
+
+// ── Scrivere un appunto ──
+function addMediaNote(box, { time = null, text = '' } = {}) {
+  if (!box || !mediaNotesEditable(box)) return;
+  const clock = mediaClock(box);
+  const at = Math.floor(time ?? clock.time);
+  if (!text) pauseMedia(box);
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  let list = mediaNoteList(box);
+  if (!list) {
+    list = document.createElement('ul');
+    box.after(list);
+  }
+  const li = document.createElement('li');
+  const later = mediaNotes(box).find(note => note.time > at);
+  if (later) later.li.before(li);
+  else list.append(li);
+  const label = formatMediaTime(at);
+  if (text) {
+    // Il testo scritto può contenere Markdown (**grassetto**, collegamenti…).
+    let inline = null;
+    try {
+      const rendered = liveRendered(text);
+      const block = rendered.firstElementChild;
+      if (rendered.childElementCount === 1 && block?.tagName === 'P') inline = [...block.childNodes];
+    } catch {}
+    li.append(label + ' ', ...(inline || [text]));
+  } else li.append(document.createElement('br'));
+  pushLiveUndo(before);
+  if (!text) {
+    // Il minuto si scrive come se lo si digitasse: Ctrl/⌘ + Z lo toglie, poi toglie la voce.
+    const caret = document.createRange();
+    caret.selectNodeContents(li);
+    caret.collapse(true);
+    const selection = getSelection();
+    selection.removeAllRanges();
+    selection.addRange(caret);
+    ed.focus({ preventScroll: true });
+    document.execCommand('insertText', false, label + ' ');
+    remember();
+    li.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  mark();
+  scanMediaNotes();
+}
+
+// Invio su un appunto con il solo minuto: il minuto si toglie (un altro Invio esce dall'elenco).
+ed.addEventListener('beforeinput', event => {
+  if (event.inputType !== 'insertParagraph' || !canEditVisual()) return;
+  const node = getSelection().anchorNode;
+  const li = (node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement)?.closest('li');
+  const box = li?.parentElement?.previousElementSibling;
+  if (!li || !mediaNotesKind(box)) return;
+  const found = mediaNoteTime(li);
+  if (!found || mediaNoteText({ li })) return;
+  if (li.querySelector('ul, ol')) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  const list = li.parentElement;
+  const previous = li.previousElementSibling;
+  const last = !li.nextElementSibling;
+  li.remove();
+  const caret = document.createRange();
+  if (last || !previous) {
+    // Ultima voce: si esce dall'elenco, su una riga vuota sotto.
+    if (!list.children.length) list.remove();
+    const anchor = list.isConnected ? list : box;
+    let line = anchor.nextElementSibling;
+    if (!line?.matches('p') || !emptyVisualText(line)) {
+      line = Object.assign(document.createElement('p'), { innerHTML: '<br>' });
+      anchor.after(line);
+    }
+    caret.selectNodeContents(line);
+    caret.collapse(true);
+  } else {
+    caret.selectNodeContents(previous);
+    caret.collapse(false);
+  }
+  const selection = getSelection();
+  selection.removeAllRanges();
+  selection.addRange(caret);
+  remember();
+  pushLiveUndo(before);
+  mark();
+  scanMediaNotes();
+}, true);
+
+// Invio in fondo a un appunto: la voce nuova riceve il minuto attuale del video.
+ed.addEventListener('input', event => {
+  if (event.inputType !== 'insertParagraph' || !canEditVisual()) return;
+  const selection = getSelection();
+  const node = selection.anchorNode;
+  const li = (node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement)?.closest('li');
+  const box = li?.parentElement?.previousElementSibling;
+  if (!li || !mediaNotesKind(box) || li.textContent.replace(/[\s ​]/g, '')) return;
+  const clock = mediaClock(box);
+  if (!(clock.time > 0)) return;
+  // Solo dopo un appunto vero (minuto + testo): da una voce vuota Invio esce dall'elenco.
+  const previous = li.previousElementSibling;
+  const previousTime = previous && mediaNoteTime(previous);
+  if (!previousTime || !mediaNoteText({ li: previous })) return;
+  setTimeout(() => {
+    if (!li.isConnected || getSelection().anchorNode?.parentElement?.closest?.('li') !== li && getSelection().anchorNode !== li) return;
+    document.execCommand('insertText', false, formatMediaTime(Math.floor(clock.time)) + ' ');
+  }, 0);
+});
+
+// ── Clic sui minuti nel documento ──
+function mediaTimeAt(x, y) {
+  for (const { box, notes } of mediaNoteBoxes) {
+    for (const note of notes) {
+      for (const rect of note.range.getClientRects()) {
+        if (x >= rect.left - 2 && x <= rect.right + 2 && y >= rect.top - 1 && y <= rect.bottom + 1) return { box, note };
+      }
+    }
+  }
+  return null;
+}
+
+let mediaHoverFrame = 0;
+ed.addEventListener('mousemove', event => {
+  if (mediaHoverFrame || !mediaNoteBoxes.some(entry => entry.notes.length)) return;
+  mediaHoverFrame = requestAnimationFrame(() => {
+    mediaHoverFrame = 0;
+    const hit = mediaTimeAt(event.clientX, event.clientY);
+    ed.classList.toggle('over-media-time', Boolean(hit));
+    if (hit) ed.title = (editingEnabled ? 'Sposta ' : 'Vai a ') + hit.note.label + (mediaNotesKind(hit.box) === 'video' ? ' nel video' : ' nell’audio');
+    else if (ed.title.startsWith('Vai a ') || ed.title.startsWith('Sposta ')) ed.removeAttribute('title');
+  });
+}, { passive: true });
+
+ed.addEventListener('click', event => {
+  if (event.button !== 0 || event.detail > 1) return;
+  const hit = mediaTimeAt(event.clientX, event.clientY);
+  if (!hit) return;
+  // In Lettura il video va lì e parte; in Modifica si sposta soltanto (il clic mette il cursore).
+  const play = !editingEnabled || sourceMode;
+  seekMedia(hit.box, hit.note.time, play);
+  if (play) {
+    const rect = hit.box.getBoundingClientRect();
+    if (rect.bottom < 60 || rect.top > innerHeight - 120) hit.box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+});
+
+// ── Schermo intero con gli appunti ──
+function toggleMediaFullscreen(box) {
+  if (!box) return;
+  if (document.fullscreenElement === box) {
+    document.exitFullscreen?.().catch(() => {});
+    return;
+  }
+  box.requestFullscreen?.().catch(error => toast('Il browser non ha concesso lo schermo intero (' + error.message + ').'));
+}
+document.addEventListener('fullscreenchange', () => {
+  for (const entry of mediaNoteBoxes) {
+    const panel = entry.box.querySelector(':scope > .media-notes')?.shadowRoot?.querySelector('.panel');
+    if (panel && document.fullscreenElement !== entry.box) delete panel.dataset.floating;
+    renderMediaCard(entry);
+  }
+  const box = document.fullscreenElement;
+  if (box && mediaNotesKind(box)) setTimeout(() => box.querySelector(':scope > .media-notes')?.shadowRoot?.querySelector('.write input')?.focus({ preventScroll: true }), 50);
+});
+// Doppio clic sul video (il suo schermo intero è stato tolto): quello con gli appunti.
+ed.addEventListener('dblclick', event => {
+  const video = event.target instanceof HTMLVideoElement ? event.target : null;
+  const box = video?.closest('[data-ext="pdf"]');
+  if (box && mediaNotesKind(box) === 'video') toggleMediaFullscreen(box);
+});
+
+// I tasti scritti negli appunti a schermo intero non devono arrivare all'editor (che li
+// vedrebbe come digitati nel riquadro del video).
+for (const type of ['keydown', 'keyup', 'keypress', 'beforeinput', 'input', 'paste', 'copy', 'cut']) {
+  document.addEventListener(type, event => {
+    const target = event.composedPath()[0];
+    if (target instanceof HTMLInputElement && target.getRootNode()?.host?.classList.contains('media-notes')) event.stopPropagation();
+  }, true);
+}
+
+// ── Quando aggiornare ──
+for (const type of ['timeupdate', 'play', 'pause', 'seeked', 'loadedmetadata', 'durationchange']) {
+  document.addEventListener(type, event => {
+    const box = event.target instanceof HTMLVideoElement ? event.target.closest('[data-ext="pdf"]') : null;
+    if (box && ed.contains(box)) refreshMediaBox(box);
+  }, true);
+  itacaAudio.addEventListener(type, () => {
+    for (const entry of mediaNoteBoxes) if (mediaNotesKind(entry.box) === 'audio') refreshMediaBox(entry.box);
+  });
+}
+new MutationObserver(() => queueMediaNotes()).observe(ed, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['contenteditable'] });
+
 
 // ── Tabelle: aggiungi, elimina, allinea ─────────────────────────────────────
 
