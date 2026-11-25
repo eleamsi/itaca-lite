@@ -33,7 +33,8 @@ Dopo una modifica bisogna ricopiare `out.css`, `out.html` e `critters.js` in `It
 
 ## itaca-icon.svg / itaca-icon.png
 
-Icona di Finder per `Itaca Lite.html` (interno bianco, tratti neri, sfondo trasparente).
+Icona di Finder per `Itaca Lite.html`: la galea del logo (dalla 2.0.0), sfondo trasparente.
+L'SVG è l'uscita di `itacaIconSvg(1024)` (in console): il disegno vive solo nella testata (`#itacaLogo`).
 Il PNG 1024 px si ottiene dall'SVG con Chrome headless (`--default-background-color=00000000 --screenshot`).
 
 ## File di prova
