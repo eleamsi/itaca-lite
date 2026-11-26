@@ -35201,11 +35201,12 @@ svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width:
 .fill { display: block; width: 0; height: 100%; border-radius: inherit; background: color-mix(in srgb, var(--accent, #2b6cb0) 60%, transparent); }
 .track:hover .rail { height: 6px; margin-top: -3px; }
 .marks { position: absolute; inset: 0; pointer-events: none; }
-.mark { position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; padding: 0; display: grid; place-items: center; border-radius: 50%; pointer-events: auto; }
+.mark { position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; padding: 0; display: grid; place-items: center; border-radius: 50%; }
 .mark::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--paper, #fff); border: 2px solid var(--muted, #888); transition: transform .15s, background-color .15s, border-color .15s; }
 .mark.past::before { border-color: var(--accent, #2b6cb0); background: color-mix(in srgb, var(--accent, #2b6cb0) 35%, var(--paper, #fff)); }
 .mark.now::before { border-color: var(--accent, #2b6cb0); background: var(--accent, #2b6cb0); transform: scale(1.3); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #2b6cb0) 25%, transparent); }
-.mark:hover::before, .mark:focus-visible::before { transform: scale(1.45); }
+.mark.hover { z-index: 1; }
+.mark.hover::before, .mark:focus-visible::before { transform: scale(1.45); }
 .mark:focus-visible { outline-offset: -2px; }
 .tip { position: absolute; bottom: calc(100% + 4px); left: 0; z-index: 3; display: grid; gap: 4px; width: max-content; max-width: min(320px, 92cqw);
   padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line, #ddd); background: var(--panel, #fff); color: var(--ink, #222);
@@ -35258,8 +35259,8 @@ kbd { padding: 0 4px; border: 1px solid var(--line, #ccc); border-bottom-width: 
 `;
 
 // Linea del tempo: un segno per ogni minuto con appunti, riempita fino al punto attuale.
-// Gli appunti troppo vicini sulla linea (stesso minuto, o pochi pixel in un video lungo)
-// diventano un solo segno, che li mostra tutti nel suggerimento.
+// Segni vicini (pochi pixel in un video lungo) restano distinti: il puntatore sceglie il più
+// vicino e il suggerimento mostra solo i suoi appunti.
 function renderMediaTrack(track, sorted, clock, group) {
   const duration = clock.duration;
   const ready = sorted.length > 0 && Number.isFinite(duration) && duration > 0;
@@ -35267,41 +35268,33 @@ function renderMediaTrack(track, sorted, clock, group) {
   if (!ready) return;
   const at = time => Math.max(0, Math.min(1, time / duration));
   track.querySelector('.fill').style.width = at(clock.time) * 100 + '%';
-  const width = track.clientWidth || 300;
   const times = [...new Set(sorted.map(note => note.time))];
   const marks = track.querySelector('.marks');
-  const key = duration + '|' + Math.round(width / 8) + '|' + times.join(',');
+  const key = duration + '|' + times.join(',');
   if (marks.dataset.key !== key) {
     marks.dataset.key = key;
-    const clusters = [];
-    for (const time of times) {
-      const last = clusters.at(-1);
-      if (last && (at(time) - at(last.times[0])) * width < 14) last.times.push(time);
-      else clusters.push({ times: [time] });
-    }
-    marks.replaceChildren(...clusters.map(({ times: group }) => {
+    marks.replaceChildren(...times.map(time => {
       const mark = Object.assign(document.createElement('button'), { type: 'button', className: 'mark' });
-      mark.dataset.time = group[0];
-      mark.dataset.times = group.join(',');
-      mark.style.left = at(group[0]) * 100 + '%';
-      mark.setAttribute('aria-label', 'Vai a ' + formatMediaTime(group[0]));
+      mark.dataset.time = time;
+      mark.style.left = at(time) * 100 + '%';
+      mark.setAttribute('aria-label', 'Vai a ' + formatMediaTime(time));
       return mark;
     }));
   }
   const nowTime = group.length ? group[0].time : null;
   for (const mark of marks.children) {
-    const own = mark.dataset.times.split(',').map(Number);
-    const now = nowTime !== null && own.includes(nowTime);
-    mark.classList.toggle('now', now);
-    mark.classList.toggle('past', !now && nowTime !== null && own[0] < nowTime);
+    const time = Number(mark.dataset.time);
+    mark.classList.toggle('now', time === nowTime);
+    mark.classList.toggle('past', nowTime !== null && time < nowTime);
   }
 }
 
 function bindMediaTrack(track, box, entry) {
   const tip = track.querySelector('.tip');
   const showTip = mark => {
-    const times = mark.dataset.times.split(',').map(Number);
-    const together = entry().notes.filter(note => times.includes(note.time)).sort((a, b) => a.time - b.time);
+    // Solo gli appunti di questo segno (più d'uno solo se scritti allo stesso minuto).
+    const time = Number(mark.dataset.time);
+    const together = entry().notes.filter(note => note.time === time);
     if (!together.length) return;
     tip.replaceChildren(...together.slice(0, 3).map(note => {
       const line = Object.assign(document.createElement('span'), { className: 'line' });
@@ -35314,11 +35307,30 @@ function bindMediaTrack(track, box, entry) {
     const width = tip.offsetWidth, room = track.clientWidth;
     tip.style.left = Math.max(-8, Math.min(room - width + 8, mark.offsetLeft - width / 2)) + 'px';
   };
-  const hideTip = () => { tip.hidden = true; };
-  track.addEventListener('pointerover', event => {
-    const mark = event.target.closest?.('.mark');
-    if (mark) showTip(mark);
-    else hideTip();
+  let hovered = null;
+  const hideTip = () => {
+    tip.hidden = true;
+    hovered?.classList.remove('hover');
+    hovered = null;
+  };
+  // Il segno sotto il puntatore = il più vicino in orizzontale, entro 9 px dal suo centro.
+  const markAt = x => {
+    let best = null, distance = 9;
+    for (const mark of track.querySelectorAll('.mark')) {
+      const rect = mark.getBoundingClientRect();
+      const gap = Math.abs(x - (rect.left + rect.width / 2));
+      if (gap <= distance) { best = mark; distance = gap; }
+    }
+    return best;
+  };
+  track.addEventListener('pointermove', event => {
+    const mark = markAt(event.clientX);
+    if (mark === hovered) return;
+    hideTip();
+    if (!mark) return;
+    hovered = mark;
+    mark.classList.add('hover');
+    showTip(mark);
   });
   track.addEventListener('pointerleave', hideTip);
   track.addEventListener('focusin', event => event.target.matches('.mark') && showTip(event.target));
@@ -35327,7 +35339,7 @@ function bindMediaTrack(track, box, entry) {
     const target = box();
     const clock = target && mediaClock(target);
     if (!clock || !(clock.duration > 0)) return;
-    const mark = event.target.closest('.mark');
+    const mark = event.detail === 0 ? event.target.closest('.mark') : markAt(event.clientX);
     if (mark) {
       // Come il clic sui minuti nel documento: in Lettura parte, in Modifica si sposta soltanto.
       const time = Number(mark.dataset.time);
@@ -35476,9 +35488,10 @@ function renderMediaCard(entry) {
     // Scheda sotto il video: l'appunto del momento (o il primo, prima di partire).
     const shown = index >= 0 ? notes[index] : sorted[0];
     bar.dataset.current = shown ? String(notes.indexOf(shown)) : '';
-    const time = bar.querySelector('.time'), text = bar.querySelector('.text');
-    const noteButton = bar.querySelector('.note');
-    const more = bar.querySelector('.more');
+    // (dentro la scheda c'è anche il suggerimento della linea del tempo, con le sue .time/.text)
+    const noteButton = bar.querySelector('.row .note');
+    const time = noteButton.querySelector('.time'), text = noteButton.querySelector('.text');
+    const more = noteButton.querySelector('.more');
     // Più appunti allo stesso minuto: il primo e «+N» (tutti nel suggerimento).
     const together = index >= 0 ? group : shown ? notes.filter(note => note.time === shown.time) : [];
     more.hidden = together.length < 2;
