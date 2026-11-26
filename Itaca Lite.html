@@ -849,6 +849,97 @@ dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-tex
 .status-menu { width: auto; min-width: 200px; }
 .status-menu button .status-dot { margin: 0 3px; }
 .status-menu button .i-check { margin-left: auto; color: var(--accent-text); }
+/* Scadenza del documento e conto alla rovescia personale */
+.i-calendar { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='3'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3Ccircle cx='12' cy='15' r='1.5' fill='%23000' stroke='none'/%3E%3C/svg%3E"); }
+[data-tone='soon'] { --st-tone: var(--st-draft); }
+[data-tone='today'], [data-tone='late'] { --st-tone: var(--st-old); }
+[data-tone='far'] { --st-tone: var(--muted); }
+.doc-deadline { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 2px 10px 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--st-tone, var(--muted)) 14%, transparent); color: color-mix(in srgb, var(--st-tone, var(--muted)) 75%, var(--ink)); font-weight: 600; font-size: 12px; }
+.doc-deadline[data-tone='far'] { background: color-mix(in srgb, var(--muted) 11%, transparent); color: var(--copy, var(--ink)); font-weight: 550; }
+.doc-deadline:hover:not(:disabled) { background: color-mix(in srgb, var(--st-tone, var(--muted)) 24%, transparent); }
+.doc-deadline .icon { width: 13px; height: 13px; }
+.doc-deadline.empty { gap: 3px; padding-left: 7px; border: 1px dashed var(--line); background: none; color: var(--muted); font-weight: 500; opacity: .75; }
+.doc-deadline.empty:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-text); opacity: 1; }
+.deadline-mark { flex: none; padding: 0 6px; border-radius: 999px; background: color-mix(in srgb, var(--st-tone) 15%, transparent); color: color-mix(in srgb, var(--st-tone) 82%, var(--ink)); font: 650 10.5px/16px var(--sans); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tree-row .deadline-mark { margin-left: 1px; }
+.deadline-menu { width: 272px; padding: 10px; }
+.dl-head { display: grid; gap: 2px; margin: 0 2px 9px; }
+.dl-head b { font: 650 13.5px/1.25 var(--display); }
+.dl-head small { color: var(--muted); font-size: 11.5px; line-height: 1.35; }
+.deadline-menu .dl-date, .ev-form input[type='text'], .ev-form input[type='date'] { box-sizing: border-box; width: 100%; height: 32px; margin: 0; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: 500 13px var(--sans); }
+.deadline-menu .dl-date:focus-visible, .ev-form input:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 0; border-color: var(--accent); }
+.dl-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 7px; }
+.deadline-menu .dl-quick button { justify-content: center; padding: 5px 6px; border: 1px solid var(--line-soft); border-radius: 7px; color: var(--copy, var(--ink)); font-size: 12px; text-align: center; }
+.deadline-menu .dl-quick button:hover { border-color: var(--line); background: var(--hover); }
+.deadline-menu .dl-quick button[aria-pressed='true'] { border-color: var(--accent); background: var(--tint); color: var(--accent-text); }
+.dl-preview { margin: 9px 2px 2px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+.dl-preview[data-tone='soon'], .dl-preview[data-tone='today'], .dl-preview[data-tone='late'] { color: color-mix(in srgb, var(--st-tone) 80%, var(--ink)); }
+.deadline-box { margin: 2px 0 8px; border: 1px solid var(--line-soft); border-radius: 10px; background: color-mix(in srgb, var(--muted) 5%, transparent); }
+.dl-box-bar { display: flex; align-items: center; }
+.dl-box-head { flex: 1; display: flex; align-items: center; gap: 7px; min-width: 0; padding: 6px 8px 6px 9px; border-radius: 10px; color: var(--ink); font: 600 12.5px var(--sans); text-align: left; }
+.dl-box-head:hover { color: var(--accent-text); }
+.dl-box-head .icon { width: 14px; height: 14px; color: var(--muted); }
+.dl-box-head .i-chevron { width: 10px; height: 10px; transition: transform .15s ease; }
+.dl-box-head[aria-expanded='true'] .i-chevron { transform: rotate(90deg); }
+.dl-box-count { min-width: 18px; padding: 0 6px; border-radius: 999px; background: color-mix(in srgb, var(--st-tone) 16%, transparent); color: color-mix(in srgb, var(--st-tone) 82%, var(--ink)); font-size: 11px; line-height: 18px; text-align: center; }
+.dl-box-all { flex: none; margin-right: 5px; padding: 3px 8px; color: var(--muted); font-size: 11.5px; }
+.dl-box-all:hover { background: var(--hover); color: var(--accent-text); }
+.dl-box-list { display: grid; padding: 0 4px 5px; }
+.dl-box-row { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 5px 6px; border-radius: 7px; color: var(--copy, var(--ink)); font-size: 12.5px; text-align: left; }
+.dl-box-row:hover { background: var(--hover); }
+.dl-box-row.current { background: var(--tint); color: var(--accent-text); }
+.dl-box-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.status-dot.none { background: none; box-shadow: inset 0 0 0 1.2px var(--line); }
+.dl-box-more { padding: 4px 6px; border-radius: 6px; color: var(--muted); font-size: 11.5px; text-align: left; }
+.dl-box-more:hover { background: var(--hover); color: var(--accent-text); }
+.events-chip { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; min-width: 28px; padding: 0 6px; border-radius: 8px; color: var(--muted); font: 600 12px var(--sans); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.events-chip:hover { background: var(--hover); color: var(--ink); }
+.events-chip .icon { width: 16px; height: 16px; }
+.events-chip.has-event { padding: 0 9px 0 7px; background: color-mix(in srgb, var(--muted) 10%, transparent); color: var(--copy, var(--ink)); }
+.events-chip.has-event:hover { background: color-mix(in srgb, var(--muted) 18%, transparent); }
+.events-chip.festive { background: color-mix(in srgb, var(--xmas-green, #2f9460) 16%, transparent); color: color-mix(in srgb, var(--xmas-green, #2f9460) 65%, var(--ink)); }
+.ev-chip-emoji { font-size: 13.5px; line-height: 1; }
+@media (max-width: 760px) { .ev-chip-text { display: none; } .events-chip.has-event { padding: 0 6px; } }
+.events-panel { position: fixed; inset: auto; box-sizing: border-box; width: min(360px, calc(100vw - 16px)); max-height: min(580px, calc(100vh - 70px)); margin: 0; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); font: 13px/1.35 var(--sans); }
+.events-panel:popover-open { display: flex; flex-direction: column; animation: ad-open .14s ease-out; transform-origin: 50% 100%; }
+.ev-head { display: flex; align-items: center; gap: 10px; padding: 12px 8px 8px 14px; }
+.ev-logo { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--tint); color: var(--accent-text); }
+.ev-logo .icon { width: 17px; height: 17px; }
+.ev-heading { display: grid; flex: 1; min-width: 0; }
+.ev-heading b { font: 650 14.5px/1.2 var(--display); }
+.ev-heading small { color: var(--muted); font-size: 11.5px; }
+.ev-list { flex: 1; min-height: 0; margin: 0; padding: 2px 8px 8px; overflow-y: auto; list-style: none; }
+.ev-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; }
+.ev-row:hover, .ev-row:focus-within { background: var(--hover); }
+.ev-row.editing { background: var(--tint); }
+.ev-row.past { opacity: .55; }
+.ev-emoji { font-size: 20px; line-height: 1; text-align: center; }
+.ev-text { display: grid; min-width: 0; }
+.ev-text b, .ev-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-text b { font-weight: 600; }
+.ev-text small { color: var(--muted); font-size: 11.5px; }
+.ev-days { color: var(--muted); font-size: 11.5px; text-align: right; white-space: nowrap; }
+.ev-days b { color: var(--ink); font: 650 19px/1 var(--display); font-variant-numeric: tabular-nums; }
+.ev-days, .ev-tools { grid-row: 1; grid-column: 3; justify-self: end; }
+/* Modifica e Togli prendono il posto dei giorni al passaggio (sul touch stanno accanto) */
+.ev-tools { display: flex; gap: 1px; visibility: hidden; }
+.ev-row:hover .ev-tools, .ev-row:focus-within .ev-tools, .ev-row.editing .ev-tools { visibility: visible; }
+.ev-row:hover .ev-days, .ev-row:focus-within .ev-days, .ev-row.editing .ev-days { visibility: hidden; }
+@media (pointer: coarse) { .ev-tools { grid-column: 4; visibility: visible; } .ev-row .ev-days { visibility: visible; } }
+.ev-tools .icon-button { width: 26px; height: 26px; }
+.ev-tools .icon { width: 14px; height: 14px; }
+.ev-empty { padding: 16px 12px; color: var(--muted); font-size: 12.5px; text-align: center; }
+.ev-form { display: grid; gap: 7px; padding: 10px 12px 12px; border-top: 1px solid var(--line-soft); background: color-mix(in srgb, var(--muted) 5%, transparent); }
+.ev-form-title { margin: 0; color: var(--muted); font: 600 11.5px var(--sans); text-transform: uppercase; letter-spacing: .04em; }
+.ev-emojis { display: flex; gap: 3px; }
+.ev-emojis button { width: 31px; height: 28px; padding: 0; border-radius: 7px; font-size: 15px; line-height: 1; }
+.ev-emojis button:hover { background: var(--hover); }
+.ev-emojis button[aria-checked='true'] { background: var(--tint); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ev-form-row { display: flex; align-items: center; gap: 10px; }
+.ev-form-row .ev-date { flex: 1; }
+.ev-yearly { display: inline-flex; align-items: center; gap: 6px; color: var(--copy, var(--ink)); font-size: 12.5px; white-space: nowrap; cursor: pointer; }
+.ev-form-actions { display: flex; justify-content: flex-end; gap: 6px; }
+@media print { .doc-deadline { display: none !important; } }
 /* Bozze personali */
 .drafts-badge { flex: none; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--st-draft) 16%, transparent); color: color-mix(in srgb, var(--st-draft) 70%, var(--ink)); font-size: 11px; font-weight: 600; white-space: nowrap; }
 .drafts-badge[hidden] { display: none; }
@@ -2627,7 +2718,12 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
             <button type="button" class="danger-text" data-tag-action="remove"><i class="icon i-close" aria-hidden="true"></i>Togli…</button>
           </div>
         </div>
-        <div class="tree" id="tree"></div>
+        <div class="tree" id="tree">
+          <section class="deadline-box" id="deadlineBox" aria-label="Documenti in scadenza" hidden>
+            <div class="dl-box-bar"><button type="button" class="dl-box-head" aria-expanded="true"><i class="icon i-calendar" aria-hidden="true"></i><span>In scadenza</span><span class="dl-box-count"></span><i class="icon i-chevron" aria-hidden="true"></i></button><button type="button" class="dl-box-all" title="Tutte le scadenze nella ricerca">Tutte</button></div>
+            <div class="dl-box-list"></div>
+          </section>
+        </div>
       </nav>
       <details class="outline-nav" id="outlineNav" open hidden>
         <summary><i class="icon i-index" aria-hidden="true"></i><span>Indice del documento</span><i class="icon i-chevron" aria-hidden="true"></i></summary>
@@ -2844,6 +2940,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
         <div class="save-status" role="status"><span class="dot" id="dot" aria-hidden="true"></span><span id="status"></span></div>
         <div class="metrics"><span id="words"></span></div>
         <span class="status-version" id="statusVersion" hidden></span>
+        <button type="button" class="events-chip" id="eventsButton" aria-label="Conto alla rovescia" aria-haspopup="dialog" aria-expanded="false" aria-controls="eventsPanel"><i class="icon i-calendar" aria-hidden="true"></i></button>
         <button type="button" class="icon-button" id="radioButton" aria-label="Radio" title="Radio online" aria-haspopup="dialog" aria-expanded="false" aria-controls="radioPanel"><i class="icon i-radio" aria-hidden="true"></i></button>
         <button type="button" class="icon-button" id="feedbackButton" aria-label="Segnalazioni" title="Segnala un problema o un’idea" aria-haspopup="dialog"><i class="icon i-feedback" aria-hidden="true"></i></button>
         <button type="button" class="icon-button" id="glossaryButton" aria-label="Glossario" title="Glossario: scorciatoie, Markdown, Material per MkDocs (Ctrl+/)" aria-haspopup="dialog"><i class="icon i-glossary" aria-hidden="true"></i></button>
@@ -3120,6 +3217,13 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
             <button type="button" class="outline" id="sidebarWidthReset">Larghezza normale</button>
           </div>
         </div>
+        <h4>Barra in basso</h4>
+        <div class="set-card">
+          <div class="set-row" data-keywords="conto alla rovescia countdown eventi natale ferie compleanno giorni mancano">
+            <label class="set-label" for="setShowEvents"><b>Conto alla rovescia</b><small>I giorni che mancano ai tuoi eventi (ferie, compleanni, Natale…), solo per te. Nella barra c’è il più vicino; il clic apre l’elenco</small></label>
+            <input type="checkbox" class="switch" id="setShowEvents" name="showEvents">
+          </div>
+        </div>
         <h4>Elenco dei file</h4>
         <div class="set-card">
           <div class="set-row">
@@ -3129,6 +3233,10 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <div class="set-row" id="treeOrderRow" hidden>
             <span class="set-label" id="treeOrderLabel"><b>Ordine dei documenti</b><small>Per nome del file se lo usi per decidere l’ordine (<code>01-introduzione.md</code>, <code>02-…</code>), come fa MkDocs</small></span>
             <div class="segmented" role="radiogroup" aria-labelledby="treeOrderLabel"><label><input type="radio" name="treeOrder" value="title"><span>Per titolo</span></label><label><input type="radio" name="treeOrder" value="name"><span>Per nome del file</span></label></div>
+          </div>
+          <div class="set-row" data-keywords="scadenza scadenze in scadenza data entro termine countdown">
+            <label class="set-label" for="setShowDeadlines"><b>Scadenze dei documenti</b><small>Un segno sui documenti che scadono entro 7 giorni e, sopra l’elenco, il riquadro «In scadenza». L’etichetta sopra il documento resta sempre</small></label>
+            <input type="checkbox" class="switch" id="setShowDeadlines" name="showDeadlines">
           </div>
           <div class="set-row">
             <label class="set-label" for="setQuickInsert"><b>Inserimento rapido</b><small>Fermati un attimo col puntatore tra due righe dell’elenco: si apre un varco con il «+» per un nuovo documento o una nuova cartella</small></label>
@@ -15390,6 +15498,8 @@ const settingChoices = {
   audioPlayer: ['docked', 'floating', 'corner', 'off'],
   radio: [true, false],
   quickInsert: [false, true],
+  showDeadlines: [true, false],
+  showEvents: [true, false],
   treeLabels: ['name', 'title'],
   treeOrder: ['title', 'name'],
   liveMarkdown: [true, false],
@@ -15405,7 +15515,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, showDeadlines: true, showEvents: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -15497,6 +15607,8 @@ function syncSettings() {
   settingsForm.deleteToTrash.checked = settings.deleteToTrash;
   $('deleteConfirmRow').hidden = settings.deleteToTrash;
   settingsForm.quickInsert.checked = settings.quickInsert;
+  settingsForm.showDeadlines.checked = settings.showDeadlines;
+  settingsForm.showEvents.checked = settings.showEvents;
   settingsForm.treeLabels.value = settings.treeLabels;
   settingsForm.treeOrder.value = settings.treeOrder;
   $('treeOrderRow').hidden = settings.treeLabels !== 'title';
@@ -15806,6 +15918,7 @@ $('settingsReset').onclick = async () => {
   syncCrittersSize();
   applyAudioPlayerSetting();
   applyRadioSetting();
+  renderEventsChip();
   scheduleAutosave();
   placeDocumentNav();
   renderOutline();
@@ -16358,6 +16471,8 @@ settingsForm.addEventListener('change', event => {
     if (name === 'treeLabels') $('treeOrderRow').hidden = settings.treeLabels !== 'title';
     if (name === 'audioPlayer') applyAudioPlayerSetting();
     if (name === 'radio') applyRadioSetting();
+    if (name === 'showDeadlines') { renderTree(); renderDeadlineBox(); }
+    if (name === 'showEvents') renderEventsChip();
     if (name === 'logoMotion') applyLogoMotion();
     if (name === 'tableTools') decorateReadTables();
     if (name === 'showOutline') renderOutline();
@@ -16963,6 +17078,7 @@ const glossaryMarkdown = [
   ]],
   ['Tag', [
     ['Tag del documento', 'Nell’intestazione all’inizio del documento, tra due righe ---. In Modifica si aggiungono anche con «+ Tag» sopra il documento. Si cercano scrivendo #tag nella ricerca e funzionano anche con il plugin dei tag di Material per MkDocs.', '---\ntags:\n  - stampanti\n  - procedure\n---\n# Sostituzione del toner'],
+    ['Scadenza del documento', 'Entro quando va finito il documento: una data nell’intestazione, che vedono tutti. In Modifica si sceglie con «+ Scadenza» sopra il documento; sopra c’è «Scade tra 12 giorni», nell’elenco un segno quando mancano 7 giorni o meno, e il riquadro «In scadenza». Nella ricerca: scadenza: (tutte), scadenza:7 (entro 7 giorni), scadenza:scadute. Togliendo lo stato si toglie anche la scadenza. MkDocs la ignora.', '---\nstatus: da-finire\nscadenza: 2026-12-15\n---\n# Sostituzione del toner'],
     ['Stato del documento', 'Uno solo per documento: pianificato, da-finire, da-revisionare, new (Nuovo) o deprecated (Obsoleto). In Modifica si sceglie con «+ Stato» sopra il documento; nella ricerca si trova con stato:… Material per MkDocs usa la stessa chiave.', '---\nstatus: da-revisionare\n---\n# Sostituzione del toner'],
   ]],
 ];
@@ -18489,7 +18605,7 @@ function indexMarkdown(markdown) {
     headings.push([at, title]);
     from = at + 1;
   }
-  return { text, folded, headings, tags: tagsFromFront(metadata), status: statusFromFront(metadata), title: contentTitle(metadata, content) };
+  return { text, folded, headings, tags: tagsFromFront(metadata), status: statusFromFront(metadata), deadline: deadlineFromFront(metadata), title: contentTitle(metadata, content) };
 }
 
 let searchImage = null;
@@ -18715,7 +18831,7 @@ function getSearchContent(path) {
   return searchIndex.entries.get(path)?.content;
 }
 
-function searchMatches(docs, terms, phrase = '', tagFilter = null, statusFilter = '') {
+function searchMatches(docs, terms, phrase = '', tagFilter = null, statusFilter = '', deadlineFilter = null) {
   const index = searchIndex;
   index.queue = docs.filter(path => {
     const handle = files.get(path);
@@ -18734,6 +18850,7 @@ function searchMatches(docs, terms, phrase = '', tagFilter = null, statusFilter 
     if (content === null) unreadable++;
     if (tagFilter && !documentHasTags(content, tagFilter)) continue;
     if (statusFilter && !documentHasStatus(path, content, statusFilter)) continue;
+    if (deadlineFilter !== null && !documentHasDeadline(path, content, deadlineFilter)) continue;
     const key = foldSearch(path);
     const name = key.split('/').pop().replace(/\.(md|markdown)$/, '');
     // Con i titoli nell'elenco il titolo pesa quanto il nome del file.
@@ -19354,6 +19471,7 @@ function renderDocTags() {
   const tags = current && !sourceMode ? tagsFromFront(front) : [];
   const editable = documentTagsEditable();
   const hasStatus = renderDocStatus(bar, editable);
+  const hasDeadline = renderDocDeadline(bar, editable);
   if (!docTagEditor) {
     docTagEditor = createTagEditor({ tags, editable, onChange: setDocumentTags, onPick: searchTag, onManage: showTagMenu });
     const label = document.createElement('i');
@@ -19364,7 +19482,7 @@ function renderDocTags() {
   // Mentre si scrive un tag non si ridisegna (si perderebbe il testo).
   if (!bar.contains(document.activeElement) || !sameTags(docTagEditor.tags, tags)) docTagEditor.setTags(tags);
   docTagEditor.setEditable(editable);
-  bar.hidden = !current || sourceMode || (!tags.length && !hasStatus && !editable);
+  bar.hidden = !current || sourceMode || (!tags.length && !hasStatus && !hasDeadline && !editable);
   bar.querySelector('.doc-tags-icon').hidden = !tags.length && !editable;
   bar.classList.toggle('editable', editable);
   queueSimilarDocs();
@@ -19395,7 +19513,7 @@ function searchTag(tag) {
 // I tag con spazi si scrivono tra virgolette: #"stampanti laser".
 function searchQueryParts(query) {
   const tags = [];
-  let status = '';
+  let status = '', deadline = null;
   const text = query.replace(/(^|\s)#(?:"([^"]*)"?|([^\s"]*))/g, (all, space, quoted, plain) => {
     const tag = cleanTag(quoted ?? plain ?? '');
     if (tag) tags.push(foldSearch(tag));
@@ -19403,8 +19521,11 @@ function searchQueryParts(query) {
   }).replace(/(^|\s)stato:(\S*)/gi, (all, space, value) => {
     if (value) status = foldSearch(value);
     return space;
+  }).replace(/(^|\s)scadenza:(\S*)/gi, (all, space, value) => {
+    deadline = foldSearch(value);
+    return space;
   });
-  return { text, tags: [...new Set(tags)], status };
+  return { text, tags: [...new Set(tags)], status, deadline };
 }
 // Un tag cercato vale esattamente se esiste; altrimenti (mentre lo si scrive) vale come inizio.
 function searchTagFilter(tags) {
@@ -19425,7 +19546,7 @@ function searchTagContext() {
   return { start: match.index + match[1].length, end: caret, query: match[3] };
 }
 function updateSearchTagSuggest() {
-  if (updateSearchStatusSuggest()) return;
+  if (updateSearchStatusSuggest() || updateSearchDeadlineSuggest()) return;
   const context = document.activeElement === search ? searchTagContext() : null;
   if (!context) {
     if (tagSuggestState?.input === search) closeTagSuggest();
@@ -19636,8 +19757,12 @@ function markTreeStatus(path) {
   const row = treeRowFor(path);
   if (!row) return;
   row.querySelector('.status-dot')?.remove();
+  row.querySelector('.deadline-mark')?.remove();
   const status = documentStatus(path);
-  if (status) row.querySelector('.row-label')?.after(statusDot(status));
+  const label = row.querySelector('.row-label');
+  const deadline = deadlineMark(path);
+  if (deadline) label?.after(deadline);
+  if (status) label?.after(statusDot(status));
 }
 // Quando l'indice scopre stati nuovi si cambiano solo le righe interessate (prima si
 // ridisegnava tutto l'elenco a ogni gruppo di documenti letti).
@@ -19646,12 +19771,14 @@ tagIndexListeners.add(() => {
   const now = new Map();
   for (const path of files.keys()) {
     if (!isMD(path)) continue;
-    const status = documentStatus(path);
-    if (status) now.set(path, status);
+    const shown = documentStatus(path) + '\n' + documentDeadline(path);
+    if (shown !== '\n') now.set(path, shown);
   }
   const changed = [...new Set([...now.keys(), ...treeStatusShown.keys()])].filter(path => now.get(path) !== treeStatusShown.get(path));
   treeStatusShown = now;
   rememberStatuses();
+  deadlineCache?.remember(content => content.deadline);
+  if (changed.length) queueDeadlineBox();
   if (!changed.length || search.value.trim()) return;
   for (const path of changed) markTreeStatus(path);
 });
@@ -19935,7 +20062,13 @@ function showStatusMenu(trigger) {
   none.append(icon('close'), document.createTextNode('Nessuno stato'));
   none.onclick = () => {
     statusMenu.hidePopover();
+    const hadDeadline = Boolean(deadlineFromFront(front));
     setDocumentStatus('');
+    // Senza stato il documento è finito: la scadenza non serve più.
+    if (hadDeadline) {
+      setDocumentDeadline('');
+      toast('Stato tolto: tolta anche la scadenza.', 'info');
+    }
   };
   const find = document.createElement('button');
   find.type = 'button';
@@ -20032,6 +20165,677 @@ function updateSearchStatusSuggest() {
   }, 'Stato', 'enter');
   return true;
 }
+
+// ── Scadenza del documento ─────────────────────────────────────────────────
+// Una data nella chiave scadenza: dell'intestazione (MkDocs la ignora). Sta nel file: la vedono
+// e la possono spostare tutti quelli che lavorano nella cartella. Sopra il documento l'etichetta
+// «Scade tra 12 giorni» (in Modifica la si sceglie con «+ Scadenza»); nell'elenco un segno solo
+// per quelle vicine o passate; nella ricerca scadenza:… ; sopra l'elenco il riquadro «In
+// scadenza». Togliere lo stato (documento finito) toglie anche la scadenza.
+const deadlineSoonDays = 7, deadlineBoxDays = 14, deadlineBoxRows = 6;
+
+function isoDate(date) {
+  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+}
+// 2026-12-15 (anche 15/12/2026, scritta a mano) → data locale; null se non è una data vera.
+function parseDayDate(text) {
+  const value = String(text || '').trim();
+  let match = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(value), year, month, day;
+  if (match) [year, month, day] = [+match[1], +match[2], +match[3]];
+  else if ((match = /^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/.exec(value))) [day, month, year] = [+match[1], +match[2], +match[3]];
+  else return null;
+  const date = new Date(year, month - 1, day);
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : null;
+}
+function startOfToday() {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+function daysUntil(date) {
+  return Math.round((date - startOfToday()) / 864e5);   // round: l'ora legale sposta di un'ora
+}
+function dayCount(days) {
+  return days === 1 ? '1 giorno' : days + ' giorni';
+}
+function longDate(date, withYear = true) {
+  return date.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long', ...(withYear ? { year: 'numeric' } : {}) });
+}
+
+// Giorni lavorativi: dal lunedì al venerdì, senza le feste nazionali italiane (Pasquetta compresa;
+// il santo patrono cambia da città a città e non c'è).
+const italianHolidayCache = new Map();
+function italianHolidays(year) {
+  if (italianHolidayCache.has(year)) return italianHolidayCache.get(year);
+  // Pasqua con l'algoritmo gregoriano anonimo (Meeus/Jones/Butcher); il lunedì dopo è festa.
+  const a = year % 19, b = Math.floor(year / 100), c = year % 100, d = Math.floor(b / 4), e = b % 4;
+  const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31), day = (h + l - 7 * m + 114) % 31 + 1;
+  const days = new Set(['01-01', '01-06', '04-25', '05-01', '06-02', '08-15', '11-01', '12-08', '12-25', '12-26', isoDate(new Date(year, month - 1, day + 1)).slice(5)]);
+  italianHolidayCache.set(year, days);
+  return days;
+}
+function isWorkday(date) {
+  const weekday = date.getDay();
+  return weekday !== 0 && weekday !== 6 && !italianHolidays(date.getFullYear()).has(isoDate(date).slice(5));
+}
+// Giorni lavorativi da domani fino al giorno indicato compreso.
+function workdaysUntil(date) {
+  let count = 0;
+  const day = startOfToday();
+  for (let step = 0; step < 4000; step++) {
+    day.setDate(day.getDate() + 1);
+    if (day > date) break;
+    if (isWorkday(day)) count++;
+  }
+  return count;
+}
+function workdaysText(count) {
+  return count === 1 ? '1 giorno lavorativo' : count + ' giorni lavorativi';
+}
+
+// Tutto quello che serve per mostrare una scadenza; null se il valore non è una data.
+function deadlineState(value) {
+  const date = parseDayDate(value);
+  if (!date) return null;
+  const days = daysUntil(date);
+  const tone = days < 0 ? 'late' : days === 0 ? 'today' : days <= deadlineSoonDays ? 'soon' : 'far';
+  const when = days < -1 ? 'Scaduta da ' + dayCount(-days) : days === -1 ? 'Scaduta ieri' : days === 0 ? 'Scade oggi'
+    : days === 1 ? 'Scade domani' : 'Scade tra ' + dayCount(days);
+  const short = days < 0 ? 'scaduta' : days === 0 ? 'oggi' : days === 1 ? 'domani' : days + ' g';
+  const work = days > 1 ? workdaysUntil(date) : null;
+  const full = longDate(date);
+  return {
+    date, days, tone, when, short, work,
+    value: isoDate(date),
+    full: full.charAt(0).toUpperCase() + full.slice(1),
+    detail: (full.charAt(0).toUpperCase() + full.slice(1)) + (work !== null ? ' · ' + workdaysText(work) : ''),
+  };
+}
+
+// La chiave scadenza: dell'intestazione (stesse regole di status:).
+function deadlineFromFront(metadata) {
+  if (!metadata) return '';
+  const lines = frontLines(metadata);
+  for (let i = 1; i < lines.length - 1; i++) {
+    const match = /^scadenza[ \t]*:(.*)$/.exec(lines[i]);
+    if (match) return yamlUnquote(match[1]).trim();
+  }
+  return '';
+}
+function frontWithDeadline(metadata, value) {
+  const eol = /\r\n/.test(metadata) ? '\r\n' : '\n';
+  const line = value ? ['scadenza: ' + value] : [];
+  if (!metadata) return line.length ? ['---', ...line, '---'].join(eol) + eol : '';
+  const lines = frontLines(metadata);
+  const at = lines.findIndex((text, i) => i > 0 && i < lines.length - 1 && /^scadenza[ \t]*:/.test(text));
+  if (at > 0) lines.splice(at, 1, ...line);
+  else {
+    // Subito dopo status:, se c'è: le due righe vanno lette insieme.
+    const status = lines.findIndex((text, i) => i > 0 && i < lines.length - 1 && /^status[ \t]*:/.test(text));
+    lines.splice(status > 0 ? status + 1 : lines.length - 1, 0, ...line);
+  }
+  if (lines.slice(1, -1).every(text => !text.trim())) return '';
+  return lines.join(eol) + eol;
+}
+
+// Scadenza di un documento: quello aperto dall'editor, gli altri dall'indice e, finché l'indice
+// non li ha letti, dall'ultima apertura della cartella (come gli stati).
+var deadlineCache = folderPathCache('itaca-deadline-cache');
+function documentDeadline(path) {
+  if (path === current && isMD(path)) return deadlineFromFront(front);
+  const content = getSearchContent(path);
+  if (content) return content.deadline || '';
+  return deadlineCache?.get()?.get(path) || '';
+}
+function deadlinesShown() {
+  try { return settings.showDeadlines !== false; } catch { return true; }
+}
+
+function setDocumentDeadline(value) {
+  if (!documentTagsEditable()) return;
+  const saved = frontSplit(original)[0];
+  const next = frontWithDeadline(front, value);
+  // Tornati alla scadenza del file salvato: l'intestazione torna com'era, byte per byte.
+  front = (deadlineState(deadlineFromFront(saved))?.value || '') === (deadlineState(value)?.value || '') && next === frontWithDeadline(saved, value) ? saved : next;
+  mark(true);
+  renderDocTags();
+  markTreeStatus(current);
+  queueDeadlineBox();
+}
+
+// Segno nell'elenco (e nei risultati): solo per le scadenze vicine o passate, salvo `always`.
+function deadlineMark(path, always = false) {
+  if (!deadlinesShown() || !isMD(path)) return null;
+  const state = deadlineState(documentDeadline(path));
+  if (!state || (!always && state.tone === 'far')) return null;
+  const mark = document.createElement('span');
+  mark.className = 'deadline-mark';
+  mark.dataset.tone = state.tone;
+  mark.textContent = state.short;
+  mark.title = state.when + ' · ' + state.detail;
+  return mark;
+}
+
+// ── Etichetta sopra il documento e menu per sceglierla ──
+function renderDocDeadline(bar, editable) {
+  let button = bar.querySelector('.doc-deadline');
+  if (!button) {
+    button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'doc-deadline';
+    button.setAttribute('aria-haspopup', 'dialog');
+    button.setAttribute('aria-expanded', 'false');
+    button.onclick = () => {
+      if (documentTagsEditable()) showDeadlineMenu(button);
+      else searchDeadlines('');
+    };
+    bar.querySelector('.doc-status')?.after(button);
+  }
+  const raw = current && !sourceMode ? deadlineFromFront(front) : '';
+  const state = deadlineState(raw);
+  button.hidden = !state && !editable;
+  button.classList.toggle('empty', !state);
+  if (state) {
+    const text = document.createElement('span');
+    text.textContent = state.when;
+    button.replaceChildren(icon('calendar'), text);
+    button.dataset.tone = state.tone;
+    button.title = 'Scadenza: ' + state.detail + (editable ? '\nClic per cambiarla' : '\nClic per vedere tutte le scadenze');
+  } else {
+    button.replaceChildren(icon('plus'), document.createTextNode('Scadenza'));
+    delete button.dataset.tone;
+    button.title = raw ? 'La scadenza «' + raw + '» non è una data: clic per sceglierla' : 'Indica entro quando va finito il documento';
+  }
+  return Boolean(state);
+}
+
+const deadlineMenu = document.createElement('div');
+deadlineMenu.className = 'file-menu deadline-menu';
+deadlineMenu.id = 'deadlineMenu';
+deadlineMenu.popover = 'auto';
+deadlineMenu.setAttribute('role', 'dialog');
+deadlineMenu.setAttribute('aria-label', 'Scadenza del documento');
+deadlineMenu.innerHTML = '<div class="dl-head"><b>Scadenza</b><small>Entro quando va finito il documento. La vedono tutti.</small></div>' +
+  '<input type="date" class="dl-date" aria-label="Data di scadenza">' +
+  '<div class="dl-quick" role="group" aria-label="Scelte rapide"></div>' +
+  '<p class="dl-preview" aria-live="polite"></p><hr>' +
+  '<button type="button" class="dl-remove"><i class="icon i-close" aria-hidden="true"></i>Togli la scadenza</button>' +
+  '<button type="button" class="dl-find"><i class="icon i-search" aria-hidden="true"></i>Tutte le scadenze</button>';
+document.body.append(deadlineMenu);
+var deadlineMenuTrigger = null, deadlineMenuOpenFor = null;
+document.addEventListener('pointerdown', () => {
+  deadlineMenuOpenFor = deadlineMenu.matches(':popover-open') ? deadlineMenuTrigger : null;
+}, true);
+
+// Scelte rapide, calcolate da oggi.
+function deadlineQuickChoices() {
+  const today = startOfToday();
+  const plus = days => new Date(today.getFullYear(), today.getMonth(), today.getDate() + days);
+  let monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  if (daysUntil(monthEnd) < 3) monthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, Math.min(today.getDate(), new Date(today.getFullYear(), today.getMonth() + 2, 0).getDate()));
+  return [
+    { label: 'Tra 1 settimana', date: plus(7) },
+    { label: 'Tra 2 settimane', date: plus(14) },
+    { label: 'Fine ' + monthEnd.toLocaleDateString('it-IT', { month: 'long' }), date: monthEnd },
+    { label: 'Tra 1 mese', date: nextMonth },
+  ];
+}
+function renderDeadlineMenu() {
+  const value = deadlineState(deadlineFromFront(front))?.value || '';
+  const input = deadlineMenu.querySelector('.dl-date');
+  if (document.activeElement !== input) input.value = value;
+  deadlineMenu.querySelector('.dl-quick').replaceChildren(...deadlineQuickChoices().map(choice => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = choice.label;
+    button.title = longDate(choice.date);
+    button.setAttribute('aria-pressed', String(isoDate(choice.date) === value));
+    button.onclick = () => {
+      setDocumentDeadline(isoDate(choice.date));
+      renderDeadlineMenu();
+    };
+    return button;
+  }));
+  const state = deadlineState(value);
+  const preview = deadlineMenu.querySelector('.dl-preview');
+  preview.dataset.tone = state?.tone || '';
+  preview.textContent = state ? state.when + ' · ' + state.detail : 'Nessuna scadenza.';
+  deadlineMenu.querySelector('.dl-remove').hidden = !value;
+}
+function showDeadlineMenu(trigger) {
+  if (deadlineMenu.matches(':popover-open')) {
+    deadlineMenu.hidePopover();
+    return;
+  }
+  if (deadlineMenuOpenFor === trigger) {
+    deadlineMenuOpenFor = null;
+    return;
+  }
+  deadlineMenuTrigger = trigger;
+  renderDeadlineMenu();
+  trigger.setAttribute('aria-expanded', 'true');
+  deadlineMenu.showPopover();
+  const box = trigger.getBoundingClientRect(), gap = 5;
+  const top = box.bottom + gap + deadlineMenu.offsetHeight > innerHeight ? box.top - gap - deadlineMenu.offsetHeight : box.bottom + gap;
+  deadlineMenu.style.top = Math.max(gap, top) + 'px';
+  deadlineMenu.style.left = Math.max(gap, Math.min(box.left, innerWidth - deadlineMenu.offsetWidth - gap)) + 'px';
+  deadlineMenu.querySelector('.dl-date').focus({ preventScroll: true });
+}
+deadlineMenu.querySelector('.dl-date').addEventListener('change', event => {
+  const state = deadlineState(event.target.value);
+  if (!state) return;
+  setDocumentDeadline(state.value);
+  renderDeadlineMenu();
+});
+deadlineMenu.querySelector('.dl-date').addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    deadlineMenu.hidePopover();
+  }
+});
+deadlineMenu.querySelector('.dl-remove').onclick = () => {
+  deadlineMenu.hidePopover();
+  setDocumentDeadline('');
+};
+deadlineMenu.querySelector('.dl-find').onclick = () => {
+  deadlineMenu.hidePopover();
+  searchDeadlines('');
+};
+deadlineMenu.addEventListener('toggle', event => {
+  if (event.newState !== 'closed') return;
+  deadlineMenuTrigger?.setAttribute('aria-expanded', 'false');
+  if (deadlineMenu.contains(document.activeElement)) deadlineMenuTrigger?.focus({ preventScroll: true });
+});
+addEventListener('resize', () => deadlineMenu.matches(':popover-open') && deadlineMenu.hidePopover());
+
+// ── Ricerca: scadenza: (tutte), scadenza:7 (entro 7 giorni, scadute comprese), scadenza:scadute ──
+function documentHasDeadline(path, content, wanted) {
+  const state = deadlineState(path === current ? deadlineFromFront(front) : content?.deadline);
+  if (!state) return false;
+  if (/^\d+$/.test(wanted)) return state.days <= Number(wanted);
+  if ('scadute'.startsWith(wanted) || 'scaduti'.startsWith(wanted)) return wanted.length < 4 ? true : state.days < 0;
+  if (wanted === 'oggi') return state.days <= 0;
+  return true;
+}
+function deadlineFilterLabel(wanted) {
+  if (/^\d+$/.test(wanted)) return 'entro ' + dayCount(Number(wanted));
+  if (wanted.length >= 4 && ('scadute'.startsWith(wanted) || 'scaduti'.startsWith(wanted))) return 'scadute';
+  if (wanted === 'oggi') return 'entro oggi';
+  return 'tutte';
+}
+function searchDeadlines(value) {
+  search.value = 'scadenza:' + value;
+  if (sidebar.hidden) setSidebar(true);
+  search.dispatchEvent(new Event('input'));
+  search.focus();
+  search.setSelectionRange(search.value.length, search.value.length);
+}
+function searchDeadlineContext() {
+  const caret = search.selectionStart;
+  if (caret !== search.selectionEnd) return null;
+  const match = /(^|\s)scadenza:(\S*)$/i.exec(search.value.slice(0, caret));
+  return match ? { start: match.index + match[1].length, end: caret, query: match[2] } : null;
+}
+function updateSearchDeadlineSuggest() {
+  const context = document.activeElement === search ? searchDeadlineContext() : null;
+  if (!context) return false;
+  const states = [...files.keys()].filter(isMD).map(path => deadlineState(documentDeadline(path))).filter(Boolean);
+  const choices = [
+    { label: 'Tutte', value: '', count: states.length },
+    { label: 'Entro 7 giorni', value: '7', count: states.filter(state => state.days <= 7).length },
+    { label: 'Entro 30 giorni', value: '30', count: states.filter(state => state.days <= 30).length },
+    { label: 'Scadute', value: 'scadute', count: states.filter(state => state.days < 0).length },
+  ];
+  const wanted = foldSearch(context.query);
+  const items = choices.filter(item => !wanted || item.value.startsWith(wanted) || foldSearch(item.label).startsWith(wanted));
+  showTagSuggest(search, items, item => {
+    const value = search.value;
+    const insert = 'scadenza:' + item.value + ' ';
+    search.value = value.slice(0, context.start) + insert + value.slice(context.end).replace(/^\S*\s*/, '');
+    search.setSelectionRange(context.start + insert.length, context.start + insert.length);
+    search.dispatchEvent(new Event('input'));
+    search.focus();
+  }, 'Scadenza', 'enter');
+  return true;
+}
+
+// ── Riquadro «In scadenza» sopra l'elenco ──
+// Compare solo se qualche documento scade entro due settimane (o è già scaduto): niente
+// riquadro vuoto. Si apre e si chiude dal titolo; la scelta resta.
+const deadlineBoxKey = 'itaca-deadline-box';
+// Sta in cima a #tree (scorre con l'elenco, non gli ruba spazio): renderTree lo rimette a ogni giro.
+var deadlineBoxElement = $('deadlineBox');
+var deadlineBoxTimer = 0;
+function queueDeadlineBox() {
+  clearTimeout(deadlineBoxTimer);
+  deadlineBoxTimer = setTimeout(renderDeadlineBox, 120);
+}
+function renderDeadlineBox() {
+  const box = deadlineBoxElement;
+  if (!box) return;
+  const searching = Boolean(search.value.trim());
+  const items = !deadlinesShown() || searching || !hasWorkspaceFolder() ? [] : [...files.keys()].filter(isMD)
+    .map(path => ({ path, state: deadlineState(documentDeadline(path)) }))
+    .filter(item => item.state && item.state.days <= deadlineBoxDays)
+    .sort((a, b) => a.state.days - b.state.days || docLabel(a.path).localeCompare(docLabel(b.path), 'it'));
+  box.hidden = !items.length;
+  if (!items.length) return;
+  let open = true;
+  try { open = localStorage.getItem(deadlineBoxKey) !== 'closed'; } catch {}
+  const head = box.querySelector('.dl-box-head');
+  head.setAttribute('aria-expanded', String(open));
+  const count = box.querySelector('.dl-box-count');
+  count.textContent = items.length;
+  count.dataset.tone = items[0].state.tone;
+  const late = items.filter(item => item.state.days < 0).length;
+  head.title = (items.length === 1 ? '1 documento scade' : items.length + ' documenti scadono') + ' entro ' + deadlineBoxDays + ' giorni' + (late ? ' (' + late + ' già ' + (late === 1 ? 'scaduto' : 'scaduti') + ')' : '');
+  const list = box.querySelector('.dl-box-list');
+  list.hidden = !open;
+  if (!open) return;
+  list.replaceChildren(...items.slice(0, deadlineBoxRows).map(({ path, state }) => {
+    const row = document.createElement('button');
+    row.type = 'button';
+    row.className = 'dl-box-row';
+    row.classList.toggle('current', path === current);
+    row.title = docLabel(path) + '\n' + state.when + ' · ' + state.detail;
+    const name = document.createElement('span');
+    name.className = 'dl-box-name';
+    name.textContent = docLabel(path);
+    const when = document.createElement('span');
+    when.className = 'deadline-mark';
+    when.dataset.tone = state.tone;
+    when.textContent = state.short;
+    const status = documentStatus(path);
+    row.append(status ? statusDot(status) : Object.assign(document.createElement('span'), { className: 'status-dot none' }), name, when);
+    row.onclick = () => openPath(path, false, '', null, 'new');
+    return row;
+  }));
+  if (items.length > deadlineBoxRows) {
+    const more = document.createElement('button');
+    more.type = 'button';
+    more.className = 'dl-box-more';
+    more.textContent = 'Altri ' + (items.length - deadlineBoxRows) + ' · tutte le scadenze';
+    more.onclick = () => searchDeadlines('');
+    list.append(more);
+  }
+}
+deadlineBoxElement.querySelector('.dl-box-head').onclick = event => {
+  const open = event.currentTarget.getAttribute('aria-expanded') !== 'true';
+  try { localStorage.setItem(deadlineBoxKey, open ? 'open' : 'closed'); } catch {}
+  renderDeadlineBox();
+};
+deadlineBoxElement.querySelector('.dl-box-all').onclick = () => searchDeadlines('');
+
+// A mezzanotte «tra 3 giorni» diventa «tra 2»: si controlla ogni 10 minuti e al ritorno sulla finestra.
+var deadlineDay = isoDate(new Date());
+function refreshDeadlineDay() {
+  const today = isoDate(new Date());
+  if (today === deadlineDay) return;
+  deadlineDay = today;
+  renderDocTags();
+  if (!search.value.trim()) renderTree();
+  renderDeadlineBox();
+  renderEventsChip();
+}
+setInterval(refreshDeadlineDay, 600000);
+addEventListener('focus', refreshDeadlineDay);
+
+// ── Conto alla rovescia personale ──────────────────────────────────────────
+// Eventi solo tuoi (ferie, compleanni, Natale…), salvati in questo browser. Nella barra in basso
+// c'è il più vicino; il clic apre l'elenco, dove si aggiungono, cambiano e tolgono. Natale c'è già
+// (si può togliere) e compare nella barra solo a dicembre, o con il tema Natale.
+const eventsKey = 'itaca-events';
+const eventEmojis = ['📅', '🎄', '🏖️', '🎂', '🎉', '✈️', '🚀', '⭐'];
+var personalEvents = loadPersonalEvents();
+var eventsEditing = null, eventsEmoji = eventEmojis[0];
+function loadPersonalEvents() {
+  try {
+    const data = JSON.parse(localStorage.getItem(eventsKey) || 'null');
+    if (Array.isArray(data?.items)) return data.items.filter(item => item && typeof item.name === 'string' && parseDayDate(item.date));
+  } catch {}
+  return [{ id: 'natale', name: 'Natale', date: '2000-12-25', yearly: true, emoji: '🎄', builtin: 'natale' }];
+}
+function storePersonalEvents() {
+  try { localStorage.setItem(eventsKey, JSON.stringify({ items: personalEvents })); } catch {}
+}
+// Prossima volta che capita (per gli eventi di ogni anno) e giorni che mancano.
+function eventOccurrence(item) {
+  const base = parseDayDate(item.date);
+  if (!base) return null;
+  let date = base;
+  if (item.yearly) {
+    const today = startOfToday();
+    date = new Date(today.getFullYear(), base.getMonth(), base.getDate());
+    if (date < today) date = new Date(today.getFullYear() + 1, base.getMonth(), base.getDate());
+  }
+  return { date, days: daysUntil(date) };
+}
+function eventDaysText(days) {
+  return days < 0 ? 'passato' : days === 0 ? 'oggi' : days === 1 ? 'domani' : dayCount(days);
+}
+function christmasNear(item, when) {
+  if (item.builtin !== 'natale') return true;
+  let palette = '';
+  try { palette = document.documentElement.dataset.palette || ''; } catch {}
+  return palette === 'natale' || (when.date.getMonth() === 11 && when.days <= 25);
+}
+function nextPersonalEvent() {
+  let best = null;
+  for (const item of personalEvents) {
+    const when = eventOccurrence(item);
+    if (!when || when.days < 0 || !christmasNear(item, when)) continue;
+    if (!best || when.days < best.when.days) best = { item, when };
+  }
+  return best;
+}
+function eventsShown() {
+  try { return settings.showEvents !== false; } catch { return true; }
+}
+function renderEventsChip() {
+  const chip = $('eventsButton');
+  if (!chip) return;
+  chip.hidden = !eventsShown();
+  const next = nextPersonalEvent();
+  chip.classList.toggle('has-event', Boolean(next));
+  chip.classList.toggle('festive', next?.item.builtin === 'natale');
+  if (!next) {
+    chip.replaceChildren(icon('calendar'));
+    chip.title = 'Conto alla rovescia: aggiungi un evento (ferie, compleanni…)';
+    chip.setAttribute('aria-label', 'Conto alla rovescia');
+    return;
+  }
+  const { item, when } = next;
+  const emoji = document.createElement('span');
+  emoji.className = 'ev-chip-emoji';
+  emoji.textContent = item.emoji || '📅';
+  const text = document.createElement('span');
+  text.className = 'ev-chip-text';
+  text.textContent = when.days === 0 ? (item.builtin === 'natale' ? 'Buon Natale!' : 'Oggi!') : eventDaysText(when.days);
+  chip.replaceChildren(emoji, text);
+  const label = item.name + ': ' + (when.days === 0 ? 'oggi' : when.days === 1 ? 'domani' : 'tra ' + dayCount(when.days)) + ' (' + longDate(when.date, false) + ')';
+  chip.title = label + '\nClic per i tuoi conti alla rovescia';
+  chip.setAttribute('aria-label', label);
+}
+
+const eventsPanel = document.createElement('section');
+eventsPanel.className = 'events-panel';
+eventsPanel.id = 'eventsPanel';
+eventsPanel.popover = 'auto';
+eventsPanel.setAttribute('role', 'dialog');
+eventsPanel.setAttribute('aria-label', 'Conto alla rovescia');
+eventsPanel.innerHTML = '<header class="ev-head"><span class="ev-logo" aria-hidden="true"><i class="icon i-calendar"></i></span>' +
+  '<span class="ev-heading"><b>Conto alla rovescia</b><small>Solo tuoi, salvati in questo browser</small></span>' +
+  '<button type="button" class="icon-button ev-close" aria-label="Chiudi" title="Chiudi (Esc)"><i class="icon i-close" aria-hidden="true"></i></button></header>' +
+  '<ul class="ev-list" aria-label="Eventi"></ul>' +
+  '<form class="ev-form" autocomplete="off"><p class="ev-form-title">Nuovo evento</p>' +
+  '<div class="ev-emojis" role="radiogroup" aria-label="Simbolo"></div>' +
+  '<input type="text" class="ev-name" placeholder="Nome (es. Ferie estive)" aria-label="Nome dell’evento" maxlength="60" required>' +
+  '<div class="ev-form-row"><input type="date" class="ev-date" aria-label="Data" required>' +
+  '<label class="ev-yearly"><input type="checkbox" class="ev-yearly-box"><span>Ogni anno</span></label></div>' +
+  '<div class="ev-form-actions"><button type="button" class="ev-cancel" hidden>Annulla</button><button type="submit" class="primary ev-submit">Aggiungi</button></div></form>';
+document.body.append(eventsPanel);
+const eventsPart = selector => eventsPanel.querySelector(selector);
+
+function renderEventsPanel() {
+  const rows = personalEvents.map(item => ({ item, when: eventOccurrence(item) })).filter(entry => entry.when)
+    .sort((a, b) => (a.when.days < 0) - (b.when.days < 0) || Math.abs(a.when.days) - Math.abs(b.when.days));
+  const list = eventsPart('.ev-list');
+  if (!rows.length) {
+    const empty = document.createElement('li');
+    empty.className = 'ev-empty';
+    empty.textContent = 'Nessun evento. Aggiungine uno qui sotto: Itaca conta i giorni che mancano.';
+    list.replaceChildren(empty);
+  } else {
+    list.replaceChildren(...rows.map(({ item, when }) => {
+      const row = document.createElement('li');
+      row.className = 'ev-row';
+      row.classList.toggle('past', when.days < 0);
+      row.classList.toggle('editing', eventsEditing === item.id);
+      const emoji = document.createElement('span');
+      emoji.className = 'ev-emoji';
+      emoji.textContent = item.emoji || '📅';
+      const text = document.createElement('span');
+      text.className = 'ev-text';
+      const name = document.createElement('b');
+      name.textContent = item.name;
+      const detail = document.createElement('small');
+      const work = when.days > 1 ? workdaysUntil(when.date) : null;
+      const day = when.date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', ...(when.date.getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) });
+      detail.textContent = day + (item.yearly ? ' · ogni anno' : '') + (work !== null ? ' · ' + work + ' lavorativi' : '');
+      detail.title = longDate(when.date) + (work !== null ? ' · ' + workdaysText(work) : '');
+      text.append(name, detail);
+      const days = document.createElement('span');
+      days.className = 'ev-days';
+      if (when.days > 1) {
+        const number = document.createElement('b');
+        number.textContent = when.days;
+        days.append(number, document.createTextNode(' giorni'));
+      } else days.textContent = eventDaysText(when.days);
+      const tools = document.createElement('span');
+      tools.className = 'ev-tools';
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'icon-button';
+      edit.setAttribute('aria-label', 'Modifica «' + item.name + '»');
+      edit.title = 'Modifica';
+      edit.append(icon('edit'));
+      edit.onclick = () => editPersonalEvent(item.id);
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'icon-button';
+      remove.setAttribute('aria-label', 'Togli «' + item.name + '»');
+      remove.title = 'Togli';
+      remove.append(icon('close'));
+      remove.onclick = () => removePersonalEvent(item.id);
+      tools.append(edit, remove);
+      row.append(emoji, text, days, tools);
+      return row;
+    }));
+  }
+  eventsPart('.ev-emojis').replaceChildren(...eventEmojis.map(symbol => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute('role', 'radio');
+    button.setAttribute('aria-checked', String(symbol === eventsEmoji));
+    button.textContent = symbol;
+    button.onclick = () => {
+      eventsEmoji = symbol;
+      renderEventsPanel();
+    };
+    return button;
+  }));
+  const editing = personalEvents.find(item => item.id === eventsEditing);
+  eventsPart('.ev-form-title').textContent = editing ? 'Modifica «' + editing.name + '»' : 'Nuovo evento';
+  eventsPart('.ev-submit').textContent = editing ? 'Salva' : 'Aggiungi';
+  eventsPart('.ev-cancel').hidden = !editing;
+}
+function resetEventsForm() {
+  eventsEditing = null;
+  eventsEmoji = eventEmojis[0];
+  eventsPart('.ev-form').reset();
+}
+function editPersonalEvent(id) {
+  const item = personalEvents.find(entry => entry.id === id);
+  if (!item) return;
+  eventsEditing = id;
+  eventsEmoji = item.emoji || eventEmojis[0];
+  eventsPart('.ev-name').value = item.name;
+  // Per gli eventi di ogni anno si mostra la prossima volta che capitano.
+  eventsPart('.ev-date').value = isoDate(item.yearly ? eventOccurrence(item).date : parseDayDate(item.date));
+  eventsPart('.ev-yearly-box').checked = Boolean(item.yearly);
+  renderEventsPanel();
+  eventsPart('.ev-name').focus();
+}
+function removePersonalEvent(id) {
+  const item = personalEvents.find(entry => entry.id === id);
+  if (!item) return;
+  personalEvents = personalEvents.filter(entry => entry.id !== id);
+  if (eventsEditing === id) resetEventsForm();
+  storePersonalEvents();
+  renderEventsPanel();
+  renderEventsChip();
+  toast('Tolto «' + item.name + '».', 'info');
+}
+eventsPart('.ev-form').addEventListener('submit', event => {
+  event.preventDefault();
+  const name = eventsPart('.ev-name').value.trim().replace(/\s+/g, ' ');
+  const date = parseDayDate(eventsPart('.ev-date').value);
+  if (!name || !date) {
+    (name ? eventsPart('.ev-date') : eventsPart('.ev-name')).focus();
+    return;
+  }
+  const yearly = eventsPart('.ev-yearly-box').checked;
+  const editing = personalEvents.find(item => item.id === eventsEditing);
+  const entry = { id: editing?.id || 'e' + Date.now().toString(36), name, date: isoDate(date), yearly, emoji: eventsEmoji, ...(editing?.builtin ? { builtin: editing.builtin } : {}) };
+  personalEvents = editing ? personalEvents.map(item => item.id === editing.id ? entry : item) : [...personalEvents, entry];
+  storePersonalEvents();
+  resetEventsForm();
+  renderEventsPanel();
+  renderEventsChip();
+  eventsPart('.ev-name').focus();
+});
+eventsPart('.ev-cancel').onclick = () => {
+  resetEventsForm();
+  renderEventsPanel();
+};
+eventsPart('.ev-close').onclick = () => eventsPanel.hidePopover();
+var eventsPanelOpenFor = false;
+document.addEventListener('pointerdown', () => { eventsPanelOpenFor = eventsPanel.matches(':popover-open'); }, true);
+function openEventsPanel() {
+  if (eventsPanel.matches(':popover-open')) return eventsPanel.hidePopover();
+  if (eventsPanelOpenFor) {
+    eventsPanelOpenFor = false;
+    return;
+  }
+  resetEventsForm();
+  renderEventsPanel();
+  eventsPanel.showPopover();
+  $('eventsButton').setAttribute('aria-expanded', 'true');
+  const rect = $('eventsButton').getBoundingClientRect();
+  const width = eventsPanel.offsetWidth, height = eventsPanel.offsetHeight;
+  eventsPanel.style.left = Math.min(Math.max(8, rect.left + rect.width / 2 - width / 2), innerWidth - width - 8) + 'px';
+  eventsPanel.style.top = Math.max(8, rect.top - height - 8) + 'px';
+  eventsPart(personalEvents.length ? '.ev-close' : '.ev-name').focus({ preventScroll: true });
+}
+eventsPanel.addEventListener('toggle', event => {
+  if (event.newState !== 'closed') return;
+  $('eventsButton').setAttribute('aria-expanded', 'false');
+  resetEventsForm();
+});
+$('eventsButton').addEventListener('click', openEventsPanel);
+addEventListener('resize', () => eventsPanel.matches(':popover-open') && eventsPanel.hidePopover());
+// Il tema Natale cambia data-palette: Natale compare (o sparisce) dalla barra.
+new MutationObserver(renderEventsChip).observe(document.documentElement, { attributes: true, attributeFilter: ['data-palette'] });
+addEventListener('storage', event => {
+  if (event.key !== eventsKey) return;
+  personalEvents = loadPersonalEvents();
+  renderEventsChip();
+  if (eventsPanel.matches(':popover-open')) renderEventsPanel();
+});
+// settings è dichiarato più avanti nello script.
+setTimeout(renderEventsChip);
 
 // ── Cartella suggerita per un nuovo documento ──────────────────────────────
 // Ogni documento con tag in comune vota per la sua cartella; i tag rari contano
@@ -20494,6 +21298,7 @@ function applyTagChangeToEditor(fromFold, to, diskText) {
 function renderTree() {
   noteGraphFiles();
   scheduleStatusScan();
+  queueDeadlineBox();
   // Le cartelle si creano solo sul disco (non nelle cartelle importate, che sono una copia).
   $('newFolder').hidden = !root;
   const tree = $('tree');
@@ -20504,7 +21309,8 @@ function renderTree() {
   const phrase = searchPhrase(queryParts.text);
   const tagFilter = searchTagFilter(queryParts.tags);
   const statusFilter = queryParts.status || '';
-  const searching = terms.length > 0 || Boolean(tagFilter) || Boolean(statusFilter);
+  const deadlineFilter = queryParts.deadline;
+  const searching = terms.length > 0 || Boolean(tagFilter) || Boolean(statusFilter) || deadlineFilter !== null;
   const renderKey = searching ? searchRenderKey(query) : null;
   if (searching && !resetSearchScroll && sameSearchRender(renderKey, lastSearchRender) && tree.querySelector('.search-result')) {
     markTreeCurrent();
@@ -20575,6 +21381,8 @@ function renderTree() {
       if (isMD(path)) {
         const status = documentStatus(path);
         if (status) button.append(statusDot(status));
+        const deadline = deadlineMark(path, Boolean(match) && deadlineFilter !== null);
+        if (deadline) button.append(deadline);
       }
       button.onclick = async () => {
         if (!isMD(path)) {
@@ -20623,7 +21431,12 @@ function renderTree() {
   if (!searching) $('searchTagManage').hidden = true;
   let emptyMessage = hasWorkspaceFolder() ? 'La cartella è vuota.' : '';
   if (searching) {
-    const { matches, pending, unreadable } = searchMatches(docs, terms, phrase, tagFilter, statusFilter);
+    const { matches, pending, unreadable } = searchMatches(docs, terms, phrase, tagFilter, statusFilter, deadlineFilter);
+    // Solo scadenze cercate: dalla più vicina (le scadute in cima).
+    if (deadlineFilter !== null && !terms.length) {
+      const day = match => deadlineState(documentDeadline(match.path))?.days ?? Infinity;
+      matches.sort((a, b) => day(a) - day(b));
+    }
     for (const match of matches.slice(0, searchLimit)) add(match.path, 0, false, match);
     if (matches.length > searchLimit) {
       const more = document.createElement('button');
@@ -20644,6 +21457,7 @@ function renderTree() {
     if (phrase && total) status += exact === total ? ' con la frase intera' : exact ? ' · ' + exact + ' con la frase intera' : ' · nessuno con la frase intera';
     if (tagFilter) status += ' con ' + tagFilter.map(({ tag, exact }) => '#' + (exact ? tagName(tag) : tag + '…')).join(' ');
     if (statusFilter) status += ' · stato «' + statusFilterLabel(statusFilter) + '»';
+    if (deadlineFilter !== null) status += ' · scadenza: ' + deadlineFilterLabel(deadlineFilter);
     if (pending) status += ' · Lettura di ' + pending + ' file…';
     if (folderAccessPending) status += ' · Apri la cartella per cercare nel testo';
     if (unreadable) status += ' · ' + unreadable + (unreadable === 1 ? ' file illeggibile' : ' file illeggibili');
@@ -20658,7 +21472,7 @@ function renderTree() {
       manage.querySelector('b').textContent = '#' + name;
       manage.dataset.tag = name;
     }
-    emptyMessage = pending ? 'Ricerca nel testo in corso…' : total ? '' : tagFilter && !terms.length ? 'Nessun documento con questo tag.' : statusFilter && !terms.length ? 'Nessun documento con questo stato.' : 'Nessun documento corrispondente.';
+    emptyMessage = pending ? 'Ricerca nel testo in corso…' : total ? '' : tagFilter && !terms.length ? 'Nessun documento con questo tag.' : statusFilter && !terms.length ? 'Nessun documento con questo stato.' : deadlineFilter !== null && !terms.length ? 'Nessun documento con questa scadenza.' : 'Nessun documento corrispondente.';
   } else {
     const folders = new Set([...folderHandles.keys()].filter(Boolean));
     const children = new Map();
@@ -20707,6 +21521,7 @@ function renderTree() {
   closeFileMenu();
   closeTreeWarp(false);
   tree.replaceChildren(nodes);
+  if (deadlineBoxElement) tree.prepend(deadlineBoxElement);
   markTreeClipboard();
   if (typeof paintTreeSelection === 'function') paintTreeSelection();
   tree.scrollTop = resetSearchScroll ? 0 : previousScroll;
