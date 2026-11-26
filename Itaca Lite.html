@@ -1143,6 +1143,9 @@ dialog .tag-skipped span { color: var(--muted); }
 .ad-info:disabled { cursor: default; opacity: 1; }
 .ad-info:not(:disabled):hover { background: var(--hover); }
 .ad-info:not(:disabled):hover .ad-doc { color: var(--accent-text, var(--accent)); text-decoration: underline; }
+.ad-info.ad-static { cursor: default; }
+.ad-info.ad-static:not(:disabled):hover { background: none; }
+.ad-info.ad-static:not(:disabled):hover .ad-doc { color: inherit; text-decoration: none; }
 .ad-title { overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .ad-doc { overflow: hidden; color: var(--muted); font-size: 11px; font-weight: 450; text-overflow: ellipsis; white-space: nowrap; }
 .ad-doc:empty { display: none; }
@@ -3190,6 +3193,13 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <div class="set-row" id="deleteConfirmRow">
             <span class="set-label" id="deleteConfirmLabel"><b>Prima di eliminare</b><small>Senza cestino l’eliminazione è definitiva</small></span>
             <div class="segmented" role="radiogroup" aria-labelledby="deleteConfirmLabel"><label><input type="radio" name="deleteConfirm" value="double"><span>Digita il nome</span></label><label><input type="radio" name="deleteConfirm" value="simple"><span>Solo conferma</span></label></div>
+          </div>
+        </div>
+        <h4>Allegati</h4>
+        <div class="set-card">
+          <div class="set-row" data-keywords="allegati _allegati immagini incollate cartella dove salvare file allegati sottocartella">
+            <span class="set-label" id="attachmentPlaceLabel"><b>Dove vanno gli allegati</b><small>Immagini, PDF e file che aggiungi a un documento. Quelli già salvati restano dove sono</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="attachmentPlaceLabel"><label><input type="radio" name="attachmentPlace" value="folder"><span>Cartella del documento</span></label><label><input type="radio" name="attachmentPlace" value="root"><span>Cartella principale</span></label></div>
           </div>
         </div>
         <h4>Cestino di Itaca</h4>
@@ -10292,6 +10302,7 @@ function renderAudioDock() {
   const doc = nowPlaying.doc ? embedBaseName(nowPlaying.doc.split('/').pop()) : '';
   setDockText('.ad-doc', doc);
   dockPart('.ad-info').disabled = !nowPlaying.doc || nowPlaying.doc === current;
+  dockPart('.ad-info').classList.remove('ad-static');
   dockPart('.ad-info').title = nowPlaying.doc && nowPlaying.doc !== current ? 'Vai al documento «' + doc + '»' : nowPlaying.title;
   dockPart('.ad-now').textContent = formatMediaTime(time);
   dockPart('.ad-total').textContent = formatMediaTime(duration);
@@ -10306,6 +10317,9 @@ function renderAudioDock() {
   }
 }
 
+const radioSongsShown = 3;   // brani «Prima:» nel suggerimento (se ne ricordano radioSongsKept)
+const radioSongsKept = 6;
+
 // Seconda riga della diretta: LIVE, livello, da quanto si ascolta, un'altra stazione dello stesso genere.
 function renderLiveDock(playing, buffering) {
   const station = nowPlaying.station;
@@ -10316,11 +10330,12 @@ function renderLiveDock(playing, buffering) {
   setDockText('.ad-doc', song ? '♪ ' + song : details);
   dockPart('.ad-doc').classList.toggle('ad-song', Boolean(song));
   const info = dockPart('.ad-info');
-  info.disabled = !station.homepage;
-  const earlier = (nowPlaying.songs || []).filter(item => item.title !== song).slice(0, 5)
+  // Niente clic (il sito della stazione non si apre più): il riquadro resta attivo solo per il suggerimento.
+  info.disabled = false;
+  info.classList.add('ad-static');
+  const earlier = (nowPlaying.songs || []).filter(item => item.title !== song).slice(0, radioSongsShown)
     .map(item => new Date(item.time).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) + '  ' + item.title);
-  const infoTitle = (song ? 'In onda: ' + song + '\n' + details + (earlier.length ? '\n\nPrima:\n' + earlier.join('\n') : '') + '\n\n' : '') +
-    (station.homepage ? 'Apri il sito di «' + station.name + '»' : station.name);
+  const infoTitle = station.name + (song ? '\nIn onda: ' + song + '\n' + details + (earlier.length ? '\n\nPrima:\n' + earlier.join('\n') : '') : '\n' + details);
   if (info.title !== infoTitle) info.title = infoTitle;
   setDockText('.ad-elapsed', buffering ? 'Connessione…' : playing ? formatMediaTime((Date.now() - nowPlaying.since) / 1000) : 'In pausa');
   const favorite = radioIsFavorite(station.uuid);
@@ -10351,9 +10366,7 @@ dockPart('.ad-close').addEventListener('click', stopItacaAudio);
 dockPart('.ad-hide').addEventListener('click', () => setDockCollapsed(true));
 dockPart('.ad-mini').addEventListener('click', () => setDockCollapsed(false));
 dockPart('.ad-info').addEventListener('click', () => {
-  if (nowPlaying?.live) {
-    if (nowPlaying.station.homepage) window.open(nowPlaying.station.homepage, '_blank', 'noopener,noreferrer');
-  } else if (nowPlaying?.doc && nowPlaying.doc !== current) openPath(nowPlaying.doc);
+  if (!nowPlaying?.live && nowPlaying?.doc && nowPlaying.doc !== current) openPath(nowPlaying.doc);
 });
 dockPart('.ad-fav').addEventListener('click', () => { if (nowPlaying?.live) toggleRadioFavorite(nowPlaying.station); });
 dockPart('.ad-radio').addEventListener('click', event => {
@@ -11085,7 +11098,7 @@ function setRadioSong(track, song) {
   if (track.song === song) return;
   track.song = song;
   if (song) {
-    track.songs = [{ title: song, time: Date.now() }, ...(track.songs || []).filter(item => item.title !== song)].slice(0, 12);
+    track.songs = [{ title: song, time: Date.now() }, ...(track.songs || []).filter(item => item.title !== song)].slice(0, radioSongsKept);
   }
   if (nowPlaying === track) {
     updateMediaSession(track);
@@ -12649,9 +12662,9 @@ function wordAssemble(blocks, ctx) {
 }
 
 // Nome libero per la cartella delle immagini: _allegati/<nome del Word> (2)…
-function wordImageFolder(base, taken) {
+function wordImageFolder(base, taken, dir = attachmentFolderName) {
   for (let index = 1; ; index++) {
-    const folder = attachmentFolderName + '/' + base + (index > 1 ? ' (' + index + ')' : '');
+    const folder = dir + '/' + base + (index > 1 ? ' (' + index + ')' : '');
     const lower = folder.toLowerCase();
     if (!taken(lower)) return folder;
   }
@@ -12687,14 +12700,15 @@ async function convertWordFile(path) {
     const file = await handle.getFile();
     const mdName = await freeDestinationName(mdFolder, base + '.md', false);
     const mdPath = [folderHandles.has(mdFolderPath) ? mdFolderPath : parent(path), mdName].filter(Boolean).join('/');
-    const existing = await entryDirectory(directory, attachmentFolderName);
-    const imageDir = attachmentFolderName + '/' + (existing ? await freeDestinationName(existing, base, true) : base);
+    const attachDir = attachmentDirFor(mdPath);
+    const existing = await directoryAt(directory, attachDir);
+    const imageDir = attachDir + '/' + (existing ? await freeDestinationName(existing, base, true) : base);
     const result = await docxToMarkdown(file, { from: mdPath, imageDir });
     if (root !== directory) return;
     files = new Map(files);
     if (result.images.length) {
-      const attachments = existing || await directory.getDirectoryHandle(attachmentFolderName, { create: true });
-      folderHandles.set(attachmentFolderName, attachments);
+      const attachments = existing || await ensureDirectory(directory, attachDir);
+      folderHandles.set(attachDir, attachments);
       const imageFolder = await attachments.getDirectoryHandle(imageDir.split('/').pop(), { create: true });
       folderHandles.set(imageDir, imageFolder);
       for (const image of result.images) files.set(image.path, await writeNewFile(imageFolder, image.path.split('/').pop(), image.blob));
@@ -12740,7 +12754,7 @@ async function inlineEmbeddedWord(box) {
     if (!file) throw new Error('file non trovato');
     const base = attachmentName(name.replace(/\.docx$/i, ''));
     const taken = lower => [...files.keys(), ...draftImages.keys(), ...folderHandles.keys()].some(item => item.toLowerCase() === lower || item.toLowerCase().startsWith(lower + '/'));
-    result = await docxToMarkdown(file, { from: current, imageDir: wordImageFolder(base, taken), shift: ed.querySelector(':scope > h1') ? 1 : 0 });
+    result = await docxToMarkdown(file, { from: current, imageDir: wordImageFolder(base, taken, attachmentDirFor(current)), shift: ed.querySelector(':scope > h1') ? 1 : 0 });
   } catch (error) {
     toast('Impossibile convertire «' + name + '»: ' + error.message);
     return;
@@ -13981,12 +13995,65 @@ function supportedImageFile(file) {
   return imageType.test(file.type) || isImage(file.name);
 }
 
+// ── Dove vanno gli allegati ──
+// «Accanto al documento» (predefinito): ogni cartella ha la sua _allegati, così una sezione copiata o
+// spostata si porta dietro i suoi file e i collegamenti restano corti (_allegati/x.png). «Nella cartella
+// principale»: una sola _allegati per tutta la cartella di lavoro, come fino alla 1.40.
+function attachmentDirFor(docPath = current) {
+  if (settings.attachmentPlace === 'root' || !docPath) return attachmentFolderName;
+  const segments = parent(docPath).split('/').filter(Boolean);
+  const inside = segments.indexOf(attachmentFolderName);
+  const folder = (inside >= 0 ? segments.slice(0, inside) : segments).join('/');
+  return folder ? folder + '/' + attachmentFolderName : attachmentFolderName;
+}
+
+// La cartella al percorso dato (dalla cartella di lavoro), o null se non c'è.
+async function directoryAt(directory, path) {
+  let handle = directory;
+  for (const name of path.split('/').filter(Boolean)) {
+    handle = await entryDirectory(handle, name);
+    if (!handle) return null;
+  }
+  return handle;
+}
+
+function attachmentTaken(path, drafts = draftImages) {
+  const lower = path.toLowerCase();
+  return [...drafts.keys(), ...draftImages.keys(), ...files.keys()].some(item => item.toLowerCase() === lower);
+}
+
+// Nome libero nella cartella: «Nome.ext», poi «Nome (2).ext»…
+function freeAttachmentPath(dir, name, drafts = draftImages) {
+  const dot = name.lastIndexOf('.');
+  const base = dot > 0 ? name.slice(0, dot) : name, extension = dot > 0 ? name.slice(dot) : '';
+  for (let index = 1; ; index++) {
+    const path = dir + '/' + (index > 1 ? base + ' (' + index + ')' + extension : name);
+    if (!attachmentTaken(path, drafts)) return path;
+  }
+}
+
+// Nomi che gli appunti danno a ogni immagine incollata («image.png»): non dicono niente.
+const genericImageName = /^(?:image|immagine|img|pasted|clipboard|incollata|unnamed|blob|untitled|senza titolo)?[\s_-]*\d*$/i;
+
+// Un'immagine in bozza: con un nome vero lo tiene («schema rete.png», «schema rete (2).png»); incollata
+// dagli appunti prende il nome del documento («Procedura avvio 1.png», «… 2.png»): in _allegati le
+// immagini dello stesso documento stanno vicine. Prima era «<codice casuale>-image.png».
 function stageImage(file, from = current, drafts = draftImages) {
   const subtype = imageType.exec(file.type)?.[1] || 'png';
-  const extension = subtype.endsWith('icon') ? 'ico' : subtype;
-  const filename = isImage(file.name) ? file.name : 'Immagine.' + extension;
-  const name = crypto.randomUUID() + '-' + filename.replace(/[^\w.\-]/g, '_').slice(-150);
-  const path = '_allegati/' + name;
+  const extension = '.' + (subtype.endsWith('icon') ? 'ico' : subtype === 'jpeg' ? 'jpg' : subtype);
+  const dir = attachmentDirFor(from);
+  const own = isImage(file.name) ? attachmentName(file.name) : '';
+  const ownBase = own.replace(/\.[^.]+$/, '');
+  let path;
+  if (own && !genericImageName.test(ownBase.trim())) path = freeAttachmentPath(dir, own, drafts);
+  else {
+    const ext = own ? own.slice(own.lastIndexOf('.')).toLowerCase() : extension;
+    const doc = from ? attachmentName(from.split('/').pop().replace(/\.md$/i, '')) : 'Immagine';
+    for (let index = 1; ; index++) {
+      path = dir + '/' + doc + ' ' + index + ext;
+      if (!attachmentTaken(path, drafts)) break;
+    }
+  }
   drafts.set(path, file);
   return relative(from, path);
 }
@@ -14025,15 +14092,32 @@ async function saveDocumentFile(handle, data) {
   }
   if (!referenced.size) return writeSavedFile(handle, data);
 
-  const existing = await entryDirectory(folder, '_allegati');
-  const attachments = existing || await folder.getDirectoryHandle('_allegati', { create: true });
+  // Le cartelle che servono (la _allegati della cartella del documento, le sottocartelle delle immagini
+  // di un Word); quelle create ora si tolgono di nuovo se il salvataggio non riesce.
   const written = new Map();
-  const targets = new Map();   // percorso → cartella (anche sottocartelle di _allegati, es. le immagini di un Word)
+  const targets = new Map();   // percorso → cartella
+  const directories = new Map([['', folder]]);
+  const created = [];
+  const directoryFor = async dirPath => {
+    let path = '', handle = folder;
+    for (const name of dirPath.split('/').filter(Boolean)) {
+      path = path ? path + '/' + name : name;
+      if (directories.has(path)) { handle = directories.get(path); continue; }
+      const parentHandle = handle;
+      // Le cartelle dei documenti ci sono già; _allegati e dentro si controllano sul disco.
+      handle = (!path.split('/').includes(attachmentFolderName) && folderHandles.get(path)) || await entryDirectory(parentHandle, name);
+      if (!handle) {
+        handle = await parentHandle.getDirectoryHandle(name, { create: true });
+        created.push({ handle, parent: parentHandle, name });
+      }
+      directories.set(path, handle);
+    }
+    return handle;
+  };
   try {
     for (const path of referenced) {
       const name = path.split('/').pop();
-      const inside = parent(path).split('/').slice(1).join('/');
-      const target = inside ? await ensureDirectory(attachments, inside) : attachments;
+      const target = await directoryFor(parent(path));
       targets.set(path, target);
       if (await existingFile(target, name)) throw new Error('Esiste già un allegato con il nome «' + name + '».');
       const image = await target.getFileHandle(name, { create: true });
@@ -14051,23 +14135,19 @@ async function saveDocumentFile(handle, data) {
         if (latest && await image.isSameEntry(latest)) await target.removeEntry(name);
       } catch { cleanupFailed = true; }
     }
-    if (!existing) {
+    for (const made of created.reverse()) {
       try {
-        const latest = await entryDirectory(folder, '_allegati');
-        if (latest && await attachments.isSameEntry(latest)) {
-          const contents = latest.entries();
-          const empty = (await contents.next()).done;
-          await contents.return?.();
-          if (empty) await folder.removeEntry('_allegati');
-        }
+        const contents = made.handle.entries();
+        const empty = (await contents.next()).done;
+        await contents.return?.();
+        if (empty) await made.parent.removeEntry(made.name);
       } catch { cleanupFailed = true; }
     }
     if (cleanupFailed) throw new Error(error.message + ' Alcuni allegati temporanei potrebbero essere rimasti in _allegati.');
     throw error;
   }
 
-  folderHandles.set('_allegati', attachments);
-  for (const [path, target] of targets) folderHandles.set(parent(path), target);
+  for (const [path, target] of directories) if (path) folderHandles.set(path, target);
   files = new Map(files);
   for (const [path, image] of written) {
     draftImages.delete(path);
@@ -14097,16 +14177,17 @@ function attachmentName(name) {
   return clean || 'Allegato';
 }
 
-async function stageAttachment(file, attachments) {
+async function stageAttachment(file) {
+  const dir = attachmentDirFor(current);
+  const attachments = await directoryAt(root, dir);
   const name = attachmentName(file.name);
   const dot = name.lastIndexOf('.');
   const base = dot > 0 ? name.slice(0, dot) : name;
   const extension = dot > 0 ? name.slice(dot) : '';
   for (let index = 1; ; index++) {
     const candidate = index > 1 ? base + ' (' + index + ')' + extension : name;
-    const path = '_allegati/' + candidate;
-    const taken = [...draftImages.keys(), ...files.keys()].some(item => item.toLowerCase() === path.toLowerCase());
-    if (taken || (attachments && await existingFile(attachments, candidate))) continue;
+    const path = dir + '/' + candidate;
+    if (attachmentTaken(path) || (attachments && await existingFile(attachments, candidate))) continue;
     draftImages.set(path, file);
     return path;
   }
@@ -14124,12 +14205,11 @@ async function addAttachmentFiles(list, pdfPlace = null) {
   const hrefs = [];
   const pdfs = [];
   try {
-    const attachments = await entryDirectory(root, '_allegati');
     for (const file of list) {
       // PDF, Word e testo si incorporano subito; video, audio e gli altri file restano collegamenti
       // e sotto compare la scelta Collegamento / Lettore (o Anteprima).
       if (isPdfFile(file) && !mediaKindOf(file.name)) {
-        const path = await stageAttachment(file, attachments);
+        const path = await stageAttachment(file);
         pdfs.push({ dest: relative(current, path), label: embedBaseName(path.split('/').pop()) });
         continue;
       }
@@ -14137,7 +14217,7 @@ async function addAttachmentFiles(list, pdfPlace = null) {
         links.push('<img data-src="' + escapeHtml(stageImage(file)) + '" alt="' + escapeHtml(file.name) + '">');
         continue;
       }
-      const path = await stageAttachment(file, attachments);
+      const path = await stageAttachment(file);
       hrefs.push(relative(current, path));
       links.push('<a data-href="' + escapeHtml(relative(current, path)) + '" title="Ctrl/⌘ + clic per aprire">' + escapeHtml(path.split('/').pop()) + '</a>');
     }
@@ -15292,6 +15372,7 @@ const settingChoices = {
   autosave: [0, 2, 5, 15, 60],
   deleteConfirm: ['double', 'simple'],
   attachmentTrash: [true, false],
+  attachmentPlace: ['folder', 'root'],
   deleteToTrash: [true, false],
   updateLinks: [true, false],
   pdfAsk: [true, false],
@@ -15331,7 +15412,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, attachmentPlace: 'folder', deleteToTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -15398,7 +15479,7 @@ function syncSettings() {
   settingsForm.palette.value = preferredPalette;
   settingsForm.themeMode.value = preferredTheme === 'light' || preferredTheme === 'dark' ? preferredTheme : 'auto';
   $('textScale').value = textScale;
-  for (const key of ['docFont', 'paperWidth', 'openMode', 'openDocs', 'deleteConfirm', 'sidebarSide', 'critters', 'crittersSize', 'audioPlayer', 'brandSize', 'brandTarget', 'versionPlacement', 'navPlacement', 'navCorner', 'graphPlacement', 'graphCorner', 'updateCheck', 'diagramTheme']) settingsForm[key].value = settings[key];
+  for (const key of ['docFont', 'paperWidth', 'openMode', 'openDocs', 'deleteConfirm', 'attachmentPlace', 'sidebarSide', 'critters', 'crittersSize', 'audioPlayer', 'brandSize', 'brandTarget', 'versionPlacement', 'navPlacement', 'navCorner', 'graphPlacement', 'graphCorner', 'updateCheck', 'diagramTheme']) settingsForm[key].value = settings[key];
   if (diagramSettingsReady) renderDiagramSettings();
   settingsForm.panelOrder.value = settings.panelOrder.join(',');
   syncOpenDocsHelp();
@@ -25417,7 +25498,7 @@ function freeDiagramName(base = 'Diagramma') {
   const taken = new Set([...files.keys(), ...draftImages.keys()].map(path => path.toLowerCase()));
   for (let index = 1; ; index++) {
     const name = index > 1 ? base + ' ' + index : base;
-    if (!taken.has(('_allegati/' + name + '.drawio.svg').toLowerCase())) return name;
+    if (!taken.has((attachmentDirFor(current) + '/' + name + '.drawio.svg').toLowerCase())) return name;
   }
 }
 
@@ -25580,10 +25661,11 @@ function handleDiagramMessage(session, message) {
 // ── Salvataggio ──
 async function diagramStagePath(name) {
   const clean = attachmentName(name).replace(/\.drawio(?:\.svg)?$/i, '') || 'Diagramma';
-  const attachments = await entryDirectory(root, '_allegati');
+  const dir = attachmentDirFor(current);
+  const attachments = await directoryAt(root, dir);
   for (let index = 1; ; index++) {
     const candidate = (index > 1 ? clean + ' (' + index + ')' : clean) + '.drawio.svg';
-    const path = '_allegati/' + candidate;
+    const path = dir + '/' + candidate;
     const taken = [...draftImages.keys(), ...files.keys()].some(item => item.toLowerCase() === path.toLowerCase());
     if (taken || (attachments && await existingFile(attachments, candidate))) continue;
     return path;
