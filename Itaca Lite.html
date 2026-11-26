@@ -740,7 +740,131 @@ button:disabled { opacity: .4; cursor: default; }
 .work-start h1 { margin: 14px 0 8px; font: 600 clamp(1.4rem, 3vw, 1.75rem)/1.2 var(--display); letter-spacing: -.015em; color: var(--ink); overflow-wrap: anywhere; }
 .work-start p { color: var(--muted); margin: 0 0 22px; font-size: 14.5px; line-height: 1.55; }
 .work-start button { min-height: 36px; padding: 8px 16px; }
-.app:has(.sidebar:not([hidden])) .work-start.has-index button { display: none; }
+.app:has(.sidebar:not([hidden])) .work-start.has-index > button { display: none; }
+/* Memo vocali: registratore sopra la barra di formattazione */
+#voiceMemo[aria-pressed='true'] { background: color-mix(in srgb, var(--danger) 16%, transparent); color: var(--danger); }
+.voice-recorder { position: absolute; left: 50%; bottom: calc(var(--dock-height, 60px) + 18px); z-index: 30; display: grid; gap: 10px; width: min(440px, calc(100% - 28px)); padding: 12px 14px; transform: translateX(-50%);
+  border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); box-shadow: 0 16px 44px color-mix(in srgb, #000 24%, transparent); font-size: 13.5px; }
+.voice-recorder[hidden] { display: none; }
+.vr-top { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.vr-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--danger); animation: vr-pulse 1.4s ease-in-out infinite; }
+.voice-recorder:is([data-state='paused'], [data-state='starting']) .vr-dot { animation: none; background: var(--muted); }
+.voice-recorder[data-state='review'] .vr-dot { animation: none; background: var(--accent); }
+@keyframes vr-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 45%, transparent); } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--danger) 0%, transparent); } }
+.vr-status { overflow: hidden; font-weight: 650; white-space: nowrap; text-overflow: ellipsis; }
+.vr-time { margin-left: auto; font: 600 15px/1 var(--mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.vr-device { max-width: 150px; min-height: 28px; padding: 2px 24px 2px 8px; border: 1px solid var(--line); border-radius: 7px; background-color: var(--canvas); font-size: 12px; }
+.vr-close { display: grid; place-items: center; width: 28px; height: 28px; padding: 0; color: var(--muted); }
+.vr-close svg, .vr-btn svg, .vr-play svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.vr-wave { display: block; width: 100%; height: 56px; border-radius: 9px; background: var(--canvas); }
+.voice-recorder[data-state='review'] .vr-wave { cursor: pointer; }
+.vr-review { display: flex; align-items: center; gap: 8px; }
+.vr-review[hidden] { display: none; }
+.vr-play { flex: none; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border-radius: 50%; background: var(--accent); color: var(--on-accent); }
+.vr-play:hover:not(:disabled) { background: var(--accent-hover); }
+.vr-play svg { fill: currentColor; stroke: none; }
+.vr-name { flex: 1; min-width: 0; display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; background: var(--canvas); }
+.vr-name:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+.vr-name input { flex: 1; min-width: 0; padding: 7px 4px 7px 10px; border: 0; background: none; outline: none; }
+.vr-name span { padding-right: 10px; color: var(--muted); font-size: 12px; }
+.vr-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.vr-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 8px; font-weight: 560; }
+.vr-btn[hidden] { display: none; }
+.vr-btn.vr-stop { border-color: transparent; background: var(--danger); color: #fff; }
+.vr-btn.vr-stop:hover:not(:disabled) { background: var(--danger-hover, var(--danger)); }
+.vr-btn.vr-stop svg { fill: currentColor; stroke: none; }
+.vr-btn.primary { border-color: transparent; }
+.vr-btn.confirming { border-color: var(--danger); color: var(--danger); }
+.vr-hint { margin: -2px 0 0; color: var(--muted); font-size: 11.5px; }
+.vr-hint kbd { padding: 0 4px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; font: 600 10.5px/1.4 var(--mono); }
+@media (prefers-reduced-motion: reduce) { .vr-dot { animation: none; } }
+@media print { .voice-recorder { display: none !important; } }
+/* Panoramica della cartella (al posto della pagina vuota) */
+.workspace:has(.work-start.is-dashboard:not([hidden])) { display: block; place-items: normal; }
+.work-start.is-dashboard { max-width: none; padding: 0; text-align: left; }
+.work-start.is-dashboard > :not(.dashboard) { display: none; }
+.dashboard { container: dash / inline-size; display: grid; gap: 18px; max-width: 1060px; margin: 0 auto; padding: 6px 2px 48px; color: var(--ink); }
+.dashboard[hidden] { display: none; }
+.dash-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px 16px; }
+.dash-title { min-width: 0; flex: 1 1 260px; }
+.dash-title h1 { margin: 0; font: 600 clamp(1.5rem, 3vw, 1.95rem)/1.15 var(--display); letter-spacing: -.015em; overflow-wrap: anywhere; }
+.dash-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 6px; color: var(--muted); font-size: 13.5px; }
+.dash-sub .dash-week { display: inline-flex; align-items: center; gap: 10px; }
+.dash-sub .dash-week::before { content: ''; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .7; }
+.dash-sub .dash-reading { display: inline-flex; align-items: center; gap: 8px; }
+.dash-progress { width: 90px; height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.dash-progress > span { display: block; height: 100%; background: var(--accent); border-radius: inherit; transition: width .3s; }
+.dash-actions { display: flex; gap: 8px; }
+.dash-actions button { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 6px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-weight: 550; font-size: 13.5px; }
+.dash-actions button.primary { border-color: transparent; background: var(--accent); }
+.dash-actions .icon { width: 15px; height: 15px; }
+.dash-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(136px, 1fr)); gap: 10px; }
+.dash-tile { position: relative; display: grid; gap: 2px; align-content: start; min-width: 0; min-height: 96px; padding: 12px 12px 11px 16px; overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); text-align: left;
+  transition: border-color .15s, box-shadow .15s, transform .15s; --st-tone: var(--accent); }
+.dash-tile::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--st-tone); opacity: .85; }
+.dash-tile:hover:not(:disabled) { background: var(--panel); border-color: color-mix(in srgb, var(--st-tone) 45%, var(--line)); box-shadow: 0 6px 18px color-mix(in srgb, var(--ink) 9%, transparent); transform: translateY(-1px); }
+.dash-tile:disabled { opacity: 1; cursor: default; }
+.dash-tile .dash-label { display: flex; align-items: center; gap: 7px; min-width: 0; white-space: nowrap; color: color-mix(in srgb, var(--st-tone) 70%, var(--ink)); font-size: 12.5px; font-weight: 650; }
+.dash-tile .dash-label .icon { width: 14px; height: 14px; }
+.dash-tile .dash-num { font: 650 30px/1.15 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.dash-tile small { overflow: hidden; color: var(--muted); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+.dash-tile.zero .dash-num { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+.dash-tile.zero::before { opacity: .3; }
+.dash-tile.pending .dash-num { color: var(--muted); }
+.dash-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.dash-col { display: grid; gap: 16px; min-width: 0; }
+.dash-card { min-width: 0; padding: 13px 8px 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.dash-card h2 { display: flex; align-items: center; gap: 8px; margin: 0 8px 8px; font: 650 14px/1.3 var(--sans); }
+.dash-card h2 .icon { width: 15px; height: 15px; color: var(--accent-text); }
+.dash-card h2 .dash-count { padding: 0 7px; border-radius: 99px; background: var(--tint); color: var(--accent-text); font-size: 11.5px; line-height: 19px; font-variant-numeric: tabular-nums; }
+.dash-card h2 small { margin-left: auto; color: var(--muted); font-weight: 400; font-size: 12px; }
+.dash-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 8px; border-radius: 8px; text-align: left; }
+.dash-row:hover:not(:disabled) { background: var(--tint); }
+.dash-row .status-dot { margin-left: 1px; }
+.dash-row .status-dot.none { background: transparent; box-shadow: inset 0 0 0 1.4px color-mix(in srgb, var(--muted) 45%, transparent); }
+.dash-name { flex: 1; min-width: 0; display: grid; }
+.dash-name b, .dash-name small { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dash-name b { font-weight: 560; font-size: 13.5px; }
+.dash-name small { color: var(--muted); font-size: 12px; }
+.dash-meta { flex: none; display: grid; justify-items: end; gap: 1px; color: var(--muted); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.dash-meta .who { color: var(--ink); opacity: .8; }
+.dash-pill { flex: none; padding: 0 8px; border-radius: 99px; background: color-mix(in srgb, var(--st-tone, var(--st-other)) 15%, transparent); color: color-mix(in srgb, var(--st-tone, var(--st-other)) 80%, var(--ink)); font: 650 11px/19px var(--sans); white-space: nowrap; }
+.dash-empty { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 8px 12px; color: var(--muted); font-size: 13px; }
+.dash-empty .icon { width: 16px; height: 16px; opacity: .7; }
+.dash-more { margin: 2px 4px 4px; padding: 5px 8px; color: var(--accent-text); font-size: 12.5px; font-weight: 550; }
+.dash-person { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent-text); font-size: 12px; font-weight: 700; }
+.dash-person + .dash-name small::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: var(--st-new); box-shadow: 0 0 0 3px color-mix(in srgb, var(--st-new) 22%, transparent); vertical-align: 1px; }
+.dash-bar { display: flex; height: 10px; margin: 2px 8px 12px; overflow: hidden; border-radius: 99px; background: var(--line); }
+.dash-bar > span { height: 100%; background: var(--st-tone, var(--st-other)); transition: width .3s; }
+.dash-bar > span + span { box-shadow: inset 2px 0 0 var(--panel); }
+.dash-bar > [data-tone='none'] { background: color-mix(in srgb, var(--muted) 22%, transparent); }
+.dash-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 4px; }
+.dash-legend button { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: 13px; text-align: left; }
+.dash-legend button:disabled { opacity: 1; }
+.dash-legend b { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dash-legend [data-tone='none'] .status-dot { background: transparent; box-shadow: inset 0 0 0 1.4px color-mix(in srgb, var(--muted) 45%, transparent); }
+.dash-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 8px 8px; }
+.dash-tags button { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 99px; background: var(--tint); color: var(--accent-text); font-size: 12.5px; font-weight: 550; }
+.dash-tags button:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.dash-tags small { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+@media (max-width: 860px) { .dash-grid { grid-template-columns: minmax(0, 1fr); } }
+@container dash (max-width: 780px) {
+  .dash-tiles { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .dash-tile { grid-column: span 2; }
+  .dash-tiles:has(> :nth-child(5)) > :nth-child(-n+2), .dash-tiles:not(:has(> :nth-child(5))) > * { grid-column: span 3; }
+}
+@container dash (max-width: 460px) {
+  .dash-tiles > .dash-tile { grid-column: span 3; }
+  .dash-tiles:has(> :nth-child(5)) > :first-child { grid-column: span 6; }
+  .dash-actions { width: 100%; }
+  .dash-actions button { flex: 1; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) { .dash-tile, .dash-bar > span, .dash-progress > span { transition: none; } }
+.i-mic { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='2.5' width='6' height='12' rx='3'/%3E%3Cpath d='M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7'/%3E%3C/svg%3E"); }
+.i-dashboard { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='3.5' width='7' height='9' rx='2'/%3E%3Crect x='13.5' y='3.5' width='7' height='5' rx='2'/%3E%3Crect x='13.5' y='11.5' width='7' height='9' rx='2'/%3E%3Crect x='3.5' y='15.5' width='7' height='5' rx='2'/%3E%3C/svg%3E"); }
+.i-people { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.5a6.5 6.5 0 0 1 3.5 5.5'/%3E%3C/svg%3E"); }
+.i-todo { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6.5 1.8 1.8L9 5M4 13.5l1.8 1.8L9 12'/%3E%3Cpath d='M12.5 7h8M12.5 14h8M4.5 19.5h.01M12.5 19.5h8'/%3E%3C/svg%3E"); }
+.i-pulse { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12h4l2.5-6 4 12 2.5-6H21'/%3E%3C/svg%3E"); }
 .editor { min-height: calc(100% - 2px); padding: clamp(28px, 4vw, 48px) clamp(22px, 5vw, 72px) 76px; outline: none; color: var(--copy); font: calc(17px * var(--text-scale))/1.7 var(--read); font-kerning: normal; text-rendering: optimizeLegibility; overflow-wrap: anywhere; }
 .editor[contenteditable='true'] { caret-color: var(--accent); }
 .editor :first-child { margin-top: 0; }
@@ -2786,6 +2910,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
             <h1 id="startTitle">Cartella di lavoro</h1>
             <p id="startDescription"></p>
             <button type="button" class="primary" id="startAction">Scegli cartella</button>
+            <div class="dashboard" id="dashboard" aria-label="Panoramica della cartella" hidden></div>
           </section>
           <div class="doc-tags" id="docTags" role="group" aria-label="Tag del documento" hidden></div>
           <article id="editor" class="editor paper" contenteditable="false" spellcheck="false" role="document" aria-label="Documento Markdown" hidden></article>
@@ -2894,6 +3019,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
               <button type="button" id="image" title="Inserisci immagine" aria-label="Inserisci immagine"><i class="icon i-image" aria-hidden="true"></i></button>
               <button type="button" id="diagram" title="Nuovo diagramma (draw.io)" aria-label="Nuovo diagramma"><i class="icon i-diagram" aria-hidden="true"></i></button>
               <button type="button" id="attach" title="Allega file (anche incollando o trascinando)" aria-label="Allega file"><i class="icon i-attach" aria-hidden="true"></i></button>
+              <button type="button" id="voiceMemo" title="Registra un memo vocale (Ctrl/⌘ + Maiusc + M)" aria-label="Registra un memo vocale" aria-pressed="false"><i class="icon i-mic" aria-hidden="true"></i></button>
               <button type="button" id="table" title="Inserisci tabella" aria-label="Inserisci tabella"><i class="icon i-table" aria-hidden="true"></i></button>
               <button type="button" id="hrule" title="Linea di separazione" aria-label="Inserisci una linea di separazione"><i class="icon i-hr" aria-hidden="true"></i></button>
               <select id="mkdocsBlock" class="menu-select" title="Inserisci un blocco: riquadro, sezione espandibile, blocchi Material for MkDocs" aria-label="Inserisci un blocco">
@@ -3183,6 +3309,10 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <div class="set-row" data-keywords="benvenuto pagina iniziale schermata introduzione intro accoglienza avvio inizio galea">
             <label class="set-label" for="setWelcomePage"><b>Pagina di benvenuto</b><small>All’apertura di Itaca in una scheda nuova: riprendi l’ultima cartella o scegline un’altra</small></label>
             <input type="checkbox" class="switch" id="setWelcomePage" name="welcomePage">
+          </div>
+          <div class="set-row" data-keywords="dashboard panoramica cruscotto riepilogo statistiche numeri nessun documento aperto pagina iniziale cartella">
+            <label class="set-label" for="setDashboard"><b>Panoramica della cartella</b><small>Senza documenti aperti: da fare, modificati di recente, chi sta lavorando, stati e tag</small></label>
+            <input type="checkbox" class="switch" id="setDashboard" name="dashboard">
           </div>
           <div class="set-row">
             <span class="set-label" id="openModeLabel"><b>Apri i documenti in</b></span>
@@ -13251,6 +13381,7 @@ function resetDoc(text, path, handle = null, startEditing = false, historyTarget
     else renderMode();
   }
   syncDocTabs(path, handle);
+  rememberRecentDocument(path);
 }
 // Modifiche non salvate: Non salvare · Annulla · Salva (Esc = Annulla, Invio = Salva).
 async function guard() {
@@ -14364,6 +14495,456 @@ async function addAttachmentFiles(list, pdfPlace = null) {
   toast(list.length === 1 ? 'File allegato: verrà copiato in _allegati quando salvi.' : list.length + ' file allegati: verranno copiati in _allegati quando salvi.');
   if (inserted.length) requestAnimationFrame(() => showPasteChoice(inserted.filter(link => link.isConnected)));
 }
+
+// ── Memo vocali ─────────────────────────────────────────────────────────────
+// Registrare dal microfono e mettere il memo nel documento come lettore audio di Itaca. Il
+// file resta in draftImages (come gli allegati) e va in _allegati al salvataggio. Formato: M4A
+// (AAC) dove il browser sa registrarlo (Chrome/Edge recenti, Safari): si ascolta ovunque, anche
+// nel sito di MkDocs; altrimenti WebM/Ogg (Opus). Si può continuare a scrivere mentre registra.
+// Il riquadro sta sopra la barra di formattazione; Ctrl/⌘ + Maiusc + M avvia e ferma.
+const voiceIcons = {
+  close: '<path d="M4 4l8 8M12 4l-8 8"/>', pause: '<path d="M5.5 3.5v9M10.5 3.5v9"/>', resume: '<path d="M8 2.5v6M5 6.5a3 3 0 0 0 6 0M8 11v2.5"/><rect x="6" y="1.5" width="4" height="8" rx="2"/>',
+  stop: '<rect x="3.5" y="3.5" width="9" height="9" rx="2"/>', play: '<path d="M5 3.2v9.6L12.8 8z"/>', playing: '<rect x="4" y="3" width="3" height="10" rx="1"/><rect x="9" y="3" width="3" height="10" rx="1"/>',
+  again: '<path d="M3 8a5 5 0 1 0 1.5-3.6M3 2.5v3h3"/>', insert: '<path d="M8 3v8M4.5 7.5 8 11l3.5-3.5M3 13.5h10"/>', trash: '<path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/>',
+};
+const voiceSvg = name => '<svg viewBox="0 0 16 16" aria-hidden="true">' + voiceIcons[name] + '</svg>';
+var voice = { state: 'idle' };
+let voicePanel = null;
+
+function voiceFormat() {
+  const options = [['audio/mp4;codecs=mp4a.40.2', 'm4a'], ['audio/mp4', 'm4a'], ['audio/webm;codecs=opus', 'weba'], ['audio/ogg;codecs=opus', 'ogg'], ['audio/webm', 'weba']];
+  for (const [type, ext] of options) if (MediaRecorder.isTypeSupported?.(type)) return { type, ext };
+  return { type: '', ext: 'weba' };
+}
+
+function ensureVoicePanel() {
+  if (voicePanel) return voicePanel;
+  voicePanel = document.createElement('section');
+  voicePanel.className = 'voice-recorder';
+  voicePanel.id = 'voiceRecorder';
+  voicePanel.setAttribute('role', 'dialog');
+  voicePanel.setAttribute('aria-label', 'Memo vocale');
+  voicePanel.hidden = true;
+  voicePanel.innerHTML =
+    '<div class="vr-top"><span class="vr-dot" aria-hidden="true"></span><span class="vr-status" aria-live="polite"></span>' +
+      '<select class="vr-device" aria-label="Microfono" hidden></select><span class="vr-time">0:00</span>' +
+      '<button type="button" class="vr-close" title="Chiudi">' + voiceSvg('close') + '</button></div>' +
+    '<canvas class="vr-wave" aria-hidden="true"></canvas>' +
+    '<div class="vr-review" hidden><button type="button" class="vr-play" title="Ascolta (Spazio)">' + voiceSvg('play') + '</button>' +
+      '<label class="vr-name"><input type="text" spellcheck="false" aria-label="Nome del memo"><span class="vr-ext"></span></label></div>' +
+    '<div class="vr-actions">' +
+      '<button type="button" class="vr-btn vr-pause">' + voiceSvg('pause') + '<span>Pausa</span></button>' +
+      '<button type="button" class="vr-btn vr-stop" title="Termina la registrazione (Ctrl/⌘ + Maiusc + M)">' + voiceSvg('stop') + '<span>Fine</span></button>' +
+      '<button type="button" class="vr-btn vr-discard">' + voiceSvg('trash') + '<span>Elimina</span></button>' +
+      '<button type="button" class="vr-btn vr-again">' + voiceSvg('again') + '<span>Registra di nuovo</span></button>' +
+      '<button type="button" class="vr-btn primary vr-insert" title="Inserisci nel documento (Invio)">' + voiceSvg('insert') + '<span>Inserisci</span></button></div>' +
+    '<p class="vr-hint"></p>';
+  document.querySelector('.document-area').append(voicePanel);
+  const $v = selector => voicePanel.querySelector(selector);
+  $v('.vr-close').onclick = () => closeVoiceRecorder();
+  $v('.vr-pause').onclick = () => toggleVoicePause();
+  $v('.vr-stop').onclick = () => stopVoiceRecording();
+  $v('.vr-again').onclick = () => confirmVoice($v('.vr-again'), 'Sostituire il memo?', () => startVoiceRecording());
+  $v('.vr-discard').onclick = () => confirmVoice($v('.vr-discard'), 'Eliminare il memo?', () => closeVoiceRecorder(true));
+  $v('.vr-insert').onclick = () => insertVoiceMemo();
+  $v('.vr-play').onclick = () => toggleVoicePlayback();
+  $v('.vr-device').onchange = event => {
+    voice.device = event.target.value;
+    try { localStorage.setItem('itaca-voice-device', voice.device); } catch {}
+    // Il microfono cambia subito: la registrazione ricomincia (di solito si sceglie all'inizio).
+    if (voice.state === 'recording' || voice.state === 'paused') startVoiceRecording();
+  };
+  $v('.vr-name input').addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); insertVoiceMemo(); }
+  });
+  $v('.vr-wave').addEventListener('pointerdown', event => {
+    if (voice.state !== 'review' || !voice.duration) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const audio = voiceAudio();
+    audio.currentTime = ratio * voice.duration;
+    if (audio.paused) drawVoiceWave();
+  });
+  voicePanel.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      if (voice.state === 'recording' || voice.state === 'paused') stopVoiceRecording();
+      else if (voice.state !== 'review') closeVoiceRecorder();
+      else ed.focus({ preventScroll: true });
+    } else if (event.key === ' ' && voice.state === 'review' && !event.target.matches('input, select')) {
+      event.preventDefault();
+      toggleVoicePlayback();
+    }
+  });
+  return voicePanel;
+}
+
+// Due clic per le azioni che buttano via la registrazione.
+function confirmVoice(button, label, action) {
+  const needs = voice.state === 'review' || voice.elapsed() > 3000;
+  if (!needs || button.classList.contains('confirming')) {
+    button.classList.remove('confirming');
+    return action();
+  }
+  const text = button.querySelector('span');
+  const before = text.textContent;
+  button.classList.add('confirming');
+  text.textContent = label;
+  setTimeout(() => {
+    button.classList.remove('confirming');
+    text.textContent = before;
+  }, 3000);
+}
+
+function renderVoicePanel() {
+  const panel = ensureVoicePanel();
+  const { state } = voice;
+  panel.hidden = state === 'idle';
+  panel.dataset.state = state;
+  const $v = selector => panel.querySelector(selector);
+  const recording = state === 'recording' || state === 'paused';
+  $v('.vr-status').textContent = state === 'starting' ? 'Accesso al microfono…' : state === 'recording' ? 'Registrazione' : state === 'paused' ? 'In pausa' : 'Memo vocale';
+  $v('.vr-pause').hidden = !recording;
+  $v('.vr-pause').innerHTML = voiceSvg(state === 'paused' ? 'resume' : 'pause') + '<span>' + (state === 'paused' ? 'Riprendi' : 'Pausa') + '</span>';
+  $v('.vr-pause').title = state === 'paused' ? 'Riprendi la registrazione' : 'Metti in pausa';
+  $v('.vr-stop').hidden = !recording;
+  $v('.vr-stop').disabled = state === 'starting';
+  $v('.vr-discard').hidden = state !== 'review';
+  $v('.vr-again').hidden = state !== 'review';
+  $v('.vr-insert').hidden = state !== 'review';
+  $v('.vr-review').hidden = state !== 'review';
+  $v('.vr-ext').textContent = '.' + (voice.format?.ext || 'm4a');
+  $v('.vr-close').title = recording ? 'Annulla la registrazione' : state === 'review' ? 'Chiudi (il memo non registrato andrà perso)' : 'Chiudi';
+  $v('.vr-close').hidden = state === 'review';
+  $v('.vr-hint').innerHTML = recording ? 'Puoi continuare a scrivere mentre registri · ' + (macKeys ? '<kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>M</kbd>' : '<kbd>Ctrl</kbd> <kbd>Maiusc</kbd> <kbd>M</kbd>') + ' termina'
+    : state === 'review' ? (current ? 'Va in «' + escapeHtml(docLabel(current)) + '», dove c’è il cursore · ' : '') + 'il file va in _allegati al salvataggio' : '';
+  const devices = $v('.vr-device');
+  devices.hidden = !(voice.devices?.length > 1) || state === 'review';
+  updateVoiceTime();
+  const button = $('voiceMemo');
+  button.setAttribute('aria-pressed', String(recording));
+  button.title = recording ? 'Termina il memo vocale (Ctrl/⌘ + Maiusc + M)' : 'Registra un memo vocale (Ctrl/⌘ + Maiusc + M)';
+}
+
+function updateVoiceTime() {
+  if (!voicePanel) return;
+  const time = voice.state === 'review' && voice.audio && !voice.audio.paused ? voice.audio.currentTime * 1000 : voice.elapsed?.() || 0;
+  voicePanel.querySelector('.vr-time').textContent = formatMediaTime(time / 1000);
+}
+
+async function openVoiceRecorder() {
+  if (voice.state === 'recording' || voice.state === 'paused') return stopVoiceRecording();
+  if (voice.state !== 'idle') {
+    ensureVoicePanel().querySelector(voice.state === 'review' ? '.vr-insert' : '.vr-stop')?.focus();
+    return;
+  }
+  if (!canEditVisual()) {
+    toast('Per registrare un memo vocale passa a Modifica.');
+    return;
+  }
+  if (!root) {
+    toast(importedFolderName ? 'Per aggiungere un memo vocale, apri la cartella con Scegli cartella e autorizza la scrittura.' : 'Apri prima la cartella di lavoro per registrare un memo vocale.');
+    return;
+  }
+  if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder !== 'function') {
+    toast('Questo browser non permette di registrare dal microfono.');
+    return;
+  }
+  remember();
+  startVoiceRecording();
+}
+
+async function startVoiceRecording() {
+  releaseVoice(false);
+  voice = { state: 'starting', device: voice.device ?? (localStorage.getItem('itaca-voice-device') || ''), devices: voice.devices, elapsed: () => 0, levels: [] };
+  renderVoicePanel();
+  let stream;
+  const constraints = { echoCancellation: true, noiseSuppression: true, autoGainControl: true };
+  try {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: voice.device ? { ...constraints, deviceId: { exact: voice.device } } : constraints });
+    } catch (error) {
+      // Il microfono ricordato non c'è più: si usa quello predefinito.
+      if (!voice.device || error.name !== 'OverconstrainedError' && error.name !== 'NotFoundError') throw error;
+      voice.device = '';
+      stream = await navigator.mediaDevices.getUserMedia({ audio: constraints });
+    }
+  } catch (error) {
+    voice.state = 'idle';
+    renderVoicePanel();
+    toast(error.name === 'NotAllowedError' ? 'Il microfono non è consentito: abilitalo dall’icona nella barra degli indirizzi del browser, poi riprova.'
+      : error.name === 'NotFoundError' ? 'Nessun microfono trovato.'
+      : error.name === 'NotReadableError' ? 'Il microfono è occupato da un altro programma.'
+      : 'Impossibile usare il microfono: ' + error.message);
+    return;
+  }
+  if (voice.state !== 'starting') return stream.getTracks().forEach(track => track.stop());
+  pauseOtherMedia(null);
+  const format = voiceFormat();
+  let recorder;
+  try {
+    recorder = new MediaRecorder(stream, { ...(format.type ? { mimeType: format.type } : {}), audioBitsPerSecond: 96000 });
+  } catch (error) {
+    stream.getTracks().forEach(track => track.stop());
+    voice.state = 'idle';
+    renderVoicePanel();
+    toast('Impossibile registrare: ' + error.message);
+    return;
+  }
+  const chunks = [];
+  let total = 0, since = performance.now();
+  Object.assign(voice, {
+    state: 'recording', stream, recorder, chunks, format,
+    elapsed: () => total + (voice.state === 'recording' ? performance.now() - since : 0),
+    pause: () => { total += performance.now() - since; },
+    resume: () => { since = performance.now(); },
+  });
+  recorder.ondataavailable = event => { if (event.data?.size) chunks.push(event.data); };
+  recorder.onerror = event => toast('Registrazione interrotta: ' + (event.error?.message || 'errore del browser'));
+  recorder.start(1000);
+  // Livello del microfono per la forma d'onda (lo stream è locale: Web Audio non ha limiti).
+  try {
+    const context = new AudioContext();
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 1024;
+    context.createMediaStreamSource(stream).connect(analyser);
+    Object.assign(voice, { context, analyser, samples: new Float32Array(analyser.fftSize), peak: 0, sampledAt: 0 });
+  } catch {}
+  voice.ticker = setInterval(updateVoiceTime, 250);
+  renderVoicePanel();
+  ed.focus({ preventScroll: true });
+  restore();
+  listVoiceDevices();
+  voiceFrame();
+}
+
+async function listVoiceDevices() {
+  try {
+    const devices = (await navigator.mediaDevices.enumerateDevices()).filter(device => device.kind === 'audioinput' && device.deviceId !== 'communications');
+    voice.devices = devices;
+    const select = ensureVoicePanel().querySelector('.vr-device');
+    const used = voice.stream?.getAudioTracks()[0]?.getSettings?.().deviceId || voice.device;
+    select.replaceChildren(...devices.map((device, index) => {
+      const label = (device.label || 'Microfono ' + (index + 1)).replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i, '');
+      return new Option(device.deviceId === 'default' ? 'Predefinito' : label, device.deviceId, false, device.deviceId === used);
+    }));
+    select.title = 'Microfono (cambiandolo la registrazione ricomincia)';
+    renderVoicePanel();
+  } catch {}
+}
+
+function voiceFrame() {
+  cancelAnimationFrame(voice.frame);
+  if (voice.state !== 'recording' && voice.state !== 'paused' && !(voice.state === 'review' && voice.audio && !voice.audio.paused)) {
+    drawVoiceWave();
+    return;
+  }
+  if (voice.state === 'recording' && voice.analyser) {
+    voice.analyser.getFloatTimeDomainData(voice.samples);
+    let sum = 0;
+    for (const value of voice.samples) sum += value * value;
+    voice.peak = Math.max(voice.peak, Math.sqrt(sum / voice.samples.length));
+    const now = performance.now();
+    if (now - voice.sampledAt >= 60) {
+      voice.levels.push(Math.min(1, voice.peak * 4.2));
+      voice.peak = 0;
+      voice.sampledAt = now;
+    }
+  }
+  if (voice.state === 'review') updateVoiceTime();
+  drawVoiceWave();
+  voice.frame = requestAnimationFrame(voiceFrame);
+}
+
+function drawVoiceWave() {
+  if (!voicePanel || voicePanel.hidden) return;
+  const canvas = voicePanel.querySelector('.vr-wave');
+  const ratio = devicePixelRatio || 1;
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  if (!width) return;
+  if (canvas.width !== Math.round(width * ratio)) canvas.width = Math.round(width * ratio);
+  if (canvas.height !== Math.round(height * ratio)) canvas.height = Math.round(height * ratio);
+  const draw = canvas.getContext('2d');
+  draw.setTransform(ratio, 0, 0, ratio, 0, 0);
+  draw.clearRect(0, 0, width, height);
+  const style = getComputedStyle(voicePanel);
+  const accent = style.getPropertyValue('--accent').trim() || '#1a5f78';
+  const muted = style.getPropertyValue('--muted').trim() || '#888';
+  const danger = style.getPropertyValue('--danger').trim() || '#b0283f';
+  const step = 5, bar = 3, pad = 8;
+  const count = Math.max(1, Math.floor((width - pad * 2) / step));
+  const levels = voice.levels || [];
+  let bars, played = -1;
+  if (voice.state === 'review') {
+    // Tutta la registrazione nella larghezza: il massimo di ogni tratto.
+    bars = Array.from({ length: count }, (_, i) => {
+      const from = Math.floor(i * levels.length / count), to = Math.max(from + 1, Math.floor((i + 1) * levels.length / count));
+      let max = 0;
+      for (let j = from; j < to && j < levels.length; j++) max = Math.max(max, levels[j]);
+      return max;
+    });
+    const audio = voice.audio;
+    if (audio && voice.duration) played = Math.floor(Math.min(1, audio.currentTime / voice.duration) * count);
+  } else bars = levels.slice(-count);
+  const offset = voice.state === 'review' ? 0 : count - bars.length;
+  draw.globalAlpha = 1;
+  for (let i = 0; i < bars.length; i++) {
+    const level = Math.max(.06, bars[i] || 0);
+    const h = Math.max(3, level * (height - 14));
+    const x = pad + (offset + i) * step;
+    draw.fillStyle = voice.state === 'review' ? (i < played ? accent : muted) : voice.state === 'paused' ? muted : danger;
+    draw.globalAlpha = voice.state === 'review' ? (i < played ? 1 : .45) : voice.state === 'paused' ? .5 : .55 + .45 * (i / bars.length);
+    draw.beginPath();
+    draw.roundRect(x, (height - h) / 2, bar, h, 1.5);
+    draw.fill();
+  }
+  if (!bars.length) {
+    draw.globalAlpha = .35;
+    draw.fillStyle = muted;
+    draw.fillRect(pad, height / 2 - .5, width - pad * 2, 1);
+  }
+  draw.globalAlpha = 1;
+}
+
+function toggleVoicePause() {
+  const { recorder } = voice;
+  if (!recorder) return;
+  if (voice.state === 'recording') {
+    recorder.pause();
+    voice.pause();
+    voice.state = 'paused';
+  } else if (voice.state === 'paused') {
+    recorder.resume();
+    voice.resume();
+    voice.state = 'recording';
+  }
+  renderVoicePanel();
+}
+
+function stopVoiceRecording() {
+  const { recorder } = voice;
+  if (!recorder || voice.state === 'review') return;
+  const duration = voice.elapsed();
+  if (voice.state === 'recording') voice.pause();
+  voice.state = 'stopping';
+  recorder.onstop = () => {
+    const type = recorder.mimeType || voice.format.type || 'audio/webm';
+    const blob = new Blob(voice.chunks, { type });
+    releaseVoice(false, true);
+    if (duration < 600 || !blob.size) {
+      voice.state = 'idle';
+      renderVoicePanel();
+      toast('Registrazione troppo breve: niente memo.');
+      return;
+    }
+    const now = new Date();
+    const pad2 = n => String(n).padStart(2, '0');
+    Object.assign(voice, { state: 'review', blob, duration: duration / 1000, elapsed: () => duration,
+      name: 'Memo vocale ' + pad2(now.getDate()) + '-' + pad2(now.getMonth() + 1) + '-' + now.getFullYear() + ' ' + pad2(now.getHours()) + '.' + pad2(now.getMinutes()) });
+    renderVoicePanel();
+    const input = voicePanel.querySelector('.vr-name input');
+    input.value = voice.name;
+    voicePanel.querySelector('.vr-insert').focus({ preventScroll: true });
+    drawVoiceWave();
+  };
+  try { recorder.stop(); } catch { recorder.onstop(); }
+  renderVoicePanel();
+}
+
+function voiceAudio() {
+  if (!voice.audio) {
+    voice.url = URL.createObjectURL(voice.blob);
+    const audio = voice.audio = new Audio(voice.url);
+    const refresh = () => {
+      // (gli eventi possono arrivare dopo la chiusura del memo)
+      if (voice.audio !== audio) return;
+      voicePanel.querySelector('.vr-play').innerHTML = voiceSvg(audio.paused ? 'play' : 'playing');
+      voicePanel.querySelector('.vr-play').title = audio.paused ? 'Ascolta (Spazio)' : 'Pausa (Spazio)';
+      voiceFrame();
+      if (audio.paused) updateVoiceTime();
+    };
+    for (const type of ['play', 'pause', 'ended', 'seeked']) audio.addEventListener(type, refresh);
+  }
+  return voice.audio;
+}
+
+function toggleVoicePlayback() {
+  if (voice.state !== 'review') return;
+  const audio = voiceAudio();
+  if (audio.paused) {
+    pauseOtherMedia(null);
+    if (audio.ended || audio.currentTime >= voice.duration - .05) audio.currentTime = 0;
+    audio.play().catch(() => toast('Questo browser non riesce a riprodurre la registrazione.'));
+  } else audio.pause();
+}
+
+// Ferma microfono, analisi e riascolto. keepBlob: dopo «Fine» la registrazione resta.
+function releaseVoice(dropAll = true, keepBlob = false) {
+  cancelAnimationFrame(voice.frame);
+  clearInterval(voice.ticker);
+  voice.stream?.getTracks().forEach(track => track.stop());
+  voice.context?.close().catch(() => {});
+  if (voice.recorder && voice.recorder.state !== 'inactive' && !keepBlob) {
+    voice.recorder.onstop = null;
+    try { voice.recorder.stop(); } catch {}
+  }
+  for (const key of ['stream', 'context', 'analyser', 'recorder', 'ticker', 'frame']) delete voice[key];
+  if (!keepBlob) {
+    voice.audio?.pause();
+    if (voice.url) URL.revokeObjectURL(voice.url);
+    delete voice.audio;
+    delete voice.url;
+  }
+  if (dropAll) voice = { state: 'idle', device: voice.device, devices: voice.devices };
+}
+
+function closeVoiceRecorder() {
+  releaseVoice(true);
+  renderVoicePanel();
+}
+
+async function insertVoiceMemo() {
+  if (voice.state !== 'review' || voice.inserting) return;
+  if (!canEditVisual() || !current) {
+    toast('Per inserire il memo vocale apri un documento in Modifica.');
+    return;
+  }
+  const input = voicePanel.querySelector('.vr-name input');
+  const name = attachmentName(input.value.trim() || voice.name).replace(/\.(m4a|weba|ogg|webm)$/i, '');
+  voice.inserting = true;
+  try {
+    const type = (voice.blob.type || '').split(';')[0] || 'audio/mp4';
+    const file = new File([voice.blob], name + '.' + voice.format.ext, { type, lastModified: Date.now() });
+    const path = await stageAttachment(file);
+    insertBlockNodes(renderedPdfEmbed(pdfEmbedMarkdown(relative(current, path), name)));
+    loadPdfEmbeds();
+    toast('Memo vocale inserito: il file va in _allegati quando salvi.');
+    closeVoiceRecorder();
+  } catch (error) {
+    toast('Impossibile inserire il memo: ' + error.message);
+  } finally {
+    voice.inserting = false;
+  }
+}
+
+$('voiceMemo').addEventListener('click', () => openVoiceRecorder());
+window.addEventListener('keydown', event => {
+  if (!(event.ctrlKey || event.metaKey) || !event.shiftKey || event.altKey || event.code !== 'KeyM') return;
+  if (document.querySelector('dialog[open]')) return;
+  if (voice.state === 'idle' && !canEditVisual()) return;
+  event.preventDefault();
+  event.stopPropagation();
+  openVoiceRecorder();
+}, true);
+window.addEventListener('beforeunload', event => {
+  if (voice.state === 'idle') return;
+  event.preventDefault();
+  event.returnValue = true;
+});
+// Uscendo da Modifica la registrazione continua (si può inserire tornando in Modifica);
+// chiudendo la cartella si butta via.
+window.addEventListener('resize', () => { if (voice.state !== 'idle') drawVoiceWave(); });
 
 // Apre un allegato: i formati che il browser sa mostrare in una nuova scheda,
 // gli altri vengono scaricati con il loro nome.
@@ -15513,6 +16094,7 @@ const settingChoices = {
   versionPlacement: ['below', 'statusbar', 'hidden'],
   logoMotion: [true, false],
   welcomePage: [true, false],
+  dashboard: [true, false],
   showOutline: [true, false],
   showBacklinks: [true, false],
   critters: ['cat', 'boat', 'sleigh', 'off'],
@@ -15538,7 +16120,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
 const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, showDeadlines: true, showEvents: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
-  brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
+  brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true, dashboard: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
 try {
@@ -15613,6 +16195,7 @@ function syncSettings() {
   settingsForm.radio.checked = settings.radio;
   settingsForm.logoMotion.checked = settings.logoMotion;
   settingsForm.welcomePage.checked = settings.welcomePage;
+  settingsForm.dashboard.checked = settings.dashboard;
   settingsForm.showOutline.checked = settings.showOutline;
   settingsForm.showBacklinks.checked = settings.showBacklinks;
   syncNavSettingControls();
@@ -16496,6 +17079,7 @@ settingsForm.addEventListener('change', event => {
     if (name === 'showDeadlines') { renderTree(); renderDeadlineBox(); }
     if (name === 'showEvents') renderEventsChip();
     if (name === 'logoMotion') applyLogoMotion();
+    if (name === 'dashboard') renderDashboard();
     if (name === 'tableTools') decorateReadTables();
     if (name === 'showOutline') renderOutline();
     if (name === 'showBacklinks') { clearTimeout(backlinkTimer); renderBacklinks(); }
@@ -16639,8 +17223,10 @@ function logoSeaRush(logo) {
   const rate = value => waves.forEach(animation => animation.updatePlaybackRate(value));
   const step = now => {
     if (logo.rushId !== id) return;
-    const t = now - start, i = logoRush.findIndex(([ms]) => ms > t);
+    // (il tempo del fotogramma può precedere di poco `start`: t negativo dava i = 0 e un errore)
+    const t = Math.max(0, now - start), i = logoRush.findIndex(([ms]) => ms > t);
     if (i === -1) return rate(1);
+    if (i === 0) return requestAnimationFrame(step);
     const [a, from] = logoRush[i - 1], [b, to] = logoRush[i];
     rate(from + (to - from) * (t - a) / (b - a));
     requestAnimationFrame(step);
@@ -16973,6 +17559,7 @@ const shortcutGroups = [
     ['Immagine selezionata: copia / taglia', 'Mod C|Mod X'],
     ['Immagine selezionata: elimina', 'Backspace|Delete'],
     ['Immagine selezionata: togli la selezione', 'Esc'],
+    ['Memo vocale: avvia / termina la registrazione', 'Mod Shift M'],
   ]],
   ['Elenco dei file (con un file o una cartella selezionati)', [
     ['Spostati, apri o chiudi le cartelle', '↑|↓|←|→'],
@@ -17088,6 +17675,7 @@ const glossaryMarkdown = [
     ['File di testo incorporato', 'Come il PDF incorporato, ma con un file di testo (.txt, .log, .csv, .json, .xml, .yaml, codice…): Itaca ne mostra il contenuto con i numeri di riga e i colori della sintassi; i CSV diventano una tabella. Per SVG e HTML si sceglie se vedere l’anteprima (come appare) o il codice. Apri lo mostra in una nuova scheda, Scarica scarica il file. In Modifica: Modifica cambia il contenuto del file (scritto quando salvi il documento, Ctrl/⌘ + Z torna alla versione di prima) e Nel documento porta il testo dentro il documento come blocco di codice (i CSV come tabella), senza più collegamento al file.', '![Configurazione](_allegati/config.yaml)'],
     ['Video incorporato', 'Come il PDF incorporato, ma con un video (.mp4, .mov, .webm, .mkv…): si guarda nel documento con il lettore del browser (schermo intero, velocità). Vale anche per l’indirizzo web di un file video. Le pagine di YouTube e simili restano collegamenti. Alcuni formati (.avi, .wmv) o codifiche il browser non li legge: in quel caso il riquadro lo dice e Scarica apre il file con un altro programma.', '![Presentazione del progetto](_allegati/presentazione.mp4)'],
     ['Appunti a tempo (video e audio)', 'Un elenco subito sotto un video o un audio, con il minuto all’inizio di ogni voce. In Itaca il minuto si clicca e il video va lì; mentre scorre, l’appunto del momento è evidenziato e compare sotto il video, e una linea del tempo mostra dove stanno gli appunti (passa sopra un segno per leggerli, clic per andarci). In Modifica «Appunto» scrive il minuto attuale (e mette in pausa), Invio in fondo a un appunto ne crea uno nuovo con il minuto. Schermo intero (doppio clic sul video): gli appunti a lato o sopra il video, e si scrivono senza uscire (N porta nel campo). In MkDocs resta un elenco.', '![Lezione](_allegati/lezione.mp4)\n\n- 0:00 Introduzione\n- 1:23 **Punto chiave**: la valvola si chiude prima\n- 4:10 Esempio pratico'],
+    ['Memo vocale', 'In Modifica il microfono nella barra (o Ctrl/⌘ + Maiusc + M) registra un memo: forma d’onda dal vivo, pausa, si può continuare a scrivere. Con «Fine» lo si riascolta, gli si dà un nome e «Inserisci» lo mette dove c’è il cursore, come audio incorporato; il file (.m4a dove il browser lo permette) va in _allegati al salvataggio. La prima volta il browser chiede il permesso del microfono.', '![Memo vocale 26-11-2026 14.32](_allegati/Memo%20vocale%2026-11-2026%2014.32.m4a)'],
     ['Audio incorporato', 'Come il video, ma con un file audio (.mp3, .wav, .m4a, .ogg, .flac…): lettore con forma d’onda (clic per spostarsi, frecce ±5 secondi, velocità). Anche l’indirizzo web di un file audio funziona. L’audio continua cambiando documento, nel lettore di Itaca (nella barra laterale, fluttuante o nell’angolo: Impostazioni › Aspetto).', '![Intervista](_allegati/intervista.mp3)'],
     ['Scheda di un file', 'Un collegamento a un file della cartella (ZIP, Excel, presentazione…) da solo su una riga, con { .card } dopo: Itaca lo mostra come una scheda con il tipo, la dimensione e Scarica; per gli ZIP anche il numero di file e Contenuto, l’elenco dei file dell’archivio. In MkDocs resta un collegamento. Incollando o trascinando un file si sceglie Collegamento o Anteprima (Lettore per video e audio).', '[Materiale del corso](_allegati/materiale.zip){ .card }'],
     ['Scheda di una pagina web', 'Un collegamento a una pagina web da solo su una riga, con { .card } dopo: Itaca lo mostra come una scheda (icona del sito, titolo, indirizzo, Apri). Incollando un indirizzo su una riga vuota si sceglie Collegamento o Scheda.', '[Documentazione di Python](https://docs.python.org/3/){ .card }'],
@@ -22017,6 +22605,7 @@ function renderMode() {
   $('documentActions').hidden = !hasDocument;
   $('workStart').hidden = hasDocument;
   if (!hasDocument) renderWorkStart();
+  else if (dashboardEl && !dashboardEl.hidden) renderDashboard();
   $('main').classList.toggle('source-mode', sourceMode);
   const saveButton = $('save');
   const saveLabel = importedFolderName ? 'Scarica copia' : 'Salva';
@@ -22036,6 +22625,427 @@ function renderMode() {
   renderExtendedControls();
   renderDocTags();
 }
+
+// ── Panoramica della cartella ───────────────────────────────────────────────
+// Senza documento aperto, al posto della pagina quasi vuota: cosa succede nella cartella di
+// lavoro. Tutto viene dall'indice della ricerca (stati, scadenze, tag, titoli, date), che Itaca
+// legge comunque all'apertura della cartella; in più i blocchi di modifica (.itaca-locks: una
+// lettura ogni 30 s, solo mentre la panoramica si vede) e il nome di chi ha modificato per le
+// sole righe «Modificati di recente». Impostazione `dashboard` (Documenti › Apertura).
+var dashboard = { timer: 0, lockTimer: 0, locks: [], locksRoot: null, locksAt: 0, locksReading: false, editors: new Map(), more: { todo: false, recent: false } };
+var dashboardEl = $('dashboard');
+
+// Ultimi documenti aperti in ogni cartella (per «Riprendi»): localStorage itaca-recent-docs
+// {nomeCartella: [percorsi]}, al massimo 8 per cartella e 30 cartelle.
+const recentDocsKey = 'itaca-recent-docs';
+function recentDocuments() {
+  const folder = root?.name || importedFolderName || '';
+  try { return (JSON.parse(localStorage.getItem(recentDocsKey) || '{}')?.[folder] || []).filter(path => typeof path === 'string' && files.has(path)); } catch { return []; }
+}
+function rememberRecentDocument(path) {
+  const folder = root?.name || importedFolderName || '';
+  if (!folder || !path || !isMD(path) || !files.has(path)) return;
+  try {
+    const stored = JSON.parse(localStorage.getItem(recentDocsKey) || '{}') || {};
+    const list = [path, ...(stored[folder] || []).filter(item => item !== path)].slice(0, 8);
+    delete stored[folder];
+    const kept = Object.fromEntries(Object.entries(stored).slice(-29));
+    kept[folder] = list;
+    localStorage.setItem(recentDocsKey, JSON.stringify(kept));
+  } catch {}
+}
+
+function dashboardActive() {
+  return Boolean(settings.dashboard && !current && !folderAccessPending && hasWorkspaceFolder() && [...files.keys()].some(isMD));
+}
+
+function queueDashboard(delay = 250) {
+  if (dashboard.timer) return;
+  dashboard.timer = setTimeout(() => {
+    dashboard.timer = 0;
+    renderDashboard();
+  }, delay);
+}
+
+function dashAgo(time) {
+  const seconds = (Date.now() - time) / 1000;
+  if (seconds < 60) return 'adesso';
+  if (seconds < 3600) return Math.round(seconds / 60) + ' min fa';
+  if (seconds < 86400) return Math.round(seconds / 3600) === 1 ? 'un’ora fa' : Math.round(seconds / 3600) + ' ore fa';
+  const days = Math.round((new Date().setHours(0, 0, 0, 0) - new Date(time).setHours(0, 0, 0, 0)) / 864e5);
+  if (days <= 1) return 'ieri';
+  if (days < 7) return days + ' giorni fa';
+  const date = new Date(time);
+  return date.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: date.getFullYear() === new Date().getFullYear() ? undefined : 'numeric' });
+}
+
+function dashboardData() {
+  const docs = [...files.keys()].filter(isMD);
+  const items = docs.map(path => {
+    const record = searchIndex.entries.get(path);
+    const content = record?.content;
+    const status = content ? content.status : documentStatus(path);
+    const deadline = deadlineState(content ? content.deadline : documentDeadline(path));
+    return { path, read: content !== undefined, modified: record?.modified || 0, size: record?.size || 0, status, info: statusInfo(status), deadline };
+  });
+  return { docs, items, read: items.filter(item => item.read).length };
+}
+
+const dashEl = (tag, className, text) => {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text !== undefined) element.textContent = text;
+  return element;
+};
+const dashIcon = name => {
+  const icon = dashEl('i', 'icon i-' + name);
+  icon.setAttribute('aria-hidden', 'true');
+  return icon;
+};
+function dashDot(info) {
+  const dot = dashEl('span', 'status-dot' + (info ? '' : ' none'));
+  if (info) {
+    dot.dataset.tone = info.tone;
+    dot.title = 'Stato: ' + info.label;
+  } else dot.title = 'Nessuno stato';
+  return dot;
+}
+function dashFolderText(path) {
+  const folder = parent(path);
+  return folder ? folder.split('/').join(' › ') : 'Cartella principale';
+}
+function dashDocRow(item, meta) {
+  const row = dashEl('button', 'dash-row');
+  row.type = 'button';
+  row.title = 'Apri ' + item.path;
+  const name = dashEl('span', 'dash-name');
+  name.append(dashEl('b', '', docLabel(item.path)), dashEl('small', '', dashFolderText(item.path)));
+  row.append(dashDot(item.info), name);
+  if (meta) row.append(meta);
+  row.onclick = () => openPath(item.path);
+  return row;
+}
+function dashCard(icon, title, count, note) {
+  const card = dashEl('section', 'dash-card');
+  const heading = dashEl('h2');
+  heading.append(dashIcon(icon), dashEl('span', '', title));
+  if (count) heading.append(dashEl('span', 'dash-count', String(count)));
+  if (note) heading.append(dashEl('small', '', note));
+  card.append(heading);
+  return card;
+}
+function dashEmpty(icon, text) {
+  const empty = dashEl('p', 'dash-empty');
+  empty.append(dashIcon(icon), dashEl('span', '', text));
+  return empty;
+}
+function dashMore(key, total, shown, onSearch) {
+  if (total <= shown && !dashboard.more[key]) return null;
+  const button = dashEl('button', 'dash-more', dashboard.more[key] ? 'Mostra meno' : 'Mostra tutti (' + total + ')');
+  button.type = 'button';
+  button.onclick = () => {
+    if (!dashboard.more[key] && total > 30 && onSearch) return onSearch();
+    dashboard.more[key] = !dashboard.more[key];
+    renderDashboard();
+  };
+  return button;
+}
+function dashSearch(query) {
+  search.value = query;
+  if (sidebar.hidden) setSidebar(true);
+  search.dispatchEvent(new Event('input'));
+  search.focus();
+  search.setSelectionRange(search.value.length, search.value.length);
+}
+
+function dashTile({ label, icon, tone, count, note, pending, action, title }) {
+  const tile = dashEl('button', 'dash-tile' + (count ? '' : ' zero') + (pending ? ' pending' : ''));
+  tile.type = 'button';
+  if (tone) tile.dataset.tone = tone;
+  const head = dashEl('span', 'dash-label');
+  head.append(dashIcon(icon), dashEl('span', '', label));
+  tile.append(head, dashEl('span', 'dash-num', pending && !count ? '…' : String(count)), dashEl('small', '', note || ' '));
+  tile.title = title || '';
+  if (action) tile.onclick = action;
+  else tile.disabled = true;
+  return tile;
+}
+
+function renderDashboard() {
+  dashboardEl ||= $('dashboard');
+  clearTimeout(dashboard.timer);
+  dashboard.timer = 0;
+  const active = dashboardActive();
+  const start = $('workStart');
+  start.classList.toggle('is-dashboard', active);
+  dashboardEl.hidden = !active;
+  if (!active) {
+    clearTimeout(dashboard.lockTimer);
+    dashboard.lockTimer = 0;
+    dashboardEl.replaceChildren();
+    return;
+  }
+  queueTagIndex();
+  const { docs, items, read } = dashboardData();
+  const reading = read < docs.length;
+  const folders = new Set(docs.map(path => parent(path))).size;
+  const now = Date.now();
+  const week = items.filter(item => item.modified && now - item.modified < 7 * 864e5).length;
+  const byStatus = id => items.filter(item => item.info && item.info.id === id);
+  const review = byStatus('da-revisionare'), draft = byStatus('da-finire');
+  const due = items.filter(item => item.deadline && item.deadline.days <= deadlineSoonDays).sort((a, b) => a.deadline.days - b.deadline.days);
+  const late = due.filter(item => item.deadline.days < 0).length;
+  const shared = Boolean(root && !importedFolderName);
+  if (shared && (dashboard.locksRoot !== root || now - dashboard.locksAt > 25000)) refreshDashboardLocks();
+  const locks = dashboard.locksRoot === root ? dashboard.locks.filter(lock => files.has(lock.path)) : [];
+
+  // Intestazione
+  const head = dashEl('header', 'dash-head');
+  const title = dashEl('div', 'dash-title');
+  title.append(dashEl('h1', '', root?.name || importedFolderName || 'Cartella di lavoro'));
+  const sub = dashEl('div', 'dash-sub');
+  sub.append(dashEl('span', '', docs.length + (docs.length === 1 ? ' documento' : ' documenti') + (folders > 1 ? ' in ' + folders + ' cartelle' : '')));
+  if (reading) {
+    const progress = dashEl('span', 'dash-reading');
+    const bar = dashEl('span', 'dash-progress');
+    const fill = dashEl('span');
+    fill.style.width = Math.round(read / docs.length * 100) + '%';
+    bar.append(fill);
+    progress.append(bar, dashEl('span', '', 'Lettura dei documenti… ' + read + ' di ' + docs.length));
+    sub.append(progress);
+  } else if (week) sub.append(dashEl('span', 'dash-week', week + (week === 1 ? ' modificato' : ' modificati') + ' negli ultimi 7 giorni'));
+  title.append(sub);
+  const actions = dashEl('div', 'dash-actions');
+  const searchButton = dashEl('button');
+  searchButton.type = 'button';
+  searchButton.append(dashIcon('search'), dashEl('span', '', 'Cerca'));
+  searchButton.title = 'Cerca nei documenti (Ctrl/⌘ + K)';
+  searchButton.onclick = () => dashSearch(search.value);
+  const newButton = dashEl('button', 'primary');
+  newButton.type = 'button';
+  newButton.append(dashIcon('plus'), dashEl('span', '', 'Nuovo documento'));
+  newButton.onclick = () => newDoc();
+  actions.append(searchButton, newButton);
+  head.append(title, actions);
+
+  // Numeri
+  const tiles = dashEl('div', 'dash-tiles');
+  tiles.append(
+    dashTile({ label: 'Documenti', icon: 'file', count: docs.length, note: reading ? '' : week ? week + ' in questa settimana' : 'nessuna modifica recente',
+      action: () => setSidebar(true, true), title: 'Mostra l’elenco dei documenti' }),
+    dashTile({ label: 'Da revisionare', icon: 'eye', tone: 'review', count: review.length, pending: reading, note: review.length ? 'qualcuno deve rileggerli' : 'niente da rileggere',
+      action: review.length ? () => searchByStatus('da-revisionare') : null, title: 'Cerca i documenti con stato «Da revisionare»' }),
+    dashTile({ label: 'Da finire', icon: 'edit', tone: 'draft', count: draft.length, pending: reading, note: draft.length ? 'ancora incompleti' : 'niente in sospeso',
+      action: draft.length ? () => searchByStatus('da-finire') : null, title: 'Cerca i documenti con stato «Da finire»' }),
+    dashTile({ label: 'In scadenza', icon: 'calendar', tone: late ? 'late' : 'soon', count: due.length, pending: reading,
+      note: late ? late + (late === 1 ? ' già scaduto' : ' già scaduti') : due.length ? 'entro ' + deadlineSoonDays + ' giorni' : 'nessuna scadenza vicina',
+      action: due.length ? () => dashSearch('scadenza:' + deadlineSoonDays) : null, title: 'Cerca i documenti che scadono entro ' + deadlineSoonDays + ' giorni (e quelli scaduti)' }),
+  );
+  if (shared) tiles.append(dashTile({ label: 'In modifica ora', icon: 'people', tone: 'new', count: locks.length,
+    note: locks.length ? [...new Set(locks.map(lockOwnerName))].join(', ') : 'nessun collega al lavoro',
+    action: locks.length === 1 ? () => openPath(locks[0].path) : null, title: locks.length === 1 ? 'Apri il documento in modifica' : '' }));
+
+  // Da fare: scadenze vicine, poi revisioni, documenti da finire e pianificati.
+  const todoPaths = new Set();
+  const todo = [];
+  const pushTodo = (item, pill) => {
+    if (todoPaths.has(item.path)) return;
+    todoPaths.add(item.path);
+    todo.push({ item, pill });
+  };
+  const recentFirst = (a, b) => b.modified - a.modified;
+  for (const item of due) pushTodo(item, { text: item.deadline.short === 'scaduta' ? 'scaduta' : item.deadline.short, tone: item.deadline.tone, title: item.deadline.when + ' · ' + item.deadline.full });
+  for (const item of [...review].sort(recentFirst)) pushTodo(item, { text: item.info.label, tone: item.info.tone });
+  for (const item of [...draft].sort(recentFirst)) pushTodo(item, { text: item.info.label, tone: item.info.tone });
+  for (const item of byStatus('pianificato').sort(recentFirst)) pushTodo(item, { text: item.info.label, tone: item.info.tone });
+  const todoCard = dashCard('todo', 'Da fare', todo.length, reading ? 'in aggiornamento…' : '');
+  const todoShown = dashboard.more.todo ? 30 : 6;
+  for (const { item, pill } of todo.slice(0, todoShown)) {
+    const tag = dashEl('span', 'dash-pill', pill.text);
+    tag.dataset.tone = pill.tone;
+    if (pill.title) tag.title = pill.title;
+    todoCard.append(dashDocRow(item, tag));
+  }
+  if (!todo.length) todoCard.append(dashEmpty('check', reading ? 'Sto leggendo i documenti…' : 'Niente in sospeso: nessuna scadenza vicina e nessun documento da finire o da rivedere.'));
+  const todoMore = dashMore('todo', todo.length, todoShown);
+  if (todoMore) todoCard.append(todoMore);
+
+  // Modificati di recente (con il nome di chi ha salvato, se Itaca lo sa).
+  const recent = items.filter(item => item.modified).sort(recentFirst);
+  const recentCard = dashCard('history', 'Modificati di recente');
+  const recentShown = dashboard.more.recent ? 20 : 6;
+  for (const item of recent.slice(0, recentShown)) {
+    const meta = dashEl('span', 'dash-meta');
+    const when = dashEl('span', '', dashAgo(item.modified));
+    when.title = new Date(item.modified).toLocaleString('it-IT');
+    meta.append(when);
+    const who = dashboardEditor(item);
+    if (who) meta.append(dashEl('span', 'who', who === userName ? 'da te' : 'da ' + who));
+    recentCard.append(dashDocRow(item, meta));
+  }
+  if (!recent.length) recentCard.append(dashEmpty('history', 'Sto leggendo i documenti…'));
+  const recentMore = dashMore('recent', Math.min(recent.length, 20), recentShown);
+  if (recentMore) recentCard.append(recentMore);
+
+  const colRight = dashEl('div', 'dash-col');
+  // Riprendi: gli ultimi documenti aperti qui da chi usa Itaca.
+  const resume = recentDocuments().slice(0, 5);
+  if (resume.length) {
+    const resumeCard = dashCard('book', 'Riprendi', 0, 'aperti da te di recente');
+    const byPath = new Map(items.map(item => [item.path, item]));
+    for (const path of resume) {
+      const item = byPath.get(path);
+      if (item) resumeCard.append(dashDocRow(item));
+    }
+    colRight.append(resumeCard);
+  }
+
+  // Chi sta lavorando adesso.
+  if (shared) {
+    const peopleCard = dashCard('people', 'Al lavoro adesso', locks.length);
+    for (const lock of locks.sort((a, b) => a.since - b.since)) {
+      const row = dashEl('button', 'dash-row');
+      row.type = 'button';
+      const person = lockOwnerName(lock);
+      const avatar = dashEl('span', 'dash-person', person.split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0].toLocaleUpperCase()).join('') || '?');
+      const name = dashEl('span', 'dash-name');
+      name.append(dashEl('b', '', person), dashEl('small', '', docLabel(lock.path)));
+      const since = dashEl('span', 'dash-meta', dashAgo(Number(lock.since)).replace(/ fa$/, '').replace(/^adesso$/, 'ora'));
+      since.title = 'In modifica ' + lockTime(lock.since);
+      row.title = 'Apri «' + docLabel(lock.path) + '» (in sola lettura)';
+      row.append(avatar, name, since);
+      row.onclick = () => openPath(lock.path);
+      peopleCard.append(row);
+    }
+    if (!locks.length) peopleCard.append(dashEmpty('people', 'Nessuno sta modificando un documento in questo momento.'));
+    colRight.append(peopleCard);
+  }
+
+  // Stato dei documenti: barra e legenda (clic = ricerca).
+  const statusCard = dashCard('pulse', 'Stato dei documenti', 0, reading ? read + ' di ' + docs.length + ' letti' : '');
+  const groups = [];
+  for (const known of documentStatuses) {
+    const count = byStatus(known.id).length;
+    if (count) groups.push({ info: known, count });
+  }
+  const others = new Map();
+  for (const item of items) if (item.info && !documentStatuses.some(known => known.id === item.info.id)) others.set(item.info.id, (others.get(item.info.id) || 0) + 1);
+  for (const [id, count] of others) groups.push({ info: statusInfo(id), count });
+  const none = items.filter(item => item.read && !item.info).length;
+  if (none) groups.push({ info: null, count: none });
+  const bar = dashEl('div', 'dash-bar');
+  bar.setAttribute('role', 'img');
+  bar.setAttribute('aria-label', groups.map(group => (group.info?.label || 'Senza stato') + ' ' + group.count).join(', '));
+  const total = groups.reduce((sum, group) => sum + group.count, 0) || 1;
+  for (const group of groups) {
+    const part = dashEl('span');
+    part.dataset.tone = group.info?.tone || 'none';
+    part.style.width = group.count / total * 100 + '%';
+    part.title = (group.info?.label || 'Senza stato') + ': ' + group.count;
+    bar.append(part);
+  }
+  const legend = dashEl('div', 'dash-legend');
+  for (const group of groups) {
+    const button = dashEl('button');
+    button.type = 'button';
+    button.dataset.tone = group.info?.tone || 'none';
+    button.append(dashDot(group.info), dashEl('span', '', group.info?.label || 'Senza stato'), dashEl('b', '', String(group.count)));
+    if (group.info) {
+      button.title = 'Cerca i documenti «' + group.info.label + '»';
+      button.onclick = () => searchByStatus(group.info.id);
+    } else button.disabled = true;
+    legend.append(button);
+  }
+  statusCard.append(bar, legend);
+  if (groups.length === 1 && !groups[0].info && !reading) statusCard.append(dashEmpty('info', 'Nessun documento ha uno stato. In Modifica, «+ Stato» sopra il titolo.'));
+  colRight.append(statusCard);
+
+  // Tag più usati.
+  const tags = [...tagIndex().tags.values()].sort((a, b) => b.paths.size - a.paths.size || a.name.localeCompare(b.name, 'it')).slice(0, 18);
+  if (tags.length) {
+    const tagCard = dashCard('tag', 'Tag più usati', tagIndex().tags.size);
+    const list = dashEl('div', 'dash-tags');
+    for (const tag of tags) {
+      const button = dashEl('button');
+      button.type = 'button';
+      button.title = 'Cerca i documenti con #' + tag.name;
+      button.append(dashEl('span', '', '#' + tag.name), dashEl('small', '', String(tag.paths.size)));
+      button.onclick = () => searchTag(tag.name);
+      list.append(button);
+    }
+    tagCard.append(list);
+    colRight.append(tagCard);
+  }
+
+  const colLeft = dashEl('div', 'dash-col');
+  colLeft.append(todoCard, recentCard);
+  const grid = dashEl('div', 'dash-grid');
+  grid.append(colLeft, colRight);
+  // Il fuoco resta dov'era (ridisegnare tutto lo perderebbe mentre l'indice si riempie).
+  const focused = dashboardEl.contains(document.activeElement) ? document.activeElement.title + '\u0001' + document.activeElement.textContent : null;
+  dashboardEl.replaceChildren(head, tiles, grid);
+  if (focused) [...dashboardEl.querySelectorAll('button')].find(button => button.title + '\u0001' + button.textContent === focused)?.focus({ preventScroll: true });
+  scheduleDashboardLocks();
+}
+
+// Chi ha salvato il file così com'è (dal registro .itaca-edits): solo per le righe mostrate.
+function dashboardEditor(item) {
+  if (!root || importedFolderName) return '';
+  const key = item.path + '|' + item.modified + '|' + item.size;
+  if (dashboard.editors.has(key)) return dashboard.editors.get(key);
+  dashboard.editors.set(key, '');
+  withTimeout(lastEditor(item.path, { lastModified: item.modified, size: item.size }), 4000).then(name => {
+    if (!name) return;
+    dashboard.editors.set(key, name);
+    if (dashboardActive()) queueDashboard();
+  }, () => {});
+  return '';
+}
+
+async function refreshDashboardLocks() {
+  if (dashboard.locksReading || !root || importedFolderName) return;
+  dashboard.locksReading = true;
+  const directory = root;
+  const found = [];
+  try {
+    const folder = await withTimeout(lockFolder(directory, false), 4000);
+    if (folder) {
+      await withTimeout((async () => {
+        for await (const [name, handle] of folder.entries()) {
+          if (handle.kind !== 'file' || !name.endsWith('.json')) continue;
+          try {
+            const data = JSON.parse(await (await handle.getFile()).text());
+            if (lockLiveFor(data) && typeof data.path === 'string') found.push(data);
+          } catch {}
+        }
+      })(), 8000);
+    }
+  } catch {}
+  dashboard.locksReading = false;
+  if (directory !== root) return;
+  const key = found.map(lock => lock.path + lock.name + lock.since).sort().join('|');
+  const changed = dashboard.locksRoot !== root || key !== dashboard.locks.map(lock => lock.path + lock.name + lock.since).sort().join('|');
+  Object.assign(dashboard, { locks: found, locksRoot: root, locksAt: Date.now() });
+  if (changed && dashboardActive()) queueDashboard(0);
+}
+// Ogni 30 s, solo con la panoramica visibile e la pagina in primo piano.
+function scheduleDashboardLocks() {
+  if (dashboard.lockTimer || !root || importedFolderName) return;
+  dashboard.lockTimer = setTimeout(function tick() {
+    dashboard.lockTimer = 0;
+    if (!dashboardActive()) return;
+    if (!document.hidden) refreshDashboardLocks();
+    // le ore «fa» vanno aggiornate anche senza novità
+    else return scheduleDashboardLocks();
+    queueDashboard(1000);
+  }, 30000);
+}
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && dashboardActive() && Date.now() - dashboard.locksAt > 25000) refreshDashboardLocks();
+});
+tagIndexListeners.add(() => {
+  if (dashboardActive()) queueDashboard();
+});
 
 function renderWorkStart() {
   renderWelcome();
@@ -22069,6 +23079,7 @@ function renderWorkStart() {
     action.textContent = offeredImport ? 'Importa cartella' : 'Scegli cartella';
     action.onclick = offeredImport ? pickImportedFolder : () => chooseFolder();
   }
+  renderDashboard();
 }
 
 function updateFormatButtons() {
