@@ -2076,6 +2076,21 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 .link-report li .link-fix button:hover { border-color: var(--accent); color: var(--accent-text); }
 .link-report li .link-fix code { font-size: 11.5px; }
 .report-ok { padding: 30px; text-align: center; font-size: 14px; }
+.word-warnings { margin: 8px 0 0; padding-left: 1.2em; }
+.word-warnings li { margin: 4px 0; }
+.report-warning { margin: 0; padding: 10px 12px; border-radius: 9px; background: var(--warning-bg); color: var(--warning) !important; }
+.attachment-report .attachment-intro { margin: 0; line-height: 1.5; }
+.attachment-report section > .link-report-actions { border: 0; border-bottom: 1px solid var(--line-soft); border-radius: 0; }
+.attachment-report li { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-top: 1px solid var(--line-soft); }
+.attachment-report li:first-child { border-top: 0; }
+.attachment-report li label { flex: 1; min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 9px; cursor: pointer; }
+.attachment-report li label small { grid-column: 2; }
+.attachment-report .attachment-text { flex: 1; min-width: 0; display: grid; }
+.attachment-report li small { color: var(--muted); font-size: 11.5px; }
+.attachment-report .attachment-name { display: flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; font-weight: 560; }
+.attachment-report li button { display: inline-flex; flex: none; width: auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; }
+.attachment-report li button.icon-button { padding: 4px; border-color: transparent; }
+.attachment-report li button:hover { border-color: var(--accent); color: var(--accent-text); }
 /* Versioni e confronto (git): grafo dei commit, confronto visivo, autori delle righe */
 .i-git-graph { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='4' cy='3.5' r='1.8'/%3E%3Ccircle cx='4' cy='12.5' r='1.8'/%3E%3Ccircle cx='12' cy='6.5' r='1.8'/%3E%3Cpath d='M4 5.3v5.4M12 8.3c0 2.4-3 2.2-6.4 3.4'/%3E%3C/svg%3E"); }
 .i-git-blame { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='4.5' cy='4.5' r='2.3'/%3E%3Cpath d='M1 13c.4-2.6 1.8-4 3.5-4s3.1 1.4 3.5 4M10 4.5h5M10 8h5M10 11.5h5'/%3E%3C/svg%3E"); }
@@ -2876,6 +2891,8 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
     <button type="button" data-file-action="info"><i class="icon i-info" aria-hidden="true"></i>Informazioni<kbd class="menu-key" data-keys="Mod I"></kbd></button>
     <button type="button" data-file-action="copy"><i class="icon i-copy" aria-hidden="true"></i>Copia percorso<kbd class="menu-key" data-keys="Mod Alt C"></kbd></button>
     <button type="button" data-file-action="start"><i class="icon i-book" aria-hidden="true"></i><span id="startActionLabel">Apri all’avvio</span></button>
+    <button type="button" data-file-action="markdown" title="Crea un documento Markdown con il testo, i titoli, gli elenchi, le tabelle e le immagini del file Word"><i class="icon i-ft-word" aria-hidden="true"></i>Converti in Markdown</button>
+    <button type="button" data-file-action="unused" title="File di questa cartella che nessun documento usa, e il cestino di Itaca"><i class="icon i-attach" aria-hidden="true"></i>Allegati non usati…</button>
     <hr>
     <button type="button" data-file-action="rename"><i class="icon i-edit" aria-hidden="true"></i>Rinomina<kbd class="menu-key" data-keys="F2"></kbd></button>
     <button type="button" data-file-action="move"><i class="icon i-folder-open" aria-hidden="true"></i>Sposta…<kbd class="menu-key" data-keys="M"></kbd></button>
@@ -3145,6 +3162,14 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <div class="set-row">
             <label class="set-label" for="setUpdateLinks"><b>Aggiorna i collegamenti</b><small>Quando rinomini o sposti un file</small></label>
             <input type="checkbox" class="switch" id="setUpdateLinks" name="updateLinks">
+          </div>
+          <div class="set-row" data-keywords="allegati cestino pulizia spazio immagini non usati _allegati itaca-trash">
+            <label class="set-label" for="setAttachmentTrash"><b>Allegati non più usati nel cestino</b><small>Se togli un allegato da un documento (o elimini il documento) e nessun altro file lo nomina, va nel cestino di Itaca: resta 30 giorni e torna da solo se un documento lo cita di nuovo</small></label>
+            <input type="checkbox" class="switch" id="setAttachmentTrash" name="attachmentTrash">
+          </div>
+          <div class="set-row" data-keywords="allegati cestino pulizia spazio immagini non usati ripristina svuota">
+            <span class="set-label"><b>Allegati non usati</b><small>Cerca in _allegati i file che nessun documento usa (anche quelli rimasti da prima) e mostra il cestino</small></span>
+            <button type="button" class="outline" id="attachmentCleanupOpen">Controlla…</button>
           </div>
         </div>
         <h4>Bozze</h4>
@@ -8419,8 +8444,9 @@ function decoratePdfEmbeds(container, editable) {
     }
     const inlineButton = box.querySelector('[data-pdf-action="inline"]');
     if (inlineButton) {
-      inlineButton.hidden = !textTools;
-      inlineButton.title = 'Porta il contenuto di «' + fileName + '» dentro il documento, senza più collegamento al file';
+      inlineButton.hidden = !textTools && !(editable && kind === 'word');
+      inlineButton.title = kind === 'word' ? 'Converte «' + fileName + '» in Markdown al posto del riquadro: testo, titoli, elenchi, tabelle e immagini diventano parte del documento'
+        : 'Porta il contenuto di «' + fileName + '» dentro il documento, senza più collegamento al file';
     }
     const link = box.querySelector('[data-pdf-action="link"]');
     link.hidden = !editable;
@@ -11440,7 +11466,7 @@ async function runPdfAction(box, action) {
   const target = pdfEmbedTarget(box, from);
   if (action === 'link') return pdfEmbedToLink(box);
   if (action === 'edit') return editEmbeddedText(box);
-  if (action === 'inline') return inlineEmbeddedText(box);
+  if (action === 'inline') return boxKind(box) === 'word' ? inlineEmbeddedWord(box) : inlineEmbeddedText(box);
   if (action === 'contents') return toggleFileList(box);
   const kind = boxKind(box);
   const word = kind === 'word';
@@ -11862,6 +11888,709 @@ async function inlineEmbeddedText(box) {
   mark();
   queueOutline();
   toast('Il contenuto di «' + name + '» è ora nel documento; il file resta nella cartella. Ctrl/⌘ + Z per tornare al riquadro.', 'success');
+}
+
+// ── Da Word a Markdown ──────────────────────────────────────────────────────
+// Convertitore proprio (niente librerie in più: il .docx è uno ZIP e JSZip c'è già per le
+// anteprime). Porta nel Markdown ciò che serve per ripartire: titoli (anche «Titolo 1» e gli
+// stili basati su questi), grassetto, corsivo, barrato, sottolineato, evidenziato, apici e
+// pedici, codice (caratteri a spaziatura fissa e stili «Codice»), collegamenti (anche ai titoli
+// dello stesso documento), elenchi puntati e numerati con i livelli e la numerazione che
+// prosegue, citazioni, tabelle (celle unite comprese), immagini (in _allegati/<nome del Word>/,
+// con la larghezza che avevano), caselle di testo e note a piè di pagina. Si lasciano fuori:
+// sommario (Itaca ha il suo indice), intestazioni e piè di pagina, commenti, revisioni
+// cancellate. Grafici, SmartArt e immagini EMF/WMF sono segnalati alla fine.
+const wordMainNs = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const wordRelNs = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+const wordKids = (node, name) => node ? [...node.children].filter(child => !name || child.localName === name) : [];
+const wordKid = (node, name) => node ? [...node.children].find(child => child.localName === name) || null : null;
+const wordAttr = (node, name) => node ? node.getAttribute('w:' + name) ?? node.getAttributeNS(wordMainNs, name) : null;
+const wordRelAttr = (node, name) => node ? node.getAttribute('r:' + name) ?? node.getAttributeNS(wordRelNs, name) : null;
+const wordAll = (node, name) => node ? [...node.getElementsByTagNameNS('*', name)] : [];
+const wordOn = node => Boolean(node) && !/^(0|false|off|none)$/i.test(wordAttr(node, 'val') || '');
+const wordMonoFont = /consolas|courier|mono|menlo|lucida console|source code|fira code|cascadia|inconsolata|andale/i;
+const wordWebImage = /^(png|jpe?g|gif|webp|bmp|svg|avif)$/i;
+
+// shift: livelli in più per tutti i titoli (il Word portato dentro un documento che ha già il suo titolo).
+async function docxToMarkdown(blob, { from, imageDir, shift = 0 }) {
+  let zip;
+  try { zip = await JSZip.loadAsync(blob); } catch { throw new Error('il file non è un documento Word (.docx) valido'); }
+  const parser = new DOMParser();
+  const xml = async name => {
+    const entry = zip.file(name);
+    if (!entry) return null;
+    const document = parser.parseFromString(await entry.async('string'), 'application/xml');
+    return document.getElementsByTagName('parsererror').length ? null : document;
+  };
+  const main = await xml('word/document.xml');
+  if (!main) throw new Error('il file non è un documento Word (.docx) valido (manca il testo)');
+  const relations = async name => {
+    const map = new Map();
+    for (const item of wordAll(await xml(name), 'Relationship')) {
+      map.set(item.getAttribute('Id'), { target: item.getAttribute('Target') || '', external: item.getAttribute('TargetMode') === 'External' });
+    }
+    return map;
+  };
+  const ctx = {
+    from, imageDir, shift,
+    rels: await relations('word/_rels/document.xml.rels'),
+    styles: wordStyles(await xml('word/styles.xml')),
+    numbering: wordNumbering(await xml('word/numbering.xml')),
+    images: new Map(), imageList: [], warnings: new Set(),
+    notes: { footnote: new Map(), endnote: new Map() }, noteRels: {}, noteOrder: [], noteIds: new Map(),
+    bookmarks: new Map(), counters: new Map(), fields: [], styleCache: new Map(), hasTitle: false, pending: [],
+  };
+  for (const kind of ['footnote', 'endnote']) {
+    for (const note of wordAll(await xml('word/' + kind + 's.xml'), kind)) {
+      const type = wordAttr(note, 'type');
+      if (!type || type === 'normal') ctx.notes[kind].set(wordAttr(note, 'id'), note);
+    }
+    ctx.noteRels[kind] = await relations('word/_rels/' + kind + 's.xml.rels');
+  }
+  const body = wordKid(main.documentElement, 'body');
+  // Prima passata: c'è un «Titolo» (allora i titoli scendono di un livello) e quali segnalibri
+  // stanno sui titoli (i collegamenti interni di Word puntano ai segnalibri).
+  for (const p of wordAll(body, 'p')) {
+    const info = wordParagraphInfo(p, ctx);
+    if (info.title) ctx.hasTitle = true;
+    if (info.level || info.title) {
+      const text = wordAll(p, 't').map(node => node.textContent).join('').trim();
+      for (const mark of wordAll(p, 'bookmarkStart')) if (text) ctx.bookmarks.set(wordAttr(mark, 'name'), headingSlug(text));
+    }
+  }
+  const blocks = [];
+  wordBlocks(body, ctx, blocks);
+  let markdown = wordAssemble(blocks, ctx);
+  // Note a piè di pagina e di chiusura, numerate nell'ordine in cui compaiono.
+  const notes = [];
+  for (let index = 0; index < ctx.noteOrder.length; index++) {
+    const { kind, id } = ctx.noteOrder[index];
+    const note = ctx.notes[kind].get(id);
+    const saved = ctx.rels;
+    ctx.rels = ctx.noteRels[kind];
+    const text = wordKids(note, 'p').map(p => wordInline(wordParagraphSegments(p, ctx), ctx, { single: true })).filter(Boolean).join(' ');
+    ctx.rels = saved;
+    notes.push('[^' + (index + 1) + ']: ' + (text.trim() || ' '));
+  }
+  if (notes.length) markdown += '\n\n' + notes.join('\n');
+  const images = await Promise.all(ctx.imageList.map(async item => ({ path: item.path, blob: new Blob([await zip.file(item.zipPath).async('uint8array')], { type: item.type }) })));
+  return { markdown: markdown.trim() + '\n', images, warnings: [...ctx.warnings] };
+}
+
+function wordStyles(xml) {
+  const map = new Map();
+  for (const style of wordAll(xml, 'style')) {
+    const pPr = wordKid(style, 'pPr');
+    map.set(wordAttr(style, 'styleId'), {
+      type: wordAttr(style, 'type'), name: wordAttr(wordKid(style, 'name'), 'val') || wordAttr(style, 'styleId') || '',
+      basedOn: wordAttr(wordKid(style, 'basedOn'), 'val'), outline: wordAttr(wordKid(pPr, 'outlineLvl'), 'val'),
+      numPr: wordKid(pPr, 'numPr'), rPr: wordKid(style, 'rPr'),
+    });
+  }
+  return map;
+}
+
+function wordStyleChain(id, ctx) {
+  const chain = [];
+  for (let step = 0; id && step < 20; step++) {
+    const style = ctx.styles.get(id);
+    if (!style || chain.includes(style)) break;
+    chain.push(style);
+    id = style.basedOn;
+  }
+  return chain;
+}
+
+function wordNumbering(xml) {
+  const abstracts = new Map(), nums = new Map();
+  for (const item of wordAll(xml, 'abstractNum')) {
+    const levels = new Map();
+    for (const level of wordKids(item, 'lvl')) {
+      levels.set(Number(wordAttr(level, 'ilvl')) || 0, { format: wordAttr(wordKid(level, 'numFmt'), 'val') || 'decimal', start: Number(wordAttr(wordKid(level, 'start'), 'val') ?? 1) });
+    }
+    abstracts.set(wordAttr(item, 'abstractNumId'), levels);
+  }
+  for (const item of wordAll(xml, 'num')) {
+    const overrides = new Map();
+    for (const override of wordKids(item, 'lvlOverride')) {
+      const start = wordKid(override, 'startOverride');
+      if (start) overrides.set(Number(wordAttr(override, 'ilvl')) || 0, Number(wordAttr(start, 'val')));
+    }
+    nums.set(wordAttr(item, 'numId'), { abstract: wordAttr(wordKid(item, 'abstractNumId'), 'val'), overrides });
+  }
+  return {
+    level(numId, ilvl) {
+      const num = nums.get(numId);
+      const level = num && abstracts.get(num.abstract)?.get(ilvl);
+      if (!level) return null;
+      return { format: level.format, start: num.overrides.has(ilvl) ? num.overrides.get(ilvl) : level.start };
+    },
+  };
+}
+
+// Che cosa è un paragrafo per il suo stile: titolo (livello), titolo del documento, citazione,
+// codice, voce di sommario, elenco dello stile.
+function wordParagraphInfo(p, ctx) {
+  const pPr = wordKid(p, 'pPr');
+  const styleId = wordAttr(wordKid(pPr, 'pStyle'), 'val') || '';
+  let info = ctx.styleCache.get(styleId);
+  if (!info) {
+    info = { level: 0, title: false, subtitle: false, quote: false, code: false, toc: false, numPr: null, mono: false };
+    for (const style of wordStyleChain(styleId || 'Normal', ctx)) {
+      const name = style.name.trim();
+      if (!info.level && !info.title) {
+        const heading = /^(?:heading|titolo|intestazione|überschrift|titre|título)\s*([1-9])$/i.exec(name);
+        if (heading) info.level = Number(heading[1]);
+        else if (style.outline !== null && Number(style.outline) < 9) info.level = Number(style.outline) + 1;
+        else if (/^(?:title|titolo|titel|titre|título)$/i.test(name)) info.title = true;
+      }
+      if (/^(?:subtitle|sottotitolo|untertitel|sous-titre)$/i.test(name)) info.subtitle = true;
+      if (/quote|citazione|zitat|citation|cita/i.test(name)) info.quote = true;
+      if (/^(?:code|codice|source code|html preformatted|preformattato html|plain text|testo normale|macro text|testo macro)\b/i.test(name)) info.code = true;
+      if (/^(?:toc|sommario|indice|verzeichnis|table des matières)\s*\d|^(?:toc heading|titolo sommario)$/i.test(name)) info.toc = true;
+      if (!info.numPr && style.numPr) info.numPr = style.numPr;
+      const fonts = wordKid(style.rPr, 'rFonts');
+      if (fonts && wordMonoFont.test(wordAttr(fonts, 'ascii') || wordAttr(fonts, 'hAnsi') || '')) info.mono = true;
+    }
+    if (info.level > 9) info.level = 0;
+    ctx.styleCache.set(styleId, info);
+  }
+  const outline = wordAttr(wordKid(pPr, 'outlineLvl'), 'val');
+  if (outline !== null && Number(outline) < 9) return { ...info, level: Number(outline) + 1, title: false };
+  return info;
+}
+
+// Formato di un pezzo di testo: stile del carattere (rStyle) + formato diretto.
+function wordRunProps(run, ctx) {
+  const rPr = wordKid(run, 'rPr');
+  const props = { b: false, i: false, s: false, u: false, mark: false, sup: false, sub: false, code: false, hidden: false };
+  const apply = node => {
+    if (!node) return;
+    for (const child of node.children) {
+      const name = child.localName;
+      if (name === 'b') props.b = wordOn(child);
+      else if (name === 'i') props.i = wordOn(child);
+      else if (name === 'strike' || name === 'dstrike') props.s = wordOn(child);
+      else if (name === 'u') props.u = !/^(none|0|false)$/i.test(wordAttr(child, 'val') || 'single');
+      else if (name === 'highlight') props.mark = !/^(none)$/i.test(wordAttr(child, 'val') || 'none');
+      else if (name === 'vertAlign') { const value = wordAttr(child, 'val'); props.sup = value === 'superscript'; props.sub = value === 'subscript'; }
+      else if (name === 'vanish' || name === 'webHidden') props.hidden = wordOn(child);
+      else if (name === 'rFonts') props.code = wordMonoFont.test(wordAttr(child, 'ascii') || wordAttr(child, 'hAnsi') || '');
+    }
+  };
+  const styleId = wordAttr(wordKid(rPr, 'rStyle'), 'val');
+  for (const style of wordStyleChain(styleId, ctx).reverse()) {
+    apply(style.rPr);
+    if (/^(?:strong|enfasi \(grassetto\)|forte)$/i.test(style.name)) props.b = true;
+    if (/^(?:emphasis|enfasi \(corsivo\)|enfasi)$/i.test(style.name)) props.i = true;
+    if (/code|codice/i.test(style.name)) props.code = true;
+    if (/^hyperlink|collegamento ipertestuale/i.test(style.name)) props.u = false;
+  }
+  apply(rPr);
+  if (styleId && /^hyperlink|collegamento/i.test(ctx.styles.get(styleId)?.name || '')) props.u = false;
+  return props;
+}
+
+// Blocchi del corpo (anche celle, caselle di testo, controlli contenuto).
+function wordBlocks(container, ctx, out) {
+  for (const node of container?.children || []) {
+    const name = node.localName;
+    if (name === 'p') {
+      const block = wordParagraph(node, ctx);
+      if (block) out.push(block);
+      if (ctx.pending.length) {
+        const pending = ctx.pending.splice(0);
+        for (const box of pending) wordBlocks(box, ctx, out);
+      }
+    } else if (name === 'tbl') out.push(wordTable(node, ctx));
+    else if (name === 'sdt') {
+      const gallery = wordAll(wordKid(node, 'sdtPr'), 'docPartGallery').map(item => wordAttr(item, 'val')).join(' ');
+      if (/table of contents/i.test(gallery)) continue;
+      wordBlocks(wordKid(node, 'sdtContent'), ctx, out);
+    } else if (name === 'customXml' || name === 'ins' || name === 'moveTo') wordBlocks(node, ctx, out);
+    else if (name === 'AlternateContent') wordBlocks(wordKid(node, 'Choice') || wordKid(node, 'Fallback'), ctx, out);
+  }
+}
+
+function wordParagraph(p, ctx) {
+  const info = wordParagraphInfo(p, ctx);
+  if (info.toc) return null;
+  const segments = wordParagraphSegments(p, ctx);
+  const pPr = wordKid(p, 'pPr');
+  const direct = wordKid(pPr, 'numPr');
+  const numPr = direct || info.numPr;
+  const numId = wordAttr(wordKid(numPr, 'numId'), 'val');
+  const ilvl = Number(wordAttr(wordKid(numPr, 'ilvl'), 'val')) || 0;
+  // «Elenco puntato 2», «List Number 3»: elenchi a un livello solo, rientrati dallo stile.
+  let depth = ilvl;
+  if (!direct && numPr && !wordKid(numPr, 'ilvl')) {
+    const styleName = ctx.styles.get(wordAttr(wordKid(pPr, 'pStyle'), 'val'))?.name || '';
+    const nested = /(?:list|elenco)\b.*?\s([2-9])$/i.exec(styleName.trim());
+    if (nested) depth = Number(nested[1]) - 1;
+  }
+  const level = info.title ? Math.min(6, 1 + ctx.shift) : info.level ? Math.min(6, info.level + (ctx.hasTitle ? 1 : 0) + ctx.shift) : 0;
+  const texts = segments.filter(segment => typeof segment.text === 'string');
+  const code = info.code || (texts.length > 0 && texts.every(segment => segment.code || !segment.text.trim()) && texts.some(segment => segment.text.trim()) &&
+    !segments.some(segment => segment.raw) && (info.mono || texts.every(segment => segment.code)) && texts.map(segment => segment.text).join('').length > 0 && wordLooksLikeCode(texts));
+  if (code) return { kind: 'code', text: segments.map(segment => segment.br ? '\n' : segment.text ?? '').join('') };
+  if (numId && numId !== '0' && !level) {
+    const format = ctx.numbering.level(numId, ilvl);
+    if (format && format.format !== 'none') return { kind: 'list', numId, ilvl: depth, ordered: format.format !== 'bullet', start: format.start, segments };
+  }
+  if (level) return { kind: 'heading', level, segments };
+  if (info.quote) return { kind: 'quote', segments };
+  if (info.subtitle) return { kind: 'para', segments: segments.map(segment => typeof segment.text === 'string' ? { ...segment, i: true } : segment) };
+  return { kind: 'para', segments };
+}
+
+// Un paragrafo tutto a spaziatura fissa è codice se sembra codice (non una sola parola in Courier).
+function wordLooksLikeCode(texts) {
+  const text = texts.map(segment => segment.text).join('');
+  return text.length > 40 || /[{}();=<>\[\]$#]|^\s{2,}|\t/.test(text);
+}
+
+function wordParagraphSegments(p, ctx) {
+  const out = [];
+  wordInlineNodes(p, ctx, out, null);
+  return out;
+}
+
+function wordInlineNodes(node, ctx, out, href) {
+  for (const child of node.children) {
+    const name = child.localName;
+    if (name === 'r') wordRun(child, ctx, out, href);
+    else if (name === 'hyperlink') {
+      const anchor = wordAttr(child, 'anchor');
+      const rel = ctx.rels.get(wordRelAttr(child, 'id'));
+      let target = rel?.target || '';
+      if (anchor && !target) target = ctx.bookmarks.has(anchor) ? '#' + ctx.bookmarks.get(anchor) : '';
+      else if (anchor) target += '#' + anchor;
+      wordInlineNodes(child, ctx, out, target || href);
+    } else if (name === 'fldSimple') {
+      const link = /HYPERLINK\s+(?:\\l\s+)?"([^"]+)"/i.exec(wordAttr(child, 'instr') || '');
+      const local = /\\l/.test(wordAttr(child, 'instr') || '');
+      wordInlineNodes(child, ctx, out, link ? (local ? (ctx.bookmarks.has(link[1]) ? '#' + ctx.bookmarks.get(link[1]) : href) : link[1]) : href);
+    } else if (['ins', 'smartTag', 'customXml', 'moveTo', 'dir', 'bdo'].includes(name)) wordInlineNodes(child, ctx, out, href);
+    else if (name === 'sdt') wordInlineNodes(wordKid(child, 'sdtContent') || child, ctx, out, href);
+    else if (name === 'AlternateContent') wordInlineNodes(wordKid(child, 'Choice') || wordKid(child, 'Fallback') || child, ctx, out, href);
+    else if (name === 'oMath' || name === 'oMathPara') {
+      const text = wordAll(child, 't').map(item => item.textContent).join('');
+      if (text) out.push({ text, code: true, href });
+      ctx.warnings.add('Le formule sono diventate testo (`…`): riscrivile con $…$ se servono.');
+    }
+  }
+}
+
+function wordRun(run, ctx, out, href, props = wordRunProps(run, ctx), children = run.children) {
+  const field = () => ctx.fields.at(-1);
+  const linkNow = () => ctx.fields.findLast(item => item.href && item.phase === 'result')?.href || href;
+  const text = value => {
+    if (props.hidden || field()?.phase === 'instr') return;
+    out.push({ ...props, text: value, href: linkNow() || '' });
+  };
+  for (const child of children) {
+    const name = child.localName;
+    if (name === 't') text(child.textContent);
+    else if (name === 'tab' || name === 'ptab') text(props.code ? '\t' : ' ');
+    else if (name === 'noBreakHyphen') text('-');
+    else if (name === 'br' || name === 'cr') {
+      const type = wordAttr(child, 'type');
+      if (type !== 'page' && type !== 'column' && field()?.phase !== 'instr') out.push({ br: true });
+    } else if (name === 'fldChar') {
+      const type = wordAttr(child, 'fldCharType');
+      if (type === 'begin') ctx.fields.push({ instr: '', phase: 'instr' });
+      else if (type === 'separate' && field()) {
+        const item = field();
+        item.phase = 'result';
+        const link = /HYPERLINK\s+(?:\\l\s+)?"([^"]+)"/i.exec(item.instr);
+        if (link) item.href = /\\l/.test(item.instr) ? (ctx.bookmarks.has(link[1]) ? '#' + ctx.bookmarks.get(link[1]) : '') : link[1];
+      } else if (type === 'end') ctx.fields.pop();
+    } else if (name === 'instrText') { if (field()) field().instr += child.textContent; }
+    else if (name === 'drawing' || name === 'pict' || name === 'object') wordDrawing(child, ctx, out, linkNow());
+    else if (name === 'footnoteReference' || name === 'endnoteReference') {
+      const kind = name === 'footnoteReference' ? 'footnote' : 'endnote';
+      const id = wordAttr(child, 'id');
+      if (!ctx.notes[kind].has(id)) continue;
+      const key = kind + ':' + id;
+      if (!ctx.noteIds.has(key)) {
+        ctx.noteOrder.push({ kind, id });
+        ctx.noteIds.set(key, ctx.noteOrder.length);
+      }
+      out.push({ raw: '[^' + ctx.noteIds.get(key) + ']' });
+    } else if (name === 'AlternateContent') {
+      const choice = wordKid(child, 'Choice') || wordKid(child, 'Fallback');
+      if (choice) wordRun(run, ctx, out, href, props, choice.children);
+    } else if (name === 'sym') {
+      const code = parseInt(wordAttr(child, 'char') || '', 16);
+      if (code === 0xf0b7) text('•');
+    }
+  }
+}
+
+// Immagini (DrawingML e VML), caselle di testo, grafici.
+function wordDrawing(node, ctx, out, href) {
+  for (const box of wordAll(node, 'txbxContent')) ctx.pending.push(box);
+  if (wordAll(node, 'chart').length) ctx.warnings.add('I grafici non sono stati convertiti: rifalli o incolla un’immagine al loro posto.');
+  if (wordAll(node, 'relIds').length) ctx.warnings.add('Gli elementi SmartArt non sono stati convertiti.');
+  const blips = [...wordAll(node, 'blip'), ...wordAll(node, 'imagedata')];
+  const description = wordAll(node, 'docPr')[0];
+  const alt = (description?.getAttribute('descr') || description?.getAttribute('title') || '').replace(/\s+/g, ' ').trim();
+  const extent = wordAll(node, 'extent')[0];
+  const width = extent ? Math.round(Number(extent.getAttribute('cx')) / 9525) : 0;
+  const done = new Set();
+  for (const blip of blips) {
+    const id = wordRelAttr(blip, 'embed') || wordRelAttr(blip, 'id') || wordRelAttr(blip, 'link');
+    if (!id || done.has(id)) continue;
+    done.add(id);
+    const rel = ctx.rels.get(id);
+    if (!rel) continue;
+    if (rel.external) {
+      if (/^https?:/i.test(rel.target)) out.push({ raw: '![' + mdText(alt) + '](' + dest(rel.target) + ')', href });
+      continue;
+    }
+    const zipPath = rel.target.startsWith('/') ? rel.target.slice(1) : normalize('word/' + rel.target);
+    let image = ctx.images.get(zipPath);
+    if (!image) {
+      let extension = (zipPath.split('.').pop() || 'png').toLowerCase();
+      if (extension === 'jpeg') extension = 'jpg';
+      const name = 'immagine-' + (ctx.images.size + 1) + '.' + extension;
+      const path = ctx.imageDir + '/' + name;
+      const type = { png: 'image/png', jpg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', bmp: 'image/bmp', svg: 'image/svg+xml', avif: 'image/avif',
+        emf: 'image/emf', wmf: 'image/wmf', tif: 'image/tiff', tiff: 'image/tiff' }[extension] || 'application/octet-stream';
+      image = { path, name, extension, type, zipPath };
+      ctx.images.set(zipPath, image);
+      ctx.imageList.push(image);
+    }
+    // Lo stesso file in un formato che il browser non mostra (EMF, WMF, TIFF): collegamento.
+    if (!wordWebImage.test(image.extension)) {
+      ctx.warnings.add('Alcune immagini sono in un formato che il browser non mostra (' + image.extension.toUpperCase() + '): sono collegamenti, sostituiscile con un PNG.');
+      out.push({ raw: '[' + (mdText(alt) || image.name) + '](' + relative(ctx.from, image.path) + ')', href });
+      continue;
+    }
+    out.push({ raw: '![' + mdText(alt) + '](' + relative(ctx.from, image.path) + ')' + (width > 0 ? '{ width="' + width + '" }' : ''), href });
+  }
+}
+
+// Testo in linea: i segni di formato si aprono e chiudono a cavallo dei pezzi (Word spezza il
+// testo in tanti pezzi con lo stesso formato), gli spazi restano fuori dai segni.
+function wordInline(segments, ctx, { table = false, single = false } = {}) {
+  // Pezzi vicini con lo stesso formato e lo stesso collegamento diventano uno.
+  const key = segment => ['b', 'i', 's', 'u', 'mark', 'sup', 'sub', 'code'].map(name => segment[name] ? 1 : 0).join('') + '|' + (segment.href || '');
+  const merged = [];
+  for (const segment of segments) {
+    const last = merged.at(-1);
+    if (typeof segment.text === 'string' && typeof last?.text === 'string' && key(last) === key(segment)) last.text += segment.text;
+    else merged.push(typeof segment.text === 'string' ? { ...segment } : segment);
+  }
+  const breakMark = '<br>';
+  const emit = list => {
+    const order = ['b', 'i', 's', 'mark'];
+    const marker = { b: '**', i: '*', s: '~~', mark: '==' };
+    let result = '';
+    const active = [];
+    const closeTo = keep => {
+      const tail = /\s*$/.exec(result)[0];
+      result = result.slice(0, result.length - tail.length);
+      while (active.length > keep) result += marker[active.pop()];
+      result += tail;
+    };
+    for (const segment of list) {
+      if (segment.br) { closeTo(0); result += breakMark; continue; }
+      if (segment.raw) { closeTo(0); result += segment.raw; continue; }
+      let text = segment.text;
+      if (!text) continue;
+      if (!text.trim()) { result += text.replace(/\t/g, ' '); continue; }
+      let piece;
+      if (segment.code) {
+        const fence = '`'.repeat(Math.max(1, ...(text.trim().match(/`+/g) || []).map(run => run.length + 1)));
+        const lead = /^\s*/.exec(text)[0], trail = /\s*$/.exec(text)[0];
+        const core = text.trim();
+        piece = lead + fence + (/^`|`$/.test(core) ? ' ' + core + ' ' : core) + fence + trail;
+      } else piece = mdText(text.replace(/\t/g, ' ')).replace(/==/g, '\\=\\=');
+      if (table) piece = piece.replace(/\|/g, '\\|');
+      if (segment.u || segment.sup || segment.sub) {
+        const lead = /^\s*/.exec(piece)[0], trail = /\s*$/.exec(piece)[0];
+        let core = piece.trim();
+        if (segment.sup) core = '<sup>' + core + '</sup>';
+        if (segment.sub) core = '<sub>' + core + '</sub>';
+        if (segment.u) core = '<u>' + core + '</u>';
+        piece = lead + core + trail;
+      }
+      const wanted = order.filter(name => segment[name]);
+      let keep = 0;
+      while (keep < active.length && wanted.includes(active[keep])) keep++;
+      if (keep < active.length) closeTo(keep);
+      const opening = wanted.filter(name => !active.includes(name));
+      if (opening.length) {
+        const lead = /^\s*/.exec(piece)[0];
+        result += lead;
+        piece = piece.slice(lead.length);
+        for (const name of opening) { result += marker[name]; active.push(name); }
+      }
+      result += piece;
+    }
+    closeTo(0);
+    return result;
+  };
+  // Collegamenti: i pezzi consecutivi con lo stesso indirizzo vanno tra [ ].
+  let result = '';
+  for (let index = 0; index < merged.length;) {
+    const href = merged[index].href || '';
+    let end = index + 1;
+    while (end < merged.length && (merged[end].href || '') === href) end++;
+    const inner = emit(merged.slice(index, end));
+    if (href && inner.trim()) {
+      const lead = /^\s*/.exec(inner)[0], trail = /\s*$/.exec(inner)[0];
+      result += lead + '[' + inner.trim() + '](' + (href.startsWith('#') ? href : dest(href)) + ')' + trail;
+    } else result += inner;
+    index = end;
+  }
+  return result.replace(/\s+$/, '').replace(/^\s+/, '').replace(/(?:<br>)+$/, '');
+}
+
+function wordTable(tbl, ctx) {
+  const rows = [];
+  const cellBlocks = cell => {
+    const blocks = [];
+    const saved = ctx.pending;
+    ctx.pending = [];
+    wordBlocks(cell, ctx, blocks);
+    ctx.pending = saved;
+    return blocks;
+  };
+  const rowNodes = [];
+  const collect = node => {
+    for (const child of node.children) {
+      if (child.localName === 'tr') rowNodes.push(child);
+      else if (['sdt', 'sdtContent', 'customXml'].includes(child.localName)) collect(child);
+    }
+  };
+  collect(tbl);
+  for (const tr of rowNodes) {
+    const cells = [];
+    const cellNodes = [];
+    const gather = node => {
+      for (const child of node.children) {
+        if (child.localName === 'tc') cellNodes.push(child);
+        else if (['sdt', 'sdtContent', 'customXml'].includes(child.localName)) gather(child);
+      }
+    };
+    gather(tr);
+    for (const tc of cellNodes) {
+      const tcPr = wordKid(tc, 'tcPr');
+      const span = Number(wordAttr(wordKid(tcPr, 'gridSpan'), 'val')) || 1;
+      const merge = wordKid(tcPr, 'vMerge');
+      const continued = merge && wordAttr(merge, 'val') !== 'restart';
+      cells.push(continued ? { blocks: [] } : { blocks: cellBlocks(tc) });
+      for (let extra = 1; extra < span; extra++) cells.push({ blocks: [] });
+    }
+    if (cells.length) rows.push(cells);
+  }
+  return { kind: 'table', rows };
+}
+
+// Contenuto di una cella su una riga: paragrafi separati da <br>, elenchi con il loro segno.
+function wordCellText(blocks, ctx) {
+  const lines = [];
+  for (const block of blocks) {
+    if (block.kind === 'table') {
+      lines.push(block.rows.map(row => row.map(cell => wordCellText(cell.blocks, ctx)).filter(Boolean).join(' · ')).filter(Boolean).join('<br>'));
+      continue;
+    }
+    if (block.kind === 'code') {
+      const text = block.text.trim();
+      if (text) lines.push(text.split('\n').map(line => '`' + line.replace(/`/g, 'ʼ').replace(/\|/g, '\\|') + '`').join('<br>'));
+      continue;
+    }
+    const text = wordInline(block.segments, ctx, { table: true });
+    if (!text) continue;
+    lines.push(block.kind === 'list' ? (block.ordered ? wordListNumber(block, ctx) + '. ' : '• ') + text : block.kind === 'heading' ? '**' + text + '**' : text);
+  }
+  return lines.join('<br>');
+}
+
+function wordListNumber(block, ctx) {
+  let counters = ctx.counters.get(block.numId);
+  if (!counters) ctx.counters.set(block.numId, counters = []);
+  counters[block.ilvl] = counters[block.ilvl] === undefined ? block.start : counters[block.ilvl] + 1;
+  counters.length = block.ilvl + 1;
+  return counters[block.ilvl];
+}
+
+function wordAssemble(blocks, ctx) {
+  const parts = [];   // { text, kind }
+  let code = null;
+  const flushCode = () => {
+    if (!code) return;
+    const text = code.join('\n').replace(/\s+$/, '');
+    const fence = '`'.repeat(Math.max(3, ...(text.match(/`{3,}/g) || []).map(run => run.length + 1)));
+    parts.push({ kind: 'code', text: fence + '\n' + text + '\n' + fence });
+    code = null;
+  };
+  for (const block of blocks) {
+    if (block.kind === 'code') {
+      (code ||= []).push(block.text.replace(/\r/g, ''));
+      continue;
+    }
+    flushCode();
+    if (block.kind === 'table') {
+      const rows = block.rows.map(row => row.map(cell => wordCellText(cell.blocks, ctx)));
+      const width = Math.max(0, ...rows.map(row => row.length));
+      if (!width) continue;
+      // Tabella di una sola cella: in Word è quasi sempre un riquadro, non una tabella.
+      if (rows.length === 1 && width === 1) {
+        const inner = block.rows[0][0].blocks;
+        if (inner.length) parts.push({ kind: 'para', text: wordAssemble(inner, ctx) });
+        continue;
+      }
+      const line = row => '| ' + Array.from({ length: width }, (_, index) => row[index] || '').join(' | ') + ' |';
+      parts.push({ kind: 'table', text: [line(rows[0]), '| ' + Array(width).fill('---').join(' | ') + ' |', ...rows.slice(1).map(line)].join('\n') });
+      continue;
+    }
+    const text = wordInline(block.segments, ctx, { single: block.kind === 'heading' });
+    if (!text.trim()) continue;   // paragrafi vuoti: in Word servono solo a fare spazio
+    if (block.kind === 'heading') parts.push({ kind: 'heading', text: '#'.repeat(block.level) + ' ' + text.replace(/<br>\n?/g, ' ') });
+    else if (block.kind === 'quote') parts.push({ kind: 'quote', text: '> ' + text });
+    else if (block.kind === 'list') {
+      const indent = '    '.repeat(block.ilvl);
+      const lead = block.ordered ? wordListNumber(block, ctx) + '. ' : '- ';
+      parts.push({ kind: 'list', text: indent + lead + text, ilvl: block.ilvl, ordered: block.ordered });
+    } else parts.push({ kind: 'para', text });
+  }
+  flushCode();
+  let markdown = '', rootOrdered = false;
+  for (let index = 0; index < parts.length; index++) {
+    const part = parts[index], previous = parts[index - 1];
+    // Un elenco puntato seguito da uno numerato (o il contrario) è un altro elenco: riga vuota.
+    if (part.kind === 'list' && previous?.kind !== 'list') rootOrdered = part.ordered;
+    const sameList = previous?.kind === 'list' && part.kind === 'list' && !(part.ilvl === 0 && part.ordered !== rootOrdered);
+    if (part.kind === 'list' && part.ilvl === 0) rootOrdered = part.ordered;
+    if (index) markdown += sameList ? '\n' : previous.kind === 'quote' && part.kind === 'quote' ? '\n>\n' : '\n\n';
+    markdown += part.text;
+  }
+  return markdown;
+}
+
+// Nome libero per la cartella delle immagini: _allegati/<nome del Word> (2)…
+function wordImageFolder(base, taken) {
+  for (let index = 1; ; index++) {
+    const folder = attachmentFolderName + '/' + base + (index > 1 ? ' (' + index + ')' : '');
+    const lower = folder.toLowerCase();
+    if (!taken(lower)) return folder;
+  }
+}
+
+function wordConversionNotes(result) {
+  const notes = [];
+  if (result.images.length) notes.push(result.images.length === 1 ? '1 immagine' : result.images.length + ' immagini');
+  return notes;
+}
+
+function wordWarningsHtml(warnings) {
+  return warnings.length ? '<ul class="word-warnings">' + warnings.map(text => '<li>' + escapeHtml(text) + '</li>').join('') + '</ul>' : '';
+}
+
+// Menu ⋯ di un .docx: nuovo documento accanto al Word, immagini in _allegati/<nome>/.
+async function convertWordFile(path) {
+  const directory = root;
+  const handle = files.get(path);
+  const folder = folderHandles.get(parent(path));
+  if (!directory || !handle || !folder || importedFolderName) return;
+  if (!await allowFolderWrite(directory)) return;
+  const wordName = path.split('/').pop();
+  const base = attachmentName(wordName.replace(/\.docx$/i, ''));
+  // Un Word in _allegati: il documento va nella cartella dei documenti, non tra gli allegati.
+  const segments = parent(path).split('/');
+  const attachmentsAt = segments.indexOf(attachmentFolderName);
+  const mdFolderPath = attachmentsAt >= 0 ? segments.slice(0, attachmentsAt).join('/') : parent(path);
+  const mdFolder = folderHandles.get(mdFolderPath) || folder;
+  startLoading('Conversione di «' + wordName + '» in Markdown…', 0);
+  fileActionBusy = true;
+  try {
+    const file = await handle.getFile();
+    const mdName = await freeDestinationName(mdFolder, base + '.md', false);
+    const mdPath = [folderHandles.has(mdFolderPath) ? mdFolderPath : parent(path), mdName].filter(Boolean).join('/');
+    const existing = await entryDirectory(directory, attachmentFolderName);
+    const imageDir = attachmentFolderName + '/' + (existing ? await freeDestinationName(existing, base, true) : base);
+    const result = await docxToMarkdown(file, { from: mdPath, imageDir });
+    if (root !== directory) return;
+    files = new Map(files);
+    if (result.images.length) {
+      const attachments = existing || await directory.getDirectoryHandle(attachmentFolderName, { create: true });
+      folderHandles.set(attachmentFolderName, attachments);
+      const imageFolder = await attachments.getDirectoryHandle(imageDir.split('/').pop(), { create: true });
+      folderHandles.set(imageDir, imageFolder);
+      for (const image of result.images) files.set(image.path, await writeNewFile(imageFolder, image.path.split('/').pop(), image.blob));
+    }
+    const mdHandle = await writeNewFile(mdFolder, mdName, result.markdown);
+    files.set(mdPath, mdHandle);
+    recordEdit(mdHandle, mdPath);
+    renderTree();
+    fileActionBusy = false;
+    stopLoading();
+    await openPath(mdPath);
+    const what = wordConversionNotes(result);
+    if (result.warnings.length) {
+      await modal('Convertito in Markdown', '<p>«' + escapeHtml(mdName) + '» è pronto' + (what.length ? ' (con ' + escapeHtml(what.join(', ')) + ' in ' + escapeHtml(imageDir) + ')' : '') +
+        '. Il file Word resta nella cartella. Da controllare:</p>' + wordWarningsHtml(result.warnings), 'OK');
+    } else {
+      toast('«' + mdName + '» creato dal Word' + (what.length ? ' · ' + what.join(', ') + ' in ' + imageDir : '') + '. Il file Word resta nella cartella.', 'success');
+    }
+  } catch (error) {
+    toast('Conversione non riuscita: ' + error.message);
+  } finally {
+    if (fileActionBusy) {
+      fileActionBusy = false;
+      stopLoading();
+    }
+  }
+}
+
+// Riquadro di un Word incorporato › «Nel documento»: il contenuto prende il posto del riquadro.
+// Le immagini restano in bozza (draftImages) e finiscono in _allegati/<nome>/ quando si salva.
+async function inlineEmbeddedWord(box) {
+  if (!ed.contains(box) || !canEditVisual()) return;
+  const target = pdfEmbedTarget(box);
+  const name = target.name;
+  if (!root && !target.external) {
+    toast('Apri la cartella di lavoro con Scegli cartella per portare il Word nel documento.');
+    return;
+  }
+  startLoading('Conversione di «' + name + '»…', 0);
+  let result;
+  try {
+    const file = target.external ? await fetch(target.url).then(response => response.ok ? response.blob() : null) : draftImages.get(target.path) || await files.get(target.path)?.getFile();
+    if (!file) throw new Error('file non trovato');
+    const base = attachmentName(name.replace(/\.docx$/i, ''));
+    const taken = lower => [...files.keys(), ...draftImages.keys(), ...folderHandles.keys()].some(item => item.toLowerCase() === lower || item.toLowerCase().startsWith(lower + '/'));
+    result = await docxToMarkdown(file, { from: current, imageDir: wordImageFolder(base, taken), shift: ed.querySelector(':scope > h1') ? 1 : 0 });
+  } catch (error) {
+    toast('Impossibile convertire «' + name + '»: ' + error.message);
+    return;
+  } finally {
+    stopLoading();
+  }
+  if (!box.isConnected || !canEditVisual()) return;
+  if (result.markdown.length > 300_000 && !await modal('Nel documento', '<p>«' + escapeHtml(name) + '» è lungo (' + Math.round(result.markdown.length / 1000) +
+      ' mila caratteri): il documento diventerà molto più lungo. Continuare?</p>', 'Continua')) return;
+  for (const image of result.images) draftImages.set(image.path, new File([image.blob], image.path.split('/').pop(), { type: image.blob.type }));
+  const nodes = renderedPdfEmbed(result.markdown);
+  if (!nodes.length || !box.isConnected) return;
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  box.replaceWith(...nodes);
+  configureVisualContent();
+  loadImages();
+  pushLiveUndo(before);
+  mark();
+  queueOutline();
+  // Un Word tra gli allegati che nessun altro usa va nel cestino di Itaca al salvataggio.
+  const leaving = !target.external && isAttachmentPath(target.path) && settings.attachmentTrash
+    ? ' Se nessun altro documento usa «' + name + '», al salvataggio va nel cestino di Itaca.' : '';
+  if (result.warnings.length) {
+    await modal('Word nel documento', '<p>Il contenuto di «' + escapeHtml(name) + '» è ora nel documento (Ctrl/⌘ + Z per tornare al riquadro).' + escapeHtml(leaving) + ' Da controllare:</p>' + wordWarningsHtml(result.warnings), 'OK');
+  } else {
+    toast('Il contenuto di «' + name + '» è ora nel documento' + (result.images.length ? '; le immagini vanno in _allegati quando salvi' : '') + '. Ctrl/⌘ + Z per tornare al riquadro.' + leaving, 'success');
+  }
 }
 
 // Nuovi blocchi in fondo al blocco del cursore (o al posto di una riga vuota). Ctrl/⌘+Z li toglie.
@@ -12601,9 +13330,11 @@ async function autosave() {
     }
     if (path !== current || handle !== standalone || loading) return;
     const data = getMarkdown();
+    const previous = original;
     await writeSavedFile(handle, data);
     if (path !== current || handle !== standalone) return;
     original = data;
+    attachmentsAfterSave(path, previous, data);
     updateSavedVisit();
     invalidateSearchPath(current);
     if (revision !== editRevision) return scheduleAutosave();
@@ -12627,6 +13358,7 @@ async function save() {
       !confirm('Il documento contiene sintassi avanzata. Il salvataggio visuale può modificarla. Continuare?')) return false;
 
   const data = getMarkdown();
+  const savedBefore = original;
   const filename = current.split('/').pop();
   const revision = editRevision;
   loading = true;
@@ -12684,6 +13416,7 @@ async function save() {
       if (importedFolderName) files.set(current, markdownSnapshot(current, data));
     }
     original = data;
+    if (handle && root) attachmentsAfterSave(current, pendingNewDocument ? '' : savedBefore, data);
     pendingNewDocument = false;
     savedVisualMarkdown = sourceMode ? undefined : serializeVisualMarkdown();
     if (!sourceMode) visualSnapshot = { markdown: data, canonical: savedVisualMarkdown };
@@ -13118,11 +13851,15 @@ async function saveDocumentFile(handle, data) {
   const existing = await entryDirectory(folder, '_allegati');
   const attachments = existing || await folder.getDirectoryHandle('_allegati', { create: true });
   const written = new Map();
+  const targets = new Map();   // percorso → cartella (anche sottocartelle di _allegati, es. le immagini di un Word)
   try {
     for (const path of referenced) {
       const name = path.split('/').pop();
-      if (await existingFile(attachments, name)) throw new Error('Esiste già un allegato con il nome «' + name + '».');
-      const image = await attachments.getFileHandle(name, { create: true });
+      const inside = parent(path).split('/').slice(1).join('/');
+      const target = inside ? await ensureDirectory(attachments, inside) : attachments;
+      targets.set(path, target);
+      if (await existingFile(target, name)) throw new Error('Esiste già un allegato con il nome «' + name + '».');
+      const image = await target.getFileHandle(name, { create: true });
       written.set(path, image);
       await writeSavedFile(image, draftImages.get(path));
     }
@@ -13132,8 +13869,9 @@ async function saveDocumentFile(handle, data) {
     for (const [path, image] of written) {
       try {
         const name = path.split('/').pop();
-        const latest = await existingFile(attachments, name);
-        if (latest && await image.isSameEntry(latest)) await attachments.removeEntry(name);
+        const target = targets.get(path);
+        const latest = await existingFile(target, name);
+        if (latest && await image.isSameEntry(latest)) await target.removeEntry(name);
       } catch { cleanupFailed = true; }
     }
     if (!existing) {
@@ -13152,6 +13890,7 @@ async function saveDocumentFile(handle, data) {
   }
 
   folderHandles.set('_allegati', attachments);
+  for (const [path, target] of targets) folderHandles.set(parent(path), target);
   files = new Map(files);
   for (const [path, image] of written) {
     draftImages.delete(path);
@@ -14375,6 +15114,7 @@ const settingChoices = {
   openMode: ['read', 'edit', 'source'],
   autosave: [0, 2, 5, 15, 60],
   deleteConfirm: ['double', 'simple'],
+  attachmentTrash: [true, false],
   updateLinks: [true, false],
   pdfAsk: [true, false],
   sidebarSide: ['left', 'right'],
@@ -14413,7 +15153,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -14501,6 +15241,7 @@ function syncSettings() {
   settingsForm.folderPath.title = root ? 'Usato da Copia percorso. Il browser non lo conosce: correggilo se non è giusto.' : 'Apri una cartella di lavoro';
   settingsForm.autosave.value = String(settings.autosave);
   settingsForm.updateLinks.checked = settings.updateLinks;
+  settingsForm.attachmentTrash.checked = settings.attachmentTrash;
   settingsForm.quickInsert.checked = settings.quickInsert;
   settingsForm.treeLabels.value = settings.treeLabels;
   settingsForm.treeOrder.value = settings.treeOrder;
@@ -15947,7 +16688,7 @@ const glossaryMarkdown = [
     ['Immagine', 'Come un collegamento, con ! davanti. Il testo tra parentesi quadre descrive l’immagine. Le immagini incollate finiscono in _allegati.', '![Schema dell’impianto](_allegati/schema.png)'],
     ['Diagramma (draw.io)', 'Un’immagine .drawio.svg contiene anche il diagramma: in Modifica il doppio clic (o «Modifica diagramma») lo riapre in draw.io. Il pulsante Diagramma della barra ne crea uno nuovo in _allegati.', '![Flusso di approvazione](_allegati/Flusso.drawio.svg)'],
     ['PDF incorporato', 'Come un’immagine, ma il file è un PDF, da solo su una riga: il PDF si legge dentro il documento (con i comandi del browser: pagine, zoom, scarica, stampa) e il pulsante Apri lo mostra in una nuova scheda. I PDF incollati o trascinati nel documento finiscono in _allegati.', '![Manuale d’uso](_allegati/manuale.pdf)'],
-    ['Documento Word incorporato', 'Come il PDF incorporato, ma con un file .docx: Itaca mostra un’anteprima delle pagine (sola lettura; caratteri e impaginazione possono differire un po’ da Word). Apri la mostra in una nuova scheda, Scarica scarica il file. I vecchi .doc non si possono mostrare: restano un collegamento.', '![Relazione](_allegati/relazione.docx)'],
+    ['Documento Word incorporato', 'Come il PDF incorporato, ma con un file .docx: Itaca mostra un’anteprima delle pagine (sola lettura; caratteri e impaginazione possono differire un po’ da Word). Apri la mostra in una nuova scheda, Scarica scarica il file. I vecchi .doc non si possono mostrare: restano un collegamento. In Modifica, «Nel documento» converte il Word in Markdown al posto del riquadro; dal menu ⋯ di un .docx nell’elenco, «Converti in Markdown» crea un documento nuovo accanto al file.', '![Relazione](_allegati/relazione.docx)'],
     ['Foglio Excel incorporato', 'Come il Word incorporato, ma con un file .xlsx o .xlsm: Itaca mostra i fogli come in Excel, con le lettere delle colonne, i numeri delle righe e le schede dei fogli in basso (sola lettura; i valori sono quelli salvati nel file, la formula compare passando sopra la cella; colori e caratteri delle celle non si vedono). I vecchi .xls non si possono mostrare: restano un collegamento.', '![Budget](_allegati/budget.xlsx)'],
     ['Presentazione PowerPoint incorporata', 'Come il Word incorporato, ma con un file .pptx: Itaca mostra le diapositive una sotto l’altra, con testi, immagini, forme e tabelle (sola lettura; grafici, animazioni e video non si vedono, e caratteri e posizioni possono differire un po’ da PowerPoint). I vecchi .ppt non si possono mostrare.', '![Presentazione](_allegati/riunione.pptx)'],
     ['File di testo incorporato', 'Come il PDF incorporato, ma con un file di testo (.txt, .log, .csv, .json, .xml, .yaml, codice…): Itaca ne mostra il contenuto con i numeri di riga e i colori della sintassi; i CSV diventano una tabella. Per SVG e HTML si sceglie se vedere l’anteprima (come appare) o il codice. Apri lo mostra in una nuova scheda, Scarica scarica il file. In Modifica: Modifica cambia il contenuto del file (scritto quando salvi il documento, Ctrl/⌘ + Z torna alla versione di prima) e Nel documento porta il testo dentro il documento come blocco di codice (i CSV come tabella), senza più collegamento al file.', '![Configurazione](_allegati/config.yaml)'],
@@ -22402,7 +23143,7 @@ async function cleanHiddenFolders(directory, backups = new Map()) {
   const alive = () => root === directory;
   const known = new Set(files.keys());
   const now = Date.now();
-  const removed = { locks: 0, edits: 0, backups: 0, bytes: 0 };
+  const removed = { locks: 0, edits: 0, backups: 0, trash: 0, bytes: 0 };
   const drop = async (folder, name, kind, size = 0) => {
     try {
       await withTimeout(folder.removeEntry(name), 10000);
@@ -22455,6 +23196,8 @@ async function cleanHiddenFolders(directory, backups = new Map()) {
       try { await folderHandles.get(folderPath)?.removeEntry(paintBackupFolder); } catch {}
     }
   }
+  // 4. Cestino degli allegati: dopo 30 giorni.
+  if (alive()) await cleanAttachmentTrash(directory, removed).catch(() => {});
   hiddenCleanupLast = { folder: directory.name, time: Date.now(), ...removed };
   return hiddenCleanupLast;
 }
@@ -22468,6 +23211,480 @@ async function forgetPaintBackup(folder, name) {
     for await (const _ of backups.keys()) { empty = false; break; }
     if (empty) await folder.removeEntry(paintBackupFolder);
   } catch {}
+}
+
+// ── Allegati non più usati: il cestino di Itaca ─────────────────────────────
+// Immagini e file inseriti nei documenti finiscono in _allegati quando si salva. Se poi si
+// tolgono dal documento (o si elimina il documento) il file restava lì per sempre. Ora, dopo
+// il salvataggio, gli allegati che il documento non cita più e che nessun altro file della
+// cartella nomina vanno in .itaca-trash (nascosta, come .itaca-backup), dove restano 30 giorni
+// prima che la pulizia delle cartelle nascoste li tolga. Se un documento li cita di nuovo
+// (Ctrl/⌘+Z dopo il salvataggio, una versione vecchia, il documento di un collega) tornano al
+// loro posto da soli. «Allegati non usati…» cerca anche quelli rimasti dal passato.
+//
+// La prova «nessuno lo usa» è volutamente prudente: basta che il NOME del file compaia in un
+// documento o in un file di testo della cartella (mkdocs.yml, HTML, CSS…), in qualsiasi forma
+// (codificato, con le maiuscole, con altri segni), perché l'allegato resti dov'è. Se anche un
+// solo file non si legge, non si sposta niente.
+const trashFolderName = '.itaca-trash', trashInfoName = 'info';
+const trashKeepDays = 30, trashKeepMs = trashKeepDays * 86400000;
+const attachmentFolderName = '_allegati';
+const referenceTextFiles = /\.(?:md|markdown|html?|ya?ml|css|js|mjs|json|toml|txt)$/i;
+var trashListCache = null;          // { directory, time, entries }
+var attachmentTrashBusy = false;
+
+function isAttachmentPath(path) {
+  return Boolean(path) && !isMD(path) && path.split('/').slice(0, -1).includes(attachmentFolderName);
+}
+
+// Testo ridotto alle sole lettere e cifre: «Schema%201.PNG», «schema\_1.png» e «Schema 1.png»
+// diventano tutti «schema1png». Serve solo a dire «potrebbe essere citato».
+function foldReference(text) {
+  return String(text)
+    .replace(/(?:%[0-9a-f]{2})+/gi, part => { try { return decodeURIComponent(part); } catch { return part; } })
+    .replace(/&(?:amp|#38);/g, '&')
+    .normalize('NFC').toLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, '');
+}
+
+// Quali dei percorsi dati sono ancora nominati da qualche parte. failed = un file non si è letto.
+async function usedAttachments(paths, { skip = new Set() } = {}) {
+  const wanted = paths.map(path => [path, foldReference(path.split('/').pop())]).filter(([, name]) => name);
+  const used = new Set(paths.filter(path => !foldReference(path.split('/').pop())));
+  const check = text => {
+    const folded = foldReference(text);
+    for (const [path, name] of wanted) if (!used.has(path) && folded.includes(name)) used.add(path);
+  };
+  // Il documento aperto e le schede con modifiche non ancora salvate contano già.
+  if (current && isMD(current)) check(getMarkdown());
+  for (const tab of Array.isArray(docTabs) ? docTabs : []) if (tab.draft?.text) check(tab.draft.text);
+  const sources = [...files].filter(([path]) => referenceTextFiles.test(path) && !skip.has(path));
+  let failed = false;
+  await forEachLimited(sources, 8, async ([, handle]) => {
+    if (failed || used.size >= paths.length) return;
+    try {
+      const file = await withTimeout(handle.getFile(), 30000);
+      if (file.size > 8_000_000) return;
+      check(await withTimeout(file.text(), 30000));
+    } catch { failed = true; }
+  });
+  return { used, failed };
+}
+
+// Allegati citati dai collegamenti di un testo (percorsi della cartella).
+function attachmentLinksOf(text, from) {
+  const index = new Set(files.keys());
+  const found = new Set();
+  for (const link of scanMarkdownLinks(text || '')) {
+    const target = resolveLink(link, from, index);
+    if (target.path && isAttachmentPath(target.path)) found.add(target.path);
+  }
+  return found;
+}
+
+// Percorsi citati da un testo che non esistono più (per il ripristino dal cestino).
+function missingLinksOf(text, from) {
+  const index = new Set(files.keys());
+  const found = new Set();
+  for (const link of scanMarkdownLinks(text || '')) {
+    const target = resolveLink(link, from, index);
+    if (!target.missing || link.wiki) continue;
+    const path = resolvePath(target.clean, from);
+    if (path) found.add(path);
+  }
+  return found;
+}
+
+const trashKey = path => encodeURIComponent(path);
+
+async function trashFolder(directory, create = false) {
+  try { return await withTimeout(directory.getDirectoryHandle(trashFolderName, { create }), 10000); }
+  catch { return null; }
+}
+
+// Contenuto del cestino: [{ key, path, time, size, from, by, handle }], i più recenti prima.
+async function trashEntries(directory = root, maxAge = 0) {
+  if (!directory) return [];
+  if (maxAge && trashListCache?.directory === directory && Date.now() - trashListCache.time < maxAge) return trashListCache.entries;
+  const trash = await trashFolder(directory);
+  const entries = [];
+  if (trash) {
+    const info = await trash.getDirectoryHandle(trashInfoName).catch(() => null);
+    for await (const [key, handle] of trash.entries()) {
+      if (handle.kind !== 'file') continue;
+      let record = null;
+      try { record = JSON.parse(await (await (await info?.getFileHandle(key + '.json'))?.getFile())?.text()); } catch {}
+      let path = typeof record?.path === 'string' ? record.path : '';
+      if (!path) try { path = decodeURIComponent(key); } catch { path = key; }
+      const file = await handle.getFile().catch(() => null);
+      entries.push({ key, path, handle, time: Number(record?.time) || file?.lastModified || 0, size: file?.size ?? record?.size ?? 0,
+        from: typeof record?.from === 'string' ? record.from : '', by: typeof record?.by === 'string' ? record.by : '' });
+    }
+  }
+  entries.sort((a, b) => b.time - a.time);
+  trashListCache = { directory, time: Date.now(), entries };
+  return entries;
+}
+
+async function writeHandleData(handle, data) {
+  const writer = await handle.createWritable();
+  try {
+    await writer.write(data);
+    await writer.close();
+  } catch (error) {
+    try { await writer.abort(); } catch {}
+    throw error;
+  }
+}
+
+// Sposta un allegato nel cestino: copia, controllo, poi tolto dal suo posto (solo se nel
+// frattempo non è cambiato). Restituisce la dimensione, oppure 0 se è rimasto dov'era.
+async function moveAttachmentToTrash(directory, path, from = '') {
+  const handle = files.get(path);
+  const folder = folderHandles.get(parent(path));
+  if (!handle || !folder) return 0;
+  const file = await withTimeout(handle.getFile(), 30000);
+  const trash = await trashFolder(directory, true);
+  if (!trash) throw new Error('Impossibile creare ' + trashFolderName + '.');
+  const info = await trash.getDirectoryHandle(trashInfoName, { create: true });
+  const key = trashKey(path);
+  try { await trash.removeEntry(key); } catch {}
+  const copy = await trash.getFileHandle(key, { create: true });
+  await writeHandleData(copy, file);
+  if ((await copy.getFile()).size !== file.size) {
+    try { await trash.removeEntry(key); } catch {}
+    throw new Error('Copia di «' + path.split('/').pop() + '» nel cestino non riuscita.');
+  }
+  const record = await info.getFileHandle(key + '.json', { create: true });
+  await writeHandleData(record, JSON.stringify({ path, time: Date.now(), size: file.size, modified: file.lastModified, from, by: userName || '' }));
+  const name = path.split('/').pop();
+  const latest = await existingFile(folder, name);
+  const fresh = latest && await latest.getFile();
+  if (!latest || !await handle.isSameEntry(latest) || fresh.size !== file.size || fresh.lastModified !== file.lastModified) {
+    // Cambiato o sparito mentre si copiava: resta dov'è, la copia si toglie.
+    try { await trash.removeEntry(key); await info.removeEntry(key + '.json'); } catch {}
+    return 0;
+  }
+  await folder.removeEntry(name);
+  files.delete(path);
+  trashListCache = null;
+  return file.size || 1;
+}
+
+// Rimette al suo posto un elemento del cestino. false se al suo posto c'è già un file diverso.
+async function restoreFromTrash(directory, entry) {
+  const file = await withTimeout(entry.handle.getFile(), 30000);
+  const folderPath = parent(entry.path);
+  const folder = await ensureDirectory(directory, folderPath);
+  let partial = '';
+  for (const name of folderPath.split('/').filter(Boolean)) {
+    partial = partial ? partial + '/' + name : name;
+    if (!folderHandles.has(partial)) folderHandles.set(partial, await directoryAt(directory, partial));
+  }
+  const name = entry.path.split('/').pop();
+  const existing = await existingFile(folder, name);
+  let handle = existing;
+  if (existing) {
+    if (!await sameFileBytes(await existing.getFile(), file)) return false;
+  } else {
+    handle = await folder.getFileHandle(name, { create: true });
+    await writeHandleData(handle, file);
+    if ((await handle.getFile()).size !== file.size) throw new Error('Ripristino di «' + name + '» non riuscito.');
+  }
+  await forgetTrashEntry(directory, entry.key);
+  files = new Map(files);
+  files.set(entry.path, handle);
+  return true;
+}
+
+async function forgetTrashEntry(directory, key) {
+  const trash = await trashFolder(directory);
+  if (!trash) return;
+  try { await trash.removeEntry(key); } catch {}
+  try { await (await trash.getDirectoryHandle(trashInfoName)).removeEntry(key + '.json'); } catch {}
+  trashListCache = null;
+}
+
+async function canWriteSilently(directory) {
+  return await withTimeout(directory.queryPermission(writeAccess), 4000).catch(() => 'prompt') === 'granted';
+}
+
+function attachmentCount(count) {
+  return count === 1 ? '1 allegato' : count + ' allegati';
+}
+
+// Documento aperto o appena salvato: gli allegati che cita e che sono nel cestino tornano.
+async function restoreCitedAttachments(text, from) {
+  const directory = root;
+  if (!directory || importedFolderName || !from || !text) return 0;
+  const missing = missingLinksOf(text, from);
+  if (!missing.size) return 0;
+  const entries = await trashEntries(directory, 60000).catch(() => []);
+  if (!entries.length) return 0;
+  const lower = new Map([...missing].map(path => [path.toLowerCase(), path]));
+  const wanted = entries.filter(entry => lower.has(entry.path.toLowerCase()));
+  if (!wanted.length || !await canWriteSilently(directory)) return 0;
+  let restored = 0;
+  for (const entry of wanted) {
+    if (root !== directory) return restored;
+    try { if (await restoreFromTrash(directory, entry)) restored++; } catch {}
+  }
+  if (restored) {
+    renderTree();
+    refreshDocumentImages();
+    toast(restored === 1 ? 'Un allegato citato dal documento era nel cestino di Itaca: è tornato al suo posto.'
+      : restored + ' allegati citati dal documento erano nel cestino di Itaca: sono tornati al loro posto.', 'success');
+  }
+  return restored;
+}
+
+// Dopo un salvataggio (anche automatico): allegati che il documento non cita più.
+async function attachmentsAfterSave(path, before, after) {
+  const directory = root;
+  if (!directory || importedFolderName || !path) return;
+  await restoreCitedAttachments(after, path).catch(() => {});
+  if (!settings.attachmentTrash || before === after) return;
+  const now = attachmentLinksOf(after, path);
+  const dropped = [...attachmentLinksOf(before, path)].filter(item => !now.has(item));
+  if (dropped.length) trashUnusedAttachments(directory, dropped, path).catch(() => {});
+}
+
+// Allegati di documenti appena eliminati (testi letti prima dell'eliminazione).
+function attachmentsAfterDelete(texts) {
+  const directory = root;
+  if (!directory || importedFolderName || !settings.attachmentTrash || !texts.length) return;
+  const candidates = new Set();
+  for (const [path, text] of texts) for (const item of attachmentLinksOf(text, path)) candidates.add(item);
+  if (candidates.size) trashUnusedAttachments(directory, [...candidates], texts[0][0]).catch(() => {});
+}
+
+async function trashUnusedAttachments(directory, candidates, from, quiet = false) {
+  // Elenco della cartella non ancora riletto dal disco (aperta dall'elenco ricordato): si aspetta.
+  if (rememberedScanRoot === directory || attachmentTrashBusy) return 0;
+  if (!await canWriteSilently(directory)) return 0;
+  attachmentTrashBusy = true;
+  try {
+    const { used, failed } = await usedAttachments(candidates);
+    if (failed || root !== directory) return 0;
+    let moved = 0, bytes = 0;
+    for (const path of candidates.filter(item => !used.has(item) && files.has(item))) {
+      if (root !== directory) break;
+      try {
+        const size = await moveAttachmentToTrash(directory, path, from);
+        if (size) { moved++; bytes += size; }
+      } catch {}
+    }
+    if (moved) {
+      renderTree();
+      if (!quiet) toast(attachmentCount(moved) + ' non più ' + (moved === 1 ? 'usato spostato' : 'usati spostati') + ' nel cestino di Itaca (' +
+        formatBytes(bytes) + '). Restano ' + trashKeepDays + ' giorni; tornano da soli se un documento li cita di nuovo.', 'info');
+    }
+    return moved;
+  } finally {
+    attachmentTrashBusy = false;
+  }
+}
+
+// Pulizia delle cartelle nascoste: il cestino si svuota dopo 30 giorni.
+async function cleanAttachmentTrash(directory, removed) {
+  const trash = await trashFolder(directory);
+  if (!trash) return;
+  const entries = await trashEntries(directory);
+  const now = Date.now();
+  for (const entry of entries) {
+    if (root !== directory) return;
+    if (now - entry.time < trashKeepMs) continue;
+    await forgetTrashEntry(directory, entry.key);
+    removed.trash = (removed.trash || 0) + 1;
+    removed.bytes += entry.size || 0;
+  }
+  // Schede rimaste senza file.
+  const keys = new Set(entries.map(entry => entry.key));
+  const info = await trash.getDirectoryHandle(trashInfoName).catch(() => null);
+  if (info) {
+    const orphans = [];
+    for await (const [name] of info.entries()) if (name.endsWith('.json') && !keys.has(name.slice(0, -5))) orphans.push(name);
+    for (const name of orphans) try { await info.removeEntry(name); } catch {}
+  }
+  if (entries.every(entry => now - entry.time >= trashKeepMs)) {
+    try { await directory.removeEntry(trashFolderName, { recursive: true }); } catch {}
+  }
+  trashListCache = null;
+}
+
+// ── Finestra «Allegati non usati» ──
+async function showAttachmentCleanup() {
+  if (!root || importedFolderName || folderAccessPending) {
+    toast('Apri una cartella di lavoro (con Scegli cartella) per controllare gli allegati.');
+    return;
+  }
+  if ($('settings').open) $('settings').close();
+  flushMark();
+  const directory = root;
+  const body = openPanel('Allegati non usati', 'Lettura dei documenti…');
+  const all = [...files.keys()].filter(isAttachmentPath).sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
+  const [{ used, failed }, trash] = await Promise.all([usedAttachments(all), trashEntries(directory).catch(() => [])]);
+  if (!panel.open || root !== directory) return;
+  const unused = all.filter(path => !used.has(path));
+  const sizes = new Map();
+  await forEachLimited(unused, 8, async path => {
+    sizes.set(path, await files.get(path)?.getFile().then(file => file, () => null));
+  });
+  if (!panel.open || root !== directory) return;
+  const total = unused.reduce((sum, path) => sum + (sizes.get(path)?.size || 0), 0);
+  $('panelStatus').textContent = all.length + ' allegati nelle cartelle ' + attachmentFolderName + ' · ' +
+    (unused.length ? unused.length + (unused.length === 1 ? ' non usato (' : ' non usati (') + formatBytes(total) + ')' : 'tutti usati') +
+    (trash.length ? ' · ' + trash.length + ' nel cestino' : '');
+  const container = document.createElement('div');
+  container.className = 'link-report attachment-report';
+
+  const intro = document.createElement('p');
+  intro.className = 'attachment-intro';
+  intro.textContent = 'Un allegato è «usato» se il suo nome compare in un documento o in un altro file di testo della cartella (anche mkdocs.yml, HTML, CSS). ' +
+    'Quelli spostati nel cestino di Itaca (cartella nascosta ' + trashFolderName + ') restano ' + trashKeepDays + ' giorni e tornano da soli se un documento li cita di nuovo.';
+  container.append(intro);
+
+  const section = (title, count) => {
+    const element = document.createElement('section');
+    const heading = document.createElement('h3');
+    heading.append(icon(title === 'trash' ? 'close' : 'attach'), title === 'trash' ? 'Nel cestino di Itaca' : 'Non usati da nessun documento');
+    const small = document.createElement('small');
+    small.textContent = count;
+    heading.append(small);
+    element.append(heading);
+    return element;
+  };
+
+  if (failed) {
+    const warning = document.createElement('p');
+    warning.className = 'report-warning';
+    warning.textContent = 'Alcuni file della cartella non si sono potuti leggere: per sicurezza nessun allegato viene indicato come non usato. Riprova più tardi.';
+    container.append(warning);
+  } else if (!unused.length) {
+    const ok = document.createElement('p');
+    ok.className = 'report-ok';
+    ok.textContent = all.length ? 'Tutti gli allegati sono usati da almeno un documento.' : 'Nella cartella non ci sono allegati.';
+    container.append(ok);
+  } else {
+    const block = section('unused', unused.length === 1 ? '1 file · ' + formatBytes(total) : unused.length + ' file · ' + formatBytes(total));
+    const list = document.createElement('ul');
+    list.className = 'attachment-list';
+    for (const path of unused) {
+      const item = document.createElement('li');
+      const label = document.createElement('label');
+      const check = Object.assign(document.createElement('input'), { type: 'checkbox', checked: true, value: path });
+      const name = document.createElement('span');
+      name.className = 'attachment-name';
+      name.append(icon(fileIconName(path)), path.split('/').pop());
+      const meta = document.createElement('small');
+      const file = sizes.get(path);
+      meta.textContent = [parent(path), file ? formatBytes(file.size) : '', file ? new Date(file.lastModified).toLocaleDateString('it-IT') : ''].filter(Boolean).join(' · ');
+      label.append(check, name, meta);
+      const open = Object.assign(document.createElement('button'), { type: 'button', className: 'icon-button', title: 'Apri «' + path.split('/').pop() + '»' });
+      open.append(icon('eye'));
+      open.onclick = () => isImage(path) ? openLinkedImage(path) : openAttachment(path);
+      item.append(label, open);
+      list.append(item);
+    }
+    const bar = document.createElement('div');
+    bar.className = 'link-report-actions';
+    const note = document.createElement('span');
+    const move = Object.assign(document.createElement('button'), { type: 'button', className: 'primary' });
+    const update = () => {
+      const chosen = list.querySelectorAll('input:checked').length;
+      note.textContent = chosen ? attachmentCount(chosen) + ' da spostare nel cestino' : 'Nessun allegato scelto';
+      move.textContent = 'Sposta nel cestino';
+      move.disabled = !chosen;
+    };
+    list.addEventListener('change', update);
+    update();
+    move.onclick = async () => {
+      const chosen = [...list.querySelectorAll('input:checked')].map(input => input.value);
+      if (!chosen.length || !await allowFolderWrite(directory)) return;
+      move.disabled = true;
+      $('panelStatus').textContent = 'Controllo e spostamento…';
+      // Si ricontrolla subito prima: un documento potrebbe essere cambiato nel frattempo.
+      const moved = await trashUnusedAttachments(directory, chosen, '', true);
+      toast(moved ? attachmentCount(moved) + ' nel cestino di Itaca.' : 'Nessun allegato spostato: nel frattempo qualcosa è cambiato.', moved ? 'success' : 'warning');
+      if (panel.open) showAttachmentCleanup();
+    };
+    bar.append(note, move);
+    block.append(bar, list);
+    container.append(block);
+  }
+
+  if (trash.length) {
+    const size = trash.reduce((sum, entry) => sum + (entry.size || 0), 0);
+    const block = section('trash', trash.length + ' file · ' + formatBytes(size));
+    const list = document.createElement('ul');
+    list.className = 'attachment-list';
+    const now = Date.now();
+    for (const entry of trash) {
+      const item = document.createElement('li');
+      const name = document.createElement('span');
+      name.className = 'attachment-name';
+      name.append(icon(fileIconName(entry.path)), entry.path.split('/').pop());
+      const meta = document.createElement('small');
+      const left = Math.max(0, Math.ceil((entry.time + trashKeepMs - now) / 86400000));
+      meta.textContent = [parent(entry.path), formatBytes(entry.size || 0),
+        'tolto il ' + new Date(entry.time).toLocaleDateString('it-IT') + (entry.by ? ' da ' + entry.by : ''),
+        left ? 'eliminato tra ' + left + (left === 1 ? ' giorno' : ' giorni') : 'eliminato alla prossima pulizia'].filter(Boolean).join(' · ');
+      if (entry.from) meta.title = 'Era in «' + entry.from + '»';
+      const text = document.createElement('span');
+      text.className = 'attachment-text';
+      text.append(name, meta);
+      const restore = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Ripristina', title: 'Rimette il file in ' + entry.path });
+      restore.onclick = async () => {
+        if (!await allowFolderWrite(directory)) return;
+        try {
+          if (!await restoreFromTrash(directory, entry)) {
+            toast('In «' + entry.path + '» c’è già un altro file con lo stesso nome: il file resta nel cestino.', 'warning');
+            return;
+          }
+          renderTree();
+          refreshDocumentImages();
+          toast('«' + entry.path.split('/').pop() + '» è tornato in ' + (parent(entry.path) || 'cartella') + '.', 'success');
+        } catch (error) {
+          toast('Ripristino non riuscito: ' + error.message);
+        }
+        if (panel.open) showAttachmentCleanup();
+      };
+      item.append(text, restore);
+      list.append(item);
+    }
+    const bar = document.createElement('div');
+    bar.className = 'link-report-actions';
+    const note = document.createElement('span');
+    note.textContent = 'Si svuota da solo dopo ' + trashKeepDays + ' giorni.';
+    const empty = Object.assign(document.createElement('button'), { type: 'button', className: 'outline danger-text', textContent: 'Svuota il cestino…' });
+    empty.onclick = async () => {
+      panel.close();
+      const ok = await modal('Svuotare il cestino di Itaca?', '<p>' + escapeHtml(trash.length === 1 ? 'Il file nel cestino verrà eliminato' : 'I ' + trash.length + ' file nel cestino verranno eliminati') +
+        ' definitivamente (' + escapeHtml(formatBytes(size)) + '). Non si potranno più ripristinare da Itaca.</p>', 'Svuota', true);
+      if (!ok || root !== directory || !await allowFolderWrite(directory)) return;
+      try {
+        await directory.removeEntry(trashFolderName, { recursive: true });
+        trashListCache = null;
+        toast('Cestino di Itaca svuotato.', 'success');
+      } catch (error) {
+        toast('Impossibile svuotare il cestino: ' + error.message);
+      }
+    };
+    bar.append(note, empty);
+    block.append(bar, list);
+    container.append(block);
+  }
+  body.replaceChildren(container);
+}
+
+// Testi dei documenti che stanno per essere eliminati (per i loro allegati).
+async function textsBeforeDelete(path, isFolder) {
+  const docs = isFolder ? [...files.keys()].filter(item => isMD(item) && inFolder(item, path)).slice(0, 500) : isMD(path) ? [path] : [];
+  const texts = [];
+  await forEachLimited(docs, 8, async item => {
+    try { texts.push([item, await (await withTimeout(files.get(item).getFile(), 30000)).text()]); } catch {}
+  });
+  return texts;
 }
 
 // ── Blocco della modifica: un solo editor per file ──────────────────────────
@@ -28591,6 +29808,8 @@ function showFileMenu(item, trigger) {
   const isStart = chosenStartDocument() === item.path;
   $('startActionLabel').textContent = isStart ? 'Non aprire più all’avvio' : 'Apri all’avvio';
   startButton.title = isStart ? 'Torna a index.md come documento iniziale' : 'Itaca si aprirà su questo documento';
+  fileMenu.querySelector('[data-file-action="markdown"]').hidden = item.isFolder || !/\.docx$/i.test(item.path) || !root;
+  fileMenu.querySelector('[data-file-action="unused"]').hidden = !item.isFolder || item.path.split('/').pop() !== attachmentFolderName || !root;
   const send = fileMenu.querySelector('[data-file-action="send"]');
   send.hidden = !root || !window.showDirectoryPicker;
   $('sendActionLabel').textContent = draftsOpen() ? 'Pubblica…' : 'In un’altra cartella…';
@@ -29106,7 +30325,9 @@ function runFileAction(item, action) {
     toast(isStart ? 'Documento iniziale: index.md (predefinito)' : 'Itaca si aprirà su «' + item.path.split('/').pop() + '»');
     return;
   }
+  if (action === 'unused') return showAttachmentCleanup();
   if (!canChangeFiles()) return;
+  if (action === 'markdown') return convertWordFile(item.path);
   if (action === 'duplicate') return copyEntryTo(item, parent(item.path));
   if (action === 'send') return sendEntries(treeSelection.size > 1 && treeSelection.has(item.path) ? treeSelectionItems() : [item]);
   return manageEntry(item, action);
@@ -29691,6 +30912,7 @@ async function manageEntry({ path, isFolder }, action, preset = null) {
     if (action === 'delete') {
       const latest = isFolder ? await sourceFolder.getDirectoryHandle(name) : await sourceFolder.getFileHandle(name);
       if (!await handle.isSameEntry(latest)) throw new Error('L’elemento è cambiato. Apri di nuovo il menu per riprovare.');
+      const deletedTexts = settings.attachmentTrash ? await textsBeforeDelete(path, isFolder) : [];
       await sourceFolder.removeEntry(name, { recursive: isFolder });
       if (isFolder) {
         removeFolderFromIndex(path);
@@ -29705,6 +30927,7 @@ async function manageEntry({ path, isFolder }, action, preset = null) {
       removeMissingHistory();
       renderTree();
       toast(isFolder ? 'Cartella eliminata' : isMD(path) ? 'Documento eliminato' : 'File eliminato');
+      attachmentsAfterDelete(deletedTexts);
     } else {
       if (isFolder) await relocateFolder(path, destinationPath);
       else await relocateFile(path, destinationPath);
@@ -31961,6 +33184,12 @@ async function readDocumentInfo(path, handle, cached) {
 
 function onDocumentShown() {
   audioDocumentChanged();
+  // Allegati citati dal documento ma finiti nel cestino di Itaca: tornano al loro posto.
+  if (current && isMD(current) && root) {
+    // Il testo si legge allo scadere: save() passa di qui prima di aggiornare original.
+    const path = current;
+    setTimeout(() => { if (current === path) restoreCitedAttachments(original, path).catch(() => {}); }, 1500);
+  }
   // Il documento lasciato torna al titolo salvato, quello aperto mostra il suo.
   if (treeTitlesOn()) queueTreeTitles(0);
   clearTimeout(backlinkTimer);
@@ -38662,6 +39891,7 @@ function renderExtendedControls() {
 }
 
 $('checkLinks').onclick = checkFolderLinks;
+$('attachmentCleanupOpen').onclick = showAttachmentCleanup;
 $('exportSite').onclick = exportSiteDialog;
 $('gitHistory').onclick = () => showGitHistory();
 $('gitBlame').onclick = showGitBlame;
