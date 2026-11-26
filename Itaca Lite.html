@@ -993,6 +993,9 @@ dialog .tag-skipped span { color: var(--muted); }
 .editor tbody tr:last-child td, .editor tfoot tr:last-child td { border-bottom: 0; }
 .editor img { max-width: 100%; height: auto; border-radius: 6px; }
 .editor img[src^='blob:'] { cursor: zoom-in; }
+/* Immagine non ancora letta (si carica quando sta per comparire): un segnaposto, così le
+   immagini successive non finiscono tutte nella prima schermata e non partono tutte insieme. */
+.editor img[data-src]:not([src]):not(.missing) { display: inline-block; min-width: 8em; min-height: 6em; background: var(--tint); vertical-align: middle; }
 .editor[contenteditable='true'] img[src^='blob:'] { cursor: pointer; }
 .image-resize { position: absolute; z-index: 2; pointer-events: none; outline: 2px solid var(--focus); border-radius: 6px; }
 .image-grip { position: absolute; right: 0; bottom: 0; display: grid; place-items: center; width: 27px; height: 27px; padding: 0; border: 1px solid var(--panel); border-radius: 6px 0 5px 0; color: var(--on-accent); background: var(--accent); cursor: nwse-resize; pointer-events: auto; touch-action: none; }
@@ -12066,27 +12069,65 @@ async function documentImage(image, from = current, index = files) {
   return handle && isImage(path) ? handle.getFile() : null;
 }
 
-async function loadImages() {
-  const activeVersion = version;
-  for (const image of ed.querySelectorAll('img[data-src]')) {
-    if (image.src.startsWith('blob:')) continue;
-    try {
-      const file = await documentImage(image);
-      if (activeVersion !== version) return;
-      if (!image.isConnected || image.src.startsWith('blob:')) continue;
-      if (file) {
-        const url = URL.createObjectURL(file);
-        objectUrls.push(url);
-        image.src = url;
-        image.classList.remove('missing');
-        configureEditorImage(image);
-        continue;
+// Le immagini del documento si leggono quando stanno per comparire (fino a una schermata e
+// mezza prima), in ordine. Su una cartella di rete ogni immagine costa qualche andata e ritorno
+// al server e il browser fa le operazioni sui file una alla volta: un documento con centinaia di
+// immagini occupava la coda per decine di secondi con la WiFi, e intanto anche il documento
+// successivo, i salvataggi e l'elenco aspettavano. PDF e Word leggono le immagini da sé.
+var imageObserver = null, imageQueue = [], imageQueueBusy = 0;
+function loadImages() {
+  imageObserver?.disconnect();
+  imageObserver = null;
+  imageQueue = [];
+  const pending = [...ed.querySelectorAll('img[data-src]')].filter(image => !image.src.startsWith('blob:'));
+  if (!pending.length) return;
+  if (typeof IntersectionObserver !== 'function') {
+    imageQueue = pending;
+    pumpImages();
+    return;
+  }
+  const observer = imageObserver = new IntersectionObserver(entries => {
+    if (observer !== imageObserver) return;
+    const near = entries.filter(entry => entry.isIntersecting).map(entry => entry.target);
+    if (!near.length) return;
+    for (const image of near) observer.unobserve(image);
+    imageQueue.push(...near);
+    imageQueue.sort((a, b) => a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1);
+    pumpImages();
+  }, { root: workspace, rootMargin: '150% 0px' });
+  for (const image of pending) observer.observe(image);
+}
+// Più immagini insieme: misurato con Chrome su una cartella di rete, 8 letture insieme
+// finiscono 6–8 volte prima che una alla volta (le attese del server si sovrappongono).
+async function pumpImages() {
+  while (imageQueueBusy < 6 && imageQueue.length) {
+    imageQueueBusy++;
+    (async () => {
+      try {
+        while (imageQueue.length) await loadEditorImage(imageQueue.shift());
+      } finally {
+        imageQueueBusy--;
       }
-    } catch {}
-    if (!image.src) {
-      image.classList.add('missing');
-      image.title = 'Immagine non disponibile offline: ' + image.dataset.src;
+    })();
+  }
+}
+async function loadEditorImage(image) {
+  if (!image.isConnected || !ed.contains(image) || image.src.startsWith('blob:')) return;
+  try {
+    const file = await documentImage(image);
+    if (!image.isConnected || !ed.contains(image) || image.src.startsWith('blob:')) return;
+    if (file) {
+      const url = URL.createObjectURL(file);
+      objectUrls.push(url);
+      image.src = url;
+      image.classList.remove('missing');
+      configureEditorImage(image);
+      return;
     }
+  } catch {}
+  if (!image.src) {
+    image.classList.add('missing');
+    image.title = 'Immagine non disponibile offline: ' + image.dataset.src;
   }
 }
 function showVisual(markdown) {
@@ -12227,6 +12268,59 @@ async function scanFolder(directory) {
   return { found, folders, backups };
 }
 
+// ── Elenco della cartella ricordato ─────────────────────────────────────────
+// Chrome elenca una cartella di rete con circa un'andata e ritorno per file: la cartella di
+// lavoro (900 file) chiedeva 12–19 secondi con la WiFi (Windows: 2), e il documento compariva
+// solo dopo. L'elenco, con i riferimenti ai file che il browser sa conservare, si ricorda in
+// IndexedDB: alla riapertura cartella e documento compaiono subito e la lettura vera prosegue in
+// sottofondo (autoRefreshFolder), che aggiunge e toglie ciò che è cambiato nel frattempo.
+const folderScanPrefix = 'itaca-folder-scan:', folderScanNamesKey = 'itaca-folder-scans', folderScanKeep = 5;
+var folderScanStored = new WeakMap();     // cartella → firma dell'ultimo elenco salvato
+var rememberedScanRoot = null;            // cartella aperta dall'elenco ricordato, in attesa della lettura vera
+function folderScanSignature(found, folders) {
+  return [...found.keys()].join('\n') + '\n\n' + [...folders.keys()].join('\n');
+}
+async function storeFolderScan(directory, { found, folders }) {
+  if (!directory?.name) return;
+  const signature = folderScanSignature(found, folders);
+  if (folderScanStored.get(directory) === signature) return;
+  folderScanStored.set(directory, signature);
+  try {
+    await withTimeout(workspaceRecord(folderScanPrefix + directory.name, {
+      root: directory, saved: Date.now(), files: [...found], folders: [...folders].filter(([path]) => path),
+    }), 15000);
+    let names = [];
+    try { names = JSON.parse(localStorage.getItem(folderScanNamesKey) || '[]'); } catch {}
+    names = [directory.name, ...(Array.isArray(names) ? names : []).filter(name => typeof name === 'string' && name !== directory.name)];
+    for (const old of names.slice(folderScanKeep)) workspaceRecord(folderScanPrefix + old, undefined, true).catch(() => {});
+    localStorage.setItem(folderScanNamesKey, JSON.stringify(names.slice(0, folderScanKeep)));
+  } catch {
+    folderScanStored.delete(directory);   // si riprova alla lettura successiva
+  }
+}
+async function rememberedFolderScan(directory) {
+  try {
+    const record = await withTimeout(workspaceRecord(folderScanPrefix + directory.name), 3000);
+    if (!record || !Array.isArray(record.files) || !Array.isArray(record.folders) || record.root?.kind !== 'directory') return null;
+    if (record.root !== directory && !await withTimeout(directory.isSameEntry(record.root), 3000)) return null;
+    const found = new Map(record.files.filter(item => typeof item?.[0] === 'string' && item[1]?.kind === 'file'));
+    const folders = new Map([['', directory], ...record.folders.filter(item => typeof item?.[0] === 'string' && item[1]?.kind === 'directory')]);
+    if (!found.size) return null;
+    folderScanStored.set(directory, folderScanSignature(found, folders));
+    return { found, folders, backups: null, remembered: true };
+  } catch {
+    return null;
+  }
+}
+// Lettura vera subito dopo l'apertura dall'elenco ricordato (appena Itaca è libera).
+function refreshRememberedSoon(directory, tries = 0) {
+  setTimeout(async () => {
+    if (root !== directory || rememberedScanRoot !== directory) return;
+    if (!autoRefreshBusy && canAutoRefresh()) await autoRefreshFolder();
+    if (root === directory && rememberedScanRoot === directory && tries < 300) refreshRememberedSoon(directory, tries + 1);
+  }, tries ? 1000 : 300);
+}
+
 async function scan() {
   const directory = root;
   const revision = folderRevision;
@@ -12234,6 +12328,7 @@ async function scan() {
   closeLinkPreview();
   const { found, folders } = await scanFolder(directory);
   if (directory !== root || revision !== folderRevision || index !== files) return;
+  storeFolderScan(directory, { found, folders });
   files = found;
   folderHandles = folders;
   resetSearchIndex();
@@ -12284,10 +12379,16 @@ async function autoRefreshFolder() {
     if (await withTimeout(Promise.resolve(directory.queryPermission?.({ mode: 'read' })), handleCheckTimeoutMs) === 'prompt') return;
     // Su una rete lenta rileggere tutta la cartella costa: il giro successivo si allontana.
     const started = performance.now();
-    const { found, folders } = await withTimeout(scanFolder(directory), 120000);
+    const { found, folders, backups } = await withTimeout(scanFolder(directory), 120000);
     lastAutoScanMs = performance.now() - started;
     lastAutoScanEnd = Date.now();
     if (directory !== root || revision !== folderRevision || index !== files || !canAutoRefresh()) return;
+    storeFolderScan(directory, { found, folders });
+    // Aperta dall'elenco ricordato: questa è la prima lettura vera (e ora si può fare la pulizia).
+    if (rememberedScanRoot === directory) {
+      rememberedScanRoot = null;
+      scheduleHiddenCleanup(directory, backups);
+    }
     const sameKeys = (a, b) => a.size === b.size && [...a.keys()].every(key => b.has(key));
     if (sameKeys(found, files) && sameKeys(folders, folderHandles)) return;
     const added = [...found.keys()].filter(path => !files.has(path));
@@ -17527,11 +17628,26 @@ function queueSearchRender() {
 }
 
 function pumpSearchIndex(index) {
-  while (index === searchIndex && index.active < 4 && index.queue.length) {
-    const path = index.queue.pop();
+  while (index === searchIndex && index.active < 4 && index.queue.length) startIndexRead(index, index.queue.pop());
+}
+// Grafo e «Citato da» all'apertura della cartella chiedono gli stessi documenti che l'indice
+// sta leggendo: invece di una seconda lettura (prima ogni .md veniva letto due volte, con la
+// WiFi diversi secondi di coda) aspettano quella dell'indice o la fanno partire subito.
+// Restituisce la promessa della lettura, oppure null se l'indice non può leggere quel file.
+function indexReadFor(path, handle) {
+  const index = searchIndex;
+  if (!index || !hasWorkspaceFolder() || files.get(path) !== handle) return null;
+  const record = index.entries.get(path);
+  if (record) return record.handle === handle && record.content === undefined ? record.done : null;
+  index.queue = index.queue.filter(queued => queued !== path);
+  return startIndexRead(index, path)?.done || null;
+}
+function startIndexRead(index, path) {
+  {
     const handle = files.get(path);
-    if (!handle || index.entries.has(path)) continue;
-    const record = { handle, content: undefined };
+    if (!handle || index.entries.has(path)) return null;
+    let finished;
+    const record = { handle, content: undefined, done: new Promise(resolve => { finished = resolve; }) };
     index.entries.set(path, record);
     index.active++;
     (async () => {
@@ -17552,6 +17668,7 @@ function pumpSearchIndex(index) {
         record.content = null;
       } finally {
         index.active--;
+        finished();
         if (index === searchIndex) {
           tagIndexChanged();
           queueSearchRender();
@@ -17559,6 +17676,7 @@ function pumpSearchIndex(index) {
         }
       }
     })();
+    return record;
   }
 }
 
@@ -22082,7 +22200,7 @@ async function collectLinkGraph() {
   const edges = new Set();
   const tags = new Map();
   await forEachLimited(paths, 6, async path => {
-    const { links, tags: own = [] } = await documentInfo(path);
+    const { links, tags: own = [] } = await documentInfo(path, linkInfoRelaxedMs);
     if (own.length) tags.set(path, own);
     for (const link of links) {
       if (link.kind === 'image') continue;
@@ -26935,7 +27053,22 @@ function clearWorkingFolder() {
 }
 
 async function showFolder(directory, canSwitch, requestedPath = '') {
-  return showFolderIndex(directory.name, await scanFolder(directory), canSwitch, requestedPath, directory);
+  // Elenco ricordato (vedi rememberedFolderScan): cartella e documento subito, lettura vera dopo.
+  const remembered = await rememberedFolderScan(directory);
+  if (remembered) {
+    const shown = await showFolderIndex(directory.name, remembered, canSwitch, requestedPath, directory);
+    if (shown === true) {
+      rememberedScanRoot = directory;
+      refreshRememberedSoon(directory);
+      return true;
+    }
+    if (shown === false) return false;
+    // Il documento da aprire non c'è più: si legge la cartella come sempre.
+  }
+  const scanned = await scanFolder(directory);
+  const shown = await showFolderIndex(directory.name, scanned, canSwitch, requestedPath, directory);
+  if (shown) storeFolderScan(directory, scanned);
+  return shown;
 }
 
 // Documento aperto all'avvio: quello scelto per la cartella, altrimenti index.md
@@ -26980,7 +27113,7 @@ function remapStartDocument(from, to, isFolder) {
   if (isFolder ? inFolder(chosen, from) : chosen === from) storeStartDocument(to + chosen.slice(from.length));
 }
 
-async function showFolderIndex(name, { found, folders, backups }, canSwitch, requestedPath = '', directory = null) {
+async function showFolderIndex(name, { found, folders, backups, remembered = false }, canSwitch, requestedPath = '', directory = null) {
   const paths = [...found.keys()].filter(isMD).sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
   const savedTabs = !requestedPath && directory && settings.openDocs !== 'single' ? savedOpenTabs(name, paths) : null;
   const path = requestedPath || savedTabs?.paths[savedTabs.active] || startDocumentFor(name, paths) || paths.find(name => /^readme\.(md|markdown)$/i.test(name)) || paths[0];
@@ -26990,6 +27123,8 @@ async function showFolderIndex(name, { found, folders, backups }, canSwitch, req
     try { text = await withTimeout((async () => (await handle.getFile()).text())(), fileReadTimeoutMs); } catch {}
   }
   if (!canSwitch()) return false;
+  // Dall'elenco ricordato: se il documento non si legge (spostato, eliminato) decide la lettura vera.
+  if (remembered && text === null) return null;
 
   clearDocumentHistory();
   resetDocTabs();
@@ -27015,7 +27150,7 @@ async function showFolderIndex(name, { found, folders, backups }, canSwitch, req
     resetDoc(text, path, handle);
     restoreOpenTabs(savedTabs);
   }
-  if (directory) scheduleHiddenCleanup(directory, backups);
+  if (directory && backups) scheduleHiddenCleanup(directory, backups);
   return true;
 }
 
@@ -31777,7 +31912,13 @@ function invalidateLinkIndex() {
   linkInfoCache.clear();
 }
 
-async function documentInfo(path) {
+// Grafo e «Citato da» guardano tutti i documenti a ogni apertura: per loro un dato di un
+// minuto fa basta (i salvataggi di Itaca lo aggiornano subito; le modifiche dei colleghi
+// arrivano entro un minuto). Prima ogni documento aperto ricontrollava tutti i file sul disco:
+// su una cartella di rete con la WiFi più di un secondo di coda a ogni clic.
+var linkInfoRelaxedMs = 60000;
+async function documentInfo(path, maxAge = 5000) {
+  if (path === current) maxAge = Math.min(maxAge, 5000);
   if (path === current && (dirty || !files.has(path))) {
     const text = getMarkdown();
     return { links: scanMarkdownLinks(text), headings: markdownHeadings(text), tags: tagsFromFront(frontSplit(text)[0]) };
@@ -31786,11 +31927,20 @@ async function documentInfo(path) {
   if (!handle) return { links: [], headings: [], tags: [] };
   const cached = linkInfoCache.get(path);
   // Spostandosi in fretta tra documenti non serve ricontrollare ogni file sul disco.
-  if (cached && cached.handle === handle && Date.now() - cached.checked < 5000) return cached;
+  if (cached && cached.handle === handle && Date.now() - cached.checked < maxAge) return cached;
   // Grafo e «Citato da» chiedono gli stessi file insieme all'apertura: una sola lettura per file.
   const pending = linkInfoReading.get(path);
   if (pending?.handle === handle) return pending.promise;
-  const promise = readDocumentInfo(path, handle, cached).finally(() => {
+  // Mai letto: si usa (o si fa partire) la lettura dell'indice, che riempie anche linkInfoCache.
+  if (!cached || cached.handle !== handle) {
+    const reading = indexReadFor(path, handle);
+    if (reading) {
+      await reading;
+      const filled = linkInfoCache.get(path);
+      if (filled && filled.handle === handle) return filled;
+    }
+  }
+  const promise = readDocumentInfo(path, handle, linkInfoCache.get(path)).finally(() => {
     if (linkInfoReading.get(path)?.promise === promise) linkInfoReading.delete(path);
   });
   linkInfoReading.set(path, { handle, promise });
@@ -31834,7 +31984,7 @@ async function renderBacklinks() {
   index.add(target);
   const hits = [];
   await forEachLimited([...files.keys()].filter(path => isMD(path) && path !== target), 6, async path => {
-    const { links } = await documentInfo(path);
+    const { links } = await documentInfo(path, linkInfoRelaxedMs);
     const count = links.filter(link => link.kind !== 'image' && resolveLink(link, path, index).path === target).length;
     if (count) hits.push({ path, count });
   });
