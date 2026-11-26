@@ -508,6 +508,7 @@ button:disabled { opacity: .4; cursor: default; }
 .link-suggestion .link-suggestion-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
 .link-suggestion .link-suggestion-name mark { padding: 0; border-radius: 2px; background: color-mix(in srgb, var(--accent) 22%, transparent); color: inherit; }
 .link-suggestion small { flex: 0 1 auto; min-width: 0; margin-left: auto; padding-left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); font-size: 11.5px; }
+.link-suggestion small.trash-badge { flex: none; padding: 1px 7px; border-radius: 99px; background: var(--warning-bg); color: var(--warning); font-size: 10.5px; font-weight: 600; }
 .link-suggestion.special .link-suggestion-name { color: var(--accent-text); font-weight: 600; }
 .link-suggestion.missing .link-suggestion-name { color: var(--danger-text); }
 .link-suggestions .link-suggestions-empty { padding: 6px 8px; color: var(--muted); cursor: default; }
@@ -1145,6 +1146,7 @@ dialog .tag-skipped span { color: var(--muted); }
 .ad-title { overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
 .ad-doc { overflow: hidden; color: var(--muted); font-size: 11px; font-weight: 450; text-overflow: ellipsis; white-space: nowrap; }
 .ad-doc:empty { display: none; }
+.ad-doc.ad-song { color: var(--accent-text, var(--accent)); font-weight: 560; }
 .ad-tools { display: flex; align-items: center; flex: none; margin-right: -3px; }
 .audio-dock .icon-button { width: 26px; height: 26px; border-radius: 7px; }
 .audio-dock .icon-button .icon { width: 14px; height: 14px; }
@@ -9917,7 +9919,7 @@ function updateMediaSession(track) {
   const station = track.live ? track.station : null;
   if (typeof MediaMetadata === 'function') {
     navigator.mediaSession.metadata = new MediaMetadata(station
-      ? { title: station.name, artist: ['Radio in diretta', radioCountryName(station.country)].filter(Boolean).join(' · '), album: station.tags.slice(0, 3).join(', '), artwork: station.favicon ? [{ src: station.favicon }] : [] }
+      ? { title: track.song || station.name, artist: track.song ? station.name : ['Radio in diretta', radioCountryName(station.country)].filter(Boolean).join(' · '), album: station.tags.slice(0, 3).join(', '), artwork: station.favicon ? [{ src: station.favicon }] : [] }
       : { title: track.title, artist: 'Itaca Lite', album: track.doc ? embedBaseName(track.doc.split('/').pop()) : '' });
   }
   try { navigator.mediaSession.setActionHandler('nexttrack', track.live && track.genre ? () => playRandomRadio(track.genre, track.country) : null); } catch {}
@@ -10308,10 +10310,17 @@ function renderAudioDock() {
 function renderLiveDock(playing, buffering) {
   const station = nowPlaying.station;
   const format = station.codec ? station.codec + (station.bitrate ? ' ' + station.bitrate + ' kbps' : '') : '';
-  setDockText('.ad-doc', [radioCountryName(station.country), station.tags[0], format].filter(Boolean).join(' · ') || 'Radio in diretta');
+  const details = [radioCountryName(station.country), station.tags[0], format].filter(Boolean).join(' · ') || 'Radio in diretta';
+  // Il brano in onda, se la stazione lo manda (metadati ICY); altrimenti paese, genere e formato.
+  const song = nowPlaying.song || '';
+  setDockText('.ad-doc', song ? '♪ ' + song : details);
+  dockPart('.ad-doc').classList.toggle('ad-song', Boolean(song));
   const info = dockPart('.ad-info');
   info.disabled = !station.homepage;
-  const infoTitle = station.homepage ? 'Apri il sito di «' + station.name + '»' : station.name;
+  const earlier = (nowPlaying.songs || []).filter(item => item.title !== song).slice(0, 5)
+    .map(item => new Date(item.time).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) + '  ' + item.title);
+  const infoTitle = (song ? 'In onda: ' + song + '\n' + details + (earlier.length ? '\n\nPrima:\n' + earlier.join('\n') : '') + '\n\n' : '') +
+    (station.homepage ? 'Apri il sito di «' + station.name + '»' : station.name);
   if (info.title !== infoTitle) info.title = infoTitle;
   setDockText('.ad-elapsed', buffering ? 'Connessione…' : playing ? formatMediaTime((Date.now() - nowPlaying.since) / 1000) : 'In pausa');
   const favorite = radioIsFavorite(station.uuid);
@@ -10953,6 +10962,138 @@ itacaAudio.addEventListener('waiting', () => {
 itacaAudio.addEventListener('ended', () => {
   if (nowPlaying?.live) radioPlaybackFailed(nowPlaying, 'network');
 });
+
+// ── Radio: il brano in onda (metadati ICY) ─────────────────────────────────
+// Molte radio (Icecast, Shoutcast) mettono «Artista - Titolo» dentro lo stream: chiedendolo con
+// l'intestazione Icy-MetaData: 1, ogni icy-metaint byte di audio arriva un blocco di testo
+// «StreamTitle='…';». Ogni 25 s (60 s con la finestra nascosta) si apre lo stream una seconda
+// volta, si legge solo fino al primo titolo (di solito 1–2 secondi di audio) e si chiude.
+// Funziona solo con le stazioni che lo permettono a una pagina web (CORS); per le altre, e per
+// gli stream HLS, la riga non compare. Niente servizi esterni: è la radio stessa a dirlo.
+const icyEveryMs = 25000, icyHiddenMs = 60000, icyTimeoutMs = 12000;
+var icyState = { track: null, timer: 0, controller: null, misses: 0 };
+var icyUnsupported = new Set();       // stazioni che non lo permettono (per questa sessione)
+
+function icyUrl(track) {
+  if (!track?.live || !track.station || icyUnsupported.has(track.station.uuid) || radioNeedsHlsJs(track) || track.station.hls) return '';
+  const url = itacaAudio.currentSrc || track.src;
+  return /^https?:/i.test(url) && !/\.m3u8(?:[?#]|$)/i.test(url) ? url : '';
+}
+
+function icyText(bytes) {
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  catch { return new TextDecoder('windows-1252').decode(bytes); }
+}
+
+// «StreamTitle='…';» in un blocco di metadati (o, senza icy-metaint leggibile, nei byte grezzi).
+const icyMarker = new TextEncoder().encode("StreamTitle='");
+function icyFindTitle(bytes) {
+  outer: for (let index = 0; index <= bytes.length - icyMarker.length; index++) {
+    for (let offset = 0; offset < icyMarker.length; offset++) if (bytes[index + offset] !== icyMarker[offset]) continue outer;
+    const start = index + icyMarker.length;
+    for (let end = start; end < bytes.length - 1 && end < start + 1024; end++) {
+      if (bytes[end] === 0x27 && (bytes[end + 1] === 0x3b || bytes[end + 1] === 0)) return icyText(bytes.subarray(start, end));
+    }
+    return undefined;   // titolo non ancora arrivato per intero
+  }
+  return undefined;
+}
+
+async function readIcyTitle(url, signal) {
+  const response = await fetch(url, { headers: { 'Icy-MetaData': '1' }, signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' });
+  if (!response.ok || !response.body) throw new Error('http ' + response.status);
+  const metaint = Number(response.headers.get('icy-metaint')) || 0;
+  const limit = metaint ? metaint * 3 + 4096 : 96 * 1024;
+  const reader = response.body.getReader();
+  let buffer = new Uint8Array(0);
+  try {
+    while (buffer.length < limit) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const next = new Uint8Array(buffer.length + value.length);
+      next.set(buffer);
+      next.set(value, buffer.length);
+      buffer = next;
+      if (metaint) {
+        // Blocchi: [metaint byte di audio][1 byte = lunghezza/16][testo]… (lunghezza 0 = nessun testo).
+        for (let at = metaint; at < buffer.length; at += metaint + 1 + buffer[at] * 16) {
+          const length = buffer[at] * 16;
+          if (at + 1 + length > buffer.length) break;
+          if (length) {
+            const title = icyFindTitle(buffer.subarray(at + 1, at + 1 + length));
+            return title === undefined ? '' : title;
+          }
+        }
+      } else {
+        const title = icyFindTitle(buffer);
+        if (title !== undefined) return title;
+      }
+    }
+  } finally {
+    reader.cancel().catch(() => {});
+  }
+  return null;   // nessun titolo: la stazione non lo manda
+}
+
+function cleanIcyTitle(title, station) {
+  const text = String(title || '').replace(/[\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/^[-–—\s]+|[-–—\s]+$/g, '');
+  if (!text || text.length < 2) return '';
+  if (foldSearch(text) === foldSearch(station?.name || '')) return '';
+  return text.slice(0, 200);
+}
+
+function stopIcy() {
+  clearTimeout(icyState.timer);
+  icyState.controller?.abort();
+  icyState = { track: null, timer: 0, controller: null, misses: 0 };
+}
+
+function startIcy(track) {
+  if (icyState.track === track) return;
+  stopIcy();
+  if (!icyUrl(track)) return;
+  icyState.track = track;
+  icyState.timer = setTimeout(() => pollIcy(track), 1500);
+}
+
+async function pollIcy(track) {
+  if (icyState.track !== track) return;
+  const url = nowPlaying === track && !itacaAudio.paused ? icyUrl(track) : '';
+  if (!url) return stopIcy();
+  const controller = new AbortController();
+  icyState.controller = controller;
+  const timeout = setTimeout(() => controller.abort(), icyTimeoutMs);
+  let title = null, failed = false;
+  try { title = await readIcyTitle(url, controller.signal); }
+  catch { failed = true; }
+  finally { clearTimeout(timeout); }
+  if (icyState.track !== track) return;
+  if (failed || title === null) {
+    // Due tentativi senza titolo: la stazione non lo manda (o non lo lascia leggere).
+    if (++icyState.misses >= 2) {
+      icyUnsupported.add(track.station.uuid);
+      return stopIcy();
+    }
+  } else {
+    icyState.misses = 0;
+    setRadioSong(track, cleanIcyTitle(title, track.station));
+  }
+  icyState.timer = setTimeout(() => pollIcy(track), document.hidden ? icyHiddenMs : icyEveryMs);
+}
+
+function setRadioSong(track, song) {
+  if (track.song === song) return;
+  track.song = song;
+  if (song) {
+    track.songs = [{ title: song, time: Date.now() }, ...(track.songs || []).filter(item => item.title !== song)].slice(0, 12);
+  }
+  if (nowPlaying === track) {
+    updateMediaSession(track);
+    refreshAudioViews();
+  }
+}
+
+itacaAudio.addEventListener('playing', () => { if (nowPlaying?.live) startIcy(nowPlaying); });
 
 // ── Pannello Radio ──
 const radioPanel = document.createElement('section');
@@ -23277,6 +23418,16 @@ const referenceTextFiles = /\.(?:md|markdown|html?|ya?ml|css|js|mjs|json|toml|tx
 var trashListCache = null;          // { directory, time, entries }
 var attachmentTrashBusy = false;
 var trashRestoreTimer = 0;
+var trashPicked = new Set();          // scelti dai suggerimenti: tornano appena il collegamento è nel documento
+var trashListTimer = 0;
+
+// Dopo ogni cambiamento il cestino si rilegge (serve ai suggerimenti), senza fretta.
+function queueTrashList() {
+  trashListCache = null;
+  clearTimeout(trashListTimer);
+  const directory = root;
+  trashListTimer = setTimeout(() => { if (root === directory && directory) trashEntries(directory).catch(() => {}); }, 400);
+}
 
 function isAttachmentPath(path) {
   return Boolean(path) && !isMD(path) && path.split('/').slice(0, -1).includes(attachmentFolderName);
@@ -23382,7 +23533,7 @@ async function trashEntries(directory = root, maxAge = 0) {
       const text = name => typeof record?.[name] === 'string' ? record[name] : '';
       entries.push({ key, handle, path: text('path') || pathFromTrashKey(key), time: Number(record?.time) || file?.lastModified || 0,
         size: file?.size ?? record?.size ?? 0, reason: text('reason') || 'unused', from: text('from'), by: text('by'),
-        group: text('group'), groupPath: text('groupPath') });
+        group: text('group'), groupPath: text('groupPath'), with: text('with') });
     });
   }
   entries.sort((a, b) => b.time - a.time || a.path.localeCompare(b.path, 'it', { numeric: true }));
@@ -23434,7 +23585,7 @@ async function trashFile(directory, path, record) {
   await folder.removeEntry(name);
   files = new Map(files);
   files.delete(path);
-  trashListCache = null;
+  queueTrashList();
   return file.size || 1;
 }
 
@@ -23493,7 +23644,7 @@ async function forgetTrashEntry(directory, key) {
   if (!trash) return;
   try { await trash.removeEntry(key); } catch {}
   try { await (await trash.getDirectoryHandle(trashInfoName)).removeEntry(key + '.json'); } catch {}
-  trashListCache = null;
+  queueTrashList();
 }
 
 async function canWriteSilently(directory) {
@@ -23503,9 +23654,10 @@ async function canWriteSilently(directory) {
 const attachmentCount = count => count === 1 ? '1 allegato' : count + ' allegati';
 const fileCount = count => count === 1 ? '1 file' : count + ' file';
 
-// Allegati del cestino che possono tornare da soli (non quelli eliminati a mano).
+// Elementi del cestino che tornano appena un documento li cita: gli allegati non più usati, e
+// quelli scelti da un suggerimento (anche se eliminati a mano).
 function returningTrash(directory = root) {
-  return trashListCache?.directory === directory ? trashListCache.entries.filter(entry => entry.reason !== 'deleted') : [];
+  return trashListCache?.directory === directory ? trashListCache.entries.filter(entry => entry.reason !== 'deleted' || trashPicked.has(entry.path)) : [];
 }
 
 // Un testo (documento aperto, salvato o che si sta scrivendo) cita allegati del cestino: tornano.
@@ -23529,20 +23681,20 @@ async function restoreCitedAttachments(text, from) {
   let restored = 0;
   for (const entry of wanted.values()) {
     if (root !== directory || files.has(entry.path)) continue;
-    try { if (await restoreFromTrash(directory, entry)) restored++; } catch {}
+    try { if (await restoreFromTrash(directory, entry)) { restored++; trashPicked.delete(entry.path); } } catch {}
   }
   if (restored) {
     renderTree();
     refreshDocumentImages();
-    toast(restored === 1 ? 'Un allegato citato dal documento era nel cestino di Itaca: è tornato al suo posto.'
-      : restored + ' allegati citati dal documento erano nel cestino di Itaca: sono tornati al loro posto.', 'success');
+    toast(restored === 1 ? 'Un file citato dal documento era nel cestino di Itaca: è tornato al suo posto.'
+      : restored + ' file citati dal documento erano nel cestino di Itaca: sono tornati al loro posto.', 'success');
   }
   return restored;
 }
 
 // Mentre si scrive (da flushMark): solo se nel cestino c'è qualcosa che può tornare.
 function queueTrashRestore() {
-  if (!root || !current || !returningTrash().length) return;
+  if (!root || !current || !returningTrash().length && !trashPicked.size) return;
   clearTimeout(trashRestoreTimer);
   const path = current;
   trashRestoreTimer = setTimeout(() => {
@@ -23550,37 +23702,32 @@ function queueTrashRestore() {
   }, 1200);
 }
 
-// Suggerimenti di collegamenti e immagini: anche gli allegati del cestino (tornano scegliendoli).
+// Suggerimenti di collegamenti e immagini: anche ciò che è nel cestino. Sceglierlo non lo
+// ripristina ancora: torna quando il collegamento entra davvero nel documento (Inserisci).
 function trashSuggestions(folded, only) {
-  if (!folded) return [];
+  if (!folded || !root) return [];
+  if (trashListCache?.directory !== root) {
+    trashEntries(root, 60000).catch(() => {});
+    return [];
+  }
   const seen = new Set();
-  return returningTrash().filter(entry => {
+  return trashListCache.entries.filter(entry => {
     if (files.has(entry.path) || seen.has(entry.path) || (only && !only(entry.path))) return false;
     seen.add(entry.path);
     return foldSearch(entry.path).includes(folded);
   }).slice(0, 5).map(entry => ({ kind: 'file', path: entry.path, trashed: true }));
 }
 function inTrashOnly(path) {
-  return !files.has(path) && returningTrash().some(entry => entry.path === path);
+  return !files.has(path) && trashListCache?.directory === root && trashListCache.entries.some(entry => entry.path === path);
 }
-
-// Dopo un salvataggio (anche automatico): allegati che il documento non cita più.
-// Un allegato del cestino scelto da un suggerimento: torna subito.
-async function restoreTrashedPath(path) {
-  const directory = root;
-  const entry = returningTrash(directory).find(item => item.path === path);
-  if (!entry || files.has(path) || !await allowFolderWrite(directory)) return;
-  try {
-    if (await restoreFromTrash(directory, entry)) {
-      renderTree();
-      refreshDocumentImages();
-      toast('«' + path.split('/').pop() + '» è tornato dal cestino di Itaca.', 'success');
-    }
-  } catch (error) {
-    toast('Ripristino dal cestino non riuscito: ' + error.message);
+function pickTrashed(item) {
+  if (item?.kind === 'file' && item.trashed) {
+    trashPicked.add(item.path);
+    trashEntries(root, 60000).catch(() => {});
   }
 }
 
+// Dopo un salvataggio (anche automatico): allegati che il documento non cita più.
 async function attachmentsAfterSave(path, before, after) {
   const directory = root;
   if (!directory || importedFolderName || !path) return;
@@ -23602,15 +23749,20 @@ async function textsBeforeDelete(path, isFolder) {
 }
 
 // Allegati di documenti appena eliminati.
-function attachmentsAfterDelete(texts) {
+// Gli allegati portano il segno del documento (with): nel cestino stanno sulla sua riga e
+// tornano insieme a lui con Ripristina.
+async function attachmentsAfterDelete(texts, deleted) {
   const directory = root;
   if (!directory || importedFolderName || !settings.attachmentTrash || !texts.length) return;
   const candidates = new Set();
   for (const [path, text] of texts) for (const item of attachmentLinksOf(text, path)) candidates.add(item);
-  if (candidates.size) trashUnusedAttachments(directory, [...candidates], texts[0][0]).catch(() => {});
+  if (!candidates.size) return;
+  const moved = await trashUnusedAttachments(directory, [...candidates], texts[0][0], true, { with: deleted }).catch(() => 0);
+  if (moved) toast('Anche ' + (moved === 1 ? 'un allegato usato solo da «' + deleted.split('/').pop() + '» è andato' : moved + ' allegati usati solo da «' + deleted.split('/').pop() + '» sono andati') +
+    ' nel cestino: tornano se lo ripristini.', 'info');
 }
 
-async function trashUnusedAttachments(directory, candidates, from, quiet = false) {
+async function trashUnusedAttachments(directory, candidates, from, quiet = false, extra = {}) {
   // Elenco della cartella non ancora riletto dal disco (aperta dall'elenco ricordato): si aspetta.
   if (rememberedScanRoot === directory || attachmentTrashBusy) return 0;
   if (!await canWriteSilently(directory)) return 0;
@@ -23622,7 +23774,7 @@ async function trashUnusedAttachments(directory, candidates, from, quiet = false
     for (const path of candidates.filter(item => !used.has(item) && files.has(item))) {
       if (root !== directory) break;
       try {
-        const size = await trashFile(directory, path, { reason: 'unused', from: from || '' });
+        const size = await trashFile(directory, path, { reason: 'unused', from: from || '', ...extra });
         if (size) { moved++; bytes += size; }
       } catch {}
     }
@@ -23841,14 +23993,29 @@ function renderTrashView() {
     // Le cartelle eliminate sono una riga sola.
     const rows = [];
     const groups = new Map();
+    // Allegati andati via con un documento (o una cartella) ancora nel cestino: sulla sua riga.
+    const owners = new Set(data.trash.filter(entry => entry.reason === 'deleted').flatMap(entry => [entry.path, entry.groupPath].filter(Boolean)));
+    const companions = new Map();
     for (const entry of data.trash) {
+      if (entry.with && owners.has(entry.with)) {
+        if (!companions.has(entry.with)) companions.set(entry.with, []);
+        companions.get(entry.with).push(entry);
+      }
+    }
+    for (const entry of data.trash) {
+      if (entry.with && owners.has(entry.with)) continue;
       if (entry.group) {
         if (!groups.has(entry.group)) rows.push(groups.set(entry.group, { group: entry.group, path: entry.groupPath || parent(entry.path), entries: [], time: entry.time, by: entry.by }).get(entry.group));
         groups.get(entry.group).entries.push(entry);
       } else rows.push({ path: entry.path, entries: [entry], time: entry.time, by: entry.by, reason: entry.reason, from: entry.from });
     }
     let lastDay = '';
-    for (const item of rows.filter(item => matches(item.path) || item.entries.some(entry => matches(entry.path)))) {
+    for (const item of rows) {
+      const owner = item.group ? item.path : item.reason === 'deleted' ? item.path : '';
+      item.companions = (owner && companions.get(owner)) || [];
+      companions.delete(owner);
+    }
+    for (const item of rows.filter(item => matches(item.path) || [...item.entries, ...item.companions].some(entry => matches(entry.path)))) {
       const day = trashDayLabel(item.time);
       if (day !== lastDay) {
         list.append(make('li', 'trash-day', day));
@@ -23862,7 +24029,9 @@ function renderTrashView() {
       const why = item.group ? 'cartella eliminata' : item.reason === 'deleted' ? 'eliminato' : 'non più usato';
       const tag = make('span', 'trash-tag' + (item.reason === 'unused' && !item.group ? ' soft' : ''), why);
       name.append(tag);
-      text.append(name, make('small', '', [parent(item.path) || root.name, item.group ? fileCount(item.entries.length) : '', formatBytes(size),
+      const extra = item.companions.length ? (item.companions.length === 1 ? 'con 1 allegato' : 'con ' + item.companions.length + ' allegati') : '';
+      if (extra) row.title = 'Torna insieme a: ' + item.companions.map(entry => entry.path.split('/').pop()).join(', ');
+      text.append(name, make('small', '', [parent(item.path) || root.name, item.group ? fileCount(item.entries.length) : '', extra, formatBytes(size),
         when + (item.by ? ' · ' + item.by : '') + (item.from && !item.group ? ' · era in «' + item.from.split('/').pop() + '»' : '')].filter(Boolean).join(' · ')));
       const thumb = item.group ? Object.assign(make('span', 'trash-thumb'), {}) : trashThumb(item.path, () => item.entries[0].handle.getFile());
       if (item.group) thumb.append(icon('folder'));
@@ -23896,10 +24065,15 @@ async function restoreTrashRow(item, button) {
   button.disabled = true;
   button.textContent = 'Ripristino…';
   const restored = [];
+  let companionsBack = 0;
   try {
     for (const entry of item.entries) {
       const path = await restoreFromTrash(directory, entry, true);
       if (path) restored.push([entry.path, path]);
+    }
+    // Gli allegati andati via con il documento tornano subito con lui.
+    for (const entry of item.companions || []) {
+      if (!files.has(entry.path) && await restoreFromTrash(directory, entry)) companionsBack++;
     }
   } catch (error) {
     toast('Ripristino non riuscito: ' + error.message);
@@ -23910,7 +24084,8 @@ async function restoreTrashRow(item, button) {
     const renamed = restored.filter(([from, to]) => from !== to);
     const what = item.group ? 'La cartella «' + item.path.split('/').pop() + '» è tornata (' + fileCount(restored.length) + ')'
       : '«' + restored[0][1].split('/').pop() + '» è tornato in ' + (parent(restored[0][1]) || root.name);
-    toast(what + (renamed.length ? ' · al suo posto c’era un altro file: ' + (renamed.length === 1 ? 'nuovo nome «' + renamed[0][1].split('/').pop() + '»' : renamed.length + ' file con un nuovo nome') : '') + '.', 'success');
+    const withAttachments = companionsBack ? ' insieme a ' + attachmentCount(companionsBack) : '';
+    toast(what + withAttachments + (renamed.length ? ' · al suo posto c’era un altro file: ' + (renamed.length === 1 ? 'nuovo nome «' + renamed[0][1].split('/').pop() + '»' : renamed.length + ' file con un nuovo nome') : '') + '.', 'success');
   }
   trashView.data = null;
   if (panel.open) showTrash({ tab: 'trash' });
@@ -26292,7 +26467,9 @@ function fillFileSuggestion(name, detail, path, query) {
   }
   highlightLinkMatch(name, file, query);
   if (inTrashOnly(path)) {
-    detail.textContent = (folder ? folder + ' · ' : '') + 'nel cestino di Itaca: sceglilo e torna al suo posto';
+    detail.textContent = 'nel cestino';
+    detail.className = 'trash-badge';
+    detail.title = 'Nel cestino di Itaca: inserendo il collegamento torna in ' + (folder || 'cartella');
     return;
   }
   const terms = foldSearch(query.split('#')[0].trim()).split(/\s+/).filter(Boolean);
@@ -26490,7 +26667,7 @@ function typedLinkTarget(text) {
 
 // Testo che un suggerimento scrive nella casella.
 function linkCompletion(item) {
-  if (item.kind === 'file' && item.trashed) restoreTrashedPath(item.path);
+  pickTrashed(item);
   if (item.kind === 'file') return item.path;
   if (item.kind === 'heading') return (item.path === current ? '' : item.path) + '#' + item.heading;
   return item.target;
@@ -31125,7 +31302,8 @@ async function askFileAction(path, action, isFolder) {
   const changes = includesCurrent && dirty ? ' Le modifiche non salvate andranno perse.' : '';
   const toTrash = settings.deleteToTrash;
   const message = toTrash ? (isFolder ? '» e tutto il suo contenuto andranno nel cestino di Itaca.' : '» andrà nel cestino di Itaca.') +
-      ' Potrai ripristinarl' + (isFolder ? 'i' : 'o') + ' per ' + trashKeepDays + ' giorni.' :
+      ' Potrai ripristinarl' + (isFolder ? 'i' : 'o') + ' per ' + trashKeepDays + ' giorni.' +
+      (settings.attachmentTrash && (isFolder || isMD(path)) ? ' Anche gli allegati usati solo da ' + (isFolder ? 'questi documenti' : 'questo documento') + ' vanno nel cestino, e tornano insieme.' : '') :
     isFolder ? '» e tutto il suo contenuto saranno eliminati definitivamente dal disco.' : '» sarà eliminato definitivamente dal disco.';
   // Con il cestino basta una conferma: l'eliminazione si può annullare.
   const simple = toTrash || settings.deleteConfirm === 'simple';
@@ -31206,7 +31384,7 @@ async function manageEntry({ path, isFolder }, action, preset = null) {
       renderTree();
       toast((isFolder ? 'Cartella eliminata' : isMD(path) ? 'Documento eliminato' : 'File eliminato') +
         (settings.deleteToTrash ? ': è nel cestino di Itaca per ' + trashKeepDays + ' giorni' : ''));
-      attachmentsAfterDelete(deletedTexts);
+      attachmentsAfterDelete(deletedTexts, path);
     } else {
       if (isFolder) await relocateFolder(path, destinationPath);
       else await relocateFile(path, destinationPath);
@@ -32576,7 +32754,7 @@ function chooseMdSuggestion(index = mdSuggestState?.active) {
   const state = mdSuggestState;
   const item = state?.items[index];
   if (!item || item.kind === 'loading' || !state.node.isConnected) return;
-  if (item.kind === 'file' && item.trashed) restoreTrashedPath(item.path);
+  pickTrashed(item);
   let markdown;
   if (state.kind === 'wiki') {
     let name = item.kind === 'file' ? (state.image ? item.path : wikiName(item.path))
