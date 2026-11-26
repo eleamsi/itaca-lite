@@ -900,45 +900,67 @@ dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-tex
 .events-chip.festive { background: color-mix(in srgb, var(--xmas-green, #2f9460) 16%, transparent); color: color-mix(in srgb, var(--xmas-green, #2f9460) 65%, var(--ink)); }
 .ev-chip-emoji { font-size: 13.5px; line-height: 1; }
 @media (max-width: 760px) { .ev-chip-text { display: none; } .events-chip.has-event { padding: 0 6px; } }
-.events-panel { position: fixed; inset: auto; box-sizing: border-box; width: min(360px, calc(100vw - 16px)); max-height: min(580px, calc(100vh - 70px)); margin: 0; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); font: 13px/1.35 var(--sans); }
+.events-panel { position: fixed; inset: auto; box-sizing: border-box; width: min(372px, calc(100vw - 16px)); max-height: min(600px, var(--ev-max, calc(100vh - 70px))); margin: 0; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); font: 13px/1.35 var(--sans); }
+.events-panel:focus { outline: none; }
 .events-panel:popover-open { display: flex; flex-direction: column; animation: ad-open .14s ease-out; transform-origin: 50% 100%; }
-.ev-head { display: flex; align-items: center; gap: 10px; padding: 12px 8px 8px 14px; }
+.ev-head { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 8px 11px 14px; border-bottom: 1px solid var(--line-soft); }
 .ev-logo { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--tint); color: var(--accent-text); }
 .ev-logo .icon { width: 17px; height: 17px; }
 .ev-heading { display: grid; flex: 1; min-width: 0; }
 .ev-heading b { font: 650 14.5px/1.2 var(--display); }
 .ev-heading small { color: var(--muted); font-size: 11.5px; }
-.ev-list { flex: 1; min-height: 0; margin: 0; padding: 2px 8px 8px; overflow-y: auto; list-style: none; }
-.ev-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; }
+.ev-list { flex: 1 1 auto; min-height: 64px; display: grid; align-content: start; gap: 2px; margin: 0; padding: 6px; overflow-y: auto; list-style: none; scrollbar-width: thin; }
+.ev-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 10px 8px 8px; border-radius: 12px; }
 .ev-row:hover, .ev-row:focus-within { background: var(--hover); }
-.ev-row.editing { background: var(--tint); }
+.ev-row.in-bar { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.ev-row.in-bar:hover, .ev-row.in-bar:focus-within { background: color-mix(in srgb, var(--accent) 13%, transparent); }
+.ev-row.editing { box-shadow: inset 0 0 0 1.5px var(--accent); }
 .ev-row.past { opacity: .55; }
-.ev-emoji { font-size: 20px; line-height: 1; text-align: center; }
-.ev-text { display: grid; min-width: 0; }
-.ev-text b, .ev-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ev-text b { font-weight: 600; }
-.ev-text small { color: var(--muted); font-size: 11.5px; }
-.ev-days { color: var(--muted); font-size: 11.5px; text-align: right; white-space: nowrap; }
-.ev-days b { color: var(--ink); font: 650 19px/1 var(--display); font-variant-numeric: tabular-nums; }
+.ev-row.just-saved { animation: ev-saved 1.4s ease-out; }
+@keyframes ev-saved { 0% { background: color-mix(in srgb, var(--accent) 26%, transparent); } }
+.ev-emoji { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; background: color-mix(in srgb, var(--muted) 11%, transparent); font-size: 21px; line-height: 1; }
+.ev-row.festive .ev-emoji { background: color-mix(in srgb, var(--xmas-green, #2f9460) 17%, transparent); }
+.ev-text { display: grid; gap: 2px; min-width: 0; }
+.ev-text b { display: flex; align-items: center; gap: 7px; min-width: 0; font-size: 13.5px; font-weight: 600; }
+.ev-name-text, .ev-text > small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ev-text > small { color: var(--muted); font-size: 11.5px; }
+.ev-emoji { position: relative; }
+.ev-row.in-bar .ev-emoji::after { content: ''; position: absolute; right: -3px; bottom: -3px; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 2px var(--panel); }
+.ev-row[data-bar='pinned'] .ev-emoji::after { content: '★'; display: grid; place-items: center; width: 16px; height: 16px; color: var(--on-accent); font: 700 10px/1 var(--sans); }
 .ev-days, .ev-tools { grid-row: 1; grid-column: 3; justify-self: end; }
-/* Modifica e Togli prendono il posto dei giorni al passaggio (sul touch stanno accanto) */
-.ev-tools { display: flex; gap: 1px; visibility: hidden; }
+.ev-days { display: grid; justify-items: end; line-height: 1; }
+.ev-days b { color: var(--ink); font: 650 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+.ev-days small { margin-top: 3px; color: var(--muted); font-size: 10.5px; }
+.ev-days .ev-word { color: var(--accent-text); font-size: 14px; }
+.ev-row.past .ev-days .ev-word { color: var(--muted); font-weight: 500; }
+/* Stella, Modifica e Togli prendono il posto dei giorni al passaggio (sul touch stanno accanto) */
+.ev-tools { display: flex; padding: 2px; border-radius: 10px; background: var(--panel); box-shadow: 0 0 0 1px var(--line-soft), 0 2px 6px #0000001a; visibility: hidden; }
 .ev-row:hover .ev-tools, .ev-row:focus-within .ev-tools, .ev-row.editing .ev-tools { visibility: visible; }
 .ev-row:hover .ev-days, .ev-row:focus-within .ev-days, .ev-row.editing .ev-days { visibility: hidden; }
-@media (pointer: coarse) { .ev-tools { grid-column: 4; visibility: visible; } .ev-row .ev-days { visibility: visible; } }
-.ev-tools .icon-button { width: 26px; height: 26px; }
+@media (pointer: coarse) { .ev-tools { grid-column: 4; visibility: visible; box-shadow: none; background: none; } .ev-row .ev-days { visibility: visible; } }
+.ev-tools .icon-button { width: 28px; height: 28px; }
 .ev-tools .icon { width: 14px; height: 14px; }
-.ev-empty { padding: 16px 12px; color: var(--muted); font-size: 12.5px; text-align: center; }
-.ev-form { display: grid; gap: 7px; padding: 10px 12px 12px; border-top: 1px solid var(--line-soft); background: color-mix(in srgb, var(--muted) 5%, transparent); }
-.ev-form-title { margin: 0; color: var(--muted); font: 600 11.5px var(--sans); text-transform: uppercase; letter-spacing: .04em; }
-.ev-emojis { display: flex; gap: 3px; }
-.ev-emojis button { width: 31px; height: 28px; padding: 0; border-radius: 7px; font-size: 15px; line-height: 1; }
+.ev-pin[aria-pressed='true'] { color: var(--accent-text); }
+.ev-hint { flex: none; margin: 0; padding: 0 16px 10px; color: var(--muted); font-size: 11.5px; line-height: 1.4; }
+.ev-list[hidden] + .ev-hint { padding: 18px 20px; text-align: center; font-size: 12.5px; }
+.ev-foot { flex: none; padding: 10px 12px 12px; border-top: 1px solid var(--line-soft); background: color-mix(in srgb, var(--muted) 4%, transparent); }
+.ev-add { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 36px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font: 600 12.5px var(--sans); }
+.ev-add:hover { border-color: var(--accent); background: var(--tint); color: var(--accent-text); }
+.ev-add .icon { width: 14px; height: 14px; }
+.ev-form { display: grid; gap: 9px; }
+.ev-form-title { font: 650 13px/1.3 var(--display); }
+.ev-emojis { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 3px; }
+.ev-emojis button { height: 32px; padding: 0; border-radius: 8px; font-size: 17px; line-height: 1; }
 .ev-emojis button:hover { background: var(--hover); }
 .ev-emojis button[aria-checked='true'] { background: var(--tint); box-shadow: inset 0 0 0 1.5px var(--accent); }
-.ev-form-row { display: flex; align-items: center; gap: 10px; }
-.ev-form-row .ev-date { flex: 1; }
-.ev-yearly { display: inline-flex; align-items: center; gap: 6px; color: var(--copy, var(--ink)); font-size: 12.5px; white-space: nowrap; cursor: pointer; }
-.ev-form-actions { display: flex; justify-content: flex-end; gap: 6px; }
+.ev-form input[type='text'], .ev-form input[type='date'] { height: 34px; }
+.ev-form-row { display: flex; align-items: center; gap: 12px; }
+.ev-form-row .ev-date { flex: 1; min-width: 0; }
+.ev-yearly input { accent-color: var(--accent); }
+.ev-yearly { display: inline-flex; align-items: center; gap: 8px; color: var(--copy, var(--ink)); font-size: 12.5px; white-space: nowrap; cursor: pointer; }
+.ev-form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+.ev-form-actions button { height: 32px; padding: 0 14px; border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { .ev-row.just-saved { animation: none; } }
 @media print { .doc-deadline { display: none !important; } }
 /* Bozze personali */
 .drafts-badge { flex: none; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--st-draft) 16%, transparent); color: color-mix(in srgb, var(--st-draft) 70%, var(--ink)); font-size: 11px; font-weight: 600; white-space: nowrap; }
@@ -20584,21 +20606,30 @@ addEventListener('focus', refreshDeadlineDay);
 
 // ── Conto alla rovescia personale ──────────────────────────────────────────
 // Eventi solo tuoi (ferie, compleanni, Natale…), salvati in questo browser. Nella barra in basso
-// c'è il più vicino; il clic apre l'elenco, dove si aggiungono, cambiano e tolgono. Natale c'è già
-// (si può togliere) e compare nella barra solo a dicembre, o con il tema Natale.
+// c'è il più vicino, oppure quello che hai messo in evidenza con la stella; il clic apre l'elenco,
+// dove si aggiungono, cambiano e tolgono. Natale c'è già (si può togliere).
+// Il pannello è ancorato in basso, sopra il pulsante: aggiungendo un evento cresce verso l'alto
+// e oltre l'altezza disponibile scorre solo l'elenco (prima cresceva verso il basso e si tagliava).
 const eventsKey = 'itaca-events';
-const eventEmojis = ['📅', '🎄', '🏖️', '🎂', '🎉', '✈️', '🚀', '⭐'];
-var personalEvents = loadPersonalEvents();
-var eventsEditing = null, eventsEmoji = eventEmojis[0];
+const eventEmojis = ['📅', '🎄', '🎂', '🏖️', '✈️', '🎉', '🚀', '🎓', '❤️', '⭐'];
+var personalEvents = [], eventsPinned = '';
+var eventsForm = null;   // null = modulo chiuso; { id } = modifica; { id: '' } = nuovo
+var eventsEmoji = eventEmojis[0];
+loadPersonalEvents();
 function loadPersonalEvents() {
   try {
     const data = JSON.parse(localStorage.getItem(eventsKey) || 'null');
-    if (Array.isArray(data?.items)) return data.items.filter(item => item && typeof item.name === 'string' && parseDayDate(item.date));
+    if (Array.isArray(data?.items)) {
+      personalEvents = data.items.filter(item => item && typeof item.name === 'string' && parseDayDate(item.date));
+      eventsPinned = personalEvents.some(item => item.id === data.pinned) ? data.pinned : '';
+      return;
+    }
   } catch {}
-  return [{ id: 'natale', name: 'Natale', date: '2000-12-25', yearly: true, emoji: '🎄', builtin: 'natale' }];
+  personalEvents = [{ id: 'natale', name: 'Natale', date: '2000-12-25', yearly: true, emoji: '🎄', builtin: 'natale' }];
+  eventsPinned = '';
 }
 function storePersonalEvents() {
-  try { localStorage.setItem(eventsKey, JSON.stringify({ items: personalEvents })); } catch {}
+  try { localStorage.setItem(eventsKey, JSON.stringify({ items: personalEvents, ...(eventsPinned ? { pinned: eventsPinned } : {}) })); } catch {}
 }
 // Prossima volta che capita (per gli eventi di ogni anno) e giorni che mancano.
 function eventOccurrence(item) {
@@ -20612,49 +20643,48 @@ function eventOccurrence(item) {
   }
   return { date, days: daysUntil(date) };
 }
-function eventDaysText(days) {
-  return days < 0 ? 'passato' : days === 0 ? 'oggi' : days === 1 ? 'domani' : dayCount(days);
+function eventShortDate(date) {
+  return date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', ...(date.getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) });
 }
-function christmasNear(item, when) {
-  if (item.builtin !== 'natale') return true;
-  let palette = '';
-  try { palette = document.documentElement.dataset.palette || ''; } catch {}
-  return palette === 'natale' || (when.date.getMonth() === 11 && when.days <= 25);
-}
-function nextPersonalEvent() {
-  let best = null;
+// L'evento della barra: quello in evidenza (se non è passato), altrimenti il più vicino.
+function barEvent() {
+  let nearest = null, pinned = null;
   for (const item of personalEvents) {
     const when = eventOccurrence(item);
-    if (!when || when.days < 0 || !christmasNear(item, when)) continue;
-    if (!best || when.days < best.when.days) best = { item, when };
+    if (!when || when.days < 0) continue;
+    if (item.id === eventsPinned) pinned = { item, when, pinned: true };
+    if (!nearest || when.days < nearest.when.days) nearest = { item, when, pinned: false };
   }
-  return best;
+  return pinned || nearest;
 }
 function eventsShown() {
   try { return settings.showEvents !== false; } catch { return true; }
+}
+function eventWhenText(days) {
+  return days === 0 ? 'oggi' : days === 1 ? 'domani' : 'tra ' + dayCount(days);
 }
 function renderEventsChip() {
   const chip = $('eventsButton');
   if (!chip) return;
   chip.hidden = !eventsShown();
-  const next = nextPersonalEvent();
-  chip.classList.toggle('has-event', Boolean(next));
-  chip.classList.toggle('festive', next?.item.builtin === 'natale');
-  if (!next) {
+  const shown = barEvent();
+  chip.classList.toggle('has-event', Boolean(shown));
+  chip.classList.toggle('festive', shown?.item.builtin === 'natale');
+  if (!shown) {
     chip.replaceChildren(icon('calendar'));
     chip.title = 'Conto alla rovescia: aggiungi un evento (ferie, compleanni…)';
     chip.setAttribute('aria-label', 'Conto alla rovescia');
     return;
   }
-  const { item, when } = next;
+  const { item, when } = shown;
   const emoji = document.createElement('span');
   emoji.className = 'ev-chip-emoji';
   emoji.textContent = item.emoji || '📅';
   const text = document.createElement('span');
   text.className = 'ev-chip-text';
-  text.textContent = when.days === 0 ? (item.builtin === 'natale' ? 'Buon Natale!' : 'Oggi!') : eventDaysText(when.days);
+  text.textContent = when.days === 0 ? (item.builtin === 'natale' ? 'Buon Natale!' : 'Oggi!') : when.days === 1 ? 'domani' : dayCount(when.days);
   chip.replaceChildren(emoji, text);
-  const label = item.name + ': ' + (when.days === 0 ? 'oggi' : when.days === 1 ? 'domani' : 'tra ' + dayCount(when.days)) + ' (' + longDate(when.date, false) + ')';
+  const label = item.name + ': ' + eventWhenText(when.days) + ' (' + longDate(when.date, false) + ')';
   chip.title = label + '\nClic per i tuoi conti alla rovescia';
   chip.setAttribute('aria-label', label);
 }
@@ -20665,119 +20695,172 @@ eventsPanel.id = 'eventsPanel';
 eventsPanel.popover = 'auto';
 eventsPanel.setAttribute('role', 'dialog');
 eventsPanel.setAttribute('aria-label', 'Conto alla rovescia');
+eventsPanel.tabIndex = -1;
 eventsPanel.innerHTML = '<header class="ev-head"><span class="ev-logo" aria-hidden="true"><i class="icon i-calendar"></i></span>' +
   '<span class="ev-heading"><b>Conto alla rovescia</b><small>Solo tuoi, salvati in questo browser</small></span>' +
   '<button type="button" class="icon-button ev-close" aria-label="Chiudi" title="Chiudi (Esc)"><i class="icon i-close" aria-hidden="true"></i></button></header>' +
   '<ul class="ev-list" aria-label="Eventi"></ul>' +
-  '<form class="ev-form" autocomplete="off"><p class="ev-form-title">Nuovo evento</p>' +
+  '<p class="ev-hint"></p>' +
+  '<div class="ev-foot"><button type="button" class="ev-add"><i class="icon i-plus" aria-hidden="true"></i>Aggiungi un evento</button>' +
+  '<form class="ev-form" autocomplete="off" hidden><div class="ev-form-head"><b class="ev-form-title">Nuovo evento</b></div>' +
   '<div class="ev-emojis" role="radiogroup" aria-label="Simbolo"></div>' +
-  '<input type="text" class="ev-name" placeholder="Nome (es. Ferie estive)" aria-label="Nome dell’evento" maxlength="60" required>' +
-  '<div class="ev-form-row"><input type="date" class="ev-date" aria-label="Data" required>' +
-  '<label class="ev-yearly"><input type="checkbox" class="ev-yearly-box"><span>Ogni anno</span></label></div>' +
-  '<div class="ev-form-actions"><button type="button" class="ev-cancel" hidden>Annulla</button><button type="submit" class="primary ev-submit">Aggiungi</button></div></form>';
+  '<input type="text" class="ev-name" placeholder="Nome, per esempio Ferie estive" aria-label="Nome dell’evento" maxlength="60">' +
+  '<div class="ev-form-row"><input type="date" class="ev-date" aria-label="Data">' +
+  '<label class="ev-yearly"><input type="checkbox" class="switch ev-yearly-box"><span>Ogni anno</span></label></div>' +
+  '<div class="ev-form-actions"><button type="button" class="outline ev-cancel">Annulla</button><button type="submit" class="primary ev-submit">Aggiungi</button></div></form></div>';
 document.body.append(eventsPanel);
 const eventsPart = selector => eventsPanel.querySelector(selector);
 
+function eventButton(name, label, action) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'icon-button';
+  button.setAttribute('aria-label', label);
+  button.title = label;
+  button.append(icon(name));
+  button.onclick = action;
+  return button;
+}
 function renderEventsPanel() {
+  const shown = barEvent();
   const rows = personalEvents.map(item => ({ item, when: eventOccurrence(item) })).filter(entry => entry.when)
     .sort((a, b) => (a.when.days < 0) - (b.when.days < 0) || Math.abs(a.when.days) - Math.abs(b.when.days));
   const list = eventsPart('.ev-list');
-  if (!rows.length) {
-    const empty = document.createElement('li');
-    empty.className = 'ev-empty';
-    empty.textContent = 'Nessun evento. Aggiungine uno qui sotto: Itaca conta i giorni che mancano.';
-    list.replaceChildren(empty);
-  } else {
-    list.replaceChildren(...rows.map(({ item, when }) => {
-      const row = document.createElement('li');
-      row.className = 'ev-row';
-      row.classList.toggle('past', when.days < 0);
-      row.classList.toggle('editing', eventsEditing === item.id);
-      const emoji = document.createElement('span');
-      emoji.className = 'ev-emoji';
-      emoji.textContent = item.emoji || '📅';
-      const text = document.createElement('span');
-      text.className = 'ev-text';
-      const name = document.createElement('b');
-      name.textContent = item.name;
-      const detail = document.createElement('small');
-      const work = when.days > 1 ? workdaysUntil(when.date) : null;
-      const day = when.date.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', ...(when.date.getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) });
-      detail.textContent = day + (item.yearly ? ' · ogni anno' : '') + (work !== null ? ' · ' + work + ' lavorativi' : '');
-      detail.title = longDate(when.date) + (work !== null ? ' · ' + workdaysText(work) : '');
-      text.append(name, detail);
-      const days = document.createElement('span');
-      days.className = 'ev-days';
-      if (when.days > 1) {
-        const number = document.createElement('b');
-        number.textContent = when.days;
-        days.append(number, document.createTextNode(' giorni'));
-      } else days.textContent = eventDaysText(when.days);
-      const tools = document.createElement('span');
-      tools.className = 'ev-tools';
-      const edit = document.createElement('button');
-      edit.type = 'button';
-      edit.className = 'icon-button';
-      edit.setAttribute('aria-label', 'Modifica «' + item.name + '»');
-      edit.title = 'Modifica';
-      edit.append(icon('edit'));
-      edit.onclick = () => editPersonalEvent(item.id);
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'icon-button';
-      remove.setAttribute('aria-label', 'Togli «' + item.name + '»');
-      remove.title = 'Togli';
-      remove.append(icon('close'));
-      remove.onclick = () => removePersonalEvent(item.id);
-      tools.append(edit, remove);
-      row.append(emoji, text, days, tools);
-      return row;
-    }));
-  }
-  eventsPart('.ev-emojis').replaceChildren(...eventEmojis.map(symbol => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.setAttribute('role', 'radio');
-    button.setAttribute('aria-checked', String(symbol === eventsEmoji));
-    button.textContent = symbol;
-    button.onclick = () => {
-      eventsEmoji = symbol;
-      renderEventsPanel();
-    };
-    return button;
+  list.hidden = !rows.length;
+  list.replaceChildren(...rows.map(({ item, when }) => {
+    const row = document.createElement('li');
+    row.className = 'ev-row';
+    row.classList.toggle('past', when.days < 0);
+    row.classList.toggle('editing', eventsForm?.id === item.id);
+    row.classList.toggle('in-bar', shown?.item.id === item.id);
+    row.classList.toggle('festive', item.builtin === 'natale');
+    const emoji = document.createElement('span');
+    emoji.className = 'ev-emoji';
+    emoji.textContent = item.emoji || '📅';
+    const text = document.createElement('span');
+    text.className = 'ev-text';
+    const name = document.createElement('b');
+    const nameText = document.createElement('span');
+    nameText.className = 'ev-name-text';
+    nameText.textContent = item.name;
+    name.append(nameText);
+    // Quello della barra: riga evidenziata e un segno sull'icona (stella se scelto da te).
+    if (shown?.item.id === item.id) {
+      row.dataset.bar = shown.pinned ? 'pinned' : 'nearest';
+      emoji.title = shown.pinned ? 'Nella barra in basso: lo hai messo in evidenza con la stella' : 'Nella barra in basso: è il più vicino';
+    }
+    const detail = document.createElement('small');
+    // Vicino: i giorni lavorativi (servono per ferie e consegne); lontano: «ogni anno».
+    const work = when.days > 1 ? workdaysUntil(when.date) : null;
+    const near = work !== null && when.days <= 60;
+    detail.textContent = eventShortDate(when.date) + (near ? ' · ' + workdaysText(work) : item.yearly ? ' · ogni anno' : '');
+    detail.title = longDate(when.date) + (item.yearly ? ' · ogni anno' : '') + (work !== null ? ' · ' + workdaysText(work) : '');
+    text.append(name, detail);
+    const days = document.createElement('span');
+    days.className = 'ev-days';
+    if (when.days > 1) {
+      const number = document.createElement('b');
+      number.textContent = when.days;
+      const unit = document.createElement('small');
+      unit.textContent = 'giorni';
+      days.append(number, unit);
+    } else {
+      const word = document.createElement('b');
+      word.className = 'ev-word';
+      word.textContent = when.days < 0 ? 'passato' : when.days === 0 ? 'Oggi' : 'Domani';
+      days.append(word);
+    }
+    const tools = document.createElement('span');
+    tools.className = 'ev-tools';
+    const pinned = item.id === eventsPinned;
+    const pin = eventButton('star', pinned ? 'Togli dall’evidenza' : 'Metti in evidenza nella barra', () => pinPersonalEvent(pinned ? '' : item.id));
+    pin.classList.add('ev-pin');
+    pin.setAttribute('aria-pressed', String(pinned));
+    pin.hidden = when.days < 0;
+    tools.append(pin,
+      eventButton('edit', 'Modifica «' + item.name + '»', () => openEventsForm(item.id)),
+      eventButton('close', 'Togli «' + item.name + '»', () => removePersonalEvent(item.id)));
+    row.append(emoji, text, days, tools);
+    return row;
   }));
-  const editing = personalEvents.find(item => item.id === eventsEditing);
-  eventsPart('.ev-form-title').textContent = editing ? 'Modifica «' + editing.name + '»' : 'Nuovo evento';
-  eventsPart('.ev-submit').textContent = editing ? 'Salva' : 'Aggiungi';
-  eventsPart('.ev-cancel').hidden = !editing;
+  const hint = eventsPart('.ev-hint');
+  hint.hidden = rows.length === 1;
+  hint.textContent = !rows.length ? 'Nessun evento: aggiungine uno e Itaca conta i giorni che mancano.'
+    : eventsPinned ? 'Quello evidenziato è nella barra in basso perché ha la stella: toglila per tornare al più vicino.'
+    : 'Quello evidenziato è nella barra in basso: il più vicino. Con la stella ne scegli un altro.';
+  // Modulo
+  const form = eventsPart('.ev-form');
+  form.hidden = !eventsForm;
+  eventsPart('.ev-add').hidden = Boolean(eventsForm);
+  if (eventsForm) {
+    eventsPart('.ev-emojis').replaceChildren(...eventEmojis.map(symbol => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('role', 'radio');
+      button.setAttribute('aria-checked', String(symbol === eventsEmoji));
+      button.setAttribute('aria-label', 'Simbolo ' + symbol);
+      button.textContent = symbol;
+      button.onclick = () => {
+        eventsEmoji = symbol;
+        for (const other of eventsPart('.ev-emojis').children) other.setAttribute('aria-checked', String(other === button));
+      };
+      return button;
+    }));
+    const editing = personalEvents.find(item => item.id === eventsForm.id);
+    eventsPart('.ev-form-title').textContent = editing ? 'Modifica «' + editing.name + '»' : 'Nuovo evento';
+    eventsPart('.ev-submit').textContent = editing ? 'Salva' : 'Aggiungi';
+    syncEventsSubmit();
+  }
+  placeEventsPanel();
 }
-function resetEventsForm() {
-  eventsEditing = null;
-  eventsEmoji = eventEmojis[0];
-  eventsPart('.ev-form').reset();
+function syncEventsSubmit() {
+  eventsPart('.ev-submit').disabled = !eventsPart('.ev-name').value.trim() || !parseDayDate(eventsPart('.ev-date').value);
 }
-function editPersonalEvent(id) {
+function openEventsForm(id = '') {
   const item = personalEvents.find(entry => entry.id === id);
-  if (!item) return;
-  eventsEditing = id;
-  eventsEmoji = item.emoji || eventEmojis[0];
-  eventsPart('.ev-name').value = item.name;
+  eventsForm = { id: item?.id || '' };
+  eventsEmoji = item?.emoji || eventEmojis[0];
+  eventsPart('.ev-name').value = item?.name || '';
   // Per gli eventi di ogni anno si mostra la prossima volta che capitano.
-  eventsPart('.ev-date').value = isoDate(item.yearly ? eventOccurrence(item).date : parseDayDate(item.date));
-  eventsPart('.ev-yearly-box').checked = Boolean(item.yearly);
+  eventsPart('.ev-date').value = item ? isoDate(item.yearly ? eventOccurrence(item).date : parseDayDate(item.date)) : '';
+  eventsPart('.ev-yearly-box').checked = Boolean(item?.yearly);
   renderEventsPanel();
-  eventsPart('.ev-name').focus();
+  eventsPart('.ev-name').focus({ preventScroll: true });
+  eventsPart('.ev-form').scrollIntoView({ block: 'nearest' });
+}
+function closeEventsForm(focus = true) {
+  eventsForm = null;
+  renderEventsPanel();
+  if (focus) eventsPart('.ev-add').focus({ preventScroll: true });
+}
+function pinPersonalEvent(id) {
+  eventsPinned = id;
+  storePersonalEvents();
+  renderEventsPanel();
+  renderEventsChip();
 }
 function removePersonalEvent(id) {
   const item = personalEvents.find(entry => entry.id === id);
   if (!item) return;
   personalEvents = personalEvents.filter(entry => entry.id !== id);
-  if (eventsEditing === id) resetEventsForm();
+  if (eventsPinned === id) eventsPinned = '';
+  if (eventsForm?.id === id) eventsForm = null;
   storePersonalEvents();
   renderEventsPanel();
   renderEventsChip();
   toast('Tolto «' + item.name + '».', 'info');
 }
+eventsPart('.ev-add').onclick = () => openEventsForm('');
+eventsPart('.ev-cancel').onclick = () => closeEventsForm();
+eventsPart('.ev-name').addEventListener('input', syncEventsSubmit);
+eventsPart('.ev-date').addEventListener('input', syncEventsSubmit);
+eventsPart('.ev-date').addEventListener('change', syncEventsSubmit);
+eventsPart('.ev-form').addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !eventsForm) return;
+  event.preventDefault();   // Esc chiude il modulo, non il pannello
+  event.stopPropagation();
+  closeEventsForm();
+});
 eventsPart('.ev-form').addEventListener('submit', event => {
   event.preventDefault();
   const name = eventsPart('.ev-name').value.trim().replace(/\s+/g, ' ');
@@ -20787,20 +20870,31 @@ eventsPart('.ev-form').addEventListener('submit', event => {
     return;
   }
   const yearly = eventsPart('.ev-yearly-box').checked;
-  const editing = personalEvents.find(item => item.id === eventsEditing);
+  const editing = personalEvents.find(item => item.id === eventsForm?.id);
   const entry = { id: editing?.id || 'e' + Date.now().toString(36), name, date: isoDate(date), yearly, emoji: eventsEmoji, ...(editing?.builtin ? { builtin: editing.builtin } : {}) };
   personalEvents = editing ? personalEvents.map(item => item.id === editing.id ? entry : item) : [...personalEvents, entry];
   storePersonalEvents();
-  resetEventsForm();
+  eventsForm = null;
   renderEventsPanel();
   renderEventsChip();
-  eventsPart('.ev-name').focus();
+  eventsPart('.ev-add').focus({ preventScroll: true });
+  // La riga appena salvata si illumina un attimo.
+  const index = [...eventsPart('.ev-list').children].findIndex(row => row.querySelector('.ev-name-text')?.textContent === name);
+  eventsPart('.ev-list').children[index]?.classList.add('just-saved');
 });
-eventsPart('.ev-cancel').onclick = () => {
-  resetEventsForm();
-  renderEventsPanel();
-};
 eventsPart('.ev-close').onclick = () => eventsPanel.hidePopover();
+
+// Sopra il pulsante, ancorato in basso: cresce verso l'alto.
+function placeEventsPanel() {
+  if (!eventsPanel.matches(':popover-open')) return;
+  const button = $('eventsButton');
+  const rect = button.getBoundingClientRect();
+  const width = eventsPanel.offsetWidth;
+  eventsPanel.style.left = Math.min(Math.max(8, rect.left + rect.width / 2 - width / 2), innerWidth - width - 8) + 'px';
+  eventsPanel.style.top = 'auto';
+  eventsPanel.style.bottom = Math.max(8, innerHeight - rect.top + 8) + 'px';
+  eventsPanel.style.setProperty('--ev-max', Math.max(240, rect.top - 16) + 'px');
+}
 var eventsPanelOpenFor = false;
 document.addEventListener('pointerdown', () => { eventsPanelOpenFor = eventsPanel.matches(':popover-open'); }, true);
 function openEventsPanel() {
@@ -20809,28 +20903,24 @@ function openEventsPanel() {
     eventsPanelOpenFor = false;
     return;
   }
-  resetEventsForm();
-  renderEventsPanel();
+  eventsForm = null;
   eventsPanel.showPopover();
   $('eventsButton').setAttribute('aria-expanded', 'true');
-  const rect = $('eventsButton').getBoundingClientRect();
-  const width = eventsPanel.offsetWidth, height = eventsPanel.offsetHeight;
-  eventsPanel.style.left = Math.min(Math.max(8, rect.left + rect.width / 2 - width / 2), innerWidth - width - 8) + 'px';
-  eventsPanel.style.top = Math.max(8, rect.top - height - 8) + 'px';
-  eventsPart(personalEvents.length ? '.ev-close' : '.ev-name').focus({ preventScroll: true });
+  renderEventsPanel();
+  // Il fuoco va al pannello (niente anello su un pulsante aperto col mouse); Tab porta alle righe.
+  if (personalEvents.length) eventsPanel.focus({ preventScroll: true });
+  else openEventsForm('');
 }
 eventsPanel.addEventListener('toggle', event => {
   if (event.newState !== 'closed') return;
   $('eventsButton').setAttribute('aria-expanded', 'false');
-  resetEventsForm();
+  eventsForm = null;
 });
 $('eventsButton').addEventListener('click', openEventsPanel);
-addEventListener('resize', () => eventsPanel.matches(':popover-open') && eventsPanel.hidePopover());
-// Il tema Natale cambia data-palette: Natale compare (o sparisce) dalla barra.
-new MutationObserver(renderEventsChip).observe(document.documentElement, { attributes: true, attributeFilter: ['data-palette'] });
+addEventListener('resize', placeEventsPanel);
 addEventListener('storage', event => {
   if (event.key !== eventsKey) return;
-  personalEvents = loadPersonalEvents();
+  loadPersonalEvents();
   renderEventsChip();
   if (eventsPanel.matches(':popover-open')) renderEventsPanel();
 });
