@@ -16952,6 +16952,8 @@ const shortcutGroups = [
     ['Trova e sostituisci (di nuovo per chiudere)', 'Mod H'],
     ['Risultato successivo / precedente', 'Enter|Shift Enter'],
     ['Apri un collegamento in Modifica', 'Mod clic'],
+    ['Video a schermo intero con gli appunti', 'doppioclic'],
+    ['Scrivi un appunto (video a schermo intero, in Modifica)', 'N'],
   ]],
   ['Modifica', [
     ['Grassetto', 'Mod B'],
@@ -17085,7 +17087,7 @@ const glossaryMarkdown = [
     ['Presentazione PowerPoint incorporata', 'Come il Word incorporato, ma con un file .pptx: Itaca mostra le diapositive una sotto l’altra, con testi, immagini, forme e tabelle (sola lettura; grafici, animazioni e video non si vedono, e caratteri e posizioni possono differire un po’ da PowerPoint). I vecchi .ppt non si possono mostrare.', '![Presentazione](_allegati/riunione.pptx)'],
     ['File di testo incorporato', 'Come il PDF incorporato, ma con un file di testo (.txt, .log, .csv, .json, .xml, .yaml, codice…): Itaca ne mostra il contenuto con i numeri di riga e i colori della sintassi; i CSV diventano una tabella. Per SVG e HTML si sceglie se vedere l’anteprima (come appare) o il codice. Apri lo mostra in una nuova scheda, Scarica scarica il file. In Modifica: Modifica cambia il contenuto del file (scritto quando salvi il documento, Ctrl/⌘ + Z torna alla versione di prima) e Nel documento porta il testo dentro il documento come blocco di codice (i CSV come tabella), senza più collegamento al file.', '![Configurazione](_allegati/config.yaml)'],
     ['Video incorporato', 'Come il PDF incorporato, ma con un video (.mp4, .mov, .webm, .mkv…): si guarda nel documento con il lettore del browser (schermo intero, velocità). Vale anche per l’indirizzo web di un file video. Le pagine di YouTube e simili restano collegamenti. Alcuni formati (.avi, .wmv) o codifiche il browser non li legge: in quel caso il riquadro lo dice e Scarica apre il file con un altro programma.', '![Presentazione del progetto](_allegati/presentazione.mp4)'],
-    ['Appunti a tempo (video e audio)', 'Un elenco subito sotto un video o un audio, con il minuto all’inizio di ogni voce. In Itaca il minuto si clicca e il video va lì; mentre scorre, l’appunto del momento è evidenziato e compare sotto il video. In Modifica «Appunto» scrive il minuto attuale (e mette in pausa), Invio in fondo a un appunto ne crea uno nuovo con il minuto. Schermo intero (doppio clic sul video): gli appunti a lato o sopra il video, e si scrivono senza uscire. In MkDocs resta un elenco.', '![Lezione](_allegati/lezione.mp4)\n\n- 0:00 Introduzione\n- 1:23 **Punto chiave**: la valvola si chiude prima\n- 4:10 Esempio pratico'],
+    ['Appunti a tempo (video e audio)', 'Un elenco subito sotto un video o un audio, con il minuto all’inizio di ogni voce. In Itaca il minuto si clicca e il video va lì; mentre scorre, l’appunto del momento è evidenziato e compare sotto il video, e una linea del tempo mostra dove stanno gli appunti (passa sopra un segno per leggerli, clic per andarci). In Modifica «Appunto» scrive il minuto attuale (e mette in pausa), Invio in fondo a un appunto ne crea uno nuovo con il minuto. Schermo intero (doppio clic sul video): gli appunti a lato o sopra il video, e si scrivono senza uscire (N porta nel campo). In MkDocs resta un elenco.', '![Lezione](_allegati/lezione.mp4)\n\n- 0:00 Introduzione\n- 1:23 **Punto chiave**: la valvola si chiude prima\n- 4:10 Esempio pratico'],
     ['Audio incorporato', 'Come il video, ma con un file audio (.mp3, .wav, .m4a, .ogg, .flac…): lettore con forma d’onda (clic per spostarsi, frecce ±5 secondi, velocità). Anche l’indirizzo web di un file audio funziona. L’audio continua cambiando documento, nel lettore di Itaca (nella barra laterale, fluttuante o nell’angolo: Impostazioni › Aspetto).', '![Intervista](_allegati/intervista.mp3)'],
     ['Scheda di un file', 'Un collegamento a un file della cartella (ZIP, Excel, presentazione…) da solo su una riga, con { .card } dopo: Itaca lo mostra come una scheda con il tipo, la dimensione e Scarica; per gli ZIP anche il numero di file e Contenuto, l’elenco dei file dell’archivio. In MkDocs resta un collegamento. Incollando o trascinando un file si sceglie Collegamento o Anteprima (Lettore per video e audio).', '[Materiale del corso](_allegati/materiale.zip){ .card }'],
     ['Scheda di una pagina web', 'Un collegamento a una pagina web da solo su una riga, con { .card } dopo: Itaca lo mostra come una scheda (icona del sito, titolo, indirizzo, Apri). Incollando un indirizzo su una riga vuota si sceglie Collegamento o Scheda.', '[Documentazione di Python](https://docs.python.org/3/){ .card }'],
@@ -35149,76 +35151,220 @@ function flashMediaNote(li) {
 
 // ── Scheda sotto il video (e pannello a schermo intero), in uno shadow DOM ──
 const mediaCardIcons = {
-  prev: '<path d="M10 3 5 8l5 5"/>', next: '<path d="m6 3 5 5-5 5"/>', add: '<path d="M8 3v10M3 8h10"/>',
+  prev: '<path d="M10 3 5 8l5 5"/>', next: '<path d="m6 3 5 5-5 5"/>', add: '<path d="M8 3.5v9M3.5 8h9"/>',
   full: '<path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3"/>', exit: '<path d="M6 3v3H3M13 6h-3V3M10 13v-3h3M3 10h3v3"/>',
-  float: '<rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M6.5 10h5"/>', list: '<path d="M5.5 4.5h8M5.5 8h8M5.5 11.5h8M2.5 4.5h.01M2.5 8h.01M2.5 11.5h.01"/>',
+  float: '<rect x="2.5" y="3" width="11" height="10" rx="1.5"/><path d="M5.5 10h5"/>', list: '<path d="M5.5 4.5h8M5.5 8h8M5.5 11.5h8M2.5 4.5h.01M2.5 8h.01M2.5 11.5h.01"/>',
+  notes: '<path d="M4 2.5h6l2.5 2.5v8.5H4z"/><path d="M6.5 7.5h4M6.5 10h3"/>',
 };
 const mediaIcon = name => '<svg viewBox="0 0 16 16" aria-hidden="true">' + mediaCardIcons[name] + '</svg>';
+const mediaTrackHtml = '<div class="track" hidden><div class="rail"><span class="fill"></span></div><div class="marks"></div>' +
+  '<div class="tip" role="tooltip" hidden></div></div>';
 const mediaCardCss = `
 :host { display: block; }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; border-radius: 6px; }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--accent, #2b6cb0); outline-offset: 1px; }
 svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.bar { display: flex; align-items: center; gap: 4px; padding: 6px 8px; border-top: 1px solid var(--line, #ddd); font: 13px/1.35 var(--sans, system-ui, sans-serif); color: var(--ink, #222); }
-.bar[hidden], .panel[hidden], .postit[hidden], [hidden] { display: none !important; }
+.time { flex: none; padding: 1px 7px; border-radius: 99px; background: var(--tint, #eef); color: var(--accent-text, #2b6cb0);
+  font: 600 12px/1.5 var(--mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; }
+.text { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
 .icon { display: inline-grid; place-items: center; width: 28px; height: 28px; color: var(--muted, #666); }
 .icon:hover:not(:disabled) { background: var(--tint, rgba(0,0,0,.06)); color: var(--ink, #222); }
 .icon:disabled { opacity: .35; cursor: default; }
-.note { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding: 4px 8px; text-align: left; }
+
+/* Scheda sotto il video */
+.bar { container-type: inline-size; display: grid; gap: 2px; padding: 2px 8px 7px; border-top: 1px solid var(--line, #ddd); font: 13px/1.35 var(--sans, system-ui, sans-serif); color: var(--ink, #222); }
+.row { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.note { position: relative; flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 8px; padding: 6px 10px; text-align: left; border-radius: 8px; transition: background-color .15s; }
 .note:hover:not(:disabled) { background: var(--tint, rgba(0,0,0,.06)); }
 .note:disabled { cursor: default; }
-.time { flex: none; padding: 1px 7px; border-radius: 99px; background: var(--tint, #eef); color: var(--accent-text, #2b6cb0); font: 600 12px/1.5 var(--mono, ui-monospace, monospace); }
-.text { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.note.now { background: color-mix(in srgb, var(--accent, #2b6cb0) 10%, transparent); box-shadow: inset 3px 0 0 var(--accent, #2b6cb0); }
+.note.now:hover { background: color-mix(in srgb, var(--accent, #2b6cb0) 16%, transparent); }
+.note.now .time { background: var(--accent, #2b6cb0); color: var(--paper, #fff); }
+.note .lead { flex: none; color: var(--muted, #666); font-size: 12px; }
+.note.idle svg { align-self: center; color: var(--muted, #666); }
 .hint { color: var(--muted, #666); }
-.more { flex: none; padding: 0 6px; border-radius: 99px; border: 1px solid var(--line, #ddd); color: var(--muted, #666); font-size: 11.5px; }
-.count { flex: none; color: var(--muted, #666); font-size: 12px; padding: 0 4px; font-variant-numeric: tabular-nums; }
-.add { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 10px; border: 1px solid var(--line, #ddd); color: var(--accent-text, #2b6cb0); font-weight: 550; }
-.add:hover { border-color: var(--accent, #2b6cb0); background: var(--tint, #eef); }
-.panel { display: flex; flex-direction: column; width: min(360px, 34vw); height: 100%; background: var(--paper, #fff); color: var(--ink, #222); font: 13.5px/1.45 var(--sans, system-ui, sans-serif); border-left: 1px solid var(--line, #ddd); }
-.panel header { display: flex; align-items: center; gap: 4px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--line, #ddd); }
-.panel header b { flex: 1; font-size: 14px; }
-.panel header small { color: var(--muted, #666); font-weight: 400; margin-left: 6px; }
-.list { flex: 1; min-height: 0; overflow: auto; margin: 0; padding: 6px; list-style: none; }
-.list li button { display: flex; gap: 10px; align-items: baseline; width: 100%; padding: 7px 10px; text-align: left; }
+.more { flex: none; align-self: center; padding: 0 6px; border-radius: 99px; border: 1px solid var(--line, #ddd); color: var(--muted, #666); font-size: 11.5px; line-height: 17px; }
+.count { flex: none; color: var(--muted, #666); font-size: 12px; padding: 0 6px 0 2px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.add { flex: none; display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px 0 9px; margin-left: 2px; border-radius: 99px;
+  border: 1px solid transparent; background: var(--tint, #eef); color: var(--accent-text, #2b6cb0); font-weight: 600; white-space: nowrap; }
+.add:hover { border-color: color-mix(in srgb, var(--accent, #2b6cb0) 55%, transparent); }
+.add .at { padding-left: 7px; border-left: 1px solid color-mix(in srgb, var(--accent, #2b6cb0) 30%, transparent); font: 500 11.5px/1 var(--mono, ui-monospace, monospace); font-variant-numeric: tabular-nums; opacity: .85; }
+@container (max-width: 560px) { .count, .add .at { display: none; } }
+@container (max-width: 400px) { .add .label { display: none; } .add { padding: 0 8px; } .note { padding: 6px 8px; } }
+
+/* Linea del tempo con i segni degli appunti */
+.track { position: relative; height: 22px; margin: 0 8px; cursor: pointer; touch-action: none; }
+.rail { position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; border-radius: 99px; overflow: hidden;
+  background: color-mix(in srgb, var(--line, #ddd) 70%, var(--muted, #888) 30%); }
+.fill { display: block; width: 0; height: 100%; border-radius: inherit; background: color-mix(in srgb, var(--accent, #2b6cb0) 60%, transparent); }
+.track:hover .rail { height: 6px; margin-top: -3px; }
+.marks { position: absolute; inset: 0; pointer-events: none; }
+.mark { position: absolute; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; padding: 0; display: grid; place-items: center; border-radius: 50%; pointer-events: auto; }
+.mark::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: var(--paper, #fff); border: 2px solid var(--muted, #888); transition: transform .15s, background-color .15s, border-color .15s; }
+.mark.past::before { border-color: var(--accent, #2b6cb0); background: color-mix(in srgb, var(--accent, #2b6cb0) 35%, var(--paper, #fff)); }
+.mark.now::before { border-color: var(--accent, #2b6cb0); background: var(--accent, #2b6cb0); transform: scale(1.3); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #2b6cb0) 25%, transparent); }
+.mark:hover::before, .mark:focus-visible::before { transform: scale(1.45); }
+.mark:focus-visible { outline-offset: -2px; }
+.tip { position: absolute; bottom: calc(100% + 4px); left: 0; z-index: 3; display: grid; gap: 4px; width: max-content; max-width: min(320px, 92cqw);
+  padding: 7px 10px; border-radius: 8px; border: 1px solid var(--line, #ddd); background: var(--panel, #fff); color: var(--ink, #222);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%); font: 12.5px/1.4 var(--sans, system-ui, sans-serif); pointer-events: none; }
+.tip .line { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.tip .others { color: var(--muted, #666); font-size: 11.5px; }
+
+/* Pannello a schermo intero */
+.panel { display: flex; flex-direction: column; width: min(380px, 36vw); height: 100%; background: var(--panel, #fff); color: var(--ink, #222);
+  font: 13.5px/1.45 var(--sans, system-ui, sans-serif); border-left: 1px solid var(--line, #ddd); }
+.panel header { display: flex; align-items: flex-start; gap: 2px; padding: 14px 10px 6px 18px; }
+.heading { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.heading b { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.heading b svg { color: var(--accent-text, #2b6cb0); }
+.total { padding: 0 7px; border-radius: 99px; background: var(--tint, #eef); color: var(--accent-text, #2b6cb0); font-size: 11.5px; font-weight: 600; line-height: 19px; }
+.source { overflow: hidden; color: var(--muted, #666); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+.panel .track { margin: 2px 18px 8px; }
+.list { flex: 1; min-height: 0; overflow: auto; margin: 0; padding: 4px 8px 10px; border-top: 1px solid var(--line, #ddd); list-style: none; scroll-padding: 8px; }
+.list li button { display: flex; gap: 10px; align-items: baseline; width: 100%; padding: 8px 10px; border-radius: 8px; text-align: left; transition: background-color .15s; }
 .list li button:hover { background: var(--tint, rgba(0,0,0,.06)); }
-.list .text { display: block; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
-.list li.now button { background: color-mix(in srgb, var(--accent, #2b6cb0) 16%, transparent); }
+.list .text { display: block; overflow: visible; white-space: pre-wrap; }
+.list li.past button { color: color-mix(in srgb, var(--ink, #222) 68%, transparent); }
+.list li.now button { background: color-mix(in srgb, var(--accent, #2b6cb0) 14%, transparent); box-shadow: inset 3px 0 0 var(--accent, #2b6cb0); color: var(--ink, #222); }
 .list li.now .time { background: var(--accent, #2b6cb0); color: var(--paper, #fff); }
-.list .empty { padding: 18px 12px; color: var(--muted, #666); text-align: center; }
-.write { padding: 10px; border-top: 1px solid var(--line, #ddd); }
-.write input { width: 100%; padding: 9px 11px; border: 1px solid var(--line, #ccc); border-radius: 8px; background: var(--canvas, #fafafa); color: inherit; font: inherit; }
-.write small { display: block; margin-top: 6px; color: var(--muted, #666); font-size: 11.5px; }
-.postit { position: fixed; left: 24px; bottom: 84px; z-index: 2; display: flex; align-items: flex-start; gap: 8px; max-width: min(460px, 70vw); padding: 10px 12px; border-radius: 10px;
-  background: rgb(18 20 24 / 78%); color: #f2f3f5; font: 14px/1.45 var(--sans, system-ui, sans-serif); box-shadow: 0 8px 28px rgb(0 0 0 / 35%); backdrop-filter: blur(6px); }
+.list .empty { display: grid; justify-items: center; gap: 8px; padding: 36px 16px; color: var(--muted, #666); text-align: center; }
+.list .empty svg { width: 26px; height: 26px; stroke-width: 1.3; opacity: .7; }
+.write { padding: 12px; border-top: 1px solid var(--line, #ddd); }
+.field { display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 7px; border: 1px solid var(--line, #ccc); border-radius: 10px; background: var(--canvas, #fafafa); cursor: text; }
+.field:focus-within { border-color: var(--accent, #2b6cb0); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #2b6cb0) 20%, transparent); }
+.field.writing .time { background: var(--accent, #2b6cb0); color: var(--paper, #fff); }
+.field input { flex: 1; min-width: 0; padding: 7px 4px; border: 0; background: none; color: inherit; font: inherit; outline: none; }
+.write small, .readonly { display: block; color: var(--muted, #666); font-size: 11.5px; }
+.write small { margin: 7px 2px 0; }
+.readonly { margin: 0; padding: 12px 18px; border-top: 1px solid var(--line, #ddd); }
+kbd { padding: 0 4px; border: 1px solid var(--line, #ccc); border-bottom-width: 2px; border-radius: 4px; font: 600 10.5px/1.4 var(--mono, ui-monospace, monospace); }
+
+/* Post-it sopra il video */
+.postit { position: fixed; left: 24px; bottom: 84px; z-index: 2; display: flex; align-items: flex-start; gap: 6px; max-width: min(480px, 70vw); padding: 10px 6px 10px 14px; border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 10%); border-left: 3px solid color-mix(in srgb, var(--accent, #2b6cb0) 65%, #fff);
+  background: rgb(14 18 24 / 80%); color: #f2f4f6; font: 14.5px/1.45 var(--sans, system-ui, sans-serif); box-shadow: 0 10px 32px rgb(0 0 0 / 40%); backdrop-filter: blur(8px); }
 .postit .notes { flex: 1; min-width: 0; max-height: 42vh; overflow: auto; display: grid; gap: 6px; }
-.postit .row { display: flex; align-items: baseline; gap: 8px; }
-.postit .row .text { display: block; overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
+.postit .line { display: flex; align-items: baseline; gap: 9px; }
+.postit .text { display: block; overflow: visible; white-space: pre-wrap; }
 .postit .time { background: rgb(255 255 255 / 16%); color: #fff; }
-.postit .icon { color: #d7dade; width: 26px; height: 26px; }
+.postit .icon { width: 26px; height: 26px; color: #d7dade; }
 .postit .icon:hover { background: rgb(255 255 255 / 14%); color: #fff; }
-.postit.empty { background: rgb(18 20 24 / 55%); }
+.postit.empty { padding-left: 6px; border-left-width: 1px; background: rgb(14 18 24 / 55%); }
 .postit.empty .notes { display: none; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 `;
+
+// Linea del tempo: un segno per ogni minuto con appunti, riempita fino al punto attuale.
+// Gli appunti troppo vicini sulla linea (stesso minuto, o pochi pixel in un video lungo)
+// diventano un solo segno, che li mostra tutti nel suggerimento.
+function renderMediaTrack(track, sorted, clock, group) {
+  const duration = clock.duration;
+  const ready = sorted.length > 0 && Number.isFinite(duration) && duration > 0;
+  track.hidden = !ready;
+  if (!ready) return;
+  const at = time => Math.max(0, Math.min(1, time / duration));
+  track.querySelector('.fill').style.width = at(clock.time) * 100 + '%';
+  const width = track.clientWidth || 300;
+  const times = [...new Set(sorted.map(note => note.time))];
+  const marks = track.querySelector('.marks');
+  const key = duration + '|' + Math.round(width / 8) + '|' + times.join(',');
+  if (marks.dataset.key !== key) {
+    marks.dataset.key = key;
+    const clusters = [];
+    for (const time of times) {
+      const last = clusters.at(-1);
+      if (last && (at(time) - at(last.times[0])) * width < 14) last.times.push(time);
+      else clusters.push({ times: [time] });
+    }
+    marks.replaceChildren(...clusters.map(({ times: group }) => {
+      const mark = Object.assign(document.createElement('button'), { type: 'button', className: 'mark' });
+      mark.dataset.time = group[0];
+      mark.dataset.times = group.join(',');
+      mark.style.left = at(group[0]) * 100 + '%';
+      mark.setAttribute('aria-label', 'Vai a ' + formatMediaTime(group[0]));
+      return mark;
+    }));
+  }
+  const nowTime = group.length ? group[0].time : null;
+  for (const mark of marks.children) {
+    const own = mark.dataset.times.split(',').map(Number);
+    const now = nowTime !== null && own.includes(nowTime);
+    mark.classList.toggle('now', now);
+    mark.classList.toggle('past', !now && nowTime !== null && own[0] < nowTime);
+  }
+}
+
+function bindMediaTrack(track, box, entry) {
+  const tip = track.querySelector('.tip');
+  const showTip = mark => {
+    const times = mark.dataset.times.split(',').map(Number);
+    const together = entry().notes.filter(note => times.includes(note.time)).sort((a, b) => a.time - b.time);
+    if (!together.length) return;
+    tip.replaceChildren(...together.slice(0, 3).map(note => {
+      const line = Object.assign(document.createElement('span'), { className: 'line' });
+      line.append(Object.assign(document.createElement('span'), { className: 'time', textContent: note.label }),
+        Object.assign(document.createElement('span'), { className: 'text', textContent: mediaNoteText(note) || '(appunto vuoto)' }));
+      return line;
+    }));
+    if (together.length > 3) tip.append(Object.assign(document.createElement('span'), { className: 'others', textContent: 'e altri ' + (together.length - 3) }));
+    tip.hidden = false;
+    const width = tip.offsetWidth, room = track.clientWidth;
+    tip.style.left = Math.max(-8, Math.min(room - width + 8, mark.offsetLeft - width / 2)) + 'px';
+  };
+  const hideTip = () => { tip.hidden = true; };
+  track.addEventListener('pointerover', event => {
+    const mark = event.target.closest?.('.mark');
+    if (mark) showTip(mark);
+    else hideTip();
+  });
+  track.addEventListener('pointerleave', hideTip);
+  track.addEventListener('focusin', event => event.target.matches('.mark') && showTip(event.target));
+  track.addEventListener('focusout', hideTip);
+  track.addEventListener('click', event => {
+    const target = box();
+    const clock = target && mediaClock(target);
+    if (!clock || !(clock.duration > 0)) return;
+    const mark = event.target.closest('.mark');
+    if (mark) {
+      // Come il clic sui minuti nel documento: in Lettura parte, in Modifica si sposta soltanto.
+      const time = Number(mark.dataset.time);
+      seekMedia(target, time, clock.playing || !mediaNotesEditable(target));
+      const note = entry().notes.find(item => item.time === time);
+      if (note && document.fullscreenElement !== target) flashMediaNote(note.li);
+      return;
+    }
+    const rect = track.querySelector('.rail').getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    seekMedia(target, ratio * clock.duration, clock.playing);
+  });
+}
 
 function ensureMediaCard(host) {
   if (host.shadowRoot?.querySelector('.bar')) return host.shadowRoot;
   const shadow = host.shadowRoot || host.attachShadow({ mode: 'open' });
   shadow.innerHTML = '<style>' + mediaCardCss + '</style>' +
-    '<div class="bar" hidden>' +
-      '<button type="button" class="icon prev" title="Appunto precedente">' + mediaIcon('prev') + '</button>' +
-      '<button type="button" class="note" title="Mostra l’appunto nel documento"><span class="time"></span><span class="text"></span><span class="more" hidden></span></button>' +
-      '<button type="button" class="icon next" title="Appunto successivo">' + mediaIcon('next') + '</button>' +
-      '<span class="count"></span>' +
-      '<button type="button" class="add" title="Scrive un appunto al minuto attuale e mette in pausa">' + mediaIcon('add') + '<span>Appunto</span></button>' +
-      '<button type="button" class="icon full" title="Schermo intero con gli appunti">' + mediaIcon('full') + '</button>' +
+    '<div class="bar" hidden>' + mediaTrackHtml +
+      '<div class="row">' +
+        '<button type="button" class="icon prev" title="Appunto precedente">' + mediaIcon('prev') + '</button>' +
+        '<button type="button" class="note" title="Mostra l’appunto nel documento"><span class="time"></span><span class="text"></span><span class="more" hidden></span></button>' +
+        '<button type="button" class="icon next" title="Appunto successivo">' + mediaIcon('next') + '</button>' +
+        '<span class="count"></span>' +
+        '<button type="button" class="add">' + mediaIcon('add') + '<span class="label">Appunto</span><span class="at"></span></button>' +
+        '<button type="button" class="icon full" title="Schermo intero con gli appunti (doppio clic sul video)">' + mediaIcon('full') + '</button>' +
+      '</div>' +
     '</div>' +
     '<section class="panel" hidden aria-label="Appunti">' +
-      '<header><b>Appunti<small class="total"></small></b>' +
+      '<header><div class="heading"><b>' + mediaIcon('notes') + 'Appunti<span class="total"></span></b><span class="source"></span></div>' +
         '<button type="button" class="icon float" title="Solo l’appunto del momento, sopra il video">' + mediaIcon('float') + '</button>' +
         '<button type="button" class="icon exit" title="Esci dallo schermo intero (Esc)">' + mediaIcon('exit') + '</button></header>' +
+      mediaTrackHtml +
       '<ol class="list"></ol>' +
-      '<form class="write"><input type="text" autocomplete="off" spellcheck="true"><small>Il video si ferma mentre scrivi e riparte con Invio.</small></form>' +
+      '<form class="write"><label class="field"><span class="time"></span><input type="text" autocomplete="off" spellcheck="true" placeholder="Scrivi un appunto e premi Invio"></label>' +
+        '<small>Il video si ferma mentre scrivi e riparte con Invio · <kbd>N</kbd> per scrivere</small></form>' +
+      '<p class="readonly">Per scrivere appunti passa a Modifica.</p>' +
     '</section>' +
     '<div class="postit" hidden>' +
       '<div class="notes"></div>' +
@@ -35236,7 +35382,9 @@ function ensureMediaCard(host) {
     else {
       const index = currentMediaNote(sorted, time);
       // Più di 2 secondi dentro l'appunto: si torna al suo inizio, come «indietro» nei lettori.
-      next = index >= 0 && time - sorted[index].time > 2 ? sorted[index] : sorted[index - 1] || sorted[0];
+      // Prima ancora del primo appunto (index -1) si va al primo.
+      next = index < 0 ? sorted[0] : time - sorted[index].time > 2 ? sorted[index]
+        : sorted.slice(0, index).reverse().find(note => note.time < sorted[index].time) || sorted[index];
     }
     if (next) seekMedia(target, next.time, mediaClock(target).playing);
   };
@@ -35252,6 +35400,7 @@ function ensureMediaCard(host) {
   shadow.querySelector('.add').onclick = () => addMediaNote(box());
   shadow.querySelector('.full').onclick = () => toggleMediaFullscreen(box());
   shadow.querySelector('.exit').onclick = () => document.exitFullscreen?.().catch(() => {});
+  for (const track of shadow.querySelectorAll('.track')) bindMediaTrack(track, box, entry);
   const panel = shadow.querySelector('.panel');
   shadow.querySelector('.float').onclick = () => {
     panel.dataset.floating = 'true';
@@ -35262,7 +35411,7 @@ function ensureMediaCard(host) {
     renderMediaCard(entry());
   };
   const input = shadow.querySelector('.write input');
-  const write = { time: null, resume: false };
+  const write = shadow.mediaWrite = { time: null, resume: false };
   // Chiamato dall'ascoltatore in cattura su document (vedi sotto): un ascoltatore sul campo
   // non verrebbe mai raggiunto, perché l'evento si ferma prima di arrivare all'editor.
   mediaInputHandlers.set(input, () => {
@@ -35273,13 +35422,13 @@ function ensureMediaCard(host) {
       write.time = clock.time;
       write.resume = clock.playing;
       pauseMedia(target);
-      renderMediaCard(entry());
     } else if (write.time !== null && !input.value.trim()) {
       // Testo cancellato: niente appunto, il video riprende se andava.
       if (write.resume) seekMedia(target, mediaClock(target).time, true);
       write.time = null;
       write.resume = false;
     }
+    renderMediaCard(entry());
   });
   shadow.querySelector('.write').addEventListener('submit', event => {
     event.preventDefault();
@@ -35295,6 +35444,7 @@ function ensureMediaCard(host) {
     if (write.resume) seekMedia(target, mediaClock(target).time, true);
     write.time = null;
     write.resume = false;
+    renderMediaCard(entry());
   });
   return shadow;
 }
@@ -35306,6 +35456,7 @@ function renderMediaCard(entry) {
   const shadow = ensureMediaCard(host);
   const editable = mediaNotesEditable(box);
   const clock = mediaClock(box);
+  watchMediaDuration(box);
   const started = clock.time > 0 || clock.playing;
   const index = started ? currentMediaNote(notes, clock.time) : -1;
   const group = mediaNoteGroup(notes, index);
@@ -35319,80 +35470,118 @@ function renderMediaCard(entry) {
   bar.hidden = full || (!notes.length && !editable);
   panel.hidden = !full || floating;
   postit.hidden = !floating;
-  // Scheda sotto il video: l'appunto del momento (o il primo, prima di partire).
-  const shown = index >= 0 ? notes[index] : sorted[0];
-  bar.dataset.current = shown ? String(notes.indexOf(shown)) : '';
-  const time = bar.querySelector('.time'), text = bar.querySelector('.text');
-  const noteButton = bar.querySelector('.note');
-  const more = bar.querySelector('.more');
-  // Più appunti allo stesso minuto: il primo e «+N» (tutti nel suggerimento).
-  const together = index >= 0 ? group : shown ? notes.filter(note => note.time === shown.time) : [];
-  more.hidden = together.length < 2;
-  more.textContent = '+' + (together.length - 1);
-  noteButton.title = together.length > 1 ? together.map(note => note.label + ' ' + mediaNoteText(note)).join('\n') : 'Mostra l’appunto nel documento';
-  if (shown) {
-    time.hidden = false;
-    time.textContent = shown.label;
-    text.textContent = mediaNoteText(shown) || '(appunto vuoto)';
-    text.className = 'text' + (index < 0 ? ' hint' : '');
-    noteButton.disabled = false;
-  } else {
-    time.hidden = true;
-    text.textContent = 'Nessun appunto: premi «Appunto» mentre ' + (video ? 'guardi il video' : 'ascolti') + ' per segnare il minuto.';
-    text.className = 'text hint';
-    noteButton.disabled = true;
+  const count = notes.length + (notes.length === 1 ? ' appunto' : ' appunti');
+  if (!bar.hidden) {
+    renderMediaTrack(bar.querySelector('.track'), sorted, clock, group);
+    // Scheda sotto il video: l'appunto del momento (o il primo, prima di partire).
+    const shown = index >= 0 ? notes[index] : sorted[0];
+    bar.dataset.current = shown ? String(notes.indexOf(shown)) : '';
+    const time = bar.querySelector('.time'), text = bar.querySelector('.text');
+    const noteButton = bar.querySelector('.note');
+    const more = bar.querySelector('.more');
+    // Più appunti allo stesso minuto: il primo e «+N» (tutti nel suggerimento).
+    const together = index >= 0 ? group : shown ? notes.filter(note => note.time === shown.time) : [];
+    more.hidden = together.length < 2;
+    more.textContent = '+' + (together.length - 1);
+    noteButton.classList.toggle('now', index >= 0);
+    noteButton.classList.toggle('idle', !shown);
+    noteButton.title = together.length > 1 ? together.map(note => note.label + ' ' + mediaNoteText(note)).join('\n') : shown ? 'Mostra l’appunto nel documento' : '';
+    if (shown) {
+      time.hidden = false;
+      time.textContent = shown.label;
+      text.textContent = mediaNoteText(shown) || '(appunto vuoto)';
+      text.className = 'text' + (index < 0 ? ' hint' : '');
+      noteButton.disabled = false;
+    } else {
+      time.hidden = true;
+      text.textContent = video ? 'Premi «Appunto» mentre guardi il video: il minuto si scrive da sé.'
+        : 'Premi «Appunto» mentre ascolti: il minuto si scrive da sé.';
+      text.className = 'text hint';
+      noteButton.disabled = true;
+    }
+    bar.querySelector('.prev').disabled = !notes.length;
+    bar.querySelector('.next').disabled = !sorted.some(note => note.time > clock.time + .3);
+    bar.querySelector('.count').textContent = !notes.length ? '' : index >= 0 ? (sorted.indexOf(shown) + 1) + ' di ' + notes.length : count;
+    const add = bar.querySelector('.add');
+    add.hidden = !editable;
+    add.querySelector('.at').textContent = formatMediaTime(clock.time);
+    add.title = 'Scrive un appunto a ' + formatMediaTime(clock.time) + (clock.playing ? ' e mette in pausa' : '');
+    bar.querySelector('.full').hidden = !video;
+    bar.querySelector('.prev').hidden = bar.querySelector('.next').hidden = !notes.length;
   }
-  const position = sorted.indexOf(shown);
-  bar.querySelector('.prev').disabled = !notes.length;
-  bar.querySelector('.next').disabled = !sorted.some(note => note.time > clock.time + .3);
-  bar.querySelector('.count').textContent = notes.length ? (index >= 0 ? position + 1 : '–') + ' / ' + notes.length : '';
-  bar.querySelector('.add').hidden = !editable;
-  bar.querySelector('.add').title = 'Scrive un appunto a ' + formatMediaTime(clock.time) + ' e mette in pausa';
-  bar.querySelector('.full').hidden = !video;
-  if (full) {
-    shadow.querySelector('.total').textContent = notes.length ? ' · ' + notes.length : '';
-    const list = shadow.querySelector('.list');
-    const key = sorted.map(note => note.time + '\u0001' + mediaNoteText(note)).join('\u0002');
-    if (list.dataset.key !== key) {
-      list.dataset.key = key;
-      list.replaceChildren(...(sorted.length ? sorted.map(note => {
+  if (!full) return;
+  shadow.querySelector('.total').textContent = notes.length || '';
+  shadow.querySelector('.total').hidden = !notes.length;
+  shadow.querySelector('.source').textContent = box.querySelector('.pdf-title')?.textContent || '';
+  renderMediaTrack(panel.querySelector('.track'), sorted, clock, group);
+  const list = shadow.querySelector('.list');
+  const key = sorted.map(note => note.time + '\u0001' + mediaNoteText(note)).join('\u0002') + '\u0003' + editable;
+  if (list.dataset.key !== key) {
+    list.dataset.key = key;
+    if (sorted.length) {
+      list.replaceChildren(...sorted.map(note => {
         const item = document.createElement('li');
         const button = document.createElement('button');
         button.type = 'button';
         button.innerHTML = '<span class="time"></span><span class="text"></span>';
         button.querySelector('.time').textContent = note.label;
-        button.querySelector('.text').textContent = mediaNoteText(note);
+        button.querySelector('.text').textContent = mediaNoteText(note) || '(appunto vuoto)';
         button.onclick = () => seekMedia(box, note.time, true);
         item.append(button);
         return item;
-      }) : [Object.assign(document.createElement('li'), { className: 'empty', textContent: editable ? 'Scrivi qui sotto il primo appunto.' : 'Nessun appunto.' })]));
-    }
-    [...list.children].forEach((item, i) => {
-      const now = Boolean(sorted[i]) && group.includes(sorted[i]);
-      if (now && item.classList.contains('now')) return;
-      if (item.classList.contains('now') !== now) {
-        item.classList.toggle('now', now);
-        if (now && sorted[i] === group[0]) item.scrollIntoView({ block: 'nearest' });
-      }
-    });
-    const write = shadow.querySelector('.write');
-    write.hidden = !editable;
-    const input = write.querySelector('input');
-    if (!input.value) input.placeholder = 'Appunto a ' + formatMediaTime(clock.time) + '… (Invio)';
-    postit.classList.toggle('empty', !group.length);
-    const rows = postit.querySelector('.notes');
-    const postKey = group.map(note => note.label + '\u0001' + mediaNoteText(note)).join('\u0002');
-    if (rows.dataset.key !== postKey) {
-      rows.dataset.key = postKey;
-      rows.replaceChildren(...group.map(note => {
-        const row = Object.assign(document.createElement('div'), { className: 'row' });
-        row.append(Object.assign(document.createElement('span'), { className: 'time', textContent: note.label }),
-          Object.assign(document.createElement('span'), { className: 'text', textContent: mediaNoteText(note) }));
-        return row;
       }));
-      rows.scrollTop = 0;
+    } else {
+      const empty = Object.assign(document.createElement('li'), { className: 'empty' });
+      empty.innerHTML = mediaIcon('notes') + '<span></span>';
+      empty.lastChild.textContent = editable ? 'Ancora nessun appunto. Scrivi qui sotto: il minuto è quello del video.' : 'Nessun appunto.';
+      list.replaceChildren(empty);
     }
   }
+  const nowTime = group.length ? group[0].time : null;
+  [...list.children].forEach((item, i) => {
+    const note = sorted[i];
+    if (!note) return;
+    item.classList.toggle('past', nowTime !== null && note.time < nowTime);
+    const now = note.time === nowTime;
+    if (item.classList.contains('now') === now) return;
+    item.classList.toggle('now', now);
+    if (now && (i === 0 || sorted[i - 1].time !== nowTime)) item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+  const write = shadow.querySelector('.write');
+  write.hidden = !editable;
+  shadow.querySelector('.readonly').hidden = editable;
+  const pending = shadow.mediaWrite?.time ?? null;
+  const field = write.querySelector('.field');
+  field.classList.toggle('writing', pending !== null);
+  field.querySelector('.time').textContent = formatMediaTime(pending ?? clock.time);
+  field.title = pending !== null ? 'L’appunto sarà a ' + formatMediaTime(pending) : '';
+  postit.classList.toggle('empty', !group.length);
+  const rows = postit.querySelector('.notes');
+  const postKey = group.map(note => note.label + '\u0001' + mediaNoteText(note)).join('\u0002');
+  if (rows.dataset.key !== postKey) {
+    rows.dataset.key = postKey;
+    rows.replaceChildren(...group.map(note => {
+      const row = Object.assign(document.createElement('div'), { className: 'line' });
+      row.append(Object.assign(document.createElement('span'), { className: 'time', textContent: note.label }),
+        Object.assign(document.createElement('span'), { className: 'text', textContent: mediaNoteText(note) }));
+      return row;
+    }));
+    rows.scrollTop = 0;
+  }
+}
+
+// La durata di un audio che non suona ancora arriva dal suo <audio> (fuori dal documento):
+// quando arriva, la linea del tempo può comparire.
+var mediaDurationWatched = new WeakSet();
+function watchMediaDuration(box) {
+  if (mediaNotesKind(box) !== 'audio') return;
+  const audio = audioPlayers.get(box.querySelector('.audio-player'))?.audio;
+  if (!audio || mediaDurationWatched.has(audio)) return;
+  mediaDurationWatched.add(audio);
+  audio.addEventListener('loadedmetadata', () => {
+    const entry = mediaNoteBoxes.find(item => item.box.querySelector('.audio-player') && audioPlayers.get(item.box.querySelector('.audio-player'))?.audio === audio);
+    if (entry) refreshMediaBox(entry.box);
+  });
 }
 
 function refreshMediaBox(box) {
@@ -35608,6 +35797,25 @@ ed.addEventListener('dblclick', event => {
   const box = video?.closest('[data-ext="pdf"]');
   if (box && mediaNotesKind(box) === 'video') toggleMediaFullscreen(box);
 });
+
+// A schermo intero il fuoco sta sul video: N porta nel campo degli appunti (e riapre il
+// pannello se si guardava solo il post-it).
+document.addEventListener('keydown', event => {
+  const box = document.fullscreenElement;
+  if (event.key.toLowerCase() !== 'n' || event.ctrlKey || event.metaKey || event.altKey || !box || !mediaNotesKind(box)) return;
+  const target = event.composedPath()[0];
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable) return;
+  const shadow = box.querySelector(':scope > .media-notes')?.shadowRoot;
+  if (!shadow || !mediaNotesEditable(box)) return;
+  event.preventDefault();
+  event.stopPropagation();
+  const panel = shadow.querySelector('.panel');
+  if (panel.dataset.floating) {
+    delete panel.dataset.floating;
+    refreshMediaBox(box);
+  }
+  shadow.querySelector('.write input')?.focus();
+}, true);
 
 // I tasti scritti negli appunti a schermo intero non devono arrivare all'editor (che li
 // vedrebbe come digitati nel riquadro del video).
