@@ -2079,18 +2079,44 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 .word-warnings { margin: 8px 0 0; padding-left: 1.2em; }
 .word-warnings li { margin: 4px 0; }
 .report-warning { margin: 0; padding: 10px 12px; border-radius: 9px; background: var(--warning-bg); color: var(--warning) !important; }
-.attachment-report .attachment-intro { margin: 0; line-height: 1.5; }
-.attachment-report section > .link-report-actions { border: 0; border-bottom: 1px solid var(--line-soft); border-radius: 0; }
-.attachment-report li { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-top: 1px solid var(--line-soft); }
-.attachment-report li:first-child { border-top: 0; }
-.attachment-report li label { flex: 1; min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 9px; cursor: pointer; }
-.attachment-report li label small { grid-column: 2; }
-.attachment-report .attachment-text { flex: 1; min-width: 0; display: grid; }
-.attachment-report li small { color: var(--muted); font-size: 11.5px; }
-.attachment-report .attachment-name { display: flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; font-weight: 560; }
-.attachment-report li button { display: inline-flex; flex: none; width: auto; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; }
-.attachment-report li button.icon-button { padding: 4px; border-color: transparent; }
-.attachment-report li button:hover { border-color: var(--accent); color: var(--accent-text); }
+.panel-back { display: inline-flex; align-items: center; gap: 4px; flex: none; margin-left: -8px; padding: 5px 10px 5px 6px; border-radius: 7px; color: var(--accent-text); font-size: 13px; font-weight: 560; }
+.panel-back:hover { background: var(--tint); }
+.panel-back[hidden] { display: none; }
+.panel-dialog.compact-panel { width: min(720px, 94vw); height: fit-content; max-height: min(720px, 90dvh); }
+.panel-dialog.compact-panel .panel-body { flex: 0 1 auto; min-height: 220px; }
+.trash-view { display: flex; flex-direction: column; gap: 10px; }
+.trash-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.trash-tabs { display: inline-flex; gap: 2px; padding: 3px; border-radius: 9px; background: var(--canvas); border: 1px solid var(--line); }
+.trash-tab { display: inline-flex; align-items: center; gap: 7px; padding: 5px 12px; border-radius: 7px; color: var(--muted); font-size: 13px; font-weight: 560; }
+.trash-tab[aria-selected='true'] { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .12); }
+.trash-count { min-width: 20px; padding: 0 6px; border-radius: 99px; background: var(--tint); color: var(--accent-text); font-size: 11.5px; line-height: 18px; text-align: center; }
+.trash-filter { width: min(220px, 100%); height: 30px; padding: 0 10px; font-size: 12.5px; }
+.panel-body p.trash-hint { margin: -2px 0 0; font-size: 12px; line-height: 1.45; }
+.trash-bar { position: sticky; top: -14px; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 8px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); }
+.trash-bar:empty { display: none; }
+.trash-bar-text { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 9px; min-width: 0; font-size: 13px; font-weight: 560; }
+.trash-bar-text input { align-self: center; margin: 0 2px 0 0; }
+.trash-bar-text small { color: var(--muted); font-weight: 400; }
+.trash-bar button { flex: none; }
+.trash-list { margin: 0; padding: 0; list-style: none; }
+.trash-day { padding: 12px 4px 4px; color: var(--muted); font-size: 11.5px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+.trash-day:first-letter { text-transform: uppercase; }
+.trash-row { display: flex; align-items: center; gap: 10px; padding: 6px 4px 6px 8px; border-radius: 8px; }
+.trash-row:hover { background: var(--canvas); }
+.trash-pick { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; cursor: default; }
+label.trash-pick { cursor: pointer; }
+.trash-thumb { position: relative; display: grid; place-items: center; flex: none; width: 36px; height: 36px; overflow: hidden; border-radius: 6px; background: var(--canvas); border: 1px solid var(--line-soft); }
+.trash-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.trash-text { display: grid; min-width: 0; }
+.trash-name { display: flex; align-items: center; gap: 7px; min-width: 0; overflow: hidden; font-weight: 560; white-space: nowrap; text-overflow: ellipsis; }
+.trash-text small { overflow: hidden; color: var(--muted); font-size: 11.5px; white-space: nowrap; text-overflow: ellipsis; }
+.trash-tag { flex: none; padding: 0 6px; border-radius: 99px; background: var(--warning-bg); color: var(--warning); font-size: 10.5px; font-weight: 600; line-height: 17px; }
+.trash-tag.soft { background: var(--tint); color: var(--accent-text); }
+.trash-action { flex: none; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; font-size: 12px; }
+.trash-action:hover { border-color: var(--accent); color: var(--accent-text); }
+.trash-action.icon-only { padding: 5px; border-color: transparent; }
+.panel-body p.trash-empty, .panel-body p.trash-loading { padding: 34px 12px; text-align: center; font-size: 13.5px; }
+.panel-body p.trash-empty.warning { padding: 12px; border-radius: 9px; background: var(--warning-bg); color: var(--warning); text-align: left; }
 /* Versioni e confronto (git): grafo dei commit, confronto visivo, autori delle righe */
 .i-git-graph { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='4' cy='3.5' r='1.8'/%3E%3Ccircle cx='4' cy='12.5' r='1.8'/%3E%3Ccircle cx='12' cy='6.5' r='1.8'/%3E%3Cpath d='M4 5.3v5.4M12 8.3c0 2.4-3 2.2-6.4 3.4'/%3E%3C/svg%3E"); }
 .i-git-blame { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='4.5' cy='4.5' r='2.3'/%3E%3Cpath d='M1 13c.4-2.6 1.8-4 3.5-4s3.1 1.4 3.5 4M10 4.5h5M10 8h5M10 11.5h5'/%3E%3C/svg%3E"); }
@@ -3156,20 +3182,27 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
         <h4>Rinominare, spostare, eliminare</h4>
         <div class="set-card">
           <div class="set-row">
-            <span class="set-label" id="deleteConfirmLabel"><b>Prima di eliminare</b><small>L’eliminazione è definitiva</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="deleteConfirmLabel"><label><input type="radio" name="deleteConfirm" value="double"><span>Digita il nome</span></label><label><input type="radio" name="deleteConfirm" value="simple"><span>Solo conferma</span></label></div>
-          </div>
-          <div class="set-row">
             <label class="set-label" for="setUpdateLinks"><b>Aggiorna i collegamenti</b><small>Quando rinomini o sposti un file</small></label>
             <input type="checkbox" class="switch" id="setUpdateLinks" name="updateLinks">
           </div>
+          <div class="set-row" id="deleteConfirmRow">
+            <span class="set-label" id="deleteConfirmLabel"><b>Prima di eliminare</b><small>Senza cestino l’eliminazione è definitiva</small></span>
+            <div class="segmented" role="radiogroup" aria-labelledby="deleteConfirmLabel"><label><input type="radio" name="deleteConfirm" value="double"><span>Digita il nome</span></label><label><input type="radio" name="deleteConfirm" value="simple"><span>Solo conferma</span></label></div>
+          </div>
+        </div>
+        <h4>Cestino di Itaca</h4>
+        <div class="set-card" id="trashCard">
+          <div class="set-row" data-keywords="cestino elimina eliminare ripristina recupera cancellare itaca-trash">
+            <label class="set-label" for="setDeleteToTrash"><b>Elimina nel cestino</b><small>Documenti, file e cartelle eliminati da Itaca restano 30 giorni in una cartella nascosta (.itaca-trash) e si possono ripristinare</small></label>
+            <input type="checkbox" class="switch" id="setDeleteToTrash" name="deleteToTrash">
+          </div>
           <div class="set-row" data-keywords="allegati cestino pulizia spazio immagini non usati _allegati itaca-trash">
-            <label class="set-label" for="setAttachmentTrash"><b>Allegati non più usati nel cestino</b><small>Se togli un allegato da un documento (o elimini il documento) e nessun altro file lo nomina, va nel cestino di Itaca: resta 30 giorni e torna da solo se un documento lo cita di nuovo</small></label>
+            <label class="set-label" for="setAttachmentTrash"><b>Allegati non più usati</b><small>Se togli un allegato da un documento (o elimini il documento) e nessun altro file lo nomina, va nel cestino; torna da solo se un documento lo cita di nuovo</small></label>
             <input type="checkbox" class="switch" id="setAttachmentTrash" name="attachmentTrash">
           </div>
           <div class="set-row" data-keywords="allegati cestino pulizia spazio immagini non usati ripristina svuota">
-            <span class="set-label"><b>Allegati non usati</b><small>Cerca in _allegati i file che nessun documento usa (anche quelli rimasti da prima) e mostra il cestino</small></span>
-            <button type="button" class="outline" id="attachmentCleanupOpen">Controlla…</button>
+            <span class="set-label"><b>Cestino e allegati non usati</b><small>Ripristina ciò che è stato eliminato, cerca gli allegati che nessuno usa</small></span>
+            <button type="button" class="outline" id="attachmentCleanupOpen">Apri…</button>
           </div>
         </div>
         <h4>Bozze</h4>
@@ -3418,6 +3451,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
   </dialog>
   <dialog id="panelDialog" class="panel-dialog" aria-labelledby="panelTitle">
     <header class="panel-header">
+      <button type="button" class="panel-back" id="panelBack" title="Torna alle Impostazioni" hidden><i class="icon i-arrow-left" aria-hidden="true"></i>Impostazioni</button>
       <h2 id="panelTitle"></h2>
       <span class="panel-status" id="panelStatus" role="status"></span>
       <button type="button" class="icon-button" id="panelClose" aria-label="Chiudi" title="Chiudi"><i class="icon i-close" aria-hidden="true"></i></button>
@@ -8106,6 +8140,8 @@ function flushMark() {
     (sourceMode ? src.value !== original.replace(/\r\n?/g, '\n') : visualDocumentMarkdown() !== original));
   // Il titolo del documento aperto può essere cambiato: la sua riga nell'elenco lo segue.
   if (treeTitlesOn()) queueTreeTitles();
+  // Un allegato del cestino citato di nuovo torna al suo posto.
+  if (typeof queueTrashRestore === 'function') queueTrashRestore();
 }
 
 function applyDirtyState(changed, complete = true) {
@@ -15115,6 +15151,7 @@ const settingChoices = {
   autosave: [0, 2, 5, 15, 60],
   deleteConfirm: ['double', 'simple'],
   attachmentTrash: [true, false],
+  deleteToTrash: [true, false],
   updateLinks: [true, false],
   pdfAsk: [true, false],
   sidebarSide: ['left', 'right'],
@@ -15153,7 +15190,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -15242,6 +15279,8 @@ function syncSettings() {
   settingsForm.autosave.value = String(settings.autosave);
   settingsForm.updateLinks.checked = settings.updateLinks;
   settingsForm.attachmentTrash.checked = settings.attachmentTrash;
+  settingsForm.deleteToTrash.checked = settings.deleteToTrash;
+  $('deleteConfirmRow').hidden = settings.deleteToTrash;
   settingsForm.quickInsert.checked = settings.quickInsert;
   settingsForm.treeLabels.value = settings.treeLabels;
   settingsForm.treeOrder.value = settings.treeOrder;
@@ -16099,6 +16138,7 @@ settingsForm.addEventListener('change', event => {
     }
     if (name === 'quickInsert' && !settings.quickInsert) closeTreeWarp(false);
     if (name === 'treeLabels' || name === 'treeOrder') renderTree();
+    if (name === 'deleteToTrash') $('deleteConfirmRow').hidden = settings.deleteToTrash;
     if (name === 'treeLabels') syncTitleViews();
     if (name === 'treeLabels') $('treeOrderRow').hidden = settings.treeLabels !== 'title';
     if (name === 'audioPlayer') applyAudioPlayerSetting();
@@ -23213,25 +23253,30 @@ async function forgetPaintBackup(folder, name) {
   } catch {}
 }
 
-// ── Allegati non più usati: il cestino di Itaca ─────────────────────────────
-// Immagini e file inseriti nei documenti finiscono in _allegati quando si salva. Se poi si
-// tolgono dal documento (o si elimina il documento) il file restava lì per sempre. Ora, dopo
-// il salvataggio, gli allegati che il documento non cita più e che nessun altro file della
-// cartella nomina vanno in .itaca-trash (nascosta, come .itaca-backup), dove restano 30 giorni
-// prima che la pulizia delle cartelle nascoste li tolga. Se un documento li cita di nuovo
-// (Ctrl/⌘+Z dopo il salvataggio, una versione vecchia, il documento di un collega) tornano al
-// loro posto da soli. «Allegati non usati…» cerca anche quelli rimasti dal passato.
+// ── Cestino di Itaca ────────────────────────────────────────────────────────
+// Una cartella nascosta, .itaca-trash, come .itaca-backup: ci finiscono
+//  • i documenti, i file e le cartelle eliminati da Itaca (reason 'deleted');
+//  • gli allegati che nessun documento usa più (reason 'unused'): dopo un salvataggio che li
+//    toglie dal documento, dopo l'eliminazione del documento, o scelti in «Allegati non usati».
+// Restano 30 giorni, poi la pulizia delle cartelle nascoste li toglie. Gli allegati 'unused'
+// tornano da soli al loro posto appena un documento li cita di nuovo (anche mentre si scrive,
+// e i suggerimenti dei collegamenti e delle immagini li propongono); quelli eliminati a mano
+// tornano solo con Ripristina.
 //
-// La prova «nessuno lo usa» è volutamente prudente: basta che il NOME del file compaia in un
-// documento o in un file di testo della cartella (mkdocs.yml, HTML, CSS…), in qualsiasi forma
-// (codificato, con le maiuscole, con altri segni), perché l'allegato resti dov'è. Se anche un
-// solo file non si legge, non si sposta niente.
+// File: .itaca-trash/<chiave> + scheda .itaca-trash/info/<chiave>.json
+//   { path, time, size, modified, reason, from, by, group, groupPath }
+// La chiave inizia con l'ora (base 36): lo stesso percorso può esserci più volte.
+//
+// «Usato» è volutamente prudente: basta che il NOME del file compaia in un documento o in un
+// file di testo della cartella (mkdocs.yml, HTML, CSS…), in qualsiasi forma, perché l'allegato
+// resti dov'è. Se anche un solo file non si legge, non si sposta niente.
 const trashFolderName = '.itaca-trash', trashInfoName = 'info';
 const trashKeepDays = 30, trashKeepMs = trashKeepDays * 86400000;
 const attachmentFolderName = '_allegati';
 const referenceTextFiles = /\.(?:md|markdown|html?|ya?ml|css|js|mjs|json|toml|txt)$/i;
 var trashListCache = null;          // { directory, time, entries }
 var attachmentTrashBusy = false;
+var trashRestoreTimer = 0;
 
 function isAttachmentPath(path) {
   return Boolean(path) && !isMD(path) && path.split('/').slice(0, -1).includes(attachmentFolderName);
@@ -23248,7 +23293,7 @@ function foldReference(text) {
 }
 
 // Quali dei percorsi dati sono ancora nominati da qualche parte. failed = un file non si è letto.
-async function usedAttachments(paths, { skip = new Set() } = {}) {
+async function usedAttachments(paths) {
   const wanted = paths.map(path => [path, foldReference(path.split('/').pop())]).filter(([, name]) => name);
   const used = new Set(paths.filter(path => !foldReference(path.split('/').pop())));
   const check = text => {
@@ -23256,9 +23301,9 @@ async function usedAttachments(paths, { skip = new Set() } = {}) {
     for (const [path, name] of wanted) if (!used.has(path) && folded.includes(name)) used.add(path);
   };
   // Il documento aperto e le schede con modifiche non ancora salvate contano già.
-  if (current && isMD(current)) check(getMarkdown());
+  if (current && isMD(current)) check(sourceMode ? src.value : getMarkdown());
   for (const tab of Array.isArray(docTabs) ? docTabs : []) if (tab.draft?.text) check(tab.draft.text);
-  const sources = [...files].filter(([path]) => referenceTextFiles.test(path) && !skip.has(path));
+  const sources = [...files].filter(([path]) => referenceTextFiles.test(path));
   let failed = false;
   await forEachLimited(sources, 8, async ([, handle]) => {
     if (failed || used.size >= paths.length) return;
@@ -23282,27 +23327,45 @@ function attachmentLinksOf(text, from) {
   return found;
 }
 
-// Percorsi citati da un testo che non esistono più (per il ripristino dal cestino).
+// Collegamenti di un testo che non portano a nessun file: percorsi e, per [[…]], nomi.
 function missingLinksOf(text, from) {
   const index = new Set(files.keys());
-  const found = new Set();
+  const paths = new Set(), names = new Set();
   for (const link of scanMarkdownLinks(text || '')) {
     const target = resolveLink(link, from, index);
-    if (!target.missing || link.wiki) continue;
+    if (!target.missing) continue;
+    if (link.wiki) {
+      if (!target.ambiguous) names.add(target.clean.split('/').pop().toLowerCase());
+      continue;
+    }
     const path = resolvePath(target.clean, from);
-    if (path) found.add(path);
+    if (path) paths.add(path.toLowerCase());
   }
-  return found;
+  return { paths, names };
 }
 
-const trashKey = path => encodeURIComponent(path);
+function trashKeyFor(path) {
+  const stamp = Date.now().toString(36) + '-';
+  const encoded = encodeURIComponent(path);
+  if (encoded.length <= 180) return stamp + encoded;
+  // Nomi lunghi: il percorso intero resta nella scheda.
+  let hash = 0;
+  for (const character of path) hash = (hash * 31 + character.codePointAt(0)) >>> 0;
+  const extension = /\.[\w-]{1,10}$/.exec(path)?.[0] || '';
+  return stamp + hash.toString(36) + extension;
+}
+
+function pathFromTrashKey(key) {
+  const encoded = /^[0-9a-z]+-(.+)$/.exec(key)?.[1] || key;
+  try { return decodeURIComponent(encoded); } catch { return encoded; }
+}
 
 async function trashFolder(directory, create = false) {
   try { return await withTimeout(directory.getDirectoryHandle(trashFolderName, { create }), 10000); }
   catch { return null; }
 }
 
-// Contenuto del cestino: [{ key, path, time, size, from, by, handle }], i più recenti prima.
+// Contenuto del cestino: [{ key, path, time, size, reason, from, by, group, groupPath, handle }], i più recenti prima.
 async function trashEntries(directory = root, maxAge = 0) {
   if (!directory) return [];
   if (maxAge && trashListCache?.directory === directory && Date.now() - trashListCache.time < maxAge) return trashListCache.entries;
@@ -23310,18 +23373,19 @@ async function trashEntries(directory = root, maxAge = 0) {
   const entries = [];
   if (trash) {
     const info = await trash.getDirectoryHandle(trashInfoName).catch(() => null);
-    for await (const [key, handle] of trash.entries()) {
-      if (handle.kind !== 'file') continue;
+    const list = [];
+    for await (const [key, handle] of trash.entries()) if (handle.kind === 'file') list.push([key, handle]);
+    await forEachLimited(list, 8, async ([key, handle]) => {
       let record = null;
-      try { record = JSON.parse(await (await (await info?.getFileHandle(key + '.json'))?.getFile())?.text()); } catch {}
-      let path = typeof record?.path === 'string' ? record.path : '';
-      if (!path) try { path = decodeURIComponent(key); } catch { path = key; }
+      try { record = JSON.parse(await (await (await info.getFileHandle(key + '.json')).getFile()).text()); } catch {}
       const file = await handle.getFile().catch(() => null);
-      entries.push({ key, path, handle, time: Number(record?.time) || file?.lastModified || 0, size: file?.size ?? record?.size ?? 0,
-        from: typeof record?.from === 'string' ? record.from : '', by: typeof record?.by === 'string' ? record.by : '' });
-    }
+      const text = name => typeof record?.[name] === 'string' ? record[name] : '';
+      entries.push({ key, handle, path: text('path') || pathFromTrashKey(key), time: Number(record?.time) || file?.lastModified || 0,
+        size: file?.size ?? record?.size ?? 0, reason: text('reason') || 'unused', from: text('from'), by: text('by'),
+        group: text('group'), groupPath: text('groupPath') });
+    });
   }
-  entries.sort((a, b) => b.time - a.time);
+  entries.sort((a, b) => b.time - a.time || a.path.localeCompare(b.path, 'it', { numeric: true }));
   trashListCache = { directory, time: Date.now(), entries };
   return entries;
 }
@@ -23337,42 +23401,65 @@ async function writeHandleData(handle, data) {
   }
 }
 
-// Sposta un allegato nel cestino: copia, controllo, poi tolto dal suo posto (solo se nel
-// frattempo non è cambiato). Restituisce la dimensione, oppure 0 se è rimasto dov'era.
-async function moveAttachmentToTrash(directory, path, from = '') {
+// Sposta un file della cartella nel cestino: copia, controllo, poi tolto dal suo posto (solo se
+// nel frattempo non è cambiato). Restituisce la dimensione (almeno 1), oppure 0 se è rimasto lì.
+async function trashFile(directory, path, record) {
   const handle = files.get(path);
   const folder = folderHandles.get(parent(path));
   if (!handle || !folder) return 0;
   const file = await withTimeout(handle.getFile(), 30000);
   const trash = await trashFolder(directory, true);
-  if (!trash) throw new Error('Impossibile creare ' + trashFolderName + '.');
+  if (!trash) throw new Error('Impossibile creare la cartella del cestino (' + trashFolderName + ').');
   const info = await trash.getDirectoryHandle(trashInfoName, { create: true });
-  const key = trashKey(path);
-  try { await trash.removeEntry(key); } catch {}
+  const key = trashKeyFor(path);
   const copy = await trash.getFileHandle(key, { create: true });
   await writeHandleData(copy, file);
-  if ((await copy.getFile()).size !== file.size) {
+  const dropCopy = async () => {
     try { await trash.removeEntry(key); } catch {}
+    try { await info.removeEntry(key + '.json'); } catch {}
+  };
+  if ((await copy.getFile()).size !== file.size) {
+    await dropCopy();
     throw new Error('Copia di «' + path.split('/').pop() + '» nel cestino non riuscita.');
   }
-  const record = await info.getFileHandle(key + '.json', { create: true });
-  await writeHandleData(record, JSON.stringify({ path, time: Date.now(), size: file.size, modified: file.lastModified, from, by: userName || '' }));
+  await writeHandleData(await info.getFileHandle(key + '.json', { create: true }),
+    JSON.stringify({ path, time: Date.now(), size: file.size, modified: file.lastModified, by: userName || '', ...record }));
   const name = path.split('/').pop();
   const latest = await existingFile(folder, name);
   const fresh = latest && await latest.getFile();
   if (!latest || !await handle.isSameEntry(latest) || fresh.size !== file.size || fresh.lastModified !== file.lastModified) {
-    // Cambiato o sparito mentre si copiava: resta dov'è, la copia si toglie.
-    try { await trash.removeEntry(key); await info.removeEntry(key + '.json'); } catch {}
+    await dropCopy();   // cambiato o sparito mentre si copiava: resta dov'è
     return 0;
   }
   await folder.removeEntry(name);
+  files = new Map(files);
   files.delete(path);
   trashListCache = null;
   return file.size || 1;
 }
 
-// Rimette al suo posto un elemento del cestino. false se al suo posto c'è già un file diverso.
-async function restoreFromTrash(directory, entry) {
+// Eliminazione da Itaca (manageEntry): il file, o tutti i file della cartella, vanno nel
+// cestino; poi la cartella (con ciò che Itaca non elenca, come .itaca-backup) si toglie.
+async function trashEntry(directory, path, isFolder) {
+  if (!isFolder) {
+    if (!await trashFile(directory, path, { reason: 'deleted', from: '' })) throw new Error('Il file è cambiato mentre lo si eliminava: riprova.');
+    return;
+  }
+  const group = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const inside = [...files.keys()].filter(item => inFolder(item, path));
+  let moved = 0;
+  for (const item of inside) {
+    if (!await trashFile(directory, item, { reason: 'deleted', group, groupPath: path })) {
+      throw new Error((moved ? moved + ' file sono già nel cestino, ma ' : '') + '«' + item + '» è cambiato mentre lo si eliminava: la cartella resta. Riprova.');
+    }
+    moved++;
+  }
+  await folderHandles.get(parent(path)).removeEntry(path.split('/').pop(), { recursive: true });
+}
+
+// Rimette al suo posto un elemento del cestino. Se al suo posto c'è un file diverso:
+// rename = con un nome libero («Nome (2).md»), altrimenti resta nel cestino (null).
+async function restoreFromTrash(directory, entry, rename = false) {
   const file = await withTimeout(entry.handle.getFile(), 30000);
   const folderPath = parent(entry.path);
   const folder = await ensureDirectory(directory, folderPath);
@@ -23381,20 +23468,24 @@ async function restoreFromTrash(directory, entry) {
     partial = partial ? partial + '/' + name : name;
     if (!folderHandles.has(partial)) folderHandles.set(partial, await directoryAt(directory, partial));
   }
-  const name = entry.path.split('/').pop();
-  const existing = await existingFile(folder, name);
-  let handle = existing;
-  if (existing) {
-    if (!await sameFileBytes(await existing.getFile(), file)) return false;
-  } else {
+  let name = entry.path.split('/').pop();
+  let handle = await existingFile(folder, name);
+  if (handle && !await sameFileBytes(await handle.getFile(), file)) {
+    if (!rename) return null;
+    name = await freeDestinationName(folder, name, false);
+    handle = null;
+  }
+  if (!handle) {
     handle = await folder.getFileHandle(name, { create: true });
     await writeHandleData(handle, file);
     if ((await handle.getFile()).size !== file.size) throw new Error('Ripristino di «' + name + '» non riuscito.');
   }
   await forgetTrashEntry(directory, entry.key);
+  const path = [folderPath, name].filter(Boolean).join('/');
   files = new Map(files);
-  files.set(entry.path, handle);
-  return true;
+  files.set(path, handle);
+  invalidateSearchPath(path);
+  return path;
 }
 
 async function forgetTrashEntry(directory, key) {
@@ -23409,24 +23500,35 @@ async function canWriteSilently(directory) {
   return await withTimeout(directory.queryPermission(writeAccess), 4000).catch(() => 'prompt') === 'granted';
 }
 
-function attachmentCount(count) {
-  return count === 1 ? '1 allegato' : count + ' allegati';
+const attachmentCount = count => count === 1 ? '1 allegato' : count + ' allegati';
+const fileCount = count => count === 1 ? '1 file' : count + ' file';
+
+// Allegati del cestino che possono tornare da soli (non quelli eliminati a mano).
+function returningTrash(directory = root) {
+  return trashListCache?.directory === directory ? trashListCache.entries.filter(entry => entry.reason !== 'deleted') : [];
 }
 
-// Documento aperto o appena salvato: gli allegati che cita e che sono nel cestino tornano.
+// Un testo (documento aperto, salvato o che si sta scrivendo) cita allegati del cestino: tornano.
 async function restoreCitedAttachments(text, from) {
   const directory = root;
   if (!directory || importedFolderName || !from || !text) return 0;
-  const missing = missingLinksOf(text, from);
-  if (!missing.size) return 0;
-  const entries = await trashEntries(directory, 60000).catch(() => []);
-  if (!entries.length) return 0;
-  const lower = new Map([...missing].map(path => [path.toLowerCase(), path]));
-  const wanted = entries.filter(entry => lower.has(entry.path.toLowerCase()));
-  if (!wanted.length || !await canWriteSilently(directory)) return 0;
+  const { paths, names } = missingLinksOf(text, from);
+  if (!paths.size && !names.size) return 0;
+  await trashEntries(directory, 60000).catch(() => []);
+  const candidates = returningTrash(directory);
+  if (!candidates.length) return 0;
+  const byName = new Map();
+  for (const entry of candidates) {
+    const name = entry.path.split('/').pop().toLowerCase();
+    byName.set(name, byName.has(name) && byName.get(name).path !== entry.path ? null : byName.get(name) || entry);
+  }
+  const wanted = new Map();
+  for (const entry of candidates) if (paths.has(entry.path.toLowerCase()) && !wanted.has(entry.path)) wanted.set(entry.path, entry);
+  for (const name of names) { const entry = byName.get(name); if (entry && !wanted.has(entry.path)) wanted.set(entry.path, entry); }
+  if (!wanted.size || !await canWriteSilently(directory)) return 0;
   let restored = 0;
-  for (const entry of wanted) {
-    if (root !== directory) return restored;
+  for (const entry of wanted.values()) {
+    if (root !== directory || files.has(entry.path)) continue;
     try { if (await restoreFromTrash(directory, entry)) restored++; } catch {}
   }
   if (restored) {
@@ -23438,7 +23540,47 @@ async function restoreCitedAttachments(text, from) {
   return restored;
 }
 
+// Mentre si scrive (da flushMark): solo se nel cestino c'è qualcosa che può tornare.
+function queueTrashRestore() {
+  if (!root || !current || !returningTrash().length) return;
+  clearTimeout(trashRestoreTimer);
+  const path = current;
+  trashRestoreTimer = setTimeout(() => {
+    if (current === path) restoreCitedAttachments(sourceMode ? src.value : getMarkdown(), path).catch(() => {});
+  }, 1200);
+}
+
+// Suggerimenti di collegamenti e immagini: anche gli allegati del cestino (tornano scegliendoli).
+function trashSuggestions(folded, only) {
+  if (!folded) return [];
+  const seen = new Set();
+  return returningTrash().filter(entry => {
+    if (files.has(entry.path) || seen.has(entry.path) || (only && !only(entry.path))) return false;
+    seen.add(entry.path);
+    return foldSearch(entry.path).includes(folded);
+  }).slice(0, 5).map(entry => ({ kind: 'file', path: entry.path, trashed: true }));
+}
+function inTrashOnly(path) {
+  return !files.has(path) && returningTrash().some(entry => entry.path === path);
+}
+
 // Dopo un salvataggio (anche automatico): allegati che il documento non cita più.
+// Un allegato del cestino scelto da un suggerimento: torna subito.
+async function restoreTrashedPath(path) {
+  const directory = root;
+  const entry = returningTrash(directory).find(item => item.path === path);
+  if (!entry || files.has(path) || !await allowFolderWrite(directory)) return;
+  try {
+    if (await restoreFromTrash(directory, entry)) {
+      renderTree();
+      refreshDocumentImages();
+      toast('«' + path.split('/').pop() + '» è tornato dal cestino di Itaca.', 'success');
+    }
+  } catch (error) {
+    toast('Ripristino dal cestino non riuscito: ' + error.message);
+  }
+}
+
 async function attachmentsAfterSave(path, before, after) {
   const directory = root;
   if (!directory || importedFolderName || !path) return;
@@ -23449,7 +23591,17 @@ async function attachmentsAfterSave(path, before, after) {
   if (dropped.length) trashUnusedAttachments(directory, dropped, path).catch(() => {});
 }
 
-// Allegati di documenti appena eliminati (testi letti prima dell'eliminazione).
+// Testi dei documenti che stanno per essere eliminati (per i loro allegati).
+async function textsBeforeDelete(path, isFolder) {
+  const docs = isFolder ? [...files.keys()].filter(item => isMD(item) && inFolder(item, path)).slice(0, 500) : isMD(path) ? [path] : [];
+  const texts = [];
+  await forEachLimited(docs, 8, async item => {
+    try { texts.push([item, await (await withTimeout(files.get(item).getFile(), 30000)).text()]); } catch {}
+  });
+  return texts;
+}
+
+// Allegati di documenti appena eliminati.
 function attachmentsAfterDelete(texts) {
   const directory = root;
   if (!directory || importedFolderName || !settings.attachmentTrash || !texts.length) return;
@@ -23470,14 +23622,14 @@ async function trashUnusedAttachments(directory, candidates, from, quiet = false
     for (const path of candidates.filter(item => !used.has(item) && files.has(item))) {
       if (root !== directory) break;
       try {
-        const size = await moveAttachmentToTrash(directory, path, from);
+        const size = await trashFile(directory, path, { reason: 'unused', from: from || '' });
         if (size) { moved++; bytes += size; }
       } catch {}
     }
     if (moved) {
       renderTree();
       if (!quiet) toast(attachmentCount(moved) + ' non più ' + (moved === 1 ? 'usato spostato' : 'usati spostati') + ' nel cestino di Itaca (' +
-        formatBytes(bytes) + '). Restano ' + trashKeepDays + ' giorni; tornano da soli se un documento li cita di nuovo.', 'info');
+        formatBytes(bytes) + '). Tornano da soli se un documento li cita di nuovo.', 'info');
     }
     return moved;
   } finally {
@@ -23498,7 +23650,6 @@ async function cleanAttachmentTrash(directory, removed) {
     removed.trash = (removed.trash || 0) + 1;
     removed.bytes += entry.size || 0;
   }
-  // Schede rimaste senza file.
   const keys = new Set(entries.map(entry => entry.key));
   const info = await trash.getDirectoryHandle(trashInfoName).catch(() => null);
   if (info) {
@@ -23512,180 +23663,296 @@ async function cleanAttachmentTrash(directory, removed) {
   trashListCache = null;
 }
 
-// ── Finestra «Allegati non usati» ──
-async function showAttachmentCleanup() {
+// ── Finestra «Cestino di Itaca» ──
+// Due viste: «Allegati non usati» (da scegliere e spostare) e «Cestino» (da ripristinare).
+// Aperta dalle Impostazioni ha «‹ Impostazioni» per tornare indietro.
+var trashView = { tab: 'trash', from: null, urls: [] };
+
+async function showTrash({ tab = trashView.tab, from = trashView.from } = {}) {
   if (!root || importedFolderName || folderAccessPending) {
-    toast('Apri una cartella di lavoro (con Scegli cartella) per controllare gli allegati.');
+    toast('Apri una cartella di lavoro (con Scegli cartella) per vedere il cestino e gli allegati.');
     return;
   }
-  if ($('settings').open) $('settings').close();
+  if ($('settings').open) {
+    $('settings').close();
+    from ||= 'settings';
+  }
   flushMark();
   const directory = root;
-  const body = openPanel('Allegati non usati', 'Lettura dei documenti…');
-  const all = [...files.keys()].filter(isAttachmentPath).sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
-  const [{ used, failed }, trash] = await Promise.all([usedAttachments(all), trashEntries(directory).catch(() => [])]);
+  const fresh = !panel.open || trashView.directory !== directory;
+  trashView = { ...trashView, tab, from, directory };
+  const body = openPanel('Cestino di Itaca', '');
+  panel.classList.add('compact-panel');
+  $('panelBack').hidden = from !== 'settings';
+  if (fresh || !trashView.data) {
+    body.replaceChildren(Object.assign(document.createElement('p'), { className: 'trash-loading', textContent: 'Lettura dei documenti e del cestino…' }));
+    const all = [...files.keys()].filter(isAttachmentPath);
+    const [{ used, failed }, trash] = await Promise.all([usedAttachments(all), trashEntries(directory).catch(() => [])]);
+    const unused = all.filter(path => !used.has(path));
+    const sizes = new Map();
+    await forEachLimited(unused, 8, async path => sizes.set(path, await files.get(path)?.getFile().catch(() => null)));
+    trashView.data = { all, unused, failed, sizes, trash, chosen: new Set(unused), filter: '' };
+  }
   if (!panel.open || root !== directory) return;
-  const unused = all.filter(path => !used.has(path));
-  const sizes = new Map();
-  await forEachLimited(unused, 8, async path => {
-    sizes.set(path, await files.get(path)?.getFile().then(file => file, () => null));
-  });
-  if (!panel.open || root !== directory) return;
-  const total = unused.reduce((sum, path) => sum + (sizes.get(path)?.size || 0), 0);
-  $('panelStatus').textContent = all.length + ' allegati nelle cartelle ' + attachmentFolderName + ' · ' +
-    (unused.length ? unused.length + (unused.length === 1 ? ' non usato (' : ' non usati (') + formatBytes(total) + ')' : 'tutti usati') +
-    (trash.length ? ' · ' + trash.length + ' nel cestino' : '');
-  const container = document.createElement('div');
-  container.className = 'link-report attachment-report';
+  renderTrashView();
+}
+const showAttachmentCleanup = options => showTrash({ tab: 'unused', ...options });
 
-  const intro = document.createElement('p');
-  intro.className = 'attachment-intro';
-  intro.textContent = 'Un allegato è «usato» se il suo nome compare in un documento o in un altro file di testo della cartella (anche mkdocs.yml, HTML, CSS). ' +
-    'Quelli spostati nel cestino di Itaca (cartella nascosta ' + trashFolderName + ') restano ' + trashKeepDays + ' giorni e tornano da soli se un documento li cita di nuovo.';
-  container.append(intro);
+function trashThumb(path, getFile) {
+  const box = document.createElement('span');
+  box.className = 'trash-thumb';
+  if (isImage(path) && !/\.(?:tiff?|emf|wmf)$/i.test(path)) {
+    getFile().then(file => {
+      if (!file || file.size > 6_000_000 || !panel.open) return;
+      const url = URL.createObjectURL(file);
+      trashView.urls.push(url);
+      const image = Object.assign(document.createElement('img'), { src: url, alt: '', loading: 'lazy', decoding: 'async' });
+      image.onerror = () => image.remove();
+      box.replaceChildren(image);
+    }).catch(() => {});
+  }
+  box.append(icon(fileIconName(path)));
+  return box;
+}
 
-  const section = (title, count) => {
-    const element = document.createElement('section');
-    const heading = document.createElement('h3');
-    heading.append(icon(title === 'trash' ? 'close' : 'attach'), title === 'trash' ? 'Nel cestino di Itaca' : 'Non usati da nessun documento');
-    const small = document.createElement('small');
-    small.textContent = count;
-    heading.append(small);
-    element.append(heading);
+function trashDayLabel(time) {
+  const day = new Date(time); day.setHours(0, 0, 0, 0);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const days = Math.round((today - day) / 86400000);
+  return days === 0 ? 'Oggi' : days === 1 ? 'Ieri' : new Date(time).toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function renderTrashView() {
+  const { data } = trashView;
+  const body = $('panelBody');
+  for (const url of trashView.urls.splice(0)) URL.revokeObjectURL(url);
+  const make = (tag, className, text) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
     return element;
   };
+  const trashSize = data.trash.reduce((sum, entry) => sum + (entry.size || 0), 0);
+  const unusedSize = data.unused.reduce((sum, path) => sum + (data.sizes.get(path)?.size || 0), 0);
 
-  if (failed) {
-    const warning = document.createElement('p');
-    warning.className = 'report-warning';
-    warning.textContent = 'Alcuni file della cartella non si sono potuti leggere: per sicurezza nessun allegato viene indicato come non usato. Riprova più tardi.';
-    container.append(warning);
-  } else if (!unused.length) {
-    const ok = document.createElement('p');
-    ok.className = 'report-ok';
-    ok.textContent = all.length ? 'Tutti gli allegati sono usati da almeno un documento.' : 'Nella cartella non ci sono allegati.';
-    container.append(ok);
-  } else {
-    const block = section('unused', unused.length === 1 ? '1 file · ' + formatBytes(total) : unused.length + ' file · ' + formatBytes(total));
-    const list = document.createElement('ul');
-    list.className = 'attachment-list';
-    for (const path of unused) {
-      const item = document.createElement('li');
-      const label = document.createElement('label');
-      const check = Object.assign(document.createElement('input'), { type: 'checkbox', checked: true, value: path });
-      const name = document.createElement('span');
-      name.className = 'attachment-name';
-      name.append(icon(fileIconName(path)), path.split('/').pop());
-      const meta = document.createElement('small');
-      const file = sizes.get(path);
-      meta.textContent = [parent(path), file ? formatBytes(file.size) : '', file ? new Date(file.lastModified).toLocaleDateString('it-IT') : ''].filter(Boolean).join(' · ');
-      label.append(check, name, meta);
-      const open = Object.assign(document.createElement('button'), { type: 'button', className: 'icon-button', title: 'Apri «' + path.split('/').pop() + '»' });
-      open.append(icon('eye'));
-      open.onclick = () => isImage(path) ? openLinkedImage(path) : openAttachment(path);
-      item.append(label, open);
-      list.append(item);
-    }
-    const bar = document.createElement('div');
-    bar.className = 'link-report-actions';
-    const note = document.createElement('span');
-    const move = Object.assign(document.createElement('button'), { type: 'button', className: 'primary' });
-    const update = () => {
-      const chosen = list.querySelectorAll('input:checked').length;
-      note.textContent = chosen ? attachmentCount(chosen) + ' da spostare nel cestino' : 'Nessun allegato scelto';
-      move.textContent = 'Sposta nel cestino';
-      move.disabled = !chosen;
-    };
-    list.addEventListener('change', update);
-    update();
-    move.onclick = async () => {
-      const chosen = [...list.querySelectorAll('input:checked')].map(input => input.value);
-      if (!chosen.length || !await allowFolderWrite(directory)) return;
-      move.disabled = true;
-      $('panelStatus').textContent = 'Controllo e spostamento…';
-      // Si ricontrolla subito prima: un documento potrebbe essere cambiato nel frattempo.
-      const moved = await trashUnusedAttachments(directory, chosen, '', true);
-      toast(moved ? attachmentCount(moved) + ' nel cestino di Itaca.' : 'Nessun allegato spostato: nel frattempo qualcosa è cambiato.', moved ? 'success' : 'warning');
-      if (panel.open) showAttachmentCleanup();
-    };
-    bar.append(note, move);
-    block.append(bar, list);
-    container.append(block);
-  }
+  const view = make('div', 'trash-view');
+  // Schede.
+  const tabs = make('div', 'trash-tabs');
+  tabs.setAttribute('role', 'tablist');
+  const tabButton = (id, label, count) => {
+    const button = make('button', 'trash-tab');
+    button.type = 'button';
+    button.setAttribute('role', 'tab');
+    button.setAttribute('aria-selected', String(trashView.tab === id));
+    button.append(label);
+    if (count) button.append(make('span', 'trash-count', String(count)));
+    button.onclick = () => { trashView.tab = id; data.filter = ''; renderTrashView(); };
+    return button;
+  };
+  tabs.append(tabButton('trash', 'Cestino', data.trash.length), tabButton('unused', 'Allegati non usati', data.failed ? 0 : data.unused.length));
+  const filter = make('input', 'trash-filter');
+  Object.assign(filter, { type: 'search', placeholder: 'Filtra per nome…', value: data.filter });
+  filter.setAttribute('aria-label', 'Filtra per nome');
+  const top = make('div', 'trash-top');
+  top.append(tabs);
+  const listSize = trashView.tab === 'trash' ? data.trash.length : data.unused.length;
+  if (listSize > 6) top.append(filter);
+  view.append(top);
 
-  if (trash.length) {
-    const size = trash.reduce((sum, entry) => sum + (entry.size || 0), 0);
-    const block = section('trash', trash.length + ' file · ' + formatBytes(size));
-    const list = document.createElement('ul');
-    list.className = 'attachment-list';
-    const now = Date.now();
-    for (const entry of trash) {
-      const item = document.createElement('li');
-      const name = document.createElement('span');
-      name.className = 'attachment-name';
-      name.append(icon(fileIconName(entry.path)), entry.path.split('/').pop());
-      const meta = document.createElement('small');
-      const left = Math.max(0, Math.ceil((entry.time + trashKeepMs - now) / 86400000));
-      meta.textContent = [parent(entry.path), formatBytes(entry.size || 0),
-        'tolto il ' + new Date(entry.time).toLocaleDateString('it-IT') + (entry.by ? ' da ' + entry.by : ''),
-        left ? 'eliminato tra ' + left + (left === 1 ? ' giorno' : ' giorni') : 'eliminato alla prossima pulizia'].filter(Boolean).join(' · ');
-      if (entry.from) meta.title = 'Era in «' + entry.from + '»';
-      const text = document.createElement('span');
-      text.className = 'attachment-text';
-      text.append(name, meta);
-      const restore = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Ripristina', title: 'Rimette il file in ' + entry.path });
-      restore.onclick = async () => {
-        if (!await allowFolderWrite(directory)) return;
-        try {
-          if (!await restoreFromTrash(directory, entry)) {
-            toast('In «' + entry.path + '» c’è già un altro file con lo stesso nome: il file resta nel cestino.', 'warning');
-            return;
-          }
-          renderTree();
-          refreshDocumentImages();
-          toast('«' + entry.path.split('/').pop() + '» è tornato in ' + (parent(entry.path) || 'cartella') + '.', 'success');
-        } catch (error) {
-          toast('Ripristino non riuscito: ' + error.message);
-        }
-        if (panel.open) showAttachmentCleanup();
+  const hint = make('p', 'trash-hint', trashView.tab === 'trash'
+    ? 'Documenti e file eliminati da Itaca e allegati non più usati restano qui ' + trashKeepDays + ' giorni. Un allegato torna da solo se un documento lo cita di nuovo.'
+    : 'File in ' + attachmentFolderName + ' che nessun documento o file di testo della cartella nomina.');
+  view.append(hint);
+
+  const bar = make('div', 'trash-bar');
+  const list = make('ul', 'trash-list');
+  const folded = foldSearch(data.filter.trim());
+  const matches = path => !folded || foldSearch(path).includes(folded);
+
+  if (trashView.tab === 'unused') {
+    if (data.failed) {
+      view.append(make('p', 'trash-empty warning', 'Alcuni file della cartella non si sono potuti leggere: per sicurezza nessun allegato è indicato come non usato. Riprova più tardi.'));
+    } else if (!data.unused.length) {
+      view.append(make('p', 'trash-empty', data.all.length ? 'Tutti gli allegati sono usati da almeno un documento.' : 'Nella cartella non ci sono allegati.'));
+    } else {
+      const shown = data.unused.filter(matches);
+      const all = make('input');
+      all.type = 'checkbox';
+      all.setAttribute('aria-label', 'Scegli tutti');
+      const chosenShown = shown.filter(path => data.chosen.has(path));
+      all.checked = chosenShown.length === shown.length && shown.length > 0;
+      all.indeterminate = chosenShown.length > 0 && !all.checked;
+      all.onchange = () => {
+        for (const path of shown) all.checked ? data.chosen.add(path) : data.chosen.delete(path);
+        renderTrashView();
       };
-      item.append(text, restore);
-      list.append(item);
-    }
-    const bar = document.createElement('div');
-    bar.className = 'link-report-actions';
-    const note = document.createElement('span');
-    note.textContent = 'Si svuota da solo dopo ' + trashKeepDays + ' giorni.';
-    const empty = Object.assign(document.createElement('button'), { type: 'button', className: 'outline danger-text', textContent: 'Svuota il cestino…' });
-    empty.onclick = async () => {
-      panel.close();
-      const ok = await modal('Svuotare il cestino di Itaca?', '<p>' + escapeHtml(trash.length === 1 ? 'Il file nel cestino verrà eliminato' : 'I ' + trash.length + ' file nel cestino verranno eliminati') +
-        ' definitivamente (' + escapeHtml(formatBytes(size)) + '). Non si potranno più ripristinare da Itaca.</p>', 'Svuota', true);
-      if (!ok || root !== directory || !await allowFolderWrite(directory)) return;
-      try {
-        await directory.removeEntry(trashFolderName, { recursive: true });
-        trashListCache = null;
-        toast('Cestino di Itaca svuotato.', 'success');
-      } catch (error) {
-        toast('Impossibile svuotare il cestino: ' + error.message);
+      const chosen = [...data.chosen];
+      const chosenSize = chosen.reduce((sum, path) => sum + (data.sizes.get(path)?.size || 0), 0);
+      const label = make('label', 'trash-bar-text');
+      label.append(all, make('span', '', chosen.length ? fileCount(chosen.length) + ' scelti · ' + formatBytes(chosenSize) : 'Nessuno scelto'),
+        make('small', '', 'su ' + fileCount(data.unused.length) + ' · ' + formatBytes(unusedSize)));
+      const move = make('button', 'primary', 'Sposta nel cestino');
+      move.type = 'button';
+      move.disabled = !chosen.length;
+      move.onclick = async () => {
+        if (!await allowFolderWrite(trashView.directory)) return;
+        move.disabled = true;
+        move.textContent = 'Spostamento…';
+        // Si ricontrolla subito prima: un documento potrebbe essere cambiato nel frattempo.
+        const moved = await trashUnusedAttachments(trashView.directory, chosen, '', true);
+        toast(moved ? attachmentCount(moved) + ' nel cestino di Itaca.' : 'Nessun allegato spostato: nel frattempo qualcosa è cambiato.', moved ? 'success' : 'warning');
+        trashView.data = null;
+        if (panel.open) showTrash({ tab: 'trash' });
+      };
+      bar.append(label, move);
+      for (const path of shown) {
+        const row = make('li', 'trash-row');
+        const check = make('input');
+        check.type = 'checkbox';
+        check.checked = data.chosen.has(path);
+        check.setAttribute('aria-label', 'Scegli ' + path.split('/').pop());
+        check.onchange = () => { check.checked ? data.chosen.add(path) : data.chosen.delete(path); renderTrashView(); };
+        const file = data.sizes.get(path);
+        const text = make('span', 'trash-text');
+        text.append(make('span', 'trash-name', path.split('/').pop()),
+          make('small', '', [parent(path), file ? formatBytes(file.size) : '', file ? 'del ' + new Date(file.lastModified).toLocaleDateString('it-IT') : ''].filter(Boolean).join(' · ')));
+        const open = make('button', 'trash-action icon-only');
+        open.type = 'button';
+        open.title = 'Apri «' + path.split('/').pop() + '»';
+        open.append(icon('eye'));
+        open.onclick = () => isImage(path) ? openLinkedImage(path) : openAttachment(path);
+        const pick = make('label', 'trash-pick');
+        pick.append(check, trashThumb(path, () => files.get(path)?.getFile()), text);
+        row.append(pick, open);
+        list.append(row);
       }
-    };
-    bar.append(note, empty);
-    block.append(bar, list);
-    container.append(block);
+      view.append(bar, list);
+    }
+  } else if (!data.trash.length) {
+    view.append(make('p', 'trash-empty', 'Il cestino è vuoto.'));
+  } else {
+    const days = Math.max(0, trashKeepDays - Math.floor((Date.now() - Math.min(...data.trash.map(entry => entry.time))) / 86400000));
+    bar.append(make('span', 'trash-bar-text', fileCount(data.trash.length) + ' · ' + formatBytes(trashSize) +
+      (days <= 7 ? ' · il più vecchio va via tra ' + (days === 1 ? '1 giorno' : days + ' giorni') : '')));
+    const empty = make('button', 'outline danger-text', 'Svuota…');
+    empty.type = 'button';
+    empty.onclick = () => emptyTrash(data.trash, trashSize);
+    bar.append(empty);
+    // Le cartelle eliminate sono una riga sola.
+    const rows = [];
+    const groups = new Map();
+    for (const entry of data.trash) {
+      if (entry.group) {
+        if (!groups.has(entry.group)) rows.push(groups.set(entry.group, { group: entry.group, path: entry.groupPath || parent(entry.path), entries: [], time: entry.time, by: entry.by }).get(entry.group));
+        groups.get(entry.group).entries.push(entry);
+      } else rows.push({ path: entry.path, entries: [entry], time: entry.time, by: entry.by, reason: entry.reason, from: entry.from });
+    }
+    let lastDay = '';
+    for (const item of rows.filter(item => matches(item.path) || item.entries.some(entry => matches(entry.path)))) {
+      const day = trashDayLabel(item.time);
+      if (day !== lastDay) {
+        list.append(make('li', 'trash-day', day));
+        lastDay = day;
+      }
+      const row = make('li', 'trash-row');
+      const size = item.entries.reduce((sum, entry) => sum + (entry.size || 0), 0);
+      const when = new Date(item.time).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+      const text = make('span', 'trash-text');
+      const name = make('span', 'trash-name', item.path.split('/').pop());
+      const why = item.group ? 'cartella eliminata' : item.reason === 'deleted' ? 'eliminato' : 'non più usato';
+      const tag = make('span', 'trash-tag' + (item.reason === 'unused' && !item.group ? ' soft' : ''), why);
+      name.append(tag);
+      text.append(name, make('small', '', [parent(item.path) || root.name, item.group ? fileCount(item.entries.length) : '', formatBytes(size),
+        when + (item.by ? ' · ' + item.by : '') + (item.from && !item.group ? ' · era in «' + item.from.split('/').pop() + '»' : '')].filter(Boolean).join(' · ')));
+      const thumb = item.group ? Object.assign(make('span', 'trash-thumb'), {}) : trashThumb(item.path, () => item.entries[0].handle.getFile());
+      if (item.group) thumb.append(icon('folder'));
+      const restore = make('button', 'trash-action', 'Ripristina');
+      restore.type = 'button';
+      restore.title = 'Rimette ' + (item.group ? 'la cartella' : 'il file') + ' in ' + (parent(item.path) || root.name);
+      restore.onclick = () => restoreTrashRow(item, restore);
+      const info = make('span', 'trash-pick');
+      info.append(thumb, text);
+      row.append(info, restore);
+      list.append(row);
+    }
+    view.append(bar, list);
   }
-  body.replaceChildren(container);
+  if (list.childElementCount === 0 && (trashView.tab === 'trash' ? data.trash.length : data.unused.length) && folded) {
+    view.append(make('p', 'trash-empty', 'Nessun file con «' + data.filter.trim() + '».'));
+  }
+  const focus = document.activeElement === $('panelBody').querySelector('.trash-filter');
+  body.replaceChildren(view);
+  filter.oninput = () => { data.filter = filter.value; renderTrashView(); };
+  if (focus) {
+    const next = body.querySelector('.trash-filter');
+    next?.focus();
+    next?.setSelectionRange(next.value.length, next.value.length);
+  }
 }
 
-// Testi dei documenti che stanno per essere eliminati (per i loro allegati).
-async function textsBeforeDelete(path, isFolder) {
-  const docs = isFolder ? [...files.keys()].filter(item => isMD(item) && inFolder(item, path)).slice(0, 500) : isMD(path) ? [path] : [];
-  const texts = [];
-  await forEachLimited(docs, 8, async item => {
-    try { texts.push([item, await (await withTimeout(files.get(item).getFile(), 30000)).text()]); } catch {}
-  });
-  return texts;
+async function restoreTrashRow(item, button) {
+  const directory = trashView.directory;
+  if (root !== directory || !await allowFolderWrite(directory)) return;
+  button.disabled = true;
+  button.textContent = 'Ripristino…';
+  const restored = [];
+  try {
+    for (const entry of item.entries) {
+      const path = await restoreFromTrash(directory, entry, true);
+      if (path) restored.push([entry.path, path]);
+    }
+  } catch (error) {
+    toast('Ripristino non riuscito: ' + error.message);
+  }
+  if (restored.length) {
+    renderTree();
+    refreshDocumentImages();
+    const renamed = restored.filter(([from, to]) => from !== to);
+    const what = item.group ? 'La cartella «' + item.path.split('/').pop() + '» è tornata (' + fileCount(restored.length) + ')'
+      : '«' + restored[0][1].split('/').pop() + '» è tornato in ' + (parent(restored[0][1]) || root.name);
+    toast(what + (renamed.length ? ' · al suo posto c’era un altro file: ' + (renamed.length === 1 ? 'nuovo nome «' + renamed[0][1].split('/').pop() + '»' : renamed.length + ' file con un nuovo nome') : '') + '.', 'success');
+  }
+  trashView.data = null;
+  if (panel.open) showTrash({ tab: 'trash' });
 }
+
+async function emptyTrash(entries, size) {
+  const directory = trashView.directory;
+  const from = trashView.from;
+  panel.close();
+  const ok = await modal('Svuotare il cestino di Itaca?', '<p>' + escapeHtml(entries.length === 1 ? 'Il file nel cestino verrà eliminato' : 'I ' + entries.length + ' file nel cestino verranno eliminati') +
+    ' definitivamente (' + escapeHtml(formatBytes(size)) + '). Non si potranno più ripristinare.</p>', 'Svuota', true);
+  if (ok && root === directory && await allowFolderWrite(directory)) {
+    try {
+      await directory.removeEntry(trashFolderName, { recursive: true });
+      trashListCache = null;
+      toast('Cestino di Itaca svuotato.', 'success');
+    } catch (error) {
+      toast('Impossibile svuotare il cestino: ' + error.message);
+    }
+  }
+  trashView.data = null;
+  if (root === directory) showTrash({ tab: 'trash', from });
+}
+
+// panel è dichiarato più avanti nello script.
+setTimeout(() => {
+$('panelBack').onclick = () => {
+  const section = trashView.from === 'settings' ? 'files' : null;
+  panel.close();
+  if (section) {
+    openSettings(section);
+    requestAnimationFrame(() => $('trashCard')?.scrollIntoView({ block: 'center' }));
+  }
+};
+panel.addEventListener('close', () => {
+  $('panelBack').hidden = true;
+  panel.classList.remove('compact-panel');
+  for (const url of trashView.urls.splice(0)) URL.revokeObjectURL(url);
+  trashView.data = null;
+  trashView.from = null;
+});
+});
 
 // ── Blocco della modifica: un solo editor per file ──────────────────────────
 // Chi modifica un documento scrive .itaca-locks/<percorso>.json nella cartella
@@ -26007,7 +26274,8 @@ function linkFileMatches(query, only = null) {
     scored.push({ path, score: score * 4 + (isMD(path) ? 0 : 1) + (path === current ? 2 : 0) });
   }
   scored.sort((a, b) => a.score - b.score || a.path.length - b.path.length || a.path.localeCompare(b.path, 'it', { numeric: true }));
-  return scored.slice(0, 30).map(({ path }) => ({ kind: 'file', path }));
+  // In fondo gli allegati del cestino di Itaca: scegliendoli tornano al loro posto.
+  return [...scored.slice(0, 30).map(({ path }) => ({ kind: 'file', path })), ...trashSuggestions(folded, only)];
 }
 
 // Nome e dettaglio di un file nei suggerimenti. Con i titoli nell'elenco: il titolo e sotto
@@ -26023,6 +26291,10 @@ function fillFileSuggestion(name, detail, path, query) {
     return;
   }
   highlightLinkMatch(name, file, query);
+  if (inTrashOnly(path)) {
+    detail.textContent = (folder ? folder + ' · ' : '') + 'nel cestino di Itaca: sceglilo e torna al suo posto';
+    return;
+  }
   const terms = foldSearch(query.split('#')[0].trim()).split(/\s+/).filter(Boolean);
   const viaTitle = title && terms.length && terms.every(term => foldSearch(title).includes(term)) && !terms.every(term => foldSearch(path).includes(term));
   detail.textContent = viaTitle ? '«' + title + '»' + (folder ? ' · ' + folder : '') : folder;
@@ -26218,6 +26490,7 @@ function typedLinkTarget(text) {
 
 // Testo che un suggerimento scrive nella casella.
 function linkCompletion(item) {
+  if (item.kind === 'file' && item.trashed) restoreTrashedPath(item.path);
   if (item.kind === 'file') return item.path;
   if (item.kind === 'heading') return (item.path === current ? '' : item.path) + '#' + item.heading;
   return item.target;
@@ -30325,7 +30598,7 @@ function runFileAction(item, action) {
     toast(isStart ? 'Documento iniziale: index.md (predefinito)' : 'Itaca si aprirà su «' + item.path.split('/').pop() + '»');
     return;
   }
-  if (action === 'unused') return showAttachmentCleanup();
+  if (action === 'unused') return showTrash({ tab: 'unused' });
   if (!canChangeFiles()) return;
   if (action === 'markdown') return convertWordFile(item.path);
   if (action === 'duplicate') return copyEntryTo(item, parent(item.path));
@@ -30515,10 +30788,11 @@ async function deleteTreeSelection() {
     return manageEntry(items[0], 'delete');
   }
   const touchesCurrent = items.some(item => item.isFolder ? inFolder(current, item.path) : item.path === current);
-  const body = '<p>Questi ' + items.length + ' elementi saranno eliminati definitivamente dal disco:</p>' + selectionListHtml(items) +
+  const toTrash = settings.deleteToTrash;
+  const body = '<p>Questi ' + items.length + (toTrash ? ' elementi andranno nel cestino di Itaca (potrai ripristinarli per ' + trashKeepDays + ' giorni):</p>' : ' elementi saranno eliminati definitivamente dal disco:</p>') + selectionListHtml(items) +
     (touchesCurrent && dirty ? '<p>Le modifiche non salvate del documento aperto andranno perse.</p>' : '');
-  const simple = settings.deleteConfirm === 'simple';
-  if (!await modal('Elimina ' + itemsLabel(items.length), body, simple ? 'Elimina definitivamente' : 'Continua', true)) return;
+  const simple = toTrash || settings.deleteConfirm === 'simple';
+  if (!await modal('Elimina ' + itemsLabel(items.length), body, toTrash ? 'Elimina' : simple ? 'Elimina definitivamente' : 'Continua', true)) return;
   if (!simple && !await modal('Conferma eliminazione', '<p>Per eliminare ' + itemsLabel(items.length) + ', digita il loro numero: <strong>' + items.length + '</strong>.</p>' +
       '<label>Numero degli elementi</label><input name="confirmation" type="text" inputmode="numeric" required autocomplete="off">',
       'Elimina definitivamente', true, String(items.length))) return;
@@ -30849,10 +31123,13 @@ async function askFileAction(path, action, isFolder) {
   }
   const includesCurrent = isFolder ? inFolder(current, path) : current === path;
   const changes = includesCurrent && dirty ? ' Le modifiche non salvate andranno perse.' : '';
-  const message = isFolder ? '» e tutto il suo contenuto saranno eliminati definitivamente dal disco.' :
-    '» sarà eliminato definitivamente dal disco.';
-  const simple = settings.deleteConfirm === 'simple';
-  const proceed = await modal('Elimina ' + kind, '<p>«' + escapeHtml(path) + message + changes + '</p>', simple ? 'Elimina definitivamente' : 'Continua', true);
+  const toTrash = settings.deleteToTrash;
+  const message = toTrash ? (isFolder ? '» e tutto il suo contenuto andranno nel cestino di Itaca.' : '» andrà nel cestino di Itaca.') +
+      ' Potrai ripristinarl' + (isFolder ? 'i' : 'o') + ' per ' + trashKeepDays + ' giorni.' :
+    isFolder ? '» e tutto il suo contenuto saranno eliminati definitivamente dal disco.' : '» sarà eliminato definitivamente dal disco.';
+  // Con il cestino basta una conferma: l'eliminazione si può annullare.
+  const simple = toTrash || settings.deleteConfirm === 'simple';
+  const proceed = await modal('Elimina ' + kind, '<p>«' + escapeHtml(path) + message + changes + '</p>', toTrash ? 'Elimina' : simple ? 'Elimina definitivamente' : 'Continua', true);
   if (!proceed || simple) return proceed || null;
 
   return modal('Conferma eliminazione', '<p>Per eliminare «' + escapeHtml(path) + '», digita esattamente <strong>' +
@@ -30913,7 +31190,8 @@ async function manageEntry({ path, isFolder }, action, preset = null) {
       const latest = isFolder ? await sourceFolder.getDirectoryHandle(name) : await sourceFolder.getFileHandle(name);
       if (!await handle.isSameEntry(latest)) throw new Error('L’elemento è cambiato. Apri di nuovo il menu per riprovare.');
       const deletedTexts = settings.attachmentTrash ? await textsBeforeDelete(path, isFolder) : [];
-      await sourceFolder.removeEntry(name, { recursive: isFolder });
+      if (settings.deleteToTrash) await trashEntry(directory, path, isFolder);
+      else await sourceFolder.removeEntry(name, { recursive: isFolder });
       if (isFolder) {
         removeFolderFromIndex(path);
         if (inFolder(current, path)) await selectAfterDeletion();
@@ -30926,7 +31204,8 @@ async function manageEntry({ path, isFolder }, action, preset = null) {
       }
       removeMissingHistory();
       renderTree();
-      toast(isFolder ? 'Cartella eliminata' : isMD(path) ? 'Documento eliminato' : 'File eliminato');
+      toast((isFolder ? 'Cartella eliminata' : isMD(path) ? 'Documento eliminato' : 'File eliminato') +
+        (settings.deleteToTrash ? ': è nel cestino di Itaca per ' + trashKeepDays + ' giorni' : ''));
       attachmentsAfterDelete(deletedTexts);
     } else {
       if (isFolder) await relocateFolder(path, destinationPath);
@@ -32297,6 +32576,7 @@ function chooseMdSuggestion(index = mdSuggestState?.active) {
   const state = mdSuggestState;
   const item = state?.items[index];
   if (!item || item.kind === 'loading' || !state.node.isConnected) return;
+  if (item.kind === 'file' && item.trashed) restoreTrashedPath(item.path);
   let markdown;
   if (state.kind === 'wiki') {
     let name = item.kind === 'file' ? (state.image ? item.path : wikiName(item.path))
@@ -33188,7 +33468,11 @@ function onDocumentShown() {
   if (current && isMD(current) && root) {
     // Il testo si legge allo scadere: save() passa di qui prima di aggiornare original.
     const path = current;
-    setTimeout(() => { if (current === path) restoreCitedAttachments(original, path).catch(() => {}); }, 1500);
+    setTimeout(() => {
+      if (current !== path) return;
+      restoreCitedAttachments(original, path).catch(() => {});
+      trashEntries(root, 300000).catch(() => {});   // per i suggerimenti
+    }, 1500);
   }
   // Il documento lasciato torna al titolo salvato, quello aperto mostra il suo.
   if (treeTitlesOn()) queueTreeTitles(0);
@@ -39891,7 +40175,7 @@ function renderExtendedControls() {
 }
 
 $('checkLinks').onclick = checkFolderLinks;
-$('attachmentCleanupOpen').onclick = showAttachmentCleanup;
+$('attachmentCleanupOpen').onclick = () => showTrash({ tab: 'trash', from: 'settings' });
 $('exportSite').onclick = exportSiteDialog;
 $('gitHistory').onclick = () => showGitHistory();
 $('gitBlame').onclick = showGitBlame;
