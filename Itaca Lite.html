@@ -3195,13 +3195,6 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
             <div class="segmented" role="radiogroup" aria-labelledby="deleteConfirmLabel"><label><input type="radio" name="deleteConfirm" value="double"><span>Digita il nome</span></label><label><input type="radio" name="deleteConfirm" value="simple"><span>Solo conferma</span></label></div>
           </div>
         </div>
-        <h4>Allegati</h4>
-        <div class="set-card">
-          <div class="set-row" data-keywords="allegati _allegati immagini incollate cartella dove salvare file allegati sottocartella">
-            <span class="set-label" id="attachmentPlaceLabel"><b>Dove vanno gli allegati</b><small>Immagini, PDF e file che aggiungi a un documento. Quelli già salvati restano dove sono</small></span>
-            <div class="segmented" role="radiogroup" aria-labelledby="attachmentPlaceLabel"><label><input type="radio" name="attachmentPlace" value="folder"><span>Cartella del documento</span></label><label><input type="radio" name="attachmentPlace" value="root"><span>Cartella principale</span></label></div>
-          </div>
-        </div>
         <h4>Cestino di Itaca</h4>
         <div class="set-card" id="trashCard">
           <div class="set-row" data-keywords="cestino elimina eliminare ripristina recupera cancellare itaca-trash">
@@ -13996,11 +13989,12 @@ function supportedImageFile(file) {
 }
 
 // ── Dove vanno gli allegati ──
-// «Accanto al documento» (predefinito): ogni cartella ha la sua _allegati, così una sezione copiata o
-// spostata si porta dietro i suoi file e i collegamenti restano corti (_allegati/x.png). «Nella cartella
-// principale»: una sola _allegati per tutta la cartella di lavoro, come fino alla 1.40.
+// Nella _allegati della cartella del documento: una sezione copiata o spostata si porta dietro i suoi
+// file e i collegamenti restano corti (_allegati/x.png). È una regola fissa, non un'impostazione:
+// nella stessa cartella condivisa lavorano più persone e devono salvare tutte allo stesso modo.
+// Fino alla 1.40 c'era una sola _allegati in cima: quei file restano dove sono e funzionano.
 function attachmentDirFor(docPath = current) {
-  if (settings.attachmentPlace === 'root' || !docPath) return attachmentFolderName;
+  if (!docPath) return attachmentFolderName;
   const segments = parent(docPath).split('/').filter(Boolean);
   const inside = segments.indexOf(attachmentFolderName);
   const folder = (inside >= 0 ? segments.slice(0, inside) : segments).join('/');
@@ -15372,7 +15366,6 @@ const settingChoices = {
   autosave: [0, 2, 5, 15, 60],
   deleteConfirm: ['double', 'simple'],
   attachmentTrash: [true, false],
-  attachmentPlace: ['folder', 'root'],
   deleteToTrash: [true, false],
   updateLinks: [true, false],
   pdfAsk: [true, false],
@@ -15412,7 +15405,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, attachmentPlace: 'folder', deleteToTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true,
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -15479,7 +15472,7 @@ function syncSettings() {
   settingsForm.palette.value = preferredPalette;
   settingsForm.themeMode.value = preferredTheme === 'light' || preferredTheme === 'dark' ? preferredTheme : 'auto';
   $('textScale').value = textScale;
-  for (const key of ['docFont', 'paperWidth', 'openMode', 'openDocs', 'deleteConfirm', 'attachmentPlace', 'sidebarSide', 'critters', 'crittersSize', 'audioPlayer', 'brandSize', 'brandTarget', 'versionPlacement', 'navPlacement', 'navCorner', 'graphPlacement', 'graphCorner', 'updateCheck', 'diagramTheme']) settingsForm[key].value = settings[key];
+  for (const key of ['docFont', 'paperWidth', 'openMode', 'openDocs', 'deleteConfirm', 'sidebarSide', 'critters', 'crittersSize', 'audioPlayer', 'brandSize', 'brandTarget', 'versionPlacement', 'navPlacement', 'navCorner', 'graphPlacement', 'graphCorner', 'updateCheck', 'diagramTheme']) settingsForm[key].value = settings[key];
   if (diagramSettingsReady) renderDiagramSettings();
   settingsForm.panelOrder.value = settings.panelOrder.join(',');
   syncOpenDocsHelp();
