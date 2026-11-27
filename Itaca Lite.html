@@ -779,6 +779,10 @@ button:disabled { opacity: .4; cursor: default; }
 .vr-hint kbd { padding: 0 4px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; font: 600 10.5px/1.4 var(--mono); }
 @media (prefers-reduced-motion: reduce) { .vr-dot { animation: none; } }
 @media print { .voice-recorder { display: none !important; } }
+/* Ombre della panoramica: con il tema scuro --ink è chiaro e le ombre diventavano un alone luminoso
+   attorno a menu e riquadri; lì si usa il nero. */
+:root { --dash-shade: var(--ink); }
+:root[data-theme='dark'] { --dash-shade: #000; }
 /* Panoramica della cartella: griglia di riquadri (al posto della pagina vuota) */
 .workspace:has(.work-start.is-dashboard:not([hidden])) { display: block; place-items: normal; }
 .work-start.is-dashboard { max-width: none; padding: 0; text-align: left; }
@@ -798,24 +802,59 @@ button:disabled { opacity: .4; cursor: default; }
 .dash-reading::before { margin-right: 2px !important; }
 .dash-progress { width: 90px; height: 4px; border-radius: 99px; background: var(--line); overflow: hidden; }
 .dash-progress > span { display: block; height: 100%; background: var(--accent); border-radius: inherit; transition: width .3s; }
-.dash-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.dash-actions button { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 6px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-weight: 550; font-size: 13.5px; }
-.dash-actions button.primary { border-color: transparent; background: var(--accent); }
-.dash-actions .icon { width: 15px; height: 15px; }
+.dash-actions { display: flex; flex-wrap: nowrap; align-items: center; gap: 8px; min-width: 0; }
+.dash-actions > button { display: inline-flex; flex: none; align-items: center; gap: 7px; min-height: 34px; padding: 6px 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-weight: 550; font-size: 13.5px; white-space: nowrap; }
+.dash-actions > button.primary { border-color: transparent; background: var(--accent); }
+.dash-actions > button .icon { width: 15px; height: 15px; }
+.dash-actions .dash-customize, .dash-actions .dash-new { justify-content: center; width: 34px; padding: 0; }
+.dash-actions .dash-customize .icon { width: 17px; height: 17px; }
+.dash-actions .dash-new { border-color: transparent; background: var(--accent); color: var(--on-accent, #fff); }
+.dash-actions .dash-new:hover { background: color-mix(in srgb, var(--accent) 88%, var(--ink)); }
+.dash-actions .dash-new .icon { width: 17px; height: 17px; }
+.dash-actions .dash-customize[aria-expanded='true'] { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: var(--tint); color: var(--accent-text); }
 .dashboard.sidebar-open .dash-when-closed { display: none; }
-.dash-actions .dash-back { max-width: 340px; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent-text); }
-.dash-back span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dash-search { position: relative; z-index: 6; min-width: 0; flex: 0 1 auto; }
+.ds-field { display: flex; align-items: center; gap: 8px; width: clamp(200px, 24vw, 300px); max-width: 100%; height: 34px; padding: 0 6px 0 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--muted); cursor: text; transition: width .25s cubic-bezier(.2, .8, .2, 1), border-color .15s, box-shadow .15s; }
+.ds-field:hover { border-color: color-mix(in srgb, var(--line) 50%, var(--muted)); }
+.dash-search:focus-within .ds-field, .dash-search.filled .ds-field { width: clamp(240px, 30vw, 380px); }
+.dash-search:focus-within .ds-field { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent-text); }
+.ds-field > .icon { flex: none; width: 15px; height: 15px; }
+.ds-field input { flex: 1; min-width: 0; height: 30px; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; box-shadow: none; }
+.ds-field input::-webkit-search-cancel-button { display: none; }
+.ds-field input::placeholder { color: var(--muted); }
+.ds-key { flex: none; padding: 1px 6px; border: 1px solid var(--line); border-radius: 5px; background: var(--paper); color: var(--muted); font: 600 11px/18px var(--sans); }
+.dash-search:focus-within .ds-key, .dash-search.filled .ds-key, .ds-clear { display: none; }
+.dash-search.filled .ds-clear { display: grid; width: 24px; height: 24px; }
+.ds-clear .icon { width: 12px; height: 12px; }
+.ds-results { position: absolute; top: calc(100% + 6px); right: 0; width: min(520px, calc(100vw - 32px)); max-height: min(62vh, 520px); overflow: auto; padding: 6px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); box-shadow: 0 22px 50px -16px color-mix(in srgb, var(--dash-shade) 45%, transparent); animation: ds-open .16s ease-out; transform-origin: top right; }
+.ds-results[hidden] { display: none; }
+@keyframes ds-open { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.ds-hit { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 8px; text-align: left; }
+.ds-hit:hover, .ds-hit:focus-visible { background: var(--tint); outline: none; }
+.ds-hit .status-dot { margin-top: 5px; }
+.ds-hit .status-dot.none { background: transparent; box-shadow: inset 0 0 0 1.4px color-mix(in srgb, var(--muted) 45%, transparent); }
+.ds-label { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.ds-label .result-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+.ds-label .result-parent { white-space: nowrap; }
+.ds-label .result-meta { color: var(--accent-text); font-size: 11.5px; }
+.ds-label mark { background: var(--warning-bg); color: var(--warning); border-radius: 2px; font-weight: 680; }
+.ds-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 4px; padding: 8px 8px 2px; border-top: 1px solid var(--line-soft); color: var(--muted); font-size: 12px; }
+.ds-foot button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 6px; color: var(--accent-text); font-size: 12px; font-weight: 600; }
+.ds-foot .icon { width: 13px; height: 13px; }
+.dash-actions .dash-back { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--accent) 8%, var(--panel)); color: var(--accent-text); }
+.dash-actions .dash-back:hover { background: var(--tint); }
 .dashboard-button[aria-pressed='true'] { color: var(--accent-text); background-color: var(--tint); }
 .dashboard-button:disabled { opacity: 1; }
 
-.dash-grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 14px; align-items: stretch; }
+/* A mattoncini: righe da 2 px e ogni riquadro ne occupa quante ne servono alla sua altezza (dashMasonry). */
+.dash-grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row dense; grid-auto-rows: 2px; gap: 0 14px; align-items: start; }
 @container dash (width < 900px) { .dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dw[data-size='4'] { grid-column: 1 / -1; } }
 @container dash (width < 540px) { .dash-grid { grid-template-columns: minmax(0, 1fr); } .dw[data-size] { grid-column: 1 / -1; } .dw-resize { display: none; } }
 .dw[data-size='2'] { grid-column: span 2; }
 .dw[data-size='4'] { grid-column: 1 / -1; }
-.dw { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 150px; border: 1px solid var(--line); border-radius: var(--dw-radius); background: var(--panel);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 4%, transparent); transition: border-color .2s, box-shadow .2s; }
-.dw:hover { border-color: color-mix(in srgb, var(--line) 60%, var(--muted)); box-shadow: 0 6px 22px -8px color-mix(in srgb, var(--ink) 18%, transparent); }
+.dw { container: dw / inline-size; position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 120px; grid-row-end: span 80; border: 1px solid var(--line); border-radius: var(--dw-radius); background: var(--panel);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--dash-shade) 4%, transparent); transition: border-color .2s, box-shadow .2s; }
+.dw:hover { border-color: color-mix(in srgb, var(--line) 60%, var(--muted)); box-shadow: 0 6px 22px -8px color-mix(in srgb, var(--dash-shade) 18%, transparent); }
 .dashboard.entering .dw { animation: dw-in .5s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 40ms); }
 @keyframes dw-in { from { opacity: 0; transform: translateY(10px) scale(.985); } }
 .dw.dw-new { animation: dw-new 1.1s ease-out; }
@@ -824,22 +863,45 @@ button:disabled { opacity: .4; cursor: default; }
 .dw-head:active { cursor: grabbing; }
 .dw-title { display: flex; align-items: center; gap: 9px; flex: 1 1 auto; min-width: 0; margin: 0; font: 650 13.5px/1.3 var(--sans); }
 .dw-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.dw-icon { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--tint); color: var(--accent-text); }
+:is(.dw, .dc-tile, .dc-card, .dash-pop) { --w-hue: var(--accent); }
+:is(.dw, .dc-tile, .dc-card, .dash-pop):is([data-id='calendar'], [data-id='timer']) { --w-hue: var(--st-old); }
+:is(.dw, .dc-tile, .dc-card, .dash-pop):is([data-id='todo'], [data-id='people']) { --w-hue: var(--st-new); }
+:is(.dw, .dc-tile, .dc-card, .dash-pop):is([data-id='favorites'], [data-id='sun']) { --w-hue: var(--st-draft); }
+:is(.dw, .dc-tile, .dc-card, .dash-pop):is([data-id='radio'], [data-id='tags']) { --w-hue: var(--st-review); }
+:is(.dw, .dc-tile, .dc-card, .dash-pop):is([data-id='clock'], [data-id='zones']) { --w-hue: var(--st-planned); }
+.dw-icon { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: color-mix(in srgb, var(--w-hue, var(--accent)) 16%, transparent); color: color-mix(in srgb, var(--w-hue, var(--accent)) 72%, var(--ink)); }
 .dw-icon .icon { width: 15px; height: 15px; }
 .dw-tools { display: flex; align-items: center; gap: 6px; min-width: 0; }
+/* Riquadro stretto: le schede dell'intestazione (Mese | Anno, Pomodoro | Timer…) vanno sotto il titolo. */
+@container dw (width < 330px) {
+  .dw-head:has(.dw-tools .dw-seg) { flex-wrap: wrap; row-gap: 6px; padding-bottom: 6px; }
+  .dw-tools:has(.dw-seg) { order: 3; flex: 1 0 100%; }
+  .dw-tools .dw-seg { display: flex; width: 100%; }
+  .dw-tools .dw-seg button { flex: 1 1 0; }
+}
 .dw .dw-menu { width: 28px; height: 28px; opacity: .55; transition: opacity .15s; }
 .dw-menu .icon.i-more { width: 15px; height: 17px; }
 .dw:hover .dw-menu, .dw-menu:focus-visible, .dw-menu[aria-expanded='true'] { opacity: 1; }
 .dw-body { position: relative; display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; padding: 2px 12px 12px; }
 .dw-count { min-width: 20px; padding: 0 7px; border-radius: 99px; background: var(--tint); color: var(--accent-text); font: 650 11.5px/20px var(--sans); text-align: center; font-variant-numeric: tabular-nums; }
 .dw-count:empty { display: none; }
-.dw-resize { position: absolute; right: 2px; bottom: 2px; width: 16px; height: 16px; border-radius: 0 0 10px 0; cursor: ew-resize; opacity: 0; transition: opacity .15s;
-  background: radial-gradient(circle, var(--muted) 1.1px, transparent 1.4px) 0 0 / 5px 5px; mask: linear-gradient(135deg, transparent 50%, #000 50%); }
-.dw:hover .dw-resize, .dw.dw-resizing .dw-resize { opacity: .7; }
-.dw.dw-resizing { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
-.dw.dw-placeholder { border: 2px dashed color-mix(in srgb, var(--accent) 55%, var(--line)); background: color-mix(in srgb, var(--accent) 6%, transparent); box-shadow: none; }
+.dw-resize { position: absolute; z-index: 3; top: 12px; bottom: 12px; right: -11px; width: 20px; display: grid; place-items: center; cursor: ew-resize; touch-action: none; }
+.dw-resize::before { content: ''; width: 4px; height: min(46px, 46%); border-radius: 99px; background: var(--muted); opacity: 0; transform: scaleY(.5); transition: opacity .15s, transform .22s cubic-bezier(.3, 1.4, .5, 1), background-color .15s; }
+.dw:hover .dw-resize::before { opacity: .35; transform: none; }
+.dw-resize:hover::before, .dw.dw-resizing .dw-resize::before { opacity: 1; background: var(--accent); transform: scaleY(1.2); }
+.dw.dw-resizing::after { content: attr(data-size-label); position: absolute; z-index: 4; top: 50%; left: 50%; padding: 6px 14px; border-radius: 99px; background: var(--accent); color: var(--on-accent, #fff); font: 650 13px/1.2 var(--sans); white-space: nowrap; box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--dash-shade) 50%, transparent); transform: translate(-50%, -50%); animation: dw-label .2s cubic-bezier(.3, 1.4, .5, 1); pointer-events: none; }
+@keyframes dw-label { from { opacity: 0; transform: translate(-50%, -50%) scale(.7); } }
+.dash-guides { position: absolute; inset: 0; z-index: 0; display: grid; gap: inherit; pointer-events: none; animation: dash-guides .2s ease-out; }
+.dash-guides i { border-radius: var(--dw-radius); background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, transparent) 0 6px, transparent 6px 12px); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent); }
+@keyframes dash-guides { from { opacity: 0; } }
+.dw.dw-resizing { z-index: 2; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent), 0 14px 34px -14px color-mix(in srgb, var(--dash-shade) 40%, transparent); }
+.dw.dw-resizing > :not(.dw-resize) { opacity: .45; transition: opacity .15s; }
+.dw.dw-placeholder { border: 2px dashed color-mix(in srgb, var(--accent) 55%, var(--line)); background: color-mix(in srgb, var(--accent) 6%, transparent); box-shadow: none; animation: dw-breathe 1.6s ease-in-out infinite; }
+@keyframes dw-breathe { 50% { background-color: color-mix(in srgb, var(--accent) 13%, transparent); border-color: var(--accent); } }
 .dw.dw-placeholder > * { visibility: hidden; }
-.dw-ghost { position: fixed; z-index: 60; margin: 0; pointer-events: none; overflow: hidden; border-color: var(--accent); box-shadow: 0 22px 50px -12px color-mix(in srgb, var(--ink) 38%, transparent); transform: rotate(1.2deg) scale(1.02); opacity: .96; }
+.dw-ghost { position: fixed; z-index: 60; margin: 0; pointer-events: none; overflow: hidden; border-color: var(--accent); box-shadow: 0 26px 56px -14px color-mix(in srgb, var(--dash-shade) 42%, transparent), 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent); scale: 1.03; rotate: var(--tilt, 0deg); opacity: .97; transition: rotate .22s cubic-bezier(.2, .8, .2, 1); will-change: translate, rotate; }
+.dw.dw-dropped { animation: dw-dropped .7s ease-out; }
+@keyframes dw-dropped { 0% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent); border-color: var(--accent); } 100% { box-shadow: 0 0 0 12px transparent; } }
 .dw-ghost .dw-head { cursor: grabbing; }
 html.dash-dragging, html.dash-dragging * { cursor: grabbing !important; }
 html.dash-resizing, html.dash-resizing * { cursor: ew-resize !important; user-select: none; }
@@ -852,7 +914,7 @@ html.dash-resizing, html.dash-resizing * { cursor: ew-resize !important; user-se
 /* Elementi comuni */
 .dw-seg { display: inline-flex; padding: 2px; border-radius: 8px; background: color-mix(in srgb, var(--muted) 12%, transparent); }
 .dw-seg button { padding: 3px 9px; border-radius: 6px; color: var(--muted); font-size: 12px; font-weight: 600; white-space: nowrap; }
-.dw-seg button[aria-pressed='true'] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 16%, transparent); }
+.dw-seg button[aria-pressed='true'] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 3px color-mix(in srgb, var(--dash-shade) 16%, transparent); }
 .dw-seg button:hover:not([aria-pressed='true']) { background-color: transparent; color: var(--ink); }
 .dash-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 5px 8px; border-radius: 8px; text-align: left; }
 .dash-row:hover:not(:disabled) { background: var(--tint); }
@@ -876,35 +938,123 @@ html.dash-resizing, html.dash-resizing * { cursor: ew-resize !important; user-se
 .dw-grip { flex: none; align-self: stretch; width: 12px; margin-right: -4px; cursor: grab; opacity: 0; transition: opacity .15s;
   background: radial-gradient(circle, var(--muted) 1.1px, transparent 1.5px) center / 6px 6px; mask: linear-gradient(#000, #000) center / 6px 18px no-repeat; }
 li:hover > .dw-grip { opacity: .8; }
-.dw-sorting { position: relative; z-index: 2; border-radius: 8px; background: var(--panel); box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--ink) 30%, transparent); }
+.dw-sorting { position: relative; z-index: 2; border-radius: 8px; background: var(--panel); box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--dash-shade) 30%, transparent); }
 .sorting, .sorting * { cursor: grabbing !important; }
 .dw-field { display: flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 6px 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--muted); transition: border-color .15s, box-shadow .15s; }
 .dw-field:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
 .dw-field .icon { flex: none; width: 14px; height: 14px; }
 .dw-field input:not([type='date']) { flex: 1; min-width: 0; height: 32px; padding: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font: inherit; font-size: 13.5px; box-shadow: none; }
 .dw-picker { position: relative; margin-top: auto; padding-top: 10px; }
-.dw-suggest { position: absolute; z-index: 20; left: 0; right: 0; bottom: calc(100% - 6px); max-height: 260px; margin: 0; padding: 4px; overflow: auto; list-style: none; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--ink) 35%, transparent); }
+.dw-suggest { position: absolute; z-index: 20; left: 0; right: 0; bottom: calc(100% - 6px); max-height: 260px; margin: 0; padding: 4px; overflow: auto; list-style: none; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: 0 14px 36px -10px color-mix(in srgb, var(--dash-shade) 35%, transparent); }
 .dw-suggest[hidden] { display: none; }
 .dw-suggest li { display: grid; padding: 6px 9px; border-radius: 7px; cursor: pointer; }
 .dw-suggest li[aria-selected='true'], .dw-suggest li:hover { background: var(--tint); }
 .dw-suggest b { overflow: hidden; font-size: 13px; font-weight: 560; white-space: nowrap; text-overflow: ellipsis; }
 .dw-suggest small { overflow: hidden; color: var(--muted); font-size: 11.5px; white-space: nowrap; text-overflow: ellipsis; }
+/* Elenchi con un'altezza massima che scorrono dentro il riquadro (dashScroller): sfumatura dove c'è altro. */
+.dw-scroll { position: relative; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--muted) 35%, transparent) transparent; }
+.dw-scroll[data-more='below'] { mask-image: linear-gradient(to bottom, #000 calc(100% - 24px), transparent); }
+.dw-scroll[data-more='above'] { mask-image: linear-gradient(to top, #000 calc(100% - 24px), transparent); }
+.dw-scroll[data-more='both'] { mask-image: linear-gradient(transparent, #000 24px, #000 calc(100% - 24px), transparent); }
+.dw-scroll-x { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
+.dw-scroll-x::-webkit-scrollbar { display: none; }
+.dw-scroll-x[data-more='below'] { mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent); }
+.dw-scroll-x[data-more='above'] { mask-image: linear-gradient(to left, #000 calc(100% - 28px), transparent); }
+.dw-scroll-x[data-more='both'] { mask-image: linear-gradient(to right, transparent, #000 28px, #000 calc(100% - 28px), transparent); }
+.df-list.dw-scroll { max-height: 236px; align-content: start; }
+.dw[data-id='folder'] .df-list { height: 222px; }
+.dw[data-id='recent'] .df-list { height: 268px; }
+/* Riquadro allungato per riempire lo spazio (dashPack): l'elenco usa tutta l'altezza in più. */
+.dw.dw-filled .dw-body > :is(.dw-scroll, .rd-region) { flex: 1 1 0; min-height: 0; max-height: none; height: auto; }
+/* Riquadri larghi: le righe si dispongono su più colonne invece di allungare il riquadro. */
+@container dw (width > 540px) {
+  .cols { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); column-gap: 6px; align-content: start; }
+  .cols > .dash-empty, .zn-list.cols > .here { grid-column: 1 / -1; }
+  .dw[data-id='recent'] .df-list { height: 222px; }
+}
 
 /* Menu dei riquadri e Personalizza */
-.dash-pop { position: fixed; inset: auto; width: min(330px, calc(100vw - 16px)); max-height: min(80vh, 620px); margin: 0; padding: 10px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink); box-shadow: 0 18px 50px -14px color-mix(in srgb, var(--ink) 40%, transparent); }
-.dash-pop.dp-wide { width: min(400px, calc(100vw - 16px)); }
+.dash-pop { position: fixed; inset: auto; width: min(300px, calc(100vw - 16px)); max-height: min(80vh, 620px); margin: 0; padding: 6px; overflow: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink); box-shadow: 0 18px 50px -14px color-mix(in srgb, var(--dash-shade) 40%, transparent); }
+.dash-pop:popover-open { animation: dp-open .16s cubic-bezier(.2, .8, .2, 1); }
+/* Staccato dai riquadri senza alone: l'ombra dei pannelli di Itaca e, col tema scuro, un fondo
+   appena più chiaro (come una superficie sollevata). */
+.dash-pop { box-shadow: var(--floating-shadow), 0 18px 40px -18px color-mix(in srgb, var(--dash-shade) 35%, transparent); }
+:root[data-theme='dark'] .dash-pop { background: color-mix(in srgb, var(--panel) 93%, #fff); border-color: color-mix(in srgb, var(--line) 70%, #000); }
+:root[data-theme='dark'] .dash-pop .dp-rows { background: color-mix(in srgb, #000 14%, transparent); }
+@keyframes dp-open { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.dash-pop.dp-wide { width: min(400px, calc(100vw - 16px)); padding: 10px; }
 .dp-head { display: grid; gap: 2px; padding: 4px 6px 10px; }
 .dp-head b { font-size: 14px; }
 .dp-head small { color: var(--muted); font-size: 12px; line-height: 1.45; }
-.dp-row { display: grid; gap: 6px; padding: 8px 6px; border-top: 1px solid var(--line); }
-.dp-row.inline { grid-template-columns: 1fr auto; align-items: center; }
-.dp-label { color: var(--muted); font-size: 12px; font-weight: 600; }
-.dp-row.inline .dp-label { color: var(--ink); font-size: 13px; font-weight: 500; }
-.dp-row .dw-seg { flex-wrap: wrap; justify-self: start; }
-.dp-actions { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 2px 2px; border-top: 1px solid var(--line); }
+/* Menu ⋯ di un riquadro: titolo con icona, righe etichetta | comando, in fondo posizione e Nascondi. */
+.dp-menu .dp-head { display: flex; align-items: center; gap: 10px; padding: 6px 6px 8px; }
+.dp-menu .dp-head .dw-icon { width: 30px; height: 30px; border-radius: 9px; }
+.dp-menu .dp-head .dw-icon .icon { width: 16px; height: 16px; }
+.dp-title { display: grid; min-width: 0; }
+.dp-title b { font-size: 13.5px; font-weight: 650; }
+.dp-title small { overflow: hidden; color: var(--muted); font-size: 11.5px; line-height: 1.35; white-space: nowrap; text-overflow: ellipsis; }
+.dp-rows { display: grid; gap: 2px; padding: 4px; border-radius: 9px; background: color-mix(in srgb, var(--muted) 7%, transparent); }
+.dp-row { display: grid; gap: 6px; min-height: 36px; padding: 6px 6px; border-radius: 7px; }
+.dp-row.inline { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.dp-row.stacked { padding-bottom: 8px; }
+.dp-label { color: var(--ink); font-size: 12.5px; font-weight: 550; line-height: 1.3; }
+.dp-row.stacked > .dp-label { color: var(--muted); font-size: 11.5px; font-weight: 600; }
+label.dp-label { cursor: pointer; }
+.dp-row .dw-seg { justify-self: end; flex-wrap: nowrap; background: color-mix(in srgb, var(--muted) 13%, transparent); }
+.dp-row.stacked .dw-seg { justify-self: stretch; display: flex; }
+.dp-row.stacked .dw-seg button { flex: 1 1 0; min-width: 0; padding-inline: 4px; }
+.dp-row .dw-seg button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 24px; font-size: 12px; }
+.dp-size-glyph { display: inline-grid; grid-template-columns: repeat(4, 3px); gap: 1.5px; }
+.dp-size-glyph span { height: 9px; border-radius: 1px; background: currentColor; opacity: .25; }
+.dp-size-glyph span.on { opacity: 1; }
+.dw-seg button[aria-pressed='true'] .dp-size-glyph span.on { background: var(--w-hue, var(--accent)); }
+.dp-actions { display: flex; align-items: center; gap: 4px; margin-top: 6px; padding: 6px 2px 0; border-top: 1px solid var(--line-soft, var(--line)); }
 .dp-actions button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 7px; font-size: 12.5px; font-weight: 550; }
 .dp-actions .icon { width: 14px; height: 14px; }
-.dp-actions .dp-hide { margin-left: auto; color: var(--danger); }
+.dp-move { display: inline-flex; align-items: center; gap: 2px; padding: 2px; border-radius: 8px; background: color-mix(in srgb, var(--muted) 9%, transparent); }
+.dp-move .icon-button { width: 28px; height: 28px; padding: 0; justify-content: center; }
+.dp-move-label { padding: 0 4px; color: var(--muted); font-size: 12px; font-weight: 600; }
+.dp-actions .dp-hide { margin-left: auto; color: var(--danger-text, var(--danger)); }
+.dp-actions .dp-hide:hover { background: color-mix(in srgb, var(--danger) 12%, transparent); }
+.dp-menu .cal-patron { flex-wrap: wrap; }
+.dash-pop.dp-custom { width: min(560px, calc(100vw - 16px)); padding: 12px 12px 8px; }
+.dc-head { padding-bottom: 6px; }
+.dc-label { display: flex; align-items: baseline; gap: 8px; margin: 8px 6px 7px; color: var(--muted); font-size: 11.5px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; }
+.dc-label small { font-weight: 550; letter-spacing: 0; text-transform: none; }
+.dc-map { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 6px; padding: 8px; border-radius: 12px; background: color-mix(in srgb, var(--muted) 8%, transparent); }
+.dc-tile { position: relative; display: flex; min-width: 0; height: 44px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); transition: border-color .15s, box-shadow .15s; }
+.dc-tile[data-size='2'] { grid-column: span 2; }
+.dc-tile[data-size='4'] { grid-column: 1 / -1; }
+.dc-tile:hover { border-color: color-mix(in srgb, var(--w-hue) 50%, var(--line)); box-shadow: 0 4px 14px -8px color-mix(in srgb, var(--dash-shade) 40%, transparent); }
+.dc-tile.dc-new { animation: dc-pop .45s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes dc-pop { from { transform: scale(.6); opacity: 0; } }
+.dc-go { display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; padding: 0 6px; border-radius: 8px; text-align: left; }
+.dc-go:hover { background: transparent; }
+.dc-go .dw-icon { width: 24px; height: 24px; border-radius: 7px; }
+.dc-go .dw-icon .icon { width: 13px; height: 13px; }
+.dc-name { overflow: hidden; font-size: 12.5px; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.dc-tile .dc-remove { position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; border: 1px solid var(--line); border-radius: 50%; background: var(--panel); color: var(--muted); opacity: 0; transform: scale(.7); transition: opacity .12s, transform .12s; }
+.dc-tile .dc-remove .icon { width: 10px; height: 10px; }
+.dc-tile:hover .dc-remove, .dc-tile:focus-within .dc-remove { opacity: 1; transform: none; }
+.dc-tile .dc-remove:hover { border-color: var(--danger); background: var(--danger); color: #fff; }
+.dc-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 6px; }
+.dc-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 58px; padding: 8px 10px; border: 1px dashed color-mix(in srgb, var(--muted) 40%, transparent); border-radius: 10px; text-align: left; transition: border-color .15s, background-color .15s, transform .15s; }
+.dc-card:hover:not(:disabled) { border-style: solid; border-color: color-mix(in srgb, var(--w-hue) 55%, var(--line)); background: color-mix(in srgb, var(--w-hue) 7%, transparent); transform: translateY(-1px); }
+.dc-card:disabled { opacity: .5; }
+.dc-card .dw-icon { width: 32px; height: 32px; border-radius: 9px; }
+.dc-card .dw-icon .icon { width: 17px; height: 17px; }
+.dc-text { display: grid; gap: 1px; min-width: 0; }
+.dc-text b { font-size: 13px; font-weight: 600; }
+.dc-text small { display: -webkit-box; overflow: hidden; color: var(--muted); font-size: 11.5px; line-height: 1.35; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.dc-plus { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: color-mix(in srgb, var(--w-hue) 14%, transparent); color: color-mix(in srgb, var(--w-hue) 75%, var(--ink)); transition: background-color .15s, color .15s; }
+.dc-plus .icon { width: 12px; height: 12px; }
+.dc-card:hover:not(:disabled) .dc-plus { background: var(--w-hue); color: #fff; }
+.dc-none { grid-column: 1 / -1; margin: 0; padding: 8px 6px; color: var(--muted); font-size: 12.5px; }
+.dc-foot { margin-top: 10px; }
+.dp-actions .dc-reset { background: var(--tint); color: var(--accent-text); font-weight: 600; }
+.dp-actions .dc-reset:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.dc-fill { grid-template-columns: auto auto !important; gap: 10px; min-height: 0; margin-left: auto; padding: 0 4px; }
+@media (max-width: 520px) { .dc-map { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dc-tile[data-size='4'] { grid-column: 1 / -1; } }
 .dp-list { display: grid; gap: 2px; padding: 0 0 6px; }
 .dp-widget { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 7px 6px; border-radius: 8px; }
 .dp-widget:hover { background: var(--tint); }
@@ -937,11 +1087,12 @@ li:hover > .dw-grip { opacity: .8; }
 .df-bar > button:disabled { opacity: 1; }
 .df-bar > [data-tone='none'] { background: color-mix(in srgb, var(--muted) 22%, transparent); }
 .df-legend { margin: 0; color: var(--muted); font-size: 11.5px; }
-@container dash (width < 1100px) { .dw[data-size='1'] .df-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.dw[data-size='1'] .df-stat small { display: none; }
+@container dw (width < 560px) { .df-stat small { display: none; } }
+@container dw (width < 400px) { .df-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* Tag */
-.dash-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.dash-tags { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 6px; }
+.dash-tags.dw-scroll { max-height: 196px; padding: 2px 0; }
 .dash-tags button { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 99px; background: color-mix(in srgb, var(--accent) calc(var(--weight, .5) * 26%), transparent); color: var(--accent-text); font-size: calc(11.5px + var(--weight, .5) * 2.5px); font-weight: 550; }
 .dash-tags button:hover { background: color-mix(in srgb, var(--accent) 30%, transparent); }
 .dash-tags small { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -949,6 +1100,12 @@ li:hover > .dw-grip { opacity: .8; }
 /* Preferiti */
 .fv-list, .td-list, .zn-list { display: grid; margin: 0 -6px; padding: 0; list-style: none; }
 .fv-list[hidden] { display: none; }
+.fv-list.dw-scroll { max-height: 264px; }
+.td-scroll { display: grid; align-content: start; max-height: 286px; margin: 0 -6px; padding: 0 6px; }
+.td-scroll .td-list { margin: 0; }
+.td-done-list { margin-top: 4px !important; padding-top: 4px !important; border-top: 1px dashed var(--line); }
+.td-done-list[hidden], .td-done[hidden] { display: none; }
+.td-done .dash-more { margin: 0; }
 .fv-row, .td-row, .zn-row { display: flex; align-items: center; gap: 4px; min-width: 0; padding-left: 2px; border-radius: 8px; }
 .fv-row .dash-row { flex: 1; min-width: 0; }
 .fv-remove, .td-remove, .zn-remove { width: 26px; height: 26px; opacity: 0; }
@@ -981,21 +1138,29 @@ li:hover > .fv-remove, li:hover .td-remove, li:hover > .zn-remove, .fv-remove:fo
 .td-add-date { width: 26px; height: 26px; opacity: 0; }
 .td-add-date .icon { width: 13px; height: 13px; }
 .td-row:hover .td-add-date, .td-add-date:focus-visible { opacity: .8; }
-.td-done { display: grid; margin-top: auto; padding-top: 6px; }
+.td-done { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px; margin-top: auto; padding-top: 6px; }
 .td-done-toggle { display: inline-flex; align-items: center; gap: 6px; justify-self: start; padding: 4px 6px; border-radius: 6px; color: var(--muted); font-size: 12.5px; font-weight: 600; }
 .td-done-toggle .icon { width: 12px; height: 12px; transform: rotate(-90deg); transition: transform .2s; }
 .td-done-toggle[aria-expanded='true'] .icon { transform: none; }
 
 /* Calendario */
-.cal-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-bottom: 8px; }
+.cal-bar { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
 .cal-bar .icon-button { width: 28px; height: 28px; }
 .cal-bar .icon-button .icon { width: 14px; height: 14px; }
-.cal-label { min-width: 0; padding: 3px 6px; border-radius: 6px; font: 650 15px/1.3 var(--display); }
+.cal-label { min-width: 0; overflow: hidden; padding: 3px 6px; border-radius: 6px; font: 650 15px/1.3 var(--display); white-space: nowrap; text-overflow: ellipsis; }
 .cal-today { margin-left: auto; padding: 3px 10px; border: 1px solid var(--line); border-radius: 7px; font-size: 12px; font-weight: 600; }
+.cal-stage { position: relative; display: flex; flex-direction: column; flex: 1; }
 .cal-month { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; flex: 1; }
-.dw[data-size='2'] .cal-month, .dw[data-size='4'] .cal-month { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); grid-template-rows: 1fr auto; }
-@container dash (width < 900px) { .dw[data-size='2'] .cal-month { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
-@container dash (width < 640px) { .dw .cal-month { grid-template-columns: minmax(0, 1fr) !important; } }
+.cal-month.under { visibility: hidden; }
+/* Stretto: il dettaglio del giorno sta sotto, alto sempre uguale (scorre se serve). */
+.cal-month > .cal-detail { height: 150px; overflow-y: auto; scrollbar-width: thin; }
+/* Largo: dettaglio a destra, alto quanto il mese (non lo allunga: contain size) e scorre. */
+@container dw (width > 420px) {
+  .cal-month { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); grid-template-rows: auto auto; }
+  .cal-month > .cal-detail { height: auto; contain: size; }
+}
+.cal-stage > .cal-year-wrap { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; animation: cal-year-in .2s ease-out; }
+@keyframes cal-year-in { from { opacity: 0; transform: scale(.985); } }
 .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; align-content: start; }
 .cal-grid.weeks { grid-template-columns: 26px repeat(7, minmax(0, 1fr)); }
 .cal-h { padding: 2px 0 4px; color: var(--muted); font-size: 11px; font-weight: 650; text-align: center; }
@@ -1041,7 +1206,8 @@ button.cal-item:hover { background: var(--tint); }
 .cal-legend .k-deadline::before { width: 6px; height: 6px; border-radius: 50%; background: var(--st-draft); }
 .cal-legend .k-event::before { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 .cal-year-wrap { display: grid; gap: 10px; }
-.cal-year { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 12px; }
+.cal-year { display: grid; grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 10px 12px; }
+.cal-mini.current .cal-mini-name { color: var(--accent-text); }
 .cal-mini { min-width: 0; }
 .cal-mini-name { padding: 2px 4px; border-radius: 5px; font-size: 12.5px; font-weight: 650; }
 .cal-mini-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; cursor: pointer; }
@@ -1054,45 +1220,72 @@ button.cal-item:hover { background: var(--tint); }
 .cal-mini-grid .cal-d.has-event::after { content: ''; position: absolute; top: 1px; right: 1px; width: 3px; height: 3px; border-radius: 50%; background: var(--accent); }
 
 /* Timer */
-.tm { display: grid; justify-items: center; gap: 10px; flex: 1; align-content: center; --tm-tone: var(--accent); }
+.tm { display: grid; justify-items: center; gap: 12px; flex: 1; align-content: center; padding: 2px 0 4px; --tm-tone: var(--accent); }
 .tm-mode { justify-self: center; margin-bottom: 2px; }
 .tm[data-phase='short'], .tm[data-phase='long'] { --tm-tone: var(--st-new); }
-.tm-face { position: relative; display: grid; place-items: center; width: 136px; aspect-ratio: 1; }
+.tm-face { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: clamp(122px, 44cqi, 148px); aspect-ratio: 1; }
 .tm-ring { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; }
 .tm-ring circle { fill: none; stroke-width: 7; }
 .tm-track { stroke: color-mix(in srgb, var(--muted) 16%, transparent); }
 .tm-progress { stroke: var(--tm-tone); stroke-linecap: round; stroke-dasharray: 1000; transition: stroke-dashoffset 1s linear, stroke .3s; }
-.tm-time { position: relative; margin-top: -8px; font: 650 30px/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
-.tm-phase { position: absolute; top: calc(50% + 18px); color: var(--muted); font-size: 12px; font-weight: 600; }
+.tm-time { position: relative; font: 650 clamp(26px, 9.5cqi, 32px)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.tm-phase { position: relative; margin-top: 5px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
 .tm.running .tm-phase { color: color-mix(in srgb, var(--tm-tone) 80%, var(--ink)); }
-.tm-controls { display: flex; align-items: center; gap: 14px; }
+.tm-controls { display: flex; align-items: center; gap: 16px; }
+.tm-controls .icon-button { width: 34px; height: 34px; border-radius: 50%; }
 .tm-main { display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border-radius: 50%; background: var(--tm-tone) !important; color: var(--on-accent); box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--tm-tone) 70%, transparent); transition: transform .15s; }
 .tm-main:hover { transform: scale(1.06); }
 .tm-main .icon { width: 19px; height: 19px; color: var(--on-accent); }
-.tm-main .icon.i-play { translate: 1px 0; }
+.tm-main .icon.i-play { translate: -.8px 0; }
 .tm-controls .icon-button .icon { width: 16px; height: 16px; }
 .tm-extra { display: grid; justify-items: center; gap: 8px; }
 .tm-phases, .tm-presets { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
-.tm-phases button, .tm-presets button { padding: 2px 9px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
+.tm-phases button, .tm-presets button { padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: 11px; font-weight: 600; white-space: nowrap; }
+.tm-phases, .tm-presets { flex-wrap: nowrap; }
 .tm-phases button[aria-pressed='true'], .tm-presets button[aria-pressed='true'] { border-color: transparent; background: color-mix(in srgb, var(--tm-tone) 16%, transparent); color: color-mix(in srgb, var(--tm-tone) 80%, var(--ink)); }
-.tm-rounds { display: flex; gap: 6px; }
-.tm-rounds i { width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+.tm-rounds { position: relative; display: flex; gap: 5px; margin-top: 7px; }
+.tm-rounds i { width: 6px; height: 6px; border-radius: 50%; box-shadow: inset 0 0 0 1.3px color-mix(in srgb, var(--accent) 55%, transparent); }
 .tm-rounds i.on { background: var(--accent); box-shadow: none; }
-.timer-chip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px; border-radius: 99px; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent-text); font: 650 12px/1 var(--sans); font-variant-numeric: tabular-nums; }
-.timer-chip[hidden] { display: none; }
-.timer-chip[data-phase='short'], .timer-chip[data-phase='long'] { background: color-mix(in srgb, var(--st-new) 16%, transparent); color: color-mix(in srgb, var(--st-new) 80%, var(--ink)); }
+.timer-chip { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; min-width: 28px; padding: 0 6px; border-radius: 8px; color: var(--muted); font: 650 12px/1 var(--sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timer-chip:hover { background: var(--hover); color: var(--ink); }
+.timer-chip .icon { width: 16px; height: 16px; }
+.timer-chip[hidden], .timer-chip.busy > .icon, .tc-emoji:empty, .tc-time:empty { display: none; }
+.timer-chip.busy { --tc-hue: var(--accent); padding: 0 10px 0 8px; border-radius: 99px; color: color-mix(in srgb, var(--tc-hue) 75%, var(--ink));
+  background: linear-gradient(to right, color-mix(in srgb, var(--tc-hue) 26%, transparent) calc(var(--tc-progress, 0) * 100%), color-mix(in srgb, var(--tc-hue) 11%, transparent) 0); }
+.timer-chip.busy:hover { color: var(--ink); background-color: transparent; filter: brightness(1.06); }
+.timer-chip.busy[data-phase='short'], .timer-chip.busy[data-phase='long'] { --tc-hue: var(--st-new); }
 .timer-chip.paused .tc-time { opacity: .6; }
+.timer-chip[aria-expanded='true'] { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, transparent); }
 .timer-chip.ring { animation: tc-ring .5s ease-in-out 6; }
 @keyframes tc-ring { 50% { transform: scale(1.12); } }
 .tc-emoji { font-size: 13px; }
+.timer-panel { width: min(320px, calc(100vw - 16px)); }
+.timer-panel .tp-body { padding: 12px 14px 6px; overflow: auto; }
+.timer-panel .tm { min-height: 0; }
+.tp-options { flex: none; border-top: 1px solid var(--line-soft); }
+.tp-options summary { display: flex; align-items: center; gap: 8px; padding: 10px 14px; color: var(--muted); font-size: 12.5px; font-weight: 600; cursor: pointer; list-style: none; }
+.tp-options summary::-webkit-details-marker { display: none; }
+.tp-options summary:hover { color: var(--ink); }
+.tp-options summary .icon { width: 14px; height: 14px; }
+.tp-options summary .i-chevron { width: 10px; height: 10px; margin-left: auto; transform: rotate(90deg); transition: transform .15s ease; }
+.tp-options[open] summary .i-chevron { transform: rotate(-90deg); }
+.tp-options .dp-row { padding-inline: 14px; }
+.tp-options[open] { max-height: 46vh; overflow: auto; }
+.timer-panel .switch { appearance: none; position: relative; flex: none; width: 36px; height: 21px; margin: 0; border-radius: 11px; background: color-mix(in srgb, var(--muted) 40%, transparent); cursor: pointer; transition: background-color .15s ease; }
+.timer-panel .switch::before { content: ''; position: absolute; top: 2.5px; left: 2.5px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px #0000003d; transition: transform .15s ease; }
+.timer-panel .switch:checked { background: var(--accent); }
+.timer-panel .switch:checked::before { transform: translateX(15px); }
 
 /* Orologio */
-.ck { display: grid; justify-items: center; align-content: center; gap: 4px; flex: 1; text-align: center; }
-.ck-time { display: flex; align-items: baseline; gap: 3px; font: 600 clamp(34px, 4.2vw, 46px)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
-.ck-time .ss { color: var(--accent-text); font-size: .42em; font-weight: 650; letter-spacing: 0; }
-.ck-date { font-size: 13.5px; font-weight: 600; }
-.ck-meta { color: var(--muted); font-size: 12px; }
-.ck-face { width: 124px; height: 124px; margin-bottom: 4px; overflow: visible; }
+.ck { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px 32px; flex: 1; padding: 4px 0 6px; text-align: center; }
+.ck-text { display: grid; justify-items: center; gap: 5px; min-width: 0; }
+.ck-time { display: flex; align-items: baseline; gap: 4px; margin-bottom: 2px; font: 600 clamp(40px, 16cqi, 92px)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.03em; }
+.ck-time .ss { color: var(--accent-text); font-size: .4em; font-weight: 650; letter-spacing: 0; }
+.ck-time .ss:empty { display: none; }
+.ck.analog .ck-time { font-size: clamp(24px, 8.5cqi, 54px); }
+.ck-date { font-size: clamp(13.5px, 3.4cqi, 20px); font-weight: 600; }
+.ck-meta { color: var(--muted); font-size: clamp(12px, 2.4cqi, 14px); }
+.ck-face { width: clamp(108px, 42cqi, 150px); height: auto; aspect-ratio: 1; overflow: visible; }
 .ck-bg { fill: color-mix(in srgb, var(--tint) 70%, transparent); stroke: var(--line); stroke-width: 1; }
 .ck-face line { stroke-linecap: round; }
 .ck-face .m { stroke: color-mix(in srgb, var(--muted) 45%, transparent); stroke-width: .8; }
@@ -1136,11 +1329,11 @@ button.cal-item:hover { background: var(--tint); }
 .moon-dot { fill: color-mix(in srgb, var(--muted) 70%, transparent); }
 .sun[data-state='night'] .sun-fill { opacity: .3; }
 .sun-times { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.sun-time { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 0 8px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--tint) 55%, transparent); }
-.sun-time .icon { grid-row: span 3; width: 20px; height: 20px; color: #d8901a; }
-.sun-time small { color: var(--muted); font-size: 11.5px; font-weight: 600; }
-.sun-time b { font: 650 19px/1.15 var(--display); font-variant-numeric: tabular-nums; }
-.sun-time span { color: var(--muted); font-size: 11px; }
+.sun-time { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: 'icon label time' 'icon note time'; align-items: center; gap: 0 9px; padding: 8px 10px; border-radius: 10px; background: color-mix(in srgb, var(--tint) 55%, transparent); }
+.sun-time .icon { grid-area: icon; width: 20px; height: 20px; color: #d8901a; }
+.sun-time small { grid-area: label; min-width: 0; overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.sun-time b { grid-area: time; font: 650 19px/1.15 var(--display); font-variant-numeric: tabular-nums; }
+.sun-time span { grid-area: note; overflow: hidden; color: var(--muted); font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
 .sun-meta { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 2px 0 0; font-size: 12.5px; }
 .sun-meta span { color: var(--muted); }
 .sun-meta .up { color: color-mix(in srgb, var(--st-new) 80%, var(--ink)); }
@@ -1156,36 +1349,121 @@ button.cal-item:hover { background: var(--tint); }
 :root[data-theme='dark'] .sun-time .icon { color: #f0b24a; }
 
 /* Radio */
-.rd-now { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 10px; background: color-mix(in srgb, var(--tint) 60%, transparent); }
-.rd-now.idle { background: transparent; border: 1px dashed var(--line); }
-.rd-art { flex: none; width: 40px; height: 40px; }
-.rd-now.idle .rd-art { display: grid; place-items: center; border-radius: 9px; background: var(--tint); color: var(--accent-text); }
-.rd-play { flex: none; display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border-radius: 50%; background: var(--accent) !important; color: var(--on-accent); }
-.rd-play .icon { width: 15px; height: 15px; color: var(--on-accent); }
-.rd-stop { width: 26px; height: 26px; }
-.rd-stop .icon { width: 13px; height: 13px; }
-.rd-now.playing .rd-art { box-shadow: 0 0 0 2px var(--accent); animation: rd-pulse 2.4s ease-in-out infinite; }
-@keyframes rd-pulse { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent); } }
-.rd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; margin-top: 10px; }
-.rd-tile { display: grid; justify-items: center; gap: 5px; min-width: 0; padding: 7px 4px; border-radius: 10px; }
-.rd-tile .rp-art { width: 38px; height: 38px; }
-.rd-tile.on { background: var(--tint); }
-.rd-tile.on .rp-art { box-shadow: 0 0 0 2px var(--accent); }
+.rd-now { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 12px; padding: 10px; border-radius: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--w-hue) 16%, transparent), color-mix(in srgb, var(--w-hue) 5%, transparent)); }
+.rd-now.idle { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+.rd-art { width: 52px; height: 52px; border-radius: 11px; font-size: 20px; }
+.rd-now.idle .rd-art { width: 40px; height: 40px; background: color-mix(in srgb, var(--w-hue) 14%, transparent); color: color-mix(in srgb, var(--w-hue) 75%, var(--ink)); }
+.rd-now.idle .rd-art .icon { width: 19px; height: 19px; }
+.rd-info { display: grid; gap: 1px; min-width: 0; }
+.rd-top { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.rd-live { flex: none; display: inline-flex; align-items: center; gap: 5px; color: color-mix(in srgb, var(--danger-text) 85%, var(--ink)); font-size: 10.5px; font-weight: 750; letter-spacing: .05em; text-transform: uppercase; }
+.rd-live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--danger-text); }
+.rd-now.playing .rd-live::before { animation: rd-blink 1.6s ease-in-out infinite; }
+.rd-now:not(.playing) .rd-live { color: var(--muted); }
+.rd-now:not(.playing) .rd-live::before { background: var(--muted); }
+@keyframes rd-blink { 50% { opacity: .3; } }
+.rd-where { overflow: hidden; color: var(--muted); font-size: 11.5px; white-space: nowrap; text-overflow: ellipsis; }
+.rd-title { overflow: hidden; font-size: 14px; font-weight: 650; white-space: nowrap; text-overflow: ellipsis; }
+.rd-song { overflow: hidden; color: var(--muted); font-size: 12px; white-space: nowrap; text-overflow: ellipsis; }
+.rd-play { flex: none; display: grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 50%; background: var(--w-hue) !important; color: #fff; box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--w-hue) 70%, transparent); transition: transform .15s; }
+.rd-play:hover { transform: scale(1.07); }
+.rd-play .icon { width: 17px; height: 17px; color: #fff; }
+.rd-play .icon.i-play { translate: -.7px 0; }
+.rp-art:not([data-letter])::before { display: none; }
+.rd-now.playing .rd-art { box-shadow: 0 0 0 2px var(--w-hue); animation: rd-pulse 2.4s ease-in-out infinite; }
+@keyframes rd-pulse { 50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--w-hue) 35%, transparent); } }
+.rd-tools { grid-column: 1 / -1; display: flex; align-items: center; gap: 2px; margin-top: 4px; padding-top: 6px; border-top: 1px solid color-mix(in srgb, var(--w-hue) 18%, transparent); }
+.rd-tools .icon-button { width: 28px; height: 28px; }
+.rd-tools .icon-button .icon { width: 14px; height: 14px; }
+.rd-fav[aria-pressed='true'], .rd-star[aria-pressed='true'] { color: var(--st-draft); }
+.rd-fav[aria-pressed='true'] .i-star, .rd-star[aria-pressed='true'] .i-star { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpath d='M12 3.5l2.6 5.3 5.9.86-4.25 4.14 1 5.85L12 16.9l-5.25 2.75 1-5.85L3.5 9.66l5.9-.86z'/%3E%3C/svg%3E"); }
+.rd-volume { flex: 1; min-width: 50px; max-width: 160px; height: 4px; margin: 0 4px 0 auto; border-radius: 99px; appearance: none; background: linear-gradient(to right, var(--w-hue) var(--level, 50%), color-mix(in srgb, var(--muted) 30%, transparent) 0); cursor: pointer; }
+.rd-volume::-webkit-slider-thumb { appearance: none; width: 13px; height: 13px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px #0005, 0 0 0 1px color-mix(in srgb, var(--w-hue) 40%, transparent); }
+.rd-tabs { display: flex; margin: 10px 0 8px; }
+.rd-region { display: flex; flex-direction: column; gap: 8px; height: 204px; }
+.rd-region .dash-empty { justify-content: center; padding-top: 18px; }
+.rd-region > .rd-list { flex: 1; min-height: 0; margin: 0 -6px; padding: 0 6px; align-content: start; }
+.rd-tabs button { flex: 1; }
+.rd-search-box { flex: none; display: grid; gap: 8px; }
+.rd-search-box[hidden] { display: none; }
+.rd-search-box input::-webkit-search-cancel-button { display: none; }
+.rd-genres { display: flex; flex-wrap: nowrap; gap: 4px; margin: 0 -2px; padding: 0 2px; }
+.rd-genre { flex: none; }
+.rd-genre { padding: 2px 9px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
+.rd-genre:hover { color: var(--ink); }
+.rd-genre[aria-pressed='true'] { border-color: transparent; background: color-mix(in srgb, var(--w-hue) 18%, transparent); color: color-mix(in srgb, var(--w-hue) 80%, var(--ink)); }
+.rd-list { display: grid; transition: opacity .2s; }
+.rd-list.loading { opacity: .55; }
+.rd-label { margin: 0 2px 4px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
+.rd-rows { display: grid; margin: 0 -6px; }
+.rd-rows.two { grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); column-gap: 6px; }
+.rd-row { display: flex; align-items: center; min-width: 0; border-radius: 9px; }
+.rd-row:hover, .rd-row.on { background: color-mix(in srgb, var(--w-hue) 9%, transparent); }
+.rd-pick { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 5px 6px; border-radius: 9px; text-align: left; }
+.rd-pick:hover { background-color: transparent !important; }
+.rd-pick .rp-art { width: 32px; height: 32px; border-radius: 8px; font-size: 13px; }
+.rd-state { flex: none; display: flex; align-items: flex-end; justify-content: center; gap: 2px; width: 18px; height: 14px; color: var(--w-hue); opacity: 0; transition: opacity .15s; }
+.rd-state .icon { width: 13px; height: 13px; align-self: center; }
+.rd-row:hover .rd-state, .rd-row.on .rd-state { opacity: 1; }
+.rd-state i { width: 3px; border-radius: 2px; background: currentColor; animation: rd-eq 1s ease-in-out infinite; }
+.rd-state i:nth-child(2) { animation-delay: -.4s; }
+.rd-state i:nth-child(3) { animation-delay: -.7s; }
+@keyframes rd-eq { 0%, 100% { height: 4px; } 50% { height: 14px; } }
+.rd-star { flex: none; width: 28px; height: 28px; opacity: 0; transition: opacity .15s; }
+.rd-star .icon { width: 14px; height: 14px; }
+.rd-row:hover .rd-star, .rd-star:focus-visible, .rd-star[aria-pressed='true'] { opacity: 1; }
+.rd-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
+.rd-tile { display: grid; justify-items: center; gap: 6px; min-width: 0; padding: 9px 4px 7px; border-radius: 11px; transition: background-color .15s, transform .15s; }
+.rd-tile:hover { background: color-mix(in srgb, var(--w-hue) 9%, transparent); transform: translateY(-1px); }
+.rd-tile .rp-art { width: 46px; height: 46px; border-radius: 11px; font-size: 18px; transition: box-shadow .2s; }
+.rd-tile.on { background: color-mix(in srgb, var(--w-hue) 12%, transparent); }
+.rd-tile.on .rp-art { box-shadow: 0 0 0 2px var(--w-hue); }
+.rd-tile.playing .rp-art { animation: rd-pulse 2.4s ease-in-out infinite; }
 .rd-name { max-width: 100%; overflow: hidden; font-size: 11.5px; font-weight: 550; white-space: nowrap; text-overflow: ellipsis; }
-.rd-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; padding-top: 10px; }
-.rd-hint { margin: 0; color: var(--muted); font-size: 12px; }
-.rd-search { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 7px; font-size: 12.5px; font-weight: 600; }
-.rd-search .icon { width: 13px; height: 13px; }
+@container dw (width < 300px) { .rd-volume { max-width: 90px; } .rd-art { width: 44px; height: 44px; } .rd-now.idle { grid-template-columns: minmax(0, 1fr) auto; } .rd-now.idle .rd-art { display: none; } }
+
+/* I riquadri seguono la loro larghezza: stretti si compattano, larghi si dispongono in orizzontale. */
+@container dw (width < 330px) {
+  .sun-times { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .sun-time { padding: 6px 10px; }
+  .zn-time { font-size: 16px; }
+  .zn-sky { display: none; }
+}
+@container dw (width > 430px) {
+  /* Timer largo: quadrante a sinistra, comandi e fasi a destra. */
+  /* Colonne di misura fissa: cambiando fase o modo (Pomodoro ↔ Timer) niente si sposta. */
+  .tm { grid-template-columns: 156px 216px; grid-template-rows: 1fr 1fr; column-gap: clamp(20px, 7cqi, 48px); row-gap: 14px; justify-content: center; justify-items: start; align-content: center; padding: 4px 8px 8px; }
+  .tm-face { grid-row: 1 / span 2; grid-column: 1; width: 156px; }
+  .tm-time { font-size: 34px; }
+  .tm-controls { grid-column: 2; align-self: end; }
+  .tm-extra { grid-column: 2; align-self: start; justify-items: start; }
+  .tm-phases, .tm-presets { justify-content: flex-start; }
+  .tm-extra { width: 100%; }
+  .tm-main { width: 52px; height: 52px; }
+  /* Orologio analogico largo: lancette a sinistra, ora in cifre e data a destra. */
+  .ck.analog { flex-direction: row; }
+  .ck.analog .ck-text { justify-items: start; text-align: left; }
+  .ck.analog .ck-face { width: clamp(140px, 30cqi, 188px); }
+}
+@container dw (width > 460px) {
+  .sun { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 18px; align-items: center; }
+  .sun-arc { grid-row: 1 / span 3; max-height: 150px; }
+  /* Accanto all'arco la colonna è stretta: alba e tramonto uno sotto l'altro. */
+  .sun-times { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+}
 
 @container dash (width < 540px) {
-  .dash-actions { width: 100%; }
-  .dash-actions button { flex: 1; justify-content: center; }
+  .dash-actions { width: 100%; flex-wrap: wrap; }
+  .dash-actions > .dash-back { flex: 1; justify-content: center; }
+  .dash-search { flex: 1 1 100%; order: -1; }
+  .ds-field, .dash-search:focus-within .ds-field, .dash-search.filled .ds-field { width: 100%; }
   .df-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dw-head { flex-wrap: wrap; }
 }
 @media (pointer: coarse) { .dw-menu, .fv-remove, .td-remove, .zn-remove, .td-add-date { opacity: 1; } .dw-head { cursor: default; } }
 @media (prefers-reduced-motion: reduce) {
-  .dashboard.entering .dw, .dw.dw-new, .td-just-done, .rd-now.playing .rd-art, .timer-chip.ring { animation: none; }
+  .dashboard.entering .dw, .dw.dw-new, .dw.dw-dropped, .dw.dw-placeholder, .dw.dw-resizing::after, .dash-guides, .td-just-done, .rd-now.playing .rd-art, .rd-now.playing .rd-live::before, .rd-state i, .rd-tile.playing .rp-art, .timer-chip.ring { animation: none; }
   .td-just-done { opacity: .5; }
   .dash-progress > span, .tm-progress { transition: none; }
 }
@@ -1203,6 +1481,7 @@ button.cal-item:hover { background: var(--tint); }
 .i-sunset { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.5 16a4.5 4.5 0 0 1 9 0M3 19.5h18M12 10V4M9.3 7.3 12 10l2.7-2.7M4.5 11.5l1.4 1M19.5 11.5l-1.4 1'/%3E%3C/svg%3E"); }
 .i-pin { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s-6.5-6.1-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 14.9 12 21 12 21z'/%3E%3Ccircle cx='12' cy='9.8' r='2.3'/%3E%3C/svg%3E"); }
 .i-mic { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='2.5' width='6' height='12' rx='3'/%3E%3Cpath d='M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7'/%3E%3C/svg%3E"); }
+.i-widgets { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='3.5' width='7' height='7' rx='2'/%3E%3Crect x='13.5' y='3.5' width='7' height='7' rx='2'/%3E%3Crect x='3.5' y='13.5' width='7' height='7' rx='2'/%3E%3Cpath d='M17 13.5v7M13.5 17h7'/%3E%3C/svg%3E"); }
 .i-dashboard { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='3.5' width='7' height='9' rx='2'/%3E%3Crect x='13.5' y='3.5' width='7' height='5' rx='2'/%3E%3Crect x='13.5' y='11.5' width='7' height='9' rx='2'/%3E%3Crect x='3.5' y='15.5' width='7' height='5' rx='2'/%3E%3C/svg%3E"); }
 .i-people { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='9' cy='8' r='3.5'/%3E%3Cpath d='M2.5 20a6.5 6.5 0 0 1 13 0M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.5a6.5 6.5 0 0 1 3.5 5.5'/%3E%3C/svg%3E"); }
 .i-todo { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6.5 1.8 1.8L9 5M4 13.5l1.8 1.8L9 12'/%3E%3Cpath d='M12.5 7h8M12.5 14h8M4.5 19.5h.01M12.5 19.5h8'/%3E%3C/svg%3E"); }
@@ -1358,6 +1637,25 @@ dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-tex
 .status-dot.none { background: none; box-shadow: inset 0 0 0 1.2px var(--line); }
 .dl-box-more { padding: 4px 6px; border-radius: 6px; color: var(--muted); font-size: 11.5px; text-align: left; }
 .dl-box-more:hover { background: var(--hover); color: var(--accent-text); }
+/* Cassetto della barra in basso: i comandi meno usati dietro la freccia ‹, che si apre al passaggio. */
+.status-drawer { position: relative; display: flex; align-items: center; flex: none; }
+.sd-items { display: flex; align-items: center; gap: 2px; max-width: 0; overflow: clip; overflow-clip-margin: 4px; opacity: 0; transition: max-width .26s cubic-bezier(.2, .8, .2, 1), opacity .18s ease, margin .26s ease; }
+.status-drawer.open .sd-items { max-width: var(--sd-width, 200px); margin-right: 2px; opacity: 1; transition-delay: 0s, 0s, 0s; }
+/* Chiusura speculare all'apertura: le icone rientrano una dopo l'altra (la più lontana per prima),
+   poi la fila si stringe, con gli stessi tempi e la stessa curva. */
+.status-drawer:not(.open) .sd-items { transition: max-width .3s cubic-bezier(.4, 0, .2, 1) calc(var(--sd-count, 4) * 28ms), opacity .2s ease calc(var(--sd-count, 4) * 28ms + .1s), margin .3s ease calc(var(--sd-count, 4) * 28ms); }
+.sd-items > * { flex: none; transform: translateX(10px) scale(.9); opacity: 0; transition: transform .22s cubic-bezier(.4, 0, .6, 1), opacity .2s ease; transition-delay: calc(var(--k, 0) * 28ms); }
+.status-drawer.open .sd-items > * { transform: none; opacity: 1; transition: transform .22s cubic-bezier(.3, 1.3, .5, 1), opacity .16s ease; transition-delay: calc((var(--sd-count, 4) - var(--k, 0)) * 28ms); }
+.status-drawer.open .sd-items::before { content: ''; flex: none; width: 1px; height: 18px; margin-right: 4px; background: var(--line); order: -1; }
+.sd-items[hidden], .sd-items > [hidden] { display: none; }
+.sd-toggle { position: relative; }
+.sd-toggle .icon { width: 12px; height: 12px; transform: rotate(180deg); transition: transform .26s cubic-bezier(.2, .8, .2, 1); }
+.status-drawer.open .sd-toggle .icon { transform: none; }
+.status-drawer.open .sd-toggle { color: var(--ink); }
+.sd-toggle.has-dot::after { content: ''; position: absolute; top: 4px; right: 3px; width: 7px; height: 7px; border: 1.5px solid var(--paper); border-radius: 50%; background: var(--accent); }
+.sd-toggle.has-dot.on-air::after { background: var(--danger-text); }
+.status-drawer.open .sd-toggle.has-dot::after { display: none; }
+@media (prefers-reduced-motion: reduce) { .sd-items, .sd-items > *, .sd-toggle .icon { transition: none; } }
 .events-chip { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; min-width: 28px; padding: 0 6px; border-radius: 8px; color: var(--muted); font: 600 12px var(--sans); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .events-chip:hover { background: var(--hover); color: var(--ink); }
 .events-chip .icon { width: 16px; height: 16px; }
@@ -3431,11 +3729,16 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
         <div class="save-status" role="status"><span class="dot" id="dot" aria-hidden="true"></span><span id="status"></span></div>
         <div class="metrics"><span id="words"></span></div>
         <span class="status-version" id="statusVersion" hidden></span>
+        <div class="status-drawer" id="statusDrawer">
+          <div class="sd-items" id="statusDrawerItems" role="group" aria-label="Altri comandi" inert>
+            <button type="button" class="icon-button" id="radioButton" aria-label="Radio" title="Radio online" aria-haspopup="dialog" aria-expanded="false" aria-controls="radioPanel"><i class="icon i-radio" aria-hidden="true"></i></button>
+            <button type="button" class="icon-button" id="feedbackButton" aria-label="Segnalazioni" title="Segnala un problema o un’idea" aria-haspopup="dialog"><i class="icon i-feedback" aria-hidden="true"></i></button>
+            <button type="button" class="icon-button" id="glossaryButton" aria-label="Glossario" title="Glossario: scorciatoie, Markdown, Material per MkDocs (Ctrl+/)" aria-haspopup="dialog"><i class="icon i-glossary" aria-hidden="true"></i></button>
+            <button type="button" class="icon-button" id="settingsButton" aria-label="Impostazioni" title="Impostazioni (Ctrl+,)" aria-haspopup="dialog"><i class="icon i-settings" aria-hidden="true"></i></button>
+          </div>
+          <button type="button" class="icon-button sd-toggle" id="statusMore" aria-expanded="false" aria-controls="statusDrawerItems" aria-label="Altri comandi" title="Radio, segnalazioni, glossario e impostazioni"><i class="icon i-chevron" aria-hidden="true"></i></button>
+        </div>
         <button type="button" class="events-chip" id="eventsButton" aria-label="Conto alla rovescia" aria-haspopup="dialog" aria-expanded="false" aria-controls="eventsPanel"><i class="icon i-calendar" aria-hidden="true"></i></button>
-        <button type="button" class="icon-button" id="radioButton" aria-label="Radio" title="Radio online" aria-haspopup="dialog" aria-expanded="false" aria-controls="radioPanel"><i class="icon i-radio" aria-hidden="true"></i></button>
-        <button type="button" class="icon-button" id="feedbackButton" aria-label="Segnalazioni" title="Segnala un problema o un’idea" aria-haspopup="dialog"><i class="icon i-feedback" aria-hidden="true"></i></button>
-        <button type="button" class="icon-button" id="glossaryButton" aria-label="Glossario" title="Glossario: scorciatoie, Markdown, Material per MkDocs (Ctrl+/)" aria-haspopup="dialog"><i class="icon i-glossary" aria-hidden="true"></i></button>
-        <button type="button" class="icon-button" id="settingsButton" aria-label="Impostazioni" title="Impostazioni (Ctrl+,)" aria-haspopup="dialog"><i class="icon i-settings" aria-hidden="true"></i></button>
         <button type="button" class="icon-button theme-toggle" id="themeToggle" aria-label="Tema scuro" aria-pressed="false" title="Tema scuro"><i class="icon i-theme" aria-hidden="true"></i></button>
       </footer>
     </main>
@@ -3723,6 +4026,10 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <div class="set-row" data-keywords="conto alla rovescia countdown eventi natale ferie compleanno giorni mancano">
             <label class="set-label" for="setShowEvents"><b>Conto alla rovescia</b><small>I giorni che mancano ai tuoi eventi (ferie, compleanni, Natale…), solo per te. Nella barra c’è il più vicino; il clic apre l’elenco</small></label>
             <input type="checkbox" class="switch" id="setShowEvents" name="showEvents">
+          </div>
+          <div class="set-row" data-keywords="timer pomodoro conto minuti pausa lavoro concentrazione">
+            <label class="set-label" for="setShowTimer"><b>Timer e pomodoro</b><small>Il timer sempre a portata di mano: mentre conta mostra il tempo che resta; il clic apre i comandi</small></label>
+            <input type="checkbox" class="switch" id="setShowTimer" name="showTimer">
           </div>
         </div>
         <h4>Elenco dei file</h4>
@@ -11366,6 +11673,7 @@ function toggleRadioFavorite(station) {
   else markRadioRows();
   renderRadioTabs();
   renderAudioDock();
+  dashRadioChanged();
 }
 
 function rememberRadio(station) {
@@ -16455,6 +16763,7 @@ const settingChoices = {
   quickInsert: [false, true],
   showDeadlines: [true, false],
   showEvents: [true, false],
+  showTimer: [true, false],
   treeLabels: ['name', 'title'],
   treeOrder: ['title', 'name'],
   liveMarkdown: [true, false],
@@ -16470,7 +16779,7 @@ const paperWidths = { narrow: '700px', medium: '860px', wide: '1100px', full: '1
 // documento, sta nel loro stesso angolo. panelOrder = ordine tra quelli nello stesso posto.
 const panelKeys = ['outline', 'backlinks', 'graph'];
 const panelPlaceNames = ['sidebar', 'top-right', 'bottom-right', 'top-left', 'bottom-left'];
-const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, showDeadlines: true, showEvents: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
+const defaultSettings = { docFont: 'serif', paperWidth: 'medium', openMode: 'read', autosave: 0, deleteConfirm: 'double', attachmentTrash: true, deleteToTrash: true, showDeadlines: true, showEvents: true, showTimer: true, updateLinks: true, quickInsert: false, treeLabels: 'name', treeOrder: 'title', liveMarkdown: true, tableTools: true, autoPair: false, openDocs: 'single', updateCheck: 'startup', pdfAsk: true, showOutline: true, showBacklinks: false, sidebarSide: 'left', showGraph: true, graphScope: 'local', graphTags: false, showSimilar: true, critters: 'off', crittersSize: 'normal', audioPlayer: 'docked', radio: true, diagramTheme: 'simple',
   brandSize: 'normal', brandTarget: 'both', versionPlacement: 'below', logoMotion: true, welcomePage: true, dashboard: true, startView: 'document',
   navPlacement: 'sidebar', navCorner: 'top-right', graphPlacement: 'document', graphCorner: 'top-right', panelOrder: [...panelKeys] };
 const settings = structuredClone(defaultSettings);
@@ -16572,6 +16881,7 @@ function syncSettings() {
   settingsForm.quickInsert.checked = settings.quickInsert;
   settingsForm.showDeadlines.checked = settings.showDeadlines;
   settingsForm.showEvents.checked = settings.showEvents;
+  settingsForm.showTimer.checked = settings.showTimer;
   settingsForm.treeLabels.value = settings.treeLabels;
   settingsForm.treeOrder.value = settings.treeOrder;
   $('treeOrderRow').hidden = settings.treeLabels !== 'title';
@@ -17436,6 +17746,7 @@ settingsForm.addEventListener('change', event => {
     if (name === 'radio') applyRadioSetting();
     if (name === 'showDeadlines') { renderTree(); renderDeadlineBox(); }
     if (name === 'showEvents') renderEventsChip();
+    if (name === 'showTimer') renderTimerViews();
     if (name === 'logoMotion') applyLogoMotion();
     if (name === 'dashboard' || name === 'startView') renderDashboard();
     if (name === 'startView') syncStartViewRows();
@@ -17895,7 +18206,10 @@ const shortcutGroups = [
   ]],
   ['Panoramica', [
     ['Sposta un riquadro (trascina l’intestazione)', 'trascina'],
-    ['Allarga o stringi un riquadro (trascina l’angolo in basso a destra)', 'trascina'],
+    ['Allarga o stringi un riquadro (trascina il bordo destro)', 'trascina'],
+    ['Larghezza successiva di un riquadro (sul bordo destro)', 'doppioclic'],
+    ['Cerca nei documenti dalla panoramica (barra laterale chiusa)', 'Mod K'],
+    ['Risultati della ricerca: scorri, apri, chiudi', '↓|↑|Enter|Esc'],
     ['Calendario: giorno prima / dopo, settimana prima / dopo', '←|→|↑|↓'],
     ['Calendario: mese prima / dopo, torna a oggi', 'PagSu|PagGiù|Home'],
     ['Aggiungi un’attività (nella casella di Da fare)', 'Enter'],
@@ -18061,12 +18375,14 @@ const glossaryMarkdown = [
     ['Stato del documento', 'Uno solo per documento: pianificato, da-finire, da-revisionare, new (Nuovo) o deprecated (Obsoleto). In Modifica si sceglie con «+ Stato» sopra il documento; nella ricerca si trova con stato:… Material per MkDocs usa la stessa chiave.', '---\nstatus: da-revisionare\n---\n# Sostituzione del toner'],
   ]],
   ['Panoramica', [
-    ['Panoramica della cartella', 'Quando nessun documento è aperto (o all’apertura, se in Impostazioni › Documenti › Apertura scegli «Panoramica»): riquadri da spostare trascinandone l’intestazione e da allargare dall’angolo in basso a destra. Il menu ⋯ di ogni riquadro cambia larghezza e opzioni o lo nasconde; «Personalizza» sceglie quali vedere. La disposizione resta in questo browser.'],
+    ['Panoramica della cartella', 'Quando nessun documento è aperto (o all’apertura, se in Impostazioni › Documenti › Apertura scegli «Panoramica»): riquadri alti quanto il loro contenuto, da spostare trascinandone l’intestazione e da allargare trascinando il bordo destro (doppio clic: larghezza successiva). Il menu ⋯ di ogni riquadro cambia larghezza e opzioni o lo nasconde; il pulsante a quadretti con il + (Personalizza) mostra la disposizione in miniatura e i riquadri da aggiungere. La disposizione resta in questo browser.'],
+    ['Cercare dalla panoramica', 'Con la barra laterale chiusa, in alto c’è una casella di ricerca (Ctrl/⌘ + K): i risultati compaiono subito sotto e il clic apre il documento sul punto trovato, senza aprire la barra. Valgono le frasi, #tag, stato: e scadenza: come nella barra laterale.'],
     ['La cartella e Recenti', 'Documenti in scadenza, da rivedere, da finire o pianificati (clic su un numero per vederli), la barra dello stato di tutti, i modificati di recente con chi li ha salvati e quelli che hai aperto tu.'],
     ['Calendario', 'Mese o anno intero con i numeri delle settimane, le feste italiane (anche il santo patrono, dal menu ⋯), i ponti a righe, le scadenze dei documenti, i conti alla rovescia e le cose da fare con una data. Clic su un giorno per vedere cosa c’è e aggiungere un’attività.', '---\nscadenza: 2026-12-15\n---'],
     ['Da fare', 'Le tue cose da fare, con una data se serve: Invio per aggiungerle, clic sul testo per cambiarle, il pallino per segnarle fatte. Sono solo tue, salvate in questo browser.'],
-    ['Timer e pomodoro', 'Pomodoro: 25 minuti di lavoro e 5 di pausa, una pausa lunga ogni 4 (si cambia dal menu ⋯). Timer: un conto alla rovescia semplice. Mentre conta si vede anche nella barra in basso, con un documento aperto; alla fine un suono e un avviso.'],
-    ['Preferiti, orologio, fusi orari, alba e tramonto, radio', 'Preferiti: i documenti più usati (anche dal menu ⋯ dell’elenco o trascinandoli). Orologio digitale o con le lancette. Fusi orari: l’ora di clienti e sedi, se sono in ufficio e un cursore per confrontare un orario. Alba e tramonto della tua città. Radio: quella in ascolto e le preferite.'],
+    ['Timer e pomodoro', 'Pomodoro: 25 minuti di lavoro e 5 di pausa, una pausa lunga ogni 4 (si cambia dal menu ⋯). Timer: un conto alla rovescia semplice. È sempre nella barra in basso (icona del cronometro, o il tempo che resta mentre conta): il clic apre gli stessi comandi, con durate e suono. Alla fine un suono e un avviso.'],
+    ['Barra in basso', 'A destra restano il tema chiaro/scuro, il conto alla rovescia e il timer. Radio, segnalazioni, glossario e impostazioni sono dietro la freccia ‹: si aprono passandoci sopra con il mouse (o con un clic) e si richiudono da sole. Un pallino sulla freccia avvisa di una radio in onda o di una novità.'],
+    ['Preferiti, orologio, fusi orari, alba e tramonto, radio', 'Preferiti: i documenti più usati (anche dal menu ⋯ dell’elenco o trascinandoli). Orologio digitale o con le lancette. Fusi orari: l’ora di clienti e sedi, se sono in ufficio e un cursore per confrontare un orario. Alba e tramonto della tua città. Radio: la stazione in onda con il brano, la stella, un’altra dello stesso genere e il volume; sotto le preferite, le recenti e la ricerca per nome o per genere, tutto dentro il riquadro.'],
   ]],
 ];
 
@@ -21907,6 +22223,91 @@ addEventListener('storage', event => {
 // settings è dichiarato più avanti nello script.
 setTimeout(renderEventsChip);
 
+// ── Cassetto della barra in basso ──
+// Radio, segnalazioni, glossario e impostazioni stanno dietro la freccia ‹: col mouse si apre
+// passandoci sopra (dopo un attimo, per non aprirlo attraversando la barra) e si richiude poco
+// dopo l'uscita; resta aperto finché un suo pannello è aperto o il fuoco della tastiera è lì.
+// Clic, Invio o tocco lo aprono e chiudono; Esc lo chiude. Un pallino sulla freccia segnala
+// quello che c'è dentro (radio in onda, aggiornamento, risposte alle segnalazioni).
+(() => {
+  const drawer = $('statusDrawer'), items = $('statusDrawerItems'), more = $('statusMore');
+  if (!drawer) return;
+  let openTimer = 0, closeTimer = 0, hovered = false, byHover = false;
+  const isOpen = () => drawer.classList.contains('open');
+  const busy = () => Boolean(items.querySelector('[aria-expanded="true"]')) || (drawer.contains(document.activeElement) && document.activeElement.matches(':focus-visible'));
+  function setOpen(open) {
+    clearTimeout(openTimer);
+    clearTimeout(closeTimer);
+    if (open === isOpen()) return;
+    if (open) {
+      const shown = [...items.children].filter(child => !child.hidden);
+      shown.forEach((child, index) => child.style.setProperty('--k', index));
+      items.style.setProperty('--sd-count', shown.length);
+      items.style.setProperty('--sd-width', items.scrollWidth + 12 + 'px');
+    }
+    items.inert = !open;
+    drawer.classList.toggle('open', open);
+    more.setAttribute('aria-expanded', String(open));
+    more.title = open ? 'Chiudi' : 'Radio, segnalazioni, glossario e impostazioni';
+  }
+  function closeSoon(delay = 420) {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => {
+      if (hovered || busy()) return;
+      setOpen(false);
+    }, delay);
+  }
+  drawer.addEventListener('pointerenter', event => {
+    if (event.pointerType !== 'mouse') return;
+    hovered = true;
+    clearTimeout(closeTimer);
+    if (!isOpen()) openTimer = setTimeout(() => {
+      byHover = true;
+      setOpen(true);
+    }, 110);
+  });
+  drawer.addEventListener('pointerleave', event => {
+    if (event.pointerType !== 'mouse') return;
+    hovered = false;
+    clearTimeout(openTimer);
+    if (isOpen()) closeSoon();
+  });
+  more.addEventListener('click', event => {
+    // Aperto un attimo prima passando col mouse: il clic lo lascia aperto.
+    if (event.detail && byHover && isOpen()) {
+      byHover = false;
+      return;
+    }
+    byHover = false;
+    setOpen(!isOpen());
+    if (isOpen() && !event.detail) [...items.children].find(child => !child.hidden)?.focus();
+  });
+  drawer.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !isOpen() || busy() && items.querySelector('[aria-expanded="true"]')) return;
+    event.stopPropagation();
+    setOpen(false);
+    more.focus();
+  });
+  drawer.addEventListener('focusin', () => clearTimeout(closeTimer));
+  drawer.addEventListener('focusout', () => setTimeout(() => {
+    if (!drawer.contains(document.activeElement) && !hovered) closeSoon(150);
+  }));
+  // Tocco fuori: si chiude.
+  document.addEventListener('pointerdown', event => {
+    if (isOpen() && event.pointerType !== 'mouse' && !drawer.contains(event.target)) closeSoon(0);
+  }, true);
+  // Pannelli che si chiudono e pallini che cambiano.
+  const sync = () => {
+    const dot = items.querySelector('.has-update:not([hidden]), .on-air:not([hidden])');
+    more.classList.toggle('has-dot', Boolean(dot));
+    more.classList.toggle('on-air', Boolean(items.querySelector('.on-air:not([hidden])')) && !items.querySelector('.has-update:not([hidden])'));
+    more.setAttribute('aria-label', 'Altri comandi' + (dot ? ' (' + (dot.id === 'radioButton' ? 'radio in onda' : 'novità') + ')' : ''));
+    if (isOpen() && !hovered && !busy()) closeSoon();
+  };
+  new MutationObserver(sync).observe(items, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-expanded', 'hidden'] });
+  sync();
+})();
+
 // ── Cartella suggerita per un nuovo documento ──────────────────────────────
 // Ogni documento con tag in comune vota per la sua cartella; i tag rari contano
 // di più di quelli usati ovunque.
@@ -23145,6 +23546,27 @@ function dashEmpty(iconName, text) {
   empty.append(dashIcon(iconName), dashEl('span', '', text));
   return empty;
 }
+// Elenco con un'altezza massima che scorre al suo interno (i riquadri non si allungano senza
+// fine): una sfumatura in alto o in basso dice che c'è altro. Un solo osservatore per tutti.
+var dashScrollWatch = new ResizeObserver(entries => entries.forEach(entry => entry.target.isConnected ? dashScrollMark(entry.target) : dashScrollWatch.unobserve(entry.target)));
+function dashScrollMark(el) {
+  const x = el.classList.contains('dw-scroll-x');
+  const above = (x ? el.scrollLeft : el.scrollTop) > 2;
+  const below = x ? el.scrollLeft + el.clientWidth < el.scrollWidth - 2 : el.scrollTop + el.clientHeight < el.scrollHeight - 2;
+  const value = above && below ? 'both' : above ? 'above' : below ? 'below' : '';
+  if ((el.dataset.more || '') !== value) {
+    if (value) el.dataset.more = value;
+    else delete el.dataset.more;
+  }
+}
+function dashScroller(el, horizontal = false) {
+  el.classList.add(horizontal ? 'dw-scroll-x' : 'dw-scroll');
+  el.addEventListener('scroll', () => dashScrollMark(el), { passive: true });
+  dashScrollWatch.observe(el);
+  // Anche quando cambiano le righe (stessa altezza esterna, contenuto diverso).
+  new MutationObserver(() => requestAnimationFrame(() => dashScrollMark(el))).observe(el, { childList: true });
+  return el;
+}
 function dashPill(text, tone, title) {
   const pill = dashEl('span', 'dash-pill', text);
   if (tone) pill.dataset.tone = tone;
@@ -23158,6 +23580,123 @@ function dashSearch(query) {
   search.focus();
   search.setSelectionRange(search.value.length, search.value.length);
 }
+// Ricerca della panoramica (solo a barra laterale chiusa): una casella nell'intestazione con i
+// risultati subito sotto, gli stessi della ricerca della barra (indice, frasi, #tag, stato:,
+// scadenza:). Il clic apre il documento e mostra il punto trovato; la barra resta chiusa.
+var dashSearchQuery = '';
+function dashSearchBox() {
+  const box = dashEl('div', 'dash-search dash-when-closed');
+  box.setAttribute('role', 'search');
+  const field = dashEl('label', 'ds-field');
+  const input = dashEl('input');
+  input.type = 'search';
+  input.placeholder = 'Cerca nei documenti…';
+  input.autocomplete = 'off';
+  input.spellcheck = false;
+  input.value = dashSearchQuery;
+  input.setAttribute('aria-label', 'Cerca nei documenti');
+  input.setAttribute('role', 'combobox');
+  input.setAttribute('aria-expanded', 'false');
+  input.setAttribute('aria-controls', 'dashSearchResults');
+  const key = dashEl('kbd', 'ds-key', /Mac/i.test(navigator.platform) ? '⌘ K' : 'Ctrl K');
+  key.setAttribute('aria-hidden', 'true');
+  const clear = dashButton('icon-button ds-clear', '', 'Svuota la ricerca', () => {
+    input.value = '';
+    dashRunSearch(box);
+    input.focus();
+  }, 'close');
+  clear.addEventListener('mousedown', event => event.preventDefault());
+  field.append(dashIcon('search'), input, clear, key);
+  const results = dashEl('div', 'ds-results');
+  results.id = 'dashSearchResults';
+  results.setAttribute('role', 'listbox');
+  results.setAttribute('aria-label', 'Risultati');
+  results.hidden = true;
+  box.append(field, results);
+  box.input = input;
+  input.addEventListener('input', () => {
+    clearTimeout(box.timer);
+    box.timer = setTimeout(() => dashRunSearch(box), 120);
+  });
+  input.addEventListener('focus', () => { if (input.value.trim()) dashRunSearch(box); });
+  box.addEventListener('focusout', event => {
+    if (!box.contains(event.relatedTarget)) setTimeout(() => { if (!box.contains(document.activeElement)) dashCloseSearch(box); }, 150);
+  });
+  box.addEventListener('keydown', event => {
+    const hits = [...results.querySelectorAll('.ds-hit')];
+    const index = hits.indexOf(document.activeElement);
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      if (!hits.length) return;
+      event.preventDefault();
+      const next = index + (event.key === 'ArrowDown' ? 1 : -1);
+      if (next < 0) input.focus();
+      else hits[Math.min(next, hits.length - 1)].focus();
+    } else if (event.key === 'Enter' && event.target === input) {
+      event.preventDefault();
+      clearTimeout(box.timer);
+      dashRunSearch(box);
+      results.querySelector('.ds-hit')?.click();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      if (event.target !== input) input.focus();
+      else if (!results.hidden) dashCloseSearch(box);
+      else {
+        input.value = '';
+        dashRunSearch(box);
+      }
+    }
+  });
+  return box;
+}
+function dashCloseSearch(box) {
+  box.querySelector('.ds-results').hidden = true;
+  box.input.setAttribute('aria-expanded', 'false');
+  box.classList.remove('open');
+}
+function dashRunSearch(box) {
+  const input = box.input, results = box.querySelector('.ds-results');
+  const query = dashSearchQuery = input.value;
+  box.classList.toggle('filled', Boolean(query));
+  const parts = searchQueryParts(query);
+  const terms = searchTerms(parts.text), phrase = searchPhrase(parts.text);
+  const tagFilter = searchTagFilter(parts.tags), statusFilter = parts.status || '', deadlineFilter = parts.deadline;
+  if (!terms.length && !tagFilter && !statusFilter && deadlineFilter === null) return dashCloseSearch(box);
+  const docs = [...files.keys()].filter(isMD);
+  const { matches, pending } = searchMatches(docs, terms, phrase, tagFilter, statusFilter, deadlineFilter);
+  const rows = matches.slice(0, 8).map(match => {
+    const hit = dashEl('button', 'ds-hit');
+    hit.type = 'button';
+    hit.setAttribute('role', 'option');
+    const label = dashEl('span', 'ds-label');
+    searchResultLabel(label, match.path, match, match.terms || terms);
+    hit.append(dashDot(statusInfo(documentStatus(match.path))), label);
+    hit.onclick = async () => {
+      dashCloseSearch(box);
+      dashSearchQuery = '';
+      await openPath(match.path);
+      if (current === match.path && (match.terms || terms).length) revealSearchMatch(match.terms || terms, 0);
+    };
+    return hit;
+  });
+  const foot = dashEl('div', 'ds-foot');
+  const count = matches.length;
+  foot.append(dashEl('span', '', (count ? (count === 1 ? '1 documento' : count + ' documenti') : 'Nessun documento') + (pending ? ' · lettura di ' + pending + ' file…' : '')));
+  if (count > rows.length) foot.append(dashButton('', 'Tutti nella barra laterale', 'Apre la barra laterale con tutti i risultati', () => dashSearch(query), 'panel'));
+  if (!count) rows.push(dashEmpty('search', pending ? 'Ricerca nel testo in corso…' : 'Nessun documento corrispondente. Prova con meno parole, #tag o stato:'));
+  results.replaceChildren(...rows, foot);
+  results.hidden = false;
+  box.classList.add('open');
+  input.setAttribute('aria-expanded', 'true');
+}
+function dashSearchFocus() {
+  const box = dashboardEl?.querySelector('.dash-search');
+  if (!box || dashboardEl.hidden || !sidebar.hidden) return false;
+  box.input.focus();
+  box.input.select();
+  return true;
+}
+
 // Pulsanti a scelta (piccoli, nell'intestazione o nel corpo dei riquadri).
 function dashSegmented(choices, value, onChange, label) {
   const group = dashEl('div', 'dw-seg');
@@ -23272,7 +23811,7 @@ const dashLayoutKey = 'itaca-dashboard';
 const dashSizeNames = { 1: 'Stretto', 2: 'Medio', 4: 'Intero' };
 var dashLayout = null;
 function dashDefaultLayout() {
-  return { order: dashWidgetDefs.map(def => def.id), hidden: dashWidgetDefs.filter(def => def.hidden).map(def => def.id), size: {}, opt: {} };
+  return { order: dashWidgetDefs.map(def => def.id), hidden: dashWidgetDefs.filter(def => def.hidden).map(def => def.id), size: {}, opt: {}, fill: true };
 }
 function dashState() {
   if (dashLayout) return dashLayout;
@@ -23289,6 +23828,7 @@ function dashState() {
       if (Array.isArray(saved.hidden)) layout.hidden = [...saved.hidden.filter(id => known.has(id)), ...layout.hidden.filter(id => added.includes(id))];
     }
     if (saved?.size && typeof saved.size === 'object') for (const [id, size] of Object.entries(saved.size)) if ([1, 2, 4].includes(size)) layout.size[id] = size;
+    if (typeof saved?.fill === 'boolean') layout.fill = saved.fill;
     if (saved?.opt && typeof saved.opt === 'object') for (const [id, value] of Object.entries(saved.opt)) if (value && typeof value === 'object' && !Array.isArray(value)) layout.opt[id] = value;
   } catch {}
   return dashLayout = layout;
@@ -23362,13 +23902,14 @@ function buildDashboard(animate = true) {
   if (!index) {
     const empty = dashEl('div', 'dash-nothing');
     empty.append(dashIcon('dashboard'), dashEl('b', '', 'Nessun riquadro'), dashEl('span', '', 'Scegli cosa vedere qui: calendario, cose da fare, timer, orologi…'),
-      dashButton('primary', 'Personalizza', '', event => openDashCustomize(event.currentTarget), 'sliders'));
+      dashButton('primary', 'Aggiungi riquadri', '', event => openDashCustomize(event.currentTarget), 'widgets'));
     grid.append(empty);
   }
   dashboardEl.classList.toggle('entering', animate && !matchMedia('(prefers-reduced-motion: reduce)').matches);
   dashboardEl.replaceChildren(head, grid);
   setTimeout(() => dashboardEl.classList.remove('entering'), 900);
   dashboard.built = dashBuildKey();
+  dashboard.builtAt = performance.now();
   dashHeaderUpdate();
   for (const ctx of dashboard.widgets.values()) ctx.def.update?.(ctx);
 }
@@ -23381,7 +23922,11 @@ function dashUpdate(ctx) {
     return;
   }
   const key = ctx.el.contains(focused) ? focused.title + '\u0001' + focused.textContent + '\u0001' + focused.className : null;
+  // Gli elenchi che scorrono restano dove erano (prima ogni aggiornamento dell'indice li riportava in cima).
+  const scrolled = [...ctx.el.querySelectorAll('.dw-scroll')].map(el => el.scrollTop);
   ctx.def.update?.(ctx);
+  const scrollers = [...ctx.el.querySelectorAll('.dw-scroll')];
+  if (scrollers.length === scrolled.length) scrollers.forEach((el, index) => { if (scrolled[index]) el.scrollTop = scrolled[index]; });
   if (key) [...ctx.el.querySelectorAll('button')].find(button => button.title + '\u0001' + button.textContent + '\u0001' + button.className === key)?.focus({ preventScroll: true });
 }
 function dashRefresh(...ids) {
@@ -23409,9 +23954,9 @@ function dashHeader() {
   hello.append(dashEl('p', 'dash-date'), dashEl('h1', 'dash-greet'), dashEl('p', 'dash-sub'));
   const actions = dashEl('div', 'dash-actions');
   actions.append(
-    dashButton('dash-when-closed', 'Cerca', 'Cerca nei documenti (Ctrl/⌘ + K)', () => dashSearch(search.value), 'search'),
-    dashButton('dash-when-closed primary', 'Nuovo documento', 'Crea un documento in questa cartella', () => newDoc(), 'plus'),
-    dashButton('dash-customize', 'Personalizza', 'Scegli i riquadri da vedere e rimetti la disposizione iniziale', event => openDashCustomize(event.currentTarget), 'sliders'),
+    dashSearchBox(),
+    dashButton('dash-when-closed dash-new', '', 'Nuovo documento in questa cartella', () => newDoc(), 'plus'),
+    dashButton('dash-customize', '', 'Personalizza la panoramica: aggiungi, togli e ritrova i riquadri', event => openDashCustomize(event.currentTarget), 'widgets'),
   );
   head.append(hello, actions);
   return head;
@@ -23431,10 +23976,16 @@ function dashHeaderUpdate(now = new Date()) {
   }
   if (back && !backPath) back.remove();
   else if (back) {
-    const many = dashboardReturn.paths.filter(path => files.has(path)).length;
-    back.querySelector('span').textContent = 'Torna a «' + docLabel(backPath) + '»' + (many === 2 ? ' e un altro' : many > 2 ? ' e altri ' + (many - 1) : '');
-    back.title = 'Riapre ' + (many > 1 ? 'i documenti che avevi aperti' : 'il documento') + ' dove eri arrivato (' + menuKeyLabel('Alt P') + ')';
+    // Testo fisso (il nome del documento sta nel suggerimento): la larghezza del pulsante non
+    // cambia con il documento e l'intestazione non si ridispone.
+    const open = dashboardReturn.paths.filter(path => files.has(path));
+    back.querySelector('span').textContent = open.length > 1 ? 'Torna ai documenti' : 'Torna al documento';
+    back.title = 'Riapre ' + (open.length > 1 ? 'i documenti che avevi aperti' : 'il documento') + ' dove eri arrivato (' + menuKeyLabel('Alt P') + ')\n'
+      + [backPath, ...open.filter(path => path !== backPath)].slice(0, 6).map(path => '· ' + docLabel(path)).join('\n') + (open.length > 6 ? '\n· e altri ' + (open.length - 6) : '');
+    back.setAttribute('aria-label', back.querySelector('span').textContent + ': ' + docLabel(backPath));
   }
+  const searchBox = head.querySelector('.dash-search');
+  if (searchBox?.classList.contains('open')) dashRunSearch(searchBox);
   const { docs, items, read } = dashboardData();
   const folders = new Set(docs.map(path => parent(path))).size;
   const sub = head.querySelector('.dash-sub');
@@ -23475,10 +24026,11 @@ function dashWidget(def, index) {
   head.append(title, tools, menu);
   const body = dashEl('div', 'dw-body');
   const grip = dashEl('span', 'dw-resize');
-  grip.title = 'Trascina per allargare o stringere il riquadro';
+  grip.title = 'Trascina il bordo per allargare o stringere il riquadro (doppio clic: larghezza successiva)';
   el.append(head, body, grip);
   const ctx = { def, el, head, tools, body, title, opt: dashOpt(def.id), s: {} };
   dashboard.widgets.set(def.id, ctx);
+  dashMasonry.observe(el);
   def.mount?.(ctx);
   return el;
 }
@@ -23560,6 +24112,8 @@ function dashShowPopover(anchor, label, build) {
   dashClosePopovers();
   if (reopen) return;
   dashPopover.setAttribute('aria-label', label);
+  dashPopover.className = 'dash-pop';
+  delete dashPopover.dataset.id;
   dashPopover.replaceChildren();
   build(dashPopover);
   dashPopover.showPopover();
@@ -23568,6 +24122,18 @@ function dashShowPopover(anchor, label, build) {
   dashPlacePopover(anchor);
   (dashPopover.querySelector('[aria-pressed="true"], input, button:not(:disabled)'))?.focus({ preventScroll: true });
 }
+// Scorrendo la pagina il menu resta attaccato al suo pulsante; se il pulsante esce dalla vista si chiude.
+function dashFollowAnchor() {
+  const anchor = dashPopoverAnchor;
+  if (!anchor || !dashPopover.matches(':popover-open')) return;
+  const rect = anchor.getBoundingClientRect(), area = workspace.getBoundingClientRect();
+  if (!anchor.isConnected || rect.bottom < area.top + 4 || rect.top > area.bottom - 4) return dashClosePopovers();
+  dashPlacePopover(anchor);
+}
+document.addEventListener('scroll', event => {
+  if (dashPopoverAnchor && !(event.target instanceof Node && dashPopover.contains(event.target))) dashFollowAnchor();
+}, { capture: true, passive: true });
+addEventListener('resize', dashFollowAnchor);
 // Il clic che chiude il popover (light dismiss) non deve riaprirlo.
 document.addEventListener('pointerdown', event => {
   const anchor = event.target.closest?.('.dw-menu, .dash-customize');
@@ -23579,10 +24145,10 @@ function dashPopoverJustClosed(anchor) {
   delete anchor.dataset.wasOpen;
   return closed;
 }
-// Una riga di opzione: scelta tra valori o interruttore. get()/set(valore).
+// Una riga di opzione: scelta tra valori o interruttore. get()/set(valore). Etichetta a sinistra e
+// comando a destra; le scelte lunghe (molti valori) vanno sotto l'etichetta, a tutta larghezza.
 function dashOptionRow(option) {
   const row = dashEl('div', 'dp-row');
-  const label = dashEl('span', 'dp-label', option.label);
   if (option.type === 'switch') {
     const id = 'dp-' + Math.random().toString(36).slice(2);
     const box = dashEl('input', 'switch');
@@ -23596,11 +24162,17 @@ function dashOptionRow(option) {
     row.append(text, box);
     return row;
   }
+  const label = dashEl('span', 'dp-label', option.label);
   if (option.type === 'node') {
+    row.classList.add('stacked');
     row.append(label, option.node);
     return row;
   }
-  row.append(label, dashSegmented(option.choices, option.get(), value => option.set(value), option.label));
+  const group = dashSegmented(option.choices, option.get(), value => option.set(value), option.label);
+  const length = option.choices.reduce((sum, choice) => sum + String(choice[1]).length, 0);
+  row.classList.add(!option.stacked && option.choices.length <= 3 && length <= 16 ? 'inline' : 'stacked');
+  if (option.glyphs) for (const [index, button] of [...group.children].entries()) button.prepend(option.glyphs[index]);
+  row.append(label, group);
   return row;
 }
 // Opzione salvata in ctx.opt[key] che, cambiando, ridisegna il riquadro.
@@ -23615,64 +24187,145 @@ function openDashMenu(ctx, anchor) {
   if (!ctx) return;
   if (dashPopoverJustClosed(anchor)) return;
   dashShowPopover(anchor, 'Opzioni di «' + ctx.def.title + '»', pop => {
+    pop.classList.add('dp-menu');
+    pop.dataset.id = ctx.def.id;
     const head = dashEl('div', 'dp-head');
-    head.append(dashEl('b', '', ctx.def.title), dashEl('small', '', ctx.def.desc));
+    const badge = dashEl('span', 'dw-icon');
+    badge.append(dashIcon(ctx.def.icon));
+    const text = dashEl('span', 'dp-title');
+    text.append(dashEl('b', '', ctx.def.title), dashEl('small', '', ctx.def.desc));
+    head.append(badge, text);
     pop.append(head);
+    const rows = dashEl('div', 'dp-rows');
     if (ctx.def.sizes.length > 1) {
-      pop.append(dashOptionRow({ label: 'Larghezza', choices: ctx.def.sizes.map(size => [size, dashSizeNames[size]]), get: () => dashSize(ctx.def), set: size => dashSetSize(ctx, size) }));
+      // Un disegnino per ogni larghezza: quante delle quattro colonne occupa.
+      const glyphs = ctx.def.sizes.map(size => {
+        const glyph = dashEl('i', 'dp-size-glyph');
+        glyph.setAttribute('aria-hidden', 'true');
+        for (let column = 0; column < 4; column++) glyph.append(dashEl('span', column < size ? 'on' : ''));
+        return glyph;
+      });
+      rows.append(dashOptionRow({ label: 'Larghezza', choices: ctx.def.sizes.map(size => [size, dashSizeNames[size], dashSizeNames[size] + ': ' + (size === 4 ? 'tutta la riga' : size === 1 ? 'una colonna' : 'due colonne')]),
+        glyphs, stacked: true, get: () => dashSize(ctx.def), set: size => dashSetSize(ctx, size) }));
     }
-    for (const option of ctx.def.options?.(ctx) || []) pop.append(dashOptionRow(option));
+    for (const option of ctx.def.options?.(ctx) || []) rows.append(dashOptionRow(option));
+    if (rows.childElementCount) pop.append(rows);
     const actions = dashEl('div', 'dp-actions');
     const siblings = () => [...ctx.el.parentElement.querySelectorAll(':scope > .dw')];
     const index = siblings().indexOf(ctx.el);
-    const before = dashButton('', 'Sposta prima', 'Sposta il riquadro prima del precedente', () => { dashMoveBy(ctx, -1); dashClosePopovers(); }, 'arrow-left');
-    const after = dashButton('', 'Sposta dopo', 'Sposta il riquadro dopo il successivo', () => { dashMoveBy(ctx, 1); dashClosePopovers(); }, 'arrow-right');
+    const move = dashEl('div', 'dp-move');
+    move.setAttribute('role', 'group');
+    move.setAttribute('aria-label', 'Posizione');
+    const before = dashButton('icon-button', '', 'Sposta prima', () => { dashMoveBy(ctx, -1); dashClosePopovers(); }, 'arrow-left');
+    const after = dashButton('icon-button', '', 'Sposta dopo', () => { dashMoveBy(ctx, 1); dashClosePopovers(); }, 'arrow-right');
     before.disabled = index <= 0;
     after.disabled = index >= siblings().length - 1;
+    move.append(before, dashEl('span', 'dp-move-label', 'Sposta'), after);
     const hide = dashButton('dp-hide', 'Nascondi', 'Nascondi il riquadro (lo rimetti da Personalizza)', () => { dashClosePopovers(); dashSetHidden(ctx.def.id, true); }, 'eye-off');
-    actions.append(before, after, hide);
+    actions.append(move, hide);
     pop.append(actions);
   });
 }
 
+// «Personalizza»: in alto la disposizione in miniatura (clic = vai al riquadro, × = toglilo),
+// sotto la galleria dei riquadri da aggiungere. Tutto si aggiorna senza chiudere il pannello.
 function openDashCustomize(anchor) {
   if (dashPopoverJustClosed(anchor)) return;
   dashShowPopover(anchor, 'Personalizza la panoramica', pop => {
-    pop.classList.add('dp-wide');
-    const head = dashEl('div', 'dp-head');
-    head.append(dashEl('b', '', 'Riquadri della panoramica'), dashEl('small', '', 'Trascina un riquadro dall’intestazione per spostarlo, dall’angolo in basso a destra per allargarlo.'));
-    const list = dashEl('div', 'dp-list');
-    for (const def of dashWidgetDefs) {
-      const available = dashAvailable(def);
-      const id = 'dpw-' + def.id;
-      const row = dashEl('div', 'dp-widget' + (available ? '' : ' off'));
-      const badge = dashEl('span', 'dw-icon');
-      badge.append(dashIcon(def.icon));
-      const text = dashEl('label', 'dp-text');
-      text.htmlFor = id;
-      text.append(dashEl('b', '', def.title), dashEl('small', '', available ? def.desc : def.unavailable || def.desc));
-      const box = dashEl('input', 'switch');
-      box.type = 'checkbox';
-      box.id = id;
-      box.checked = !dashState().hidden.includes(def.id);
-      box.disabled = !available;
-      box.onchange = () => dashSetHidden(def.id, !box.checked, true);
-      row.append(badge, text, box);
-      list.append(row);
-    }
-    const foot = dashEl('div', 'dp-actions');
-    foot.append(dashButton('', 'Ripristina la disposizione', 'Rimette i riquadri, l’ordine e le larghezze iniziali (le tue cose da fare, i preferiti e le altre scelte restano)', () => {
-      const layout = dashState();
-      const fresh = dashDefaultLayout();
-      Object.assign(layout, { order: fresh.order, hidden: fresh.hidden, size: {} });
-      storeDashLayout();
-      dashClosePopovers();
-      buildDashboard(true);
-      dashScheduleTick();
-      toast('Panoramica come all’inizio');
-    }, 'refresh'));
-    pop.append(head, list, foot);
+    pop.classList.add('dp-wide', 'dp-custom');
+    renderDashCustomize(pop);
   });
+}
+function renderDashCustomize(pop, added = '') {
+  const layout = dashState();
+  const shown = layout.order.map(id => dashDefs.get(id)).filter(def => def && dashVisible(def));
+  const head = dashEl('div', 'dp-head dc-head');
+  head.append(dashEl('b', '', 'Personalizza la panoramica'), dashEl('small', '', 'Sposta i riquadri trascinando l’intestazione e allargali dal bordo destro.'));
+  const mapHead = dashEl('div', 'dc-label');
+  mapHead.append(dashEl('span', '', 'Sulla panoramica'), dashEl('small', '', shown.length + (shown.length === 1 ? ' riquadro' : ' riquadri')));
+  const map = dashEl('div', 'dc-map');
+  map.setAttribute('role', 'list');
+  for (const def of shown) {
+    const tile = dashEl('div', 'dc-tile');
+    tile.setAttribute('role', 'listitem');
+    tile.dataset.id = def.id;
+    tile.dataset.size = dashSize(def);
+    if (def.id === added) tile.classList.add('dc-new');
+    const go = dashButton('dc-go', '', 'Vai a «' + def.title + '»', () => {
+      dashClosePopovers();
+      const el = dashboard.widgets.get(def.id)?.el;
+      if (!el) return;
+      el.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      el.classList.remove('dw-new');
+      void el.offsetWidth;
+      el.classList.add('dw-new');
+      setTimeout(() => el.classList.remove('dw-new'), 1200);
+      el.querySelector('.dw-menu')?.focus({ preventScroll: true });
+    });
+    const badge = dashEl('span', 'dw-icon');
+    badge.append(dashIcon(def.icon));
+    go.append(badge, dashEl('span', 'dc-name', def.title));
+    const remove = dashButton('icon-button dc-remove', '', 'Togli «' + def.title + '» dalla panoramica', () => {
+      dashSetHidden(def.id, true, true);
+      renderDashCustomize(pop);
+      dashReanchorPopover();
+      pop.querySelector('.dc-remove, .dc-card:not(:disabled)')?.focus({ preventScroll: true });
+    }, 'close');
+    tile.append(go, remove);
+    map.append(tile);
+  }
+  if (!shown.length) map.append(dashEl('p', 'dc-none', 'Nessun riquadro: aggiungine uno qui sotto.'));
+  const hidden = dashWidgetDefs.filter(def => !shown.includes(def));
+  const galleryHead = dashEl('div', 'dc-label');
+  galleryHead.append(dashEl('span', '', 'Da aggiungere'));
+  const gallery = dashEl('div', 'dc-gallery');
+  for (const def of hidden) {
+    const available = dashAvailable(def);
+    const card = dashButton('dc-card', '', available ? 'Aggiungi «' + def.title + '»' : def.unavailable || def.desc, () => {
+      dashSetHidden(def.id, false, true);
+      renderDashCustomize(pop, def.id);
+      dashReanchorPopover();
+      pop.querySelector('.dc-card:not(:disabled)')?.focus({ preventScroll: true });
+    });
+    card.dataset.id = def.id;
+    card.disabled = !available;
+    const badge = dashEl('span', 'dw-icon');
+    badge.append(dashIcon(def.icon));
+    const text = dashEl('span', 'dc-text');
+    text.append(dashEl('b', '', def.title), dashEl('small', '', available ? def.desc : def.unavailable || def.desc));
+    const plus = dashEl('span', 'dc-plus');
+    plus.append(dashIcon(available ? 'plus' : 'eye-off'));
+    card.append(badge, text, plus);
+    gallery.append(card);
+  }
+  if (!hidden.length) gallery.append(dashEl('p', 'dc-none', 'Ci sono già tutti. Toglierne qualcuno lascia più spazio agli altri.'));
+  const foot = dashEl('div', 'dp-actions dc-foot');
+  const fill = dashOptionRow({ label: 'Riempi gli spazi', type: 'switch', get: () => layout.fill !== false, set: value => {
+    layout.fill = value;
+    storeDashLayout();
+    const grid = $('dashGrid');
+    if (grid) dashFlip(grid, () => {});
+  } });
+  fill.classList.add('dc-fill');
+  fill.title = 'Allunga i riquadri fino a quelli sotto: la griglia resta senza buchi';
+  foot.append(dashButton('primary dc-reset', 'Disposizione consigliata', 'Tutti i riquadri, in un ordine pensato per incastrarsi senza spazi (le tue cose da fare, i preferiti e le altre scelte restano)', () => {
+    const fresh = dashDefaultLayout();
+    Object.assign(layout, { order: fresh.order, hidden: fresh.hidden, size: {}, fill: true });
+    storeDashLayout();
+    dashClosePopovers();
+    buildDashboard(true);
+    dashScheduleTick();
+    toast('Disposizione consigliata', 'success');
+  }, 'widgets'), fill);
+  pop.replaceChildren(head, mapHead, map, galleryHead, gallery, foot);
+}
+// La panoramica si è ridisegnata: il pannello segue il nuovo pulsante.
+function dashReanchorPopover() {
+  const anchor = dashboardEl.querySelector('.dash-customize');
+  if (!anchor || !dashPopover.matches(':popover-open')) return;
+  dashPopoverAnchor = anchor;
+  anchor.setAttribute('aria-expanded', 'true');
+  dashPlacePopover(anchor);
 }
 
 function dashSetHidden(id, hidden, keepOpen = false) {
@@ -23736,19 +24389,70 @@ function dashSaveOrder(grid) {
   dashboard.built = dashBuildKey();
 }
 
+// Altezza dei riquadri → righe della griglia (2 px l'una, più 14 px di distanza sotto). Poi, se
+// «Riempi gli spazi» è acceso (predefinito), ogni riquadro si allunga fino a quello che ha sotto
+// (o fino al fondo della colonna più lunga): la griglia resta senza buchi. Il calcolo parte sempre
+// dalle altezze naturali (senza allungamenti), così non si alimenta da solo. I cambi dopo il primo
+// disegno sono animati: un riquadro che cresce spinge dolcemente quelli sotto.
+const dashRowUnit = 2, dashRowGap = 14;
+var dashPacking = false;
+var dashMasonry = new ResizeObserver(entries => {
+  for (const entry of entries) if (!entry.target.isConnected) dashMasonry.unobserve(entry.target);
+  const grid = entries.map(entry => entry.target.parentElement).find(parent => parent?.isConnected && parent.id === 'dashGrid');
+  if (grid && !dashPacking) dashPack(grid);
+});
+function dashPack(grid, quiet = false) {
+  const items = [...grid.querySelectorAll(':scope > .dw')];
+  if (!items.length || dashboardEl.hidden) return;
+  dashPacking = true;
+  const animate = !quiet && !dashboardEl.classList.contains('entering') && performance.now() - (dashboard.builtAt || 0) > 1500 && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const before = animate ? new Map([...grid.children].map(el => [el, el.getBoundingClientRect()])) : null;
+  const spanOf = height => 'span ' + Math.max(1, Math.ceil((height + dashRowGap) / dashRowUnit));
+  // 1. Altezze naturali.
+  for (const el of items) {
+    el.style.minHeight = '';
+    el.classList.remove('dw-filled');
+  }
+  const natural = items.map(el => el.offsetHeight);
+  items.forEach((el, index) => { el.style.gridRowEnd = spanOf(natural[index]); });
+  // 2. Allungamenti fino al riquadro sotto o al fondo.
+  if (dashState().fill !== false && getComputedStyle(grid).gridTemplateColumns.split(' ').length > 1) {
+    const boxes = items.map((el, index) => ({ el, left: el.offsetLeft, right: el.offsetLeft + el.offsetWidth, top: el.offsetTop, bottom: el.offsetTop + natural[index] }));
+    const floor = Math.max(...boxes.map(box => box.bottom));
+    for (const box of boxes) {
+      let limit = floor;
+      for (const other of boxes) {
+        if (other === box || other.top < box.bottom || other.right <= box.left + 1 || other.left >= box.right - 1) continue;
+        limit = Math.min(limit, other.top - dashRowGap);
+      }
+      const height = limit - box.top;
+      if (height - (box.bottom - box.top) < 4) continue;
+      // min-height (non height): se il contenuto cresce oltre, il riquadro cresce e il calcolo riparte.
+      box.el.style.minHeight = height + 'px';
+      box.el.classList.add('dw-filled');
+      box.el.style.gridRowEnd = spanOf(height);
+    }
+  }
+  dashPacking = false;
+  if (before) dashFlip(grid, null, before);
+}
+// Il riquadro della panoramica cambia misura senza che lo dica il ResizeObserver (finestra, barra).
+addEventListener('resize', () => { const grid = $('dashGrid'); if (grid && !dashboardEl.hidden) requestAnimationFrame(() => dashPack(grid)); });
+
 // Spostamenti animati (FLIP): posizioni prima e dopo il cambio, poi la differenza si annulla.
-function dashFlip(grid, change) {
+function dashFlip(grid, change, measured = null) {
   const items = [...grid.children];
-  const before = new Map(items.map(el => [el, el.getBoundingClientRect()]));
-  change();
+  const before = measured || new Map(items.map(el => [el, el.getBoundingClientRect()]));
+  change?.();
+  // Ordine o larghezze cambiati: subito la nuova disposizione (con gli allungamenti rifatti).
+  if (change && grid.id === 'dashGrid') dashPack(grid, true);
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   for (const el of grid.children) {
     const was = before.get(el);
     if (!was) continue;
     const now = el.getBoundingClientRect();
     const dx = was.left - now.left, dy = was.top - now.top;
-    const sx = was.width / (now.width || 1), sy = was.height / (now.height || 1);
-    if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < .01 && Math.abs(sy - 1) < .01) continue;
+    if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
     el.getAnimations().forEach(animation => animation.id === 'flip' && animation.cancel());
     const animation = el.animate([
       { transformOrigin: 'top left', transform: `translate(${dx}px, ${dy}px)` },
@@ -23758,7 +24462,20 @@ function dashFlip(grid, change) {
   }
 }
 
-// ── Trascinamento: intestazione = sposta, angolo = larghezza ──
+function dashSizeLabel(size, cols) {
+  const span = size >= 4 ? cols : Math.min(size, cols);
+  return dashSizeNames[size] + ' · ' + (span >= cols ? 'tutta la riga' : span === 1 ? '1 colonna' : span + ' colonne');
+}
+// Doppio clic sul bordo destro: la larghezza dopo (Stretto → Medio → Intero → Stretto).
+dashboardEl?.addEventListener('dblclick', event => {
+  const handle = event.target.closest('.dw-resize');
+  const ctx = handle && dashboard.widgets.get(handle.closest('.dw')?.dataset.id);
+  if (!ctx) return;
+  const sizes = ctx.def.sizes;
+  dashSetSize(ctx, sizes[(sizes.indexOf(dashSize(ctx.def)) + 1) % sizes.length]);
+});
+
+// ── Trascinamento: intestazione = sposta, bordo destro = larghezza ──
 dashboardEl?.addEventListener('pointerdown', event => {
   if (event.button !== 0 || event.pointerType === 'touch') return;
   const resize = event.target.closest('.dw-resize');
@@ -23794,6 +24511,13 @@ function dashDragBegin(drag) {
     drag.def = dashDefs.get(drag.el.dataset.id);
     drag.size = Number(drag.el.dataset.size);
     drag.el.classList.add('dw-resizing');
+    drag.el.dataset.sizeLabel = dashSizeLabel(drag.size, drag.cols);
+    // Le colonne della griglia, in trasparenza: si vede dove arriverà il bordo.
+    const guides = dashEl('div', 'dash-guides');
+    guides.style.gridTemplateColumns = style.gridTemplateColumns;
+    guides.append(...Array.from({ length: drag.cols }, () => dashEl('i')));
+    drag.grid.prepend(guides);
+    drag.guides = guides;
     return;
   }
   const rect = drag.el.getBoundingClientRect();
@@ -23806,6 +24530,7 @@ function dashDragBegin(drag) {
   document.body.append(ghost);
   drag.ghost = ghost;
   drag.el.classList.add('dw-placeholder');
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) ghost.animate([{ scale: '1', boxShadow: 'none' }, {}], { duration: 180, easing: 'cubic-bezier(.2, .8, .2, 1)' });
 }
 
 function dashDragMove(event) {
@@ -23823,10 +24548,22 @@ function dashDragMove(event) {
     let size = span >= drag.cols ? 4 : span >= 2 ? 2 : 1;
     if (drag.cols <= 2 && span >= drag.cols) size = drag.size === 4 ? 4 : Math.max(2, drag.size === 1 ? 2 : drag.size);
     if (!drag.def.sizes.includes(size)) size = drag.def.sizes.reduce((best, item) => Math.abs(item - size) < Math.abs(best - size) ? item : best, drag.def.sizes[0]);
-    if (size !== Number(drag.el.dataset.size)) dashFlip(drag.grid, () => { drag.el.dataset.size = size; });
+    if (size !== Number(drag.el.dataset.size)) {
+      dashFlip(drag.grid, () => { drag.el.dataset.size = size; });
+      drag.el.dataset.sizeLabel = dashSizeLabel(size, drag.cols);
+    }
     return;
   }
   drag.ghost.style.translate = dx + 'px ' + dy + 'px';
+  // Il riquadro si inclina un poco nel verso in cui va, e torna dritto quando ci si ferma.
+  const now = performance.now();
+  const speed = (event.clientX - (drag.lastX ?? event.clientX)) / Math.max(8, now - (drag.lastT || now));
+  drag.lastX = event.clientX;
+  drag.lastT = now;
+  drag.tilt = (drag.tilt || 0) * .7 + Math.max(-6, Math.min(6, speed * 9)) * .3;
+  drag.ghost.style.setProperty('--tilt', drag.tilt.toFixed(2) + 'deg');
+  clearTimeout(drag.still);
+  drag.still = setTimeout(() => { drag.tilt = 0; drag.ghost?.style.setProperty('--tilt', '0deg'); }, 90);
   if (performance.now() - drag.moved < 140) return;
   const box = drag.grid.getBoundingClientRect();
   const x = event.clientX - box.left, y = event.clientY - box.top;
@@ -23858,6 +24595,11 @@ function dashDragStop() {
   document.documentElement.classList.remove('dash-dragging', 'dash-resizing');
   const drag = dashboard.drag;
   dashboard.drag = null;
+  if (drag) {
+    clearTimeout(drag.still);
+    drag.guides?.remove();
+    delete drag.el.dataset.sizeLabel;
+  }
   return drag;
 }
 function dashDragEnd() {
@@ -23878,15 +24620,23 @@ function dashDragEnd() {
   }
   const ghost = drag.ghost;
   const rect = drag.el.getBoundingClientRect();
-  const from = ghost.getBoundingClientRect();
+  const from = { width: ghost.offsetWidth, height: ghost.offsetHeight };
   const finish = () => {
     ghost.remove();
     drag.el.classList.remove('dw-placeholder');
+    drag.el.classList.remove('dw-dropped');
+    void drag.el.offsetWidth;
+    drag.el.classList.add('dw-dropped');
+    setTimeout(() => drag.el.classList.remove('dw-dropped'), 750);
   };
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
-  else ghost.animate([{ translate: ghost.style.translate, width: from.width + 'px', height: from.height + 'px' },
-    { translate: (rect.left - parseFloat(ghost.style.left)) + 'px ' + (rect.top - parseFloat(ghost.style.top)) + 'px', width: rect.width + 'px', height: rect.height + 'px' }],
-  { duration: 200, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'forwards' }).finished.then(finish, finish);
+  else {
+    // Si posa al suo posto con un piccolo rimbalzo, raddrizzandosi.
+    ghost.style.transition = 'none';
+    ghost.animate([{ translate: ghost.style.translate, width: from.width + 'px', height: from.height + 'px', scale: '1.03', rotate: ghost.style.getPropertyValue('--tilt') || '0deg' },
+      { translate: (rect.left - parseFloat(ghost.style.left)) + 'px ' + (rect.top - parseFloat(ghost.style.top)) + 'px', width: rect.width + 'px', height: rect.height + 'px', scale: '1', rotate: '0deg' }],
+    { duration: 300, easing: 'cubic-bezier(.3, 1.25, .5, 1)', fill: 'forwards' }).finished.then(finish, finish);
+  }
   dashSaveOrder(drag.grid);
 }
 function dashDragCancel() {
@@ -23928,11 +24678,12 @@ function dashSortable(list, onDone) {
         row.classList.add('dw-sorting');
         list.classList.add('sorting');
       }
-      const y = moveEvent.clientY;
+      const x = moveEvent.clientX, y = moveEvent.clientY;
       for (const other of list.children) {
         if (other === row || other.tagName !== 'LI') continue;
         const rect = other.getBoundingClientRect();
-        if (y > rect.top && y < rect.bottom) {
+        // Anche negli elenchi a più colonne (riquadri larghi): conta la riga sotto il puntatore.
+        if (y > rect.top && y < rect.bottom && x >= rect.left && x <= rect.right) {
           const ahead = y < rect.top + rect.height / 2;
           const reference = ahead ? other : other.nextElementSibling;
           if (reference !== row && reference !== row.nextElementSibling) dashFlip(list, () => list.insertBefore(row, reference));
@@ -23957,7 +24708,7 @@ function dashSortable(list, onDone) {
 // ── Riquadro «La cartella»: scadenze e stati, con l'elenco dei documenti del filtro scelto ──
 function dashFolderWidget() {
   return {
-    id: 'folder', title: 'La cartella', icon: 'pulse', size: 2, sizes: [1, 2, 4], data: true,
+    id: 'folder', title: 'La cartella', icon: 'pulse', size: 2, sizes: [2, 4], data: true,
     desc: 'Scadenze, documenti da rivedere, da finire o pianificati, e lo stato di tutti',
     update(ctx) {
       const { docs, items, read } = dashboardData();
@@ -23980,8 +24731,8 @@ function dashFolderWidget() {
       for (const filter of filters) {
         const button = dashButton('df-stat' + (filter.items.length ? '' : ' zero'), '', 'Mostra i documenti «' + filter.label + '»', () => {
           ctx.s.filter = filter.id;
-          ctx.s.more = false;
           dashUpdate(ctx);
+          ctx.body.querySelector('.df-list')?.scrollTo(0, 0);
         });
         button.setAttribute('role', 'tab');
         button.setAttribute('aria-selected', String(filter === chosen));
@@ -23989,8 +24740,8 @@ function dashFolderWidget() {
         button.append(dashEl('b', 'df-num', reading && !filter.items.length ? '…' : String(filter.items.length)), dashEl('span', 'df-label', filter.label), dashEl('small', '', filter.note));
         stats.append(button);
       }
-      const list = dashEl('div', 'df-list');
-      const shown = ctx.s.more ? 15 : 5;
+      const list = dashScroller(dashEl('div', 'df-list cols'));
+      const shown = 40;
       for (const item of chosen.items.slice(0, shown)) {
         const pill = chosen.id === 'due' || item.deadline && item.deadline.days <= deadlineSoonDays
           ? dashPill(item.deadline.days < 0 ? 'scaduta' : item.deadline.short, item.deadline.tone, item.deadline.when + ' · ' + item.deadline.full)
@@ -23999,13 +24750,7 @@ function dashFolderWidget() {
       }
       if (!chosen.items.length) list.append(dashEmpty('check', reading ? 'Sto leggendo i documenti…' : chosen.empty));
       const foot = dashEl('div', 'df-foot');
-      if (chosen.items.length > shown || ctx.s.more) {
-        foot.append(dashButton('dash-more', ctx.s.more && chosen.items.length <= 15 ? 'Mostra meno' : 'Mostra tutti (' + chosen.items.length + ')', '', () => {
-          if (chosen.items.length > 15) return chosen.search();
-          ctx.s.more = !ctx.s.more;
-          dashUpdate(ctx);
-        }));
-      }
+      if (chosen.items.length > shown) foot.append(dashButton('dash-more', 'Tutti nella ricerca (' + chosen.items.length + ')', 'Apre la ricerca della barra laterale con tutti i documenti', () => chosen.search()));
       // Stato di tutti i documenti in una barra (clic su una parte = ricerca).
       const groups = [];
       for (const known of documentStatuses) {
@@ -24042,18 +24787,17 @@ function dashRecentWidget() {
     id: 'recent', title: 'Recenti', icon: 'history', size: 2, sizes: [1, 2, 4], data: true,
     desc: 'Documenti modificati di recente (e da chi) o aperti da te',
     mount(ctx) {
-      ctx.tools.append(dashSegmented([['modified', 'Modificati', 'Gli ultimi documenti modificati nella cartella'], ['opened', 'Aperti da te', 'Gli ultimi documenti che hai aperto qui']],
-        ctx.opt.tab || 'modified', tab => { ctx.opt.tab = tab; storeDashLayout(); dashUpdate(ctx); }, 'Quali documenti'));
+      ctx.tools.append(dashSegmented([['modified', 'Modificati', 'Gli ultimi documenti modificati nella cartella'], ['opened', 'Aperti', 'Gli ultimi documenti che hai aperto tu, qui']],
+        ctx.opt.tab || 'modified', tab => { ctx.opt.tab = tab; storeDashLayout(); dashUpdate(ctx); ctx.body.querySelector('.df-list')?.scrollTo(0, 0); }, 'Quali documenti'));
     },
     update(ctx) {
       const { items, byPath } = dashboardData();
-      const list = dashEl('div', 'df-list');
-      const shown = ctx.s.more ? 14 : 6;
+      const list = dashScroller(dashEl('div', 'df-list cols'));
+      const shown = 14;
       if ((ctx.opt.tab || 'modified') === 'opened') {
         const opened = recentDocuments().map(path => byPath.get(path)).filter(Boolean);
-        for (const item of opened.slice(0, shown)) list.append(dashDocRow(item, dashEl('span', 'dash-meta', item.modified ? 'modificato ' + dashAgo(item.modified) : '')));
+        for (const item of opened.slice(0, shown)) list.append(dashDocRow(item, dashEl('span', 'dash-meta', item.modified ? dashAgo(item.modified) : '')));
         if (!opened.length) list.append(dashEmpty('book', 'I documenti che apri compariranno qui.'));
-        if (opened.length > 6) list.append(dashButton('dash-more', ctx.s.more ? 'Mostra meno' : 'Mostra altri', '', () => { ctx.s.more = !ctx.s.more; dashUpdate(ctx); }));
       } else {
         const recent = items.filter(item => item.modified).sort((a, b) => b.modified - a.modified);
         for (const item of recent.slice(0, shown)) {
@@ -24066,7 +24810,6 @@ function dashRecentWidget() {
           list.append(dashDocRow(item, meta));
         }
         if (!recent.length) list.append(dashEmpty('history', 'Sto leggendo i documenti…'));
-        if (recent.length > 6) list.append(dashButton('dash-more', ctx.s.more ? 'Mostra meno' : 'Mostra altri', '', () => { ctx.s.more = !ctx.s.more; dashUpdate(ctx); }));
       }
       ctx.body.replaceChildren(list);
     },
@@ -24076,13 +24819,13 @@ function dashRecentWidget() {
 // ── Riquadro «Al lavoro adesso» (cartelle condivise) ──
 function dashPeopleWidget() {
   return {
-    id: 'people', title: 'Al lavoro adesso', icon: 'people', size: 1, sizes: [1, 2, 4], data: true,
+    id: 'people', title: 'Al lavoro adesso', icon: 'people', size: 1, sizes: [1, 2], data: true,
     desc: 'Chi sta modificando un documento in questo momento',
     unavailable: 'Solo nelle cartelle aperte dal disco (non nelle copie importate)',
     when: () => Boolean(root && !importedFolderName),
     update(ctx) {
       const locks = dashboard.locksRoot === root ? dashboard.locks.filter(lock => files.has(lock.path)) : [];
-      const list = dashEl('div', 'df-list');
+      const list = dashScroller(dashEl('div', 'df-list cols'));
       for (const lock of [...locks].sort((a, b) => a.since - b.since)) {
         const person = lockOwnerName(lock);
         const row = dashButton('dash-row', '', 'Apri «' + docLabel(lock.path) + '» (in sola lettura)', () => openPath(lock.path));
@@ -24103,12 +24846,12 @@ function dashPeopleWidget() {
 // ── Riquadro «Tag» ──
 function dashTagsWidget() {
   return {
-    id: 'tags', title: 'Tag più usati', icon: 'tag', size: 2, sizes: [1, 2, 4], data: true, hidden: true,
+    id: 'tags', title: 'Tag più usati', icon: 'tag', size: 2, sizes: [1, 2, 4], data: true,
     desc: 'I tag dei documenti, dal più usato: clic per cercarli',
     update(ctx) {
       const all = [...tagIndex().tags.values()].sort((a, b) => b.paths.size - a.paths.size || a.name.localeCompare(b.name, 'it'));
       const most = all[0]?.paths.size || 1;
-      const list = dashEl('div', 'dash-tags');
+      const list = dashScroller(dashEl('div', 'dash-tags'));
       for (const tag of all.slice(0, 30)) {
         const button = dashButton('', '', 'Cerca i documenti con #' + tag.name, () => searchTag(tag.name));
         button.style.setProperty('--weight', (.35 + .65 * tag.paths.size / most).toFixed(2));
@@ -24159,13 +24902,13 @@ function remapFavoriteDocs(from, to, isFolder) {
 }
 function dashFavoritesWidget() {
   return {
-    id: 'favorites', title: 'Preferiti', icon: 'star', size: 1, sizes: [1, 2, 4], data: true, keepsInputs: true,
+    id: 'favorites', title: 'Preferiti', icon: 'star', size: 1, sizes: [1, 2], data: true, keepsInputs: true,
     desc: 'I documenti che usi di più, a un clic',
     mount(ctx) {
-      ctx.list = dashEl('ul', 'fv-list');
+      ctx.list = dashScroller(dashEl('ul', 'fv-list cols'));
       dashSortable(ctx.list, keys => storeFavoriteDocs(keys));
       ctx.picker = dashPicker({
-        placeholder: 'Aggiungi un documento…', label: 'Aggiungi un documento ai preferiti', iconName: 'star',
+        placeholder: 'Aggiungi documento…', label: 'Aggiungi un documento ai preferiti', iconName: 'star',
         items: query => linkFileMatches(query, isMD).filter(item => item.kind === 'file' && !item.trashed && files.has(item.path) && !isFavoriteDoc(item.path)).slice(0, 7)
           .map(item => ({ label: docLabel(item.path), detail: item.path, value: item.path })),
         choose: item => {
@@ -24304,7 +25047,7 @@ function todoEdit(row, item) {
 }
 function dashTodoWidget() {
   return {
-    id: 'todo', title: 'Da fare', icon: 'todo', size: 1, sizes: [1, 2, 4], keepsInputs: true,
+    id: 'todo', title: 'Da fare', icon: 'todo', size: 1, sizes: [1, 2], keepsInputs: true,
     desc: 'Le tue cose da fare, con una data se serve (compaiono anche nel calendario)',
     mount(ctx) {
       const form = dashEl('form', 'td-new');
@@ -24336,6 +25079,9 @@ function dashTodoWidget() {
         date.onchange();
       };
       ctx.list = dashEl('ul', 'td-list');
+      ctx.scroll = dashScroller(dashEl('div', 'td-scroll'));
+      ctx.doneList = dashEl('ul', 'td-list td-done-list');
+      ctx.scroll.append(ctx.list, ctx.doneList);
       dashSortable(ctx.list, keys => {
         const open = keys.map(key => todoItems.find(item => item.id === key)).filter(Boolean);
         todoItems = [...open, ...todoItems.filter(item => !open.includes(item))];
@@ -24344,7 +25090,7 @@ function dashTodoWidget() {
       ctx.done = dashEl('div', 'td-done');
       ctx.count = dashEl('span', 'dw-count');
       ctx.tools.append(ctx.count);
-      ctx.body.append(form, ctx.list, ctx.done);
+      ctx.body.append(form, ctx.scroll, ctx.done);
       ctx.input = input;
     },
     update(ctx) {
@@ -24353,26 +25099,29 @@ function dashTodoWidget() {
       ctx.count.textContent = open.length ? String(open.length) : '';
       ctx.count.title = open.length === 1 ? '1 attività da fare' : open.length + ' attività da fare';
       ctx.list.replaceChildren(...open.map(item => todoRow(item, ctx)));
-      ctx.body.querySelector(':scope > .dash-empty')?.remove();
+      ctx.scroll.querySelector(':scope > .dash-empty')?.remove();
       if (!open.length) ctx.list.after(dashEmpty('check', done.length ? 'Tutto fatto. Bravo!' : 'Niente da fare per ora: scrivi qui sopra e premi Invio.'));
+      // Le completate restano nello stesso elenco che scorre (sotto): il riquadro non si allunga.
+      const showDone = Boolean(ctx.opt.showDone && done.length);
+      ctx.doneList.replaceChildren(...(showDone ? done.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).slice(0, 30).map(item => todoRow(item, ctx, false)) : []));
+      ctx.doneList.hidden = !showDone;
       ctx.done.replaceChildren();
+      ctx.done.hidden = !done.length;
       if (done.length) {
-        const toggle = dashButton('td-done-toggle', (ctx.opt.showDone ? 'Nascondi' : 'Mostra') + ' le completate (' + done.length + ')', '', () => {
+        const toggle = dashButton('td-done-toggle', (showDone ? 'Nascondi' : 'Mostra') + ' le completate (' + done.length + ')', '', () => {
           ctx.opt.showDone = !ctx.opt.showDone;
           storeDashLayout();
           dashUpdate(ctx);
+          if (ctx.opt.showDone) ctx.scroll.scrollTo({ top: ctx.doneList.offsetTop - 4, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }, 'chevron');
-        toggle.setAttribute('aria-expanded', String(Boolean(ctx.opt.showDone)));
+        toggle.setAttribute('aria-expanded', String(showDone));
         ctx.done.append(toggle);
-        if (ctx.opt.showDone) {
-          const list = dashEl('ul', 'td-list');
-          list.append(...done.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).slice(0, 30).map(item => todoRow(item, ctx, false)));
-          const clear = dashButton('dash-more', 'Elimina le completate', 'Toglie dall’elenco tutte le attività completate', () => {
+        if (showDone) {
+          ctx.done.append(dashButton('dash-more td-clear', 'Elimina le completate', 'Toglie dall’elenco tutte le attività completate', () => {
             todoItems = todoItems.filter(item => !item.done);
             storeTodos();
             toast(done.length === 1 ? 'Eliminata 1 attività completata' : 'Eliminate ' + done.length + ' attività completate');
-          });
-          ctx.done.append(list, clear);
+          }));
         }
       }
     },
@@ -24505,8 +25254,25 @@ function dashCalendarWidget() {
         dashUpdate(ctx);
       });
       todayButton.disabled = isCurrent && ctx.s.selected === todayIso;
-      bar.append(todayButton, dashSegmented([['month', 'Mese', 'Un mese con i dettagli dei giorni'], ['year', 'Anno', 'Tutto l’anno con feste e ponti']], ctx.s.view, view => { ctx.s.view = view; dashUpdate(ctx); }, 'Vista'));
-      ctx.body.replaceChildren(bar, year ? calendarYear(ctx, month.getFullYear(), todayIso, weeks) : calendarMonth(ctx, month, todayIso, weeks));
+      bar.append(todayButton);
+      // Mese | Anno nell'intestazione del riquadro (lascia la riga dei mesi più libera).
+      ctx.tools.replaceChildren(dashSegmented([['month', 'Mese', 'Un mese con i dettagli dei giorni'], ['year', 'Anno', 'Tutto l’anno con feste e ponti']], ctx.s.view, view => { ctx.s.view = view; dashUpdate(ctx); }, 'Vista'));
+      // La vista Anno si posa sopra quella del mese, che resta sotto invisibile e tiene l'altezza:
+      // passando da una all'altra il riquadro non cambia misura e gli altri non si spostano.
+      const stage = dashEl('div', 'cal-stage');
+      const monthView = calendarMonth(ctx, month, todayIso, weeks);
+      stage.append(monthView);
+      if (year) {
+        monthView.inert = true;
+        monthView.classList.add('under');
+        stage.append(calendarYear(ctx, month.getFullYear(), todayIso, weeks));
+      }
+      ctx.body.replaceChildren(bar, stage);
+      if (year) {
+        const wrap = stage.querySelector('.cal-year-wrap');
+        const shown = wrap.querySelector('.cal-mini.current') || wrap.querySelector('.cal-mini:nth-child(' + (month.getMonth() + 1) + ')');
+        if (shown && shown.offsetTop + shown.offsetHeight > wrap.clientHeight) wrap.scrollTop = shown.offsetTop - 6;
+      }
     },
   };
 }
@@ -24533,7 +25299,8 @@ function calendarMonth(ctx, month, todayIso, weeks) {
   const first = new Date(month.getFullYear(), month.getMonth(), 1);
   const start = addDays(first, -((first.getDay() + 6) % 7));
   const last = new Date(month.getFullYear(), month.getMonth() + 1, 0);
-  const end = addDays(last, 6 - (last.getDay() + 6) % 7);
+  // Sempre sei settimane: cambiando mese l'altezza resta la stessa.
+  const end = addDays(start, 41);
   const entries = calendarEntries(start, end);
   const wrap = dashEl('div', 'cal-month');
   const grid = dashEl('div', 'cal-grid' + (weeks ? ' weeks' : ''));
@@ -24659,7 +25426,7 @@ function calendarYear(ctx, year, todayIso, weeks) {
   let work = 0, feasts = 0, bridges = 0;
   for (let index = 0; index < 12; index++) {
     const first = new Date(year, index, 1);
-    const box = dashEl('div', 'cal-mini');
+    const box = dashEl('div', 'cal-mini' + (year === new Date().getFullYear() && index === new Date().getMonth() ? ' current' : ''));
     const name = dashButton('cal-mini-name', capitalize(first.toLocaleDateString('it-IT', { month: 'long' })), 'Apri il mese', () => {
       ctx.s.view = 'month';
       ctx.s.month = first;
@@ -24825,33 +25592,98 @@ function timerChime() {
 function timerEmoji(phase = timer.phase) {
   return phase === 'work' ? '🍅' : phase === 'timer' ? '⏱️' : '☕';
 }
-// Chip nella barra in basso: si vede mentre il timer conta o è in pausa a metà.
+// Chip nella barra in basso (Impostazioni › Barra e pannelli › Timer e pomodoro): fermo è solo
+// l'icona, mentre conta (o in pausa a metà) mostra il tempo che resta. Il clic apre il pannello
+// del timer: gli stessi comandi del riquadro della panoramica, più durate e suono.
+function timerShown() {
+  try { return settings.showTimer !== false; } catch { return true; }
+}
+function timerContexts() {
+  return [dashboard.widgets.get('timer'), timerPanelCtx].filter(ctx => ctx?.el?.isConnected);
+}
 function renderTimerViews() {
   const chip = $('timerChip');
   if (chip) {
     const left = timerLeft();
     const busy = timer.running || left < timer.total;
-    chip.hidden = !busy;
-    if (busy) {
-      chip.classList.toggle('paused', !timer.running);
-      chip.dataset.phase = timer.phase;
-      chip.querySelector('.tc-emoji').textContent = timerEmoji();
-      chip.querySelector('.tc-time').textContent = timerClock(left);
-      const label = (timer.mode === 'pomodoro' ? 'Pomodoro · ' + timerPhaseNames[timer.phase] : 'Timer') + ': ' + timerClock(left) + (timer.running ? '' : ' (in pausa)');
-      chip.title = label + '\nClic: ' + (timer.running ? 'pausa' : 'riprendi');
-      chip.setAttribute('aria-label', label);
-    }
+    chip.hidden = !timerShown() && !busy;
+    chip.classList.toggle('busy', busy);
+    chip.classList.toggle('paused', busy && !timer.running);
+    chip.dataset.phase = timer.phase;
+    chip.querySelector('.tc-emoji').textContent = busy ? timerEmoji() : '';
+    chip.querySelector('.tc-time').textContent = busy ? timerClock(left) : '';
+    const label = busy ? (timer.mode === 'pomodoro' ? 'Pomodoro · ' + timerPhaseNames[timer.phase] : 'Timer') + ': ' + timerClock(left) + (timer.running ? '' : ' (in pausa)')
+      : timer.mode === 'pomodoro' ? 'Pomodoro: ' + timer.work + ' minuti di lavoro e ' + timer.short + ' di pausa' : 'Timer';
+    chip.title = label + '\nClic per i comandi del timer';
+    chip.setAttribute('aria-label', label);
+    chip.style.setProperty('--tc-progress', String(1 - left / (timer.total || 1)));
   }
-  const ctx = dashboard.widgets.get('timer');
-  if (ctx?.el.isConnected) dashTimerPaint(ctx);
+  for (const ctx of timerContexts()) dashTimerPaint(ctx);
 }
+const timerPanel = dashEl('section', 'events-panel timer-panel');
+timerPanel.id = 'timerPanel';
+timerPanel.popover = 'auto';
+timerPanel.setAttribute('role', 'dialog');
+timerPanel.setAttribute('aria-label', 'Timer e pomodoro');
+timerPanel.tabIndex = -1;
+document.body.append(timerPanel);
+var timerPanelCtx = null;
+var timerPanelOpenFor = false;
+document.addEventListener('pointerdown', () => { timerPanelOpenFor = timerPanel.matches(':popover-open'); }, true);
+function placeTimerPanel() {
+  if (!timerPanel.matches(':popover-open')) return;
+  const rect = $('timerChip').getBoundingClientRect();
+  const width = timerPanel.offsetWidth;
+  timerPanel.style.left = Math.min(Math.max(8, rect.left + rect.width / 2 - width / 2), innerWidth - width - 8) + 'px';
+  timerPanel.style.top = 'auto';
+  timerPanel.style.bottom = Math.max(8, innerHeight - rect.top + 8) + 'px';
+  timerPanel.style.setProperty('--ev-max', Math.max(240, rect.top - 16) + 'px');
+}
+function buildTimerPanel() {
+  const def = dashDefs.get('timer');
+  const head = dashEl('header', 'ev-head');
+  const logo = dashEl('span', 'ev-logo');
+  logo.append(dashIcon('timer'));
+  const heading = dashEl('span', 'ev-heading');
+  heading.append(dashEl('b', '', 'Timer e pomodoro'), dashEl('small', '', 'Continua a contare anche mentre scrivi'));
+  const close = dashButton('icon-button ev-close', '', 'Chiudi (Esc)', () => timerPanel.hidePopover(), 'close');
+  head.append(logo, heading, close);
+  const body = dashEl('div', 'dw-body tp-body');
+  const options = dashEl('details', 'tp-options');
+  const summary = dashEl('summary');
+  summary.append(dashIcon('sliders'), dashEl('span', '', 'Durate e suono'), dashIcon('chevron'));
+  options.append(summary, ...def.options().map(dashOptionRow));
+  timerPanelCtx = { def, el: timerPanel, head, tools: dashEl('div'), body, opt: dashOpt('timer'), s: {} };
+  timerPanel.replaceChildren(head, body, options);
+  def.mount(timerPanelCtx);
+}
+function openTimerPanel() {
+  if (timerPanel.matches(':popover-open')) return timerPanel.hidePopover();
+  if (timerPanelOpenFor) {
+    timerPanelOpenFor = false;
+    return;
+  }
+  buildTimerPanel();
+  timerPanel.showPopover();
+  $('timerChip').setAttribute('aria-expanded', 'true');
+  placeTimerPanel();
+  timerPanel.querySelector('.tm-main')?.focus({ preventScroll: true });
+}
+timerPanel.addEventListener('toggle', event => {
+  if (event.newState !== 'closed') return;
+  $('timerChip')?.setAttribute('aria-expanded', 'false');
+  timerPanelCtx = null;
+});
+addEventListener('resize', placeTimerPanel);
 (() => {
   const chip = dashEl('button', 'timer-chip');
   chip.type = 'button';
   chip.id = 'timerChip';
-  chip.hidden = true;
-  chip.append(dashEl('span', 'tc-emoji'), dashEl('span', 'tc-time'));
-  chip.onclick = timerToggle;
+  chip.setAttribute('aria-haspopup', 'dialog');
+  chip.setAttribute('aria-expanded', 'false');
+  chip.setAttribute('aria-controls', 'timerPanel');
+  chip.append(dashIcon('timer'), dashEl('span', 'tc-emoji'), dashEl('span', 'tc-time'));
+  chip.onclick = openTimerPanel;
   $('eventsButton')?.before(chip);
   // Riaperto Itaca: se il tempo è passato intanto, la fase è finita (senza suono).
   if (timer.running && timer.endsAt <= Date.now()) timerFinish(false);
@@ -24864,9 +25696,9 @@ function dashTimerWidget() {
     desc: 'Pomodoro (25 minuti di lavoro e 5 di pausa) o un timer semplice',
     options: () => [
       { label: 'Lavoro', choices: [15, 20, 25, 30, 45, 50].map(value => [value, value + '′']), get: () => timer.work, set: value => { timer.work = value; if (timer.phase === 'work' && !timer.running) timerSet('work'); storeTimer(); renderTimerViews(); } },
-      { label: 'Pausa', choices: [3, 5, 10].map(value => [value, value + '′']), get: () => timer.short, set: value => { timer.short = value; if (timer.phase === 'short' && !timer.running) timerSet('short'); storeTimer(); renderTimerViews(); } },
+      { label: 'Pausa', stacked: true, choices: [3, 5, 10].map(value => [value, value + '′']), get: () => timer.short, set: value => { timer.short = value; if (timer.phase === 'short' && !timer.running) timerSet('short'); storeTimer(); renderTimerViews(); } },
       { label: 'Pausa lunga', choices: [10, 15, 20, 30].map(value => [value, value + '′']), get: () => timer.long, set: value => { timer.long = value; if (timer.phase === 'long' && !timer.running) timerSet('long'); storeTimer(); renderTimerViews(); } },
-      { label: 'Pausa lunga ogni', choices: [3, 4, 5].map(value => [value, value + ' pomodori']), get: () => timer.every, set: value => { timer.every = value; storeTimer(); renderTimerViews(); } },
+      { label: 'Pausa lunga ogni … pomodori', choices: [3, 4, 5].map(value => [value, String(value), 'Pausa lunga ogni ' + value + ' pomodori']), get: () => timer.every, set: value => { timer.every = value; storeTimer(); renderTimerViews(); } },
       { label: 'Fase successiva da sola', type: 'switch', get: () => timer.auto, set: value => { timer.auto = value; storeTimer(); } },
       { label: 'Suono alla fine', type: 'switch', get: () => timer.sound, set: value => { timer.sound = value; storeTimer(); if (value) timerChime(); } },
     ],
@@ -24875,7 +25707,7 @@ function dashTimerWidget() {
         timer.mode = mode;
         timer.round = 0;
         timerSet(mode === 'timer' ? 'timer' : 'work');
-        dashRemount(ctx);
+        for (const other of timerContexts()) dashRemount(other);
       }, 'Modo');
       mode.classList.add('tm-mode');
       const wrap = dashEl('div', 'tm');
@@ -24886,6 +25718,7 @@ function dashTimerWidget() {
       ring.innerHTML = '<circle class="tm-track" cx="60" cy="60" r="52"/><circle class="tm-progress" cx="60" cy="60" r="52" pathLength="1000"/>';
       const face = dashEl('div', 'tm-face');
       face.append(ring, dashEl('span', 'tm-time'), dashEl('span', 'tm-phase'));
+      if (timer.mode === 'pomodoro') face.append(dashEl('div', 'tm-rounds'));
       face.setAttribute('role', 'timer');
       const extra = dashEl('div', 'tm-extra');
       const controls = dashEl('div', 'tm-controls');
@@ -24909,10 +25742,11 @@ function dashTimerWidget() {
           button.dataset.phase = phase;
           phases.append(button);
         }
-        extra.append(phases, dashEl('div', 'tm-rounds'));
+        extra.append(phases);
       } else {
         const presets = dashEl('div', 'tm-presets');
-        for (const minutes of [1, 5, 10, 15, 25, 45, 60]) {
+        // Cinque durate: stanno su una riga come le fasi del pomodoro (stessa altezza nei due modi).
+        for (const minutes of [5, 10, 15, 30, 60]) {
           const button = dashButton('', minutes === 60 ? '1 h' : minutes + '′', minutes + ' minuti', () => {
             timer.minutes = minutes;
             timerSet('timer');
@@ -24922,7 +25756,11 @@ function dashTimerWidget() {
         }
         extra.append(presets);
       }
-      wrap.append(mode, face, controls, extra);
+      // Nella panoramica la scelta Pomodoro | Timer sta nell'intestazione del riquadro; nel
+      // pannello della barra in basso resta in cima.
+      if (ctx.el === timerPanel) wrap.append(mode);
+      else ctx.tools.append(mode);
+      wrap.append(face, controls, extra);
       ctx.body.append(wrap);
       dashTimerPaint(ctx);
     },
@@ -24976,12 +25814,13 @@ function dashClockWidget() {
         }
         svg.innerHTML = '<circle class="ck-bg" r="48.5"/>' + ticks + '<g class="ck-hands"></g><circle class="ck-pin" r="2.6"/>';
         wrap.append(svg);
-      } else {
-        const time = dashEl('div', 'ck-time');
-        time.append(dashEl('span', 'hm'), dashEl('span', 'ss'));
-        wrap.append(time);
       }
-      wrap.append(dashEl('div', 'ck-date'), dashEl('div', 'ck-meta'));
+      // Ora in cifre (anche accanto alle lancette), data e settimana: crescono con il riquadro.
+      const text = dashEl('div', 'ck-text');
+      const time = dashEl('div', 'ck-time');
+      time.append(dashEl('span', 'hm'), dashEl('span', 'ss'));
+      text.append(time, dashEl('div', 'ck-date'), dashEl('div', 'ck-meta'));
+      wrap.append(text);
       ctx.body.append(wrap);
       ctx.def.resume(ctx);
     },
@@ -25002,14 +25841,14 @@ function dashClockWidget() {
       const hm = ctx.body.querySelector('.hm');
       if (hm) {
         hm.textContent = dashTime(now);
-        ctx.body.querySelector('.ss').textContent = ctx.opt.seconds ?? true ? String(now.getSeconds()).padStart(2, '0') : '';
+        ctx.body.querySelector('.ss').textContent = ctx.opt.style !== 'analog' && (ctx.opt.seconds ?? true) ? String(now.getSeconds()).padStart(2, '0') : '';
       }
       const date = ctx.body.querySelector('.ck-date');
       date.textContent = capitalize(now.toLocaleDateString('it-IT', { weekday: 'long', day: 'numeric', month: 'long' }));
       const start = new Date(now.getFullYear(), 0, 1);
       const day = Math.round((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - start) / 864e5) + 1;
       const total = new Date(now.getFullYear(), 1, 29).getDate() === 29 ? 366 : 365;
-      ctx.body.querySelector('.ck-meta').textContent = (ctx.opt.style === 'analog' ? dashTime(now) + ' · ' : '') + 'Settimana ' + isoWeek(now) + ' · giorno ' + day + ' di ' + total;
+      ctx.body.querySelector('.ck-meta').textContent = 'Settimana ' + isoWeek(now) + ' · giorno ' + day + ' di ' + total;
     },
   };
 }
@@ -25076,7 +25915,7 @@ function zoneDiffText(minutes) {
 function dashZonesWidget() {
   const here = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Rome'; } catch { return 'Europe/Rome'; } })();
   return {
-    id: 'zones', title: 'Fusi orari', icon: 'globe', size: 1, sizes: [1, 2, 4], hidden: true,
+    id: 'zones', title: 'Fusi orari', icon: 'globe', size: 1, sizes: [1, 2, 4],
     desc: 'L’ora di clienti e sedi all’estero, con l’orario d’ufficio e un orario da confrontare',
     options: ctx => [
       dashOptChoice(ctx, 'office', 'Orario d’ufficio', [['8-17', '8–17'], ['9-18', '9–18'], ['10-19', '10–19']], '9-18'),
@@ -25084,7 +25923,7 @@ function dashZonesWidget() {
     mount(ctx) {
       ctx.opt.zones = Array.isArray(ctx.opt.zones) ? ctx.opt.zones.filter(zone => zone && zoneValid(zone.tz)) : [];
       ctx.s.shift ||= 0;
-      ctx.list = dashEl('ul', 'zn-list');
+      ctx.list = dashScroller(dashEl('ul', 'zn-list cols'));
       ctx.compare = dashEl('div', 'zn-compare');
       const range = dashEl('input');
       range.type = 'range';
@@ -25099,7 +25938,7 @@ function dashZonesWidget() {
       const reset = dashButton('icon-button', '', 'Torna all’ora attuale', () => { range.value = ctx.s.shift = 0; ctx.def.tick(ctx, new Date()); }, 'refresh');
       ctx.compare.append(label, range, reset);
       ctx.picker = dashPicker({
-        placeholder: 'Aggiungi una città o un fuso…', label: 'Aggiungi un fuso orario', iconName: 'plus',
+        placeholder: 'Aggiungi una città…', label: 'Aggiungi un fuso orario', iconName: 'plus',
         items: query => {
           const terms = foldSearch(query).split(/\s+/).filter(Boolean);
           const taken = new Set(ctx.opt.zones.map(zone => zone.tz));
@@ -25245,7 +26084,7 @@ function dashDuration(ms) {
 }
 function dashSunWidget() {
   return {
-    id: 'sun', title: 'Alba e tramonto', icon: 'sun', size: 1, sizes: [1, 2], hidden: true,
+    id: 'sun', title: 'Alba e tramonto', icon: 'sun', size: 1, sizes: [1, 2],
     desc: 'Quando sorge e tramonta il sole, quanta luce c’è e quanta ne manca',
     mount(ctx) {
       const place = ctx.opt.place;
@@ -25336,49 +26175,256 @@ function dashSunWidget() {
 }
 
 // ── Radio ──
+// Tutto dentro il riquadro: in alto la stazione in onda (brano, preferita, un'altra simile,
+// volume), sotto Preferite | Recenti | Cerca. La ricerca usa le stesse API e la stessa cache
+// del pannello Radio, ma i risultati restano qui (il pannello completo resta nella barra in basso).
+const dashRadioGenres = [['news', 'Notizie'], ['pop', 'Pop'], ['rock', 'Rock'], ['jazz', 'Jazz'], ['classical', 'Classica'], ['chillout', 'Rilassante'], ['dance', 'Dance'], ['oldies', 'Anni passati']];
 function dashRadioWidget() {
   return {
-    id: 'radio', title: 'Radio', icon: 'radio', size: 1, sizes: [1, 2, 4],
-    desc: 'La radio in ascolto e le tue stazioni preferite',
+    id: 'radio', title: 'Radio', icon: 'radio', size: 1, sizes: [1, 2], keepsInputs: true,
+    desc: 'Cerca e ascolta le radio online, con le tue preferite a portata di clic',
     unavailable: 'La radio è spenta (Impostazioni › Audio e radio)',
     when: () => settings.radio !== false,
+    mount(ctx) {
+      ctx.s.tab = ['fav', 'recent', 'search'].includes(ctx.opt.tab) ? ctx.opt.tab : radioFavorites.length ? 'fav' : radioHistory.length ? 'recent' : 'search';
+      ctx.s.limit = 0;
+      ctx.now = dashEl('div', 'rd-now');
+      const tabs = dashSegmented([['fav', 'Preferite', 'Le stazioni con la stella'], ['recent', 'Recenti', 'Ascoltate di recente'], ['search', 'Cerca', 'Cerca tra le radio di tutto il mondo']], ctx.s.tab, tab => {
+        ctx.s.tab = ctx.opt.tab = tab;
+        storeDashLayout();
+        dashRadioShowTab(ctx, tab === 'search');
+      }, 'Stazioni');
+      tabs.classList.add('rd-tabs');
+      // Ricerca: casella, generi, risultati.
+      ctx.search = dashEl('div', 'rd-search-box');
+      const field = dashEl('label', 'dw-field');
+      const input = dashEl('input');
+      input.type = 'search';
+      input.placeholder = 'Nome della radio, città…';
+      input.setAttribute('aria-label', 'Cerca una radio');
+      input.autocomplete = 'off';
+      input.spellcheck = false;
+      field.append(dashIcon('search'), input);
+      const genres = dashEl('div', 'rd-genres');
+      genres.setAttribute('role', 'group');
+      genres.setAttribute('aria-label', 'Generi');
+      for (const [tag, label] of dashRadioGenres) {
+        const chip = dashButton('rd-genre', label, 'Radio di genere ' + label.toLocaleLowerCase('it-IT'), () => {
+          ctx.s.tag = ctx.s.tag === tag ? '' : tag;
+          for (const other of genres.children) other.setAttribute('aria-pressed', String(other === chip && Boolean(ctx.s.tag)));
+          dashRadioSearch(ctx);
+        });
+        chip.setAttribute('aria-pressed', 'false');
+        genres.append(chip);
+      }
+      ctx.search.append(field, genres);
+      ctx.list = dashScroller(dashEl('div', 'rd-list'));
+      ctx.list.setAttribute('aria-live', 'polite');
+      input.addEventListener('input', () => {
+        clearTimeout(ctx.s.timer);
+        ctx.s.timer = setTimeout(() => dashRadioSearch(ctx), 380);
+      });
+      input.addEventListener('keydown', event => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          clearTimeout(ctx.s.timer);
+          dashRadioSearch(ctx);
+        } else if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          ctx.list.querySelector('button')?.focus();
+        } else if (event.key === 'Escape' && input.value) {
+          event.preventDefault();
+          event.stopPropagation();
+          input.value = '';
+          dashRadioSearch(ctx);
+        }
+      });
+      ctx.input = input;
+      // Sotto le schede una zona di altezza fissa (ricerca + elenco che scorre): cambiando scheda
+      // o cercando il riquadro non si allunga.
+      const region = dashEl('div', 'rd-region');
+      region.append(ctx.search, ctx.list);
+      dashScroller(genres, true);
+      ctx.body.append(ctx.now, tabs, region);
+      dashRadioShowTab(ctx, false);
+      refreshStoredRadios();
+    },
     update(ctx) {
       ctx.s.key = dashRadioKey();
-      const live = nowPlaying?.live ? nowPlaying : null;
-      const now = dashEl('div', 'rd-now' + (live ? '' : ' idle'));
-      const art = dashEl('span', 'rp-art rd-art');
-      if (live) radioArt(art, live.station);
-      else art.append(dashIcon('radio'));
-      const info = dashEl('span', 'dash-name');
-      if (live) {
-        info.append(dashEl('b', '', live.station.name), dashEl('small', '', live.song ? '♪ ' + live.song : itacaAudio.paused ? 'In pausa' : 'In diretta'));
-        now.classList.toggle('playing', !itacaAudio.paused);
-        now.append(art, info, dashButton('rd-play', '', itacaAudio.paused ? 'Ascolta' : 'Pausa', toggleItacaAudio, itacaAudio.paused ? 'play' : 'pause'),
-          dashButton('icon-button rd-stop', '', 'Ferma la radio', stopItacaAudio, 'close'));
-      } else {
-        info.append(dashEl('b', '', 'Nessuna radio in ascolto'), dashEl('small', '', 'Scegli una stazione qui sotto o cercane una'));
-        now.append(art, info);
-      }
-      const stations = radioFavorites.length ? radioFavorites : radioHistory;
-      const grid = dashEl('div', 'rd-grid');
-      for (const station of stations.slice(0, ctx.el.dataset.size === '1' ? 6 : 12)) {
-        const playing = isNowPlaying('radio:' + station.uuid) && !itacaAudio.paused;
-        const tile = dashButton('rd-tile' + (playing ? ' on' : ''), '', (playing ? 'In ascolto: ' : 'Ascolta ') + station.name, () => playRadio(station));
-        const tileArt = dashEl('span', 'rp-art');
-        radioArt(tileArt, station);
-        tile.append(tileArt, dashEl('span', 'rd-name', station.name));
-        grid.append(tile);
-      }
-      const foot = dashEl('div', 'rd-foot');
-      if (!stations.length) foot.append(dashEl('p', 'rd-hint', 'Cerca una radio e salvala con la stella: comparirà qui.'));
-      else foot.append(dashEl('small', 'rd-hint', radioFavorites.length ? 'Le tue preferite' : 'Ascoltate di recente'));
-      foot.append(dashButton('rd-search', 'Cerca una radio', 'Apri la radio online', event => openRadioPanel(event.currentTarget), 'search'));
-      ctx.body.replaceChildren(now, grid, foot);
+      dashRadioNow(ctx);
+      if (ctx.s.tab === 'search') dashRadioResults(ctx);
+      else dashRadioStations(ctx);
+    },
+    resized(ctx) { dashRadioShowTab(ctx, false); },
+    destroy(ctx) {
+      clearTimeout(ctx.s.timer);
+      ctx.s.controller?.abort();
     },
   };
 }
+function dashRadioShowTab(ctx, focus) {
+  ctx.search.hidden = ctx.s.tab !== 'search';
+  if (ctx.s.tab === 'search') {
+    if (!ctx.s.results && !ctx.s.loading) dashRadioSearch(ctx);
+    else dashRadioResults(ctx);
+    if (focus) ctx.input.focus({ preventScroll: true });
+  } else dashRadioStations(ctx);
+}
+// La stazione in onda (o l'invito ad ascoltarne una).
+function dashRadioNow(ctx) {
+  const live = nowPlaying?.live ? nowPlaying : null;
+  const now = ctx.now;
+  now.className = 'rd-now' + (live ? '' : ' idle') + (live && !itacaAudio.paused ? ' playing' : '');
+  const art = dashEl('span', 'rp-art rd-art');
+  const info = dashEl('div', 'rd-info');
+  if (live) {
+    radioArt(art, live.station);
+    const top = dashEl('span', 'rd-top');
+    const badge = dashEl('span', 'rd-live', itacaAudio.paused ? 'In pausa' : 'In diretta');
+    top.append(badge);
+    if (live.station.country || live.station.tags?.[0]) top.append(dashEl('span', 'rd-where', [radioCountryName(live.station.country), live.station.tags?.[0]].filter(Boolean).join(' · ')));
+    const name = dashEl('b', 'rd-title', live.station.name);
+    name.title = live.station.name;
+    info.append(top, name);
+    if (live.song) {
+      const song = dashEl('span', 'rd-song', '♪ ' + live.song);
+      song.title = live.song;
+      info.append(song);
+    }
+    const play = dashButton('rd-play', '', itacaAudio.paused ? 'Ascolta' : 'Pausa', toggleItacaAudio, itacaAudio.paused ? 'play' : 'pause');
+    const tools = dashEl('div', 'rd-tools');
+    const favorite = dashButton('icon-button rd-fav', '', radioIsFavorite(live.station.uuid) ? 'Togli dalle preferite' : 'Aggiungi alle preferite', () => toggleRadioFavorite(live.station), 'star');
+    favorite.setAttribute('aria-pressed', String(radioIsFavorite(live.station.uuid)));
+    tools.append(favorite);
+    if (live.genre) tools.append(dashButton('icon-button', '', 'Un’altra radio dello stesso genere', () => playRandomRadio(live.genre, live.country), 'shuffle'));
+    tools.append(dashButton('icon-button', '', 'Ferma la radio', stopItacaAudio, 'close'));
+    const volume = dashEl('input', 'rd-volume');
+    volume.type = 'range';
+    volume.min = 0;
+    volume.max = 100;
+    volume.value = audioVolume.muted ? 0 : trackVolumeLevel();
+    volume.title = 'Volume';
+    volume.setAttribute('aria-label', 'Volume');
+    volume.style.setProperty('--level', volume.value + '%');
+    volume.oninput = () => {
+      setItacaVolume(Number(volume.value));
+      volume.style.setProperty('--level', volume.value + '%');
+    };
+    tools.append(volume);
+    now.replaceChildren(art, info, play, tools);
+  } else {
+    art.append(dashIcon('radio'));
+    const last = radioHistory[0];
+    const title = dashEl('b', 'rd-title', 'Radio spenta');
+    const sub = dashEl('span', 'rd-song', last ? 'Ultima: ' + last.name : radioFavorites.length ? 'Scegli una stazione' : 'Cerca una radio qui sotto');
+    sub.title = sub.textContent;
+    info.append(title, sub);
+    now.replaceChildren(art, info);
+    if (last) {
+      const again = dashButton('rd-play', '', 'Riascolta «' + last.name + '»', () => playRadio(last), 'play');
+      now.append(again);
+    }
+  }
+}
+// Una riga di stazione: clic = ascolta (o pausa se è in onda), stella a destra.
+function dashRadioRow(station) {
+  const row = dashEl('div', 'rd-row');
+  const on = isNowPlaying('radio:' + station.uuid);
+  const playing = on && !itacaAudio.paused;
+  row.classList.toggle('on', on);
+  const main = dashButton('rd-pick', '', (playing ? 'Pausa: ' : 'Ascolta ') + station.name, () => on ? toggleItacaAudio() : playRadio(station));
+  const art = dashEl('span', 'rp-art');
+  radioArt(art, station);
+  const name = dashEl('span', 'dash-name');
+  name.append(dashEl('b', '', station.name), dashEl('small', '', radioMeta(station)));
+  const state = dashEl('span', 'rd-state');
+  if (playing) state.append(dashEl('i'), dashEl('i'), dashEl('i'));
+  else state.append(dashIcon('play'));
+  main.append(art, name, state);
+  const favorite = radioIsFavorite(station.uuid);
+  const star = dashButton('icon-button rd-star', '', favorite ? 'Togli dalle preferite' : 'Aggiungi alle preferite', () => toggleRadioFavorite(station), 'star');
+  star.setAttribute('aria-pressed', String(favorite));
+  row.append(main, star);
+  return row;
+}
+// Preferite o recenti: righe nel riquadro stretto, riquadri con il logo in quello largo.
+function dashRadioStations(ctx) {
+  const favorites = ctx.s.tab === 'fav';
+  const stations = favorites ? radioFavorites : radioHistory;
+  const wide = Number(ctx.el.dataset.size) > 1;
+  const max = 60;
+  const shown = stations.slice(0, ctx.s.limit || max);
+  if (!stations.length) {
+    const empty = dashEmpty(favorites ? 'star' : 'history', favorites ? 'Nessuna preferita: cerca una radio e premi la stella.' : 'Le radio che ascolti compariranno qui.');
+    const go = dashButton('dash-more', 'Cerca una radio', '', () => ctx.body.querySelector('.rd-tabs button:last-child')?.click());
+    ctx.list.replaceChildren(empty, go);
+    return;
+  }
+  let content;
+  if (wide) {
+    content = dashEl('div', 'rd-grid');
+    for (const station of shown) {
+      const on = isNowPlaying('radio:' + station.uuid);
+      const playing = on && !itacaAudio.paused;
+      const tile = dashButton('rd-tile' + (on ? ' on' : '') + (playing ? ' playing' : ''), '', (playing ? 'In ascolto: ' : 'Ascolta ') + station.name + '\n' + radioMeta(station), () => on ? toggleItacaAudio() : playRadio(station));
+      const art = dashEl('span', 'rp-art');
+      radioArt(art, station);
+      tile.append(art, dashEl('span', 'rd-name', station.name));
+      content.append(tile);
+    }
+  } else {
+    content = dashEl('div', 'rd-rows');
+    content.append(...shown.map(dashRadioRow));
+  }
+  const parts = [content];
+  if (stations.length > shown.length) parts.push(dashButton('dash-more', 'Mostra altre (' + (stations.length - shown.length) + ')', '', () => { ctx.s.limit = shown.length + max; dashRadioStations(ctx); }));
+  ctx.list.replaceChildren(...parts);
+}
+async function dashRadioSearch(ctx) {
+  const name = ctx.input.value.trim();
+  const tag = ctx.s.tag || '';
+  ctx.s.controller?.abort();
+  const controller = ctx.s.controller = new AbortController();
+  ctx.s.loading = true;
+  ctx.s.limit = 0;
+  ctx.s.error = '';
+  dashRadioResults(ctx);
+  try {
+    const query = name || tag ? { name, tag, country: '' } : { name: '', tag: '', country: 'IT' };
+    const result = await radioCachedSearch(radioSearchPath(query), controller.signal);
+    if (controller.signal.aborted) return;
+    ctx.s.results = radioUnique(result.stations);
+    ctx.s.popular = !name && !tag;
+  } catch (error) {
+    if (controller.signal.aborted) return;
+    ctx.s.results = [];
+    ctx.s.error = 'Radio Browser non risponde: controlla la connessione e riprova.';
+  }
+  ctx.s.loading = false;
+  if (ctx.el.isConnected) dashRadioResults(ctx);
+}
+function dashRadioResults(ctx) {
+  if (ctx.s.tab !== 'search') return;
+  const results = ctx.s.results || [];
+  const wide = Number(ctx.el.dataset.size) > 1;
+  const max = 40;
+  const shown = results.slice(0, ctx.s.limit || max);
+  const parts = [];
+  if (ctx.s.loading && !results.length) parts.push(dashEmpty('radio', 'Ricerca delle radio…'));
+  else if (ctx.s.error) parts.push(dashEmpty('radio', ctx.s.error));
+  else if (!results.length) parts.push(dashEmpty('search', 'Nessuna radio trovata: prova un altro nome o un genere.'));
+  else {
+    const label = dashEl('p', 'rd-label', ctx.s.popular ? 'Le più ascoltate in Italia' : results.length >= radioPageSize ? 'Più di ' + (radioPageSize - 1) + ' radio' : results.length === 1 ? '1 radio' : results.length + ' radio');
+    const rows = dashEl('div', 'rd-rows' + (wide ? ' two' : ''));
+    rows.append(...shown.map(dashRadioRow));
+    parts.push(label, rows);
+    if (results.length > shown.length) parts.push(dashButton('dash-more', 'Mostra altre', '', () => { ctx.s.limit = shown.length + max; dashRadioResults(ctx); }));
+  }
+  ctx.list.classList.toggle('loading', Boolean(ctx.s.loading));
+  ctx.list.replaceChildren(...parts);
+}
 function dashRadioKey() {
-  return [nowPlaying?.key || '', nowPlaying?.song || '', itacaAudio.paused, radioFavorites.map(station => station.uuid).join(','), radioHistory.length].join('|');
+  return [nowPlaying?.key || '', nowPlaying?.song || '', itacaAudio.paused, radioFavorites.map(station => station.uuid).join(','), radioHistory.slice(0, 12).map(station => station.uuid).join(','), [...radioFailed].join(',')].join('|');
 }
 // Chiamata da refreshAudioViews (anche a ogni fotogramma mentre suona): ridisegna solo se cambia qualcosa.
 function dashRadioChanged() {
@@ -25387,8 +26433,12 @@ function dashRadioChanged() {
   dashUpdate(ctx);
 }
 
+// Ordine e larghezze della disposizione consigliata («Disposizione consigliata» in Personalizza):
+// La cartella | Calendario  ·  Da fare, Timer, Orologio, Preferiti  ·  Recenti, Al lavoro adesso, Radio
+// ·  Fusi orari, Alba e tramonto, Tag. Scelta provando molti ordini a 4 e a 2 colonne: è quella che
+// lascia meno spazio da riempire. «Riempi gli spazi» allunga poi i riquadri fino a quelli sotto.
 const dashWidgetDefs = [dashFolderWidget(), dashCalendarWidget(), dashTodoWidget(), dashTimerWidget(), dashClockWidget(), dashFavoritesWidget(), dashRecentWidget(),
-  dashRadioWidget(), dashPeopleWidget(), dashZonesWidget(), dashSunWidget(), dashTagsWidget()];
+  dashPeopleWidget(), dashRadioWidget(), dashZonesWidget(), dashSunWidget(), dashTagsWidget()];
 const dashDefs = new Map(dashWidgetDefs.map(def => [def.id, def]));
 
 // Chi ha salvato il file così com'è (dal registro .itaca-edits): solo per le righe mostrate.
@@ -25653,6 +26703,7 @@ document.addEventListener('keydown', event => {
   if ($('dialog').open || $('imagePreview').open || imagePaint.open || $('fileMenu').matches(':popover-open')) return;
   if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
+    if (dashSearchFocus()) return;
     setSidebar(true);
     search.focus();
     search.select();
