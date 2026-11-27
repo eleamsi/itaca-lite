@@ -803,6 +803,10 @@ button:disabled { opacity: .4; cursor: default; }
 .dash-actions button.primary { border-color: transparent; background: var(--accent); }
 .dash-actions .icon { width: 15px; height: 15px; }
 .dashboard.sidebar-open .dash-when-closed { display: none; }
+.dash-actions .dash-back { max-width: 340px; border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent-text); }
+.dash-back span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.dashboard-button[aria-pressed='true'] { color: var(--accent-text); background-color: var(--tint); }
+.dashboard-button:disabled { opacity: 1; }
 
 .dash-grid { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-flow: row dense; gap: 14px; align-items: stretch; }
 @container dash (width < 900px) { .dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .dw[data-size='4'] { grid-column: 1 / -1; } }
@@ -3416,6 +3420,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <button type="button" class="icon-button" id="historyBack" aria-label="Documento precedente" title="Documento precedente" disabled><i class="icon history-arrow back" aria-hidden="true"></i></button>
           <button type="button" class="icon-button" id="historyForward" aria-label="Documento successivo" title="Documento successivo" disabled><i class="icon history-arrow" aria-hidden="true"></i></button>
         </div>
+        <button type="button" class="icon-button dashboard-button" id="dashboardButton" aria-label="Panoramica" title="Panoramica (Alt + P)" aria-pressed="false" hidden><i class="icon i-dashboard" aria-hidden="true"></i></button>
         <div class="breadcrumb" id="breadcrumb" aria-label="Percorso del documento">
           <i class="icon i-folder" aria-hidden="true"></i>
           <span id="crumbParent">Documenti</span>
@@ -3477,6 +3482,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
     <button type="button" role="menuitem" id="gitBlame" aria-haspopup="dialog" hidden title="Chi ha scritto o cambiato per ultimo la riga dove si trova il cursore"><i class="icon i-git-blame" aria-hidden="true"></i>Chi ha modificato questo punto…</button>
     <button type="button" role="menuitem" id="moveTabLeft" hidden><i class="icon i-arrow-left" aria-hidden="true"></i><span>Sposta a sinistra</span></button>
     <button type="button" role="menuitem" id="moveTabRight" hidden><i class="icon i-arrow-right" aria-hidden="true"></i><span>Sposta a destra</span></button>
+    <button type="button" role="menuitem" id="showDashboard"><i class="icon i-dashboard" aria-hidden="true"></i>Panoramica<kbd class="menu-key" data-keys="Alt P"></kbd></button>
     <button type="button" role="menuitem" id="closeDocument"><i class="icon i-close" aria-hidden="true"></i>Chiudi documento<kbd class="menu-key" data-keys="Alt W"></kbd></button>
     <button type="button" role="menuitem" id="closeAllDocuments" hidden><i class="icon i-close" aria-hidden="true"></i>Chiudi tutti<kbd class="menu-key" data-keys="Alt Shift W"></kbd></button>
   </div>
@@ -17881,6 +17887,7 @@ const shortcutGroups = [
     ['Apri il Glossario', 'Mod /'],
     ['Salva il documento', 'Mod S'],
     ['Passa da Lettura a Modifica e viceversa', 'Mod E'],
+    ['Panoramica della cartella / di nuovo per tornare ai documenti', 'Alt P'],
     ['Chiudi il documento (la scheda o la colonna attiva)', 'Alt W'],
     ['Chiudi tutti i documenti', 'Alt Shift W'],
     ['Cambia l’ordine di schede e colonne (scheda o dorso)', 'trascina'],
@@ -22989,6 +22996,7 @@ function renderMode() {
   $('workStart').hidden = hasDocument;
   if (!hasDocument) renderWorkStart();
   else if (dashboardEl && !dashboardEl.hidden) renderDashboard();
+  if (hasDocument) queueMicrotask(syncDashboardButton);
   $('main').classList.toggle('source-mode', sourceMode);
   const saveButton = $('save');
   const saveLabel = importedFolderName ? 'Scarica copia' : 'Salva';
@@ -23022,6 +23030,7 @@ function renderMode() {
 var dashboard = { timer: 0, lockTimer: 0, tickTimer: 0, locks: [], locksRoot: null, locksAt: 0, locksReading: false, editors: new Map(),
   built: '', widgets: new Map(), stale: new Set(), drag: null, swallowClick: false, data: null };
 var dashboardEl = $('dashboard');
+var dashboardReturn = null;   // documenti da riaprire uscendo dalla panoramica: { folder, paths, active, scroll }
 
 // Ultimi documenti aperti in ogni cartella (per «Recenti › Aperti da te»): localStorage
 // itaca-recent-docs {nomeCartella: [percorsi]}, al massimo 12 per cartella e 30 cartelle.
@@ -23034,6 +23043,7 @@ function recentDocuments() {
   try { return (JSON.parse(localStorage.getItem(recentDocsKey) || '{}')?.[folder] || []).filter(path => typeof path === 'string' && files.has(path)); } catch { return []; }
 }
 function rememberRecentDocument(path) {
+  if (path && dashboardReturn && !dashboardReturn.paths.includes(path)) dashboardReturn = null;
   const folder = dashFolderName();
   if (!folder || !path || !isMD(path) || !files.has(path)) return;
   try {
@@ -23312,6 +23322,7 @@ function renderDashboard() {
   const active = dashboardActive();
   const start = $('workStart');
   start.classList.toggle('is-dashboard', active);
+  if (typeof syncDashboardButton === 'function') queueMicrotask(syncDashboardButton);
   const wasHidden = dashboardEl.hidden;
   dashboardEl.hidden = !active;
   if (!active) {
@@ -23411,6 +23422,19 @@ function dashHeaderUpdate(now = new Date()) {
   head.querySelector('.dash-date').textContent = capitalize(longDate(now)) + ' · settimana ' + isoWeek(now);
   const first = (userName || '').trim().split(/\s+/)[0];
   head.querySelector('.dash-greet').textContent = dashGreeting(now) + (first ? ', ' + first : '');
+  const backPath = dashboardReturnPath();
+  let back = head.querySelector('.dash-back');
+  if (backPath && !back) {
+    back = dashButton('dash-back', '', '', () => returnFromDashboard(), 'arrow-left');
+    back.append(dashEl('span'));
+    head.querySelector('.dash-actions').prepend(back);
+  }
+  if (back && !backPath) back.remove();
+  else if (back) {
+    const many = dashboardReturn.paths.filter(path => files.has(path)).length;
+    back.querySelector('span').textContent = 'Torna a «' + docLabel(backPath) + '»' + (many === 2 ? ' e un altro' : many > 2 ? ' e altri ' + (many - 1) : '');
+    back.title = 'Riapre ' + (many > 1 ? 'i documenti che avevi aperti' : 'il documento') + ' dove eri arrivato (' + menuKeyLabel('Alt P') + ')';
+  }
   const { docs, items, read } = dashboardData();
   const folders = new Set(docs.map(path => parent(path))).size;
   const sub = head.querySelector('.dash-sub');
@@ -35464,6 +35488,76 @@ addEventListener('keydown', event => {
 }, true);
 $('closeDocument').onclick = () => multiDocs() && docTabs[activeTab] ? closeTab(activeTab) : closeAllDocuments();
 $('closeAllDocuments').onclick = () => closeAllDocuments();
+
+// ── Alt/⌥ + P: alla panoramica e ritorno ──
+// Si chiudono i documenti come con «Chiudi tutti» (con le modifiche non salvate Itaca chiede) e si
+// ricorda quali erano, quale era attivo e dove si era arrivati: di nuovo Alt/⌥ + P, il pulsante
+// nella barra in basso o «Torna a …» nella panoramica li riaprono. Le schede ricordate per la
+// cartella (itaca-open-tabs) non si toccano: chiudendo Itaca sulla panoramica restano quelle.
+function dashboardAvailable() {
+  return Boolean((settings.dashboard || settings.startView === 'dashboard') && hasWorkspaceFolder() && [...files.keys()].some(isMD));
+}
+function dashboardReturnPath() {
+  const back = dashboardReturn;
+  if (!back || current || back.folder !== dashFolderName()) return '';
+  return files.has(back.active) ? back.active : back.paths.find(path => files.has(path)) || '';
+}
+async function showDashboard() {
+  if (!current || tabSwitching || documentOpening || fileActionBusy || loading) return;
+  if (!dashboardAvailable()) {
+    toast('La panoramica è spenta: Impostazioni › Documenti › Apertura', 'warning');
+    return;
+  }
+  const many = multiDocs() && docTabs.length > 1;
+  const paths = many ? docTabs.map(tab => tab.path) : [current];
+  const back = { folder: dashFolderName(), paths, active: current, scroll: workspace.scrollTop };
+  if (!await guardAll()) return;
+  resetDoc('', '');
+  dashboardReturn = back;
+  renderDashboard();
+  workspace.scrollTop = 0;
+  dashboardEl.querySelector('.dash-back')?.focus({ preventScroll: true });
+}
+async function returnFromDashboard() {
+  const active = dashboardReturnPath();
+  if (!active) return;
+  const back = dashboardReturn;
+  const paths = back.paths.filter(path => files.has(path));
+  await openPath(active);
+  if (current !== active) return;
+  dashboardReturn = null;
+  if (paths.length > 1) restoreOpenTabs({ paths, active: paths.indexOf(active) });
+  storeOpenTabs();
+  setTimeout(() => { workspace.scrollTop = back.scroll; }, 60);
+}
+function toggleDashboard() {
+  if (current) showDashboard();
+  else if (dashboardReturnPath()) returnFromDashboard();
+}
+function syncDashboardButton() {
+  const button = $('dashboardButton');
+  if (!button) return;
+  const available = dashboardAvailable();
+  button.hidden = !available;
+  $('showDashboard').hidden = !available;
+  const showing = Boolean(dashboardEl && !dashboardEl.hidden);
+  const back = showing ? dashboardReturnPath() : '';
+  button.setAttribute('aria-pressed', String(showing));
+  button.disabled = showing && !back;
+  const label = back ? 'Torna a «' + docLabel(back) + '»' : showing ? 'Sei nella panoramica' : 'Panoramica della cartella';
+  button.title = label + (button.disabled ? '' : ' (' + menuKeyLabel('Alt P') + ')');
+  button.setAttribute('aria-label', label);
+}
+$('dashboardButton').onclick = toggleDashboard;
+$('showDashboard').onclick = showDashboard;
+addEventListener('keydown', event => {
+  if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.code !== 'KeyP' || event.isComposing) return;
+  if (document.querySelector('dialog[open]')) return;
+  if (!current && !dashboardReturnPath()) return;
+  event.preventDefault();
+  event.stopPropagation();
+  toggleDashboard();
+}, true);
 for (const kbd of $('docMenu').querySelectorAll('.menu-key')) kbd.textContent = menuKeyLabel(kbd.dataset.keys);
 
 // Ctrl/⌘ + Maiusc + E: porta il fuoco sull'elenco dei file (sul documento aperto).
