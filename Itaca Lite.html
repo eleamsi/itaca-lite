@@ -160,6 +160,18 @@
 ::highlight(settings-search) { background-color: color-mix(in srgb, var(--accent) 26%, transparent); color: inherit; }
 .settings-reset { margin: auto 6px 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--paper); color: var(--copy); font-size: 12px; font-weight: 550; text-align: left; }
 .settings-reset:hover:not(:disabled) { border-color: color-mix(in srgb, var(--line) 50%, var(--muted)); color: var(--ink); }
+.transfer-intro { margin: -4px 2px 14px; color: var(--copy); font-size: 13px; line-height: 1.5; }
+.transfer-note { margin: 10px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.settings-dialog .update-actions .icon, #settingsPanel-transfer .update-actions .icon { width: 15px; height: 15px; margin-right: 6px; vertical-align: -3px; }
+.transfer-choices { display: grid; gap: 6px; margin: 12px 0 4px; }
+.transfer-choice { display: flex !important; align-items: flex-start; gap: 10px; margin: 0 !important; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); cursor: pointer; }
+.transfer-choice:has(input:checked) { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--accent) 6%, var(--paper)); }
+.transfer-choice input { flex: none; width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--accent); }
+.transfer-choice span { display: grid; gap: 2px; min-width: 0; }
+.transfer-choice b { color: var(--ink); font-weight: 620; }
+.transfer-choice em { color: var(--accent-text); font-size: 12px; font-style: normal; font-weight: 600; }
+.transfer-choice small { color: var(--muted); font-size: 12px; line-height: 1.4; }
+.transfer-origin { color: var(--muted); }
 .settings-about { padding: 0 10px; color: var(--muted); font-size: 11.5px; font-variant-numeric: tabular-nums; }
 .settings-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .settings-close { position: absolute; z-index: 3; top: 12px; right: 12px; }
@@ -194,11 +206,11 @@
 .font-choice span { font-size: 13px; font-weight: 500; }
 
 /* Interruttore */
-.settings-dialog .switch, .dash-pop .switch { appearance: none; position: relative; flex: none; width: 36px; height: 21px; margin: 0; border-radius: 11px; background: color-mix(in srgb, var(--muted) 40%, transparent); cursor: pointer; transition: background-color .15s ease; }
-.settings-dialog .switch::before, .dash-pop .switch::before { content: ''; position: absolute; top: 2.5px; left: 2.5px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px #0000003d; transition: transform .15s ease; }
-.settings-dialog .switch:checked, .dash-pop .switch:checked { background: var(--accent); }
-.settings-dialog .switch:checked::before, .dash-pop .switch:checked::before { transform: translateX(15px); }
-.settings-dialog .switch:focus-visible, .dash-pop .switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 11px; }
+.settings-dialog .switch, .dash-pop .switch, .compare-dialog .switch { appearance: none; position: relative; flex: none; width: 36px; height: 21px; margin: 0; border-radius: 11px; background: color-mix(in srgb, var(--muted) 40%, transparent); cursor: pointer; transition: background-color .15s ease; }
+.settings-dialog .switch::before, .dash-pop .switch::before, .compare-dialog .switch::before { content: ''; position: absolute; top: 2.5px; left: 2.5px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px #0000003d; transition: transform .15s ease; }
+.settings-dialog .switch:checked, .dash-pop .switch:checked, .compare-dialog .switch:checked { background: var(--accent); }
+.settings-dialog .switch:checked::before, .dash-pop .switch:checked::before, .compare-dialog .switch:checked::before { transform: translateX(15px); }
+.settings-dialog .switch:focus-visible, .dash-pop .switch:focus-visible, .compare-dialog .switch:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 11px; }
 
 /* Scelta dell'angolo: una pagina in miniatura con i quattro angoli cliccabili */
 .corner-picker { display: grid; grid-template-columns: repeat(2, 30px); justify-content: space-between; align-content: space-between; flex: none; width: 92px; height: 66px; padding: 5px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); box-shadow: inset 0 0 0 4px var(--paper), inset 0 0 0 5px var(--line-soft); }
@@ -243,6 +255,77 @@
 .i-feedback { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z'/%3E%3Cpath d='M12 6.8v4.2M12 13.4v.1'/%3E%3C/svg%3E"); }
 .si-fb-new { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 20h8M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'/%3E%3C/svg%3E"); }
 .si-fb-list { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 6h11M9 12h11M9 18h11'/%3E%3Ccircle cx='4.5' cy='6' r='1'/%3E%3Ccircle cx='4.5' cy='12' r='1'/%3E%3Ccircle cx='4.5' cy='18' r='1'/%3E%3C/svg%3E"); }
+.i-swap { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h15l-4-4M20 16H5l4 4'/%3E%3C/svg%3E"); }
+.i-chevron-up { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 15 6-6 6 6'/%3E%3C/svg%3E"); }
+.i-chevron-down { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+/* Confronto affiancato */
+.compare-dialog { width: min(1400px, calc(100vw - 32px)); max-width: none; height: min(900px, calc(100vh - 32px)); max-height: none; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); }
+.compare-dialog[open] { display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); }
+.compare-dialog::backdrop { background: var(--overlay); }
+.cmp-head { display: flex; align-items: center; gap: 10px; padding: 12px 10px 8px 18px; }
+.cmp-head > .icon { width: 18px; height: 18px; color: var(--accent-text); }
+.cmp-head h2 { margin: 0; font: 650 16px/1.2 var(--display); white-space: nowrap; }
+.cmp-stats { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; margin-left: 8px; }
+.cmp-pill { padding: 2px 9px; border-radius: 999px; background: var(--tint); color: var(--accent-text); font: 600 11.5px/1.5 var(--sans); white-space: nowrap; }
+.cmp-pill.same { background: color-mix(in srgb, var(--success, #2f855a) 14%, transparent); color: var(--success-text, var(--success, #2f855a)); }
+.cmp-pill.change { background: color-mix(in srgb, var(--cmp-change) 22%, transparent); color: var(--copy); }
+.cmp-pill.del { background: color-mix(in srgb, var(--cmp-del) 18%, transparent); color: var(--copy); }
+.cmp-pill.add { background: color-mix(in srgb, var(--cmp-add) 18%, transparent); color: var(--copy); }
+.compare-dialog { --cmp-del: #d1453b; --cmp-add: #2e8b57; --cmp-change: #d39b1f; }
+:root[data-theme='dark'] .compare-dialog { --cmp-del: #ff7b72; --cmp-add: #56d364; --cmp-change: #e3b341; }
+.cmp-sources { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: start; gap: 8px; padding: 2px 18px 10px; }
+.cmp-side { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 4px 8px; }
+.cmp-tag { color: var(--muted); font: 650 10.5px/1 var(--sans); letter-spacing: .06em; text-transform: uppercase; }
+.cmp-side select { width: 100%; height: 32px; padding: 0 28px 0 10px; border: 1px solid var(--line); border-radius: var(--radius); background-color: var(--paper); color: var(--ink); font: 550 13px var(--sans); text-overflow: ellipsis; cursor: pointer; }
+.cmp-side .cmp-edit[hidden] { display: none; }
+.cmp-detail { grid-column: 2 / -1; overflow: hidden; color: var(--muted); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap; }
+.cmp-swap { margin-top: 2px; }
+.cmp-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 8px 18px; border-block: 1px solid var(--line-soft); background: color-mix(in srgb, var(--muted) 5%, var(--panel)); }
+.cmp-nav { display: inline-flex; align-items: center; gap: 2px; }
+.cmp-position { min-width: 4.5em; color: var(--copy); font: 600 12px var(--sans); font-variant-numeric: tabular-nums; text-align: center; }
+.cmp-toggle { display: inline-flex; align-items: center; gap: 8px; color: var(--copy); font-size: 12.5px; cursor: pointer; }
+.cmp-body { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 14px; min-height: 0; }
+.cmp-view { position: relative; overflow: auto; overscroll-behavior: contain; background: var(--paper); font: 12.5px/1.55 var(--mono); scrollbar-width: thin; }
+.cmp-view:focus { outline: none; }
+.cmp-row { display: grid; grid-template-columns: 3.6em minmax(0, 1fr) 3.6em minmax(0, 1fr); }
+.cmp-num { padding: 0 8px 0 4px; border-right: 1px solid var(--line-soft); color: var(--muted); text-align: right; user-select: none; font-variant-numeric: tabular-nums; opacity: .8; }
+.cmp-num:nth-of-type(2) { border-left: 1px solid var(--line); }
+.cmp-code { min-width: 0; padding: 0 10px; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; color: var(--ink); }
+.cmp-row.change > .cmp-code { background: color-mix(in srgb, var(--cmp-change) 12%, transparent); }
+.cmp-row.del > .cmp-code:nth-child(2), .cmp-row.change > .cmp-code:nth-child(2) { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--cmp-del) 70%, transparent); }
+.cmp-row.add > .cmp-code:nth-child(4), .cmp-row.change > .cmp-code:nth-child(4) { box-shadow: inset 3px 0 0 color-mix(in srgb, var(--cmp-add) 70%, transparent); }
+.cmp-row.del > .cmp-code:nth-child(2) { background: color-mix(in srgb, var(--cmp-del) 12%, transparent); }
+.cmp-row.add > .cmp-code:nth-child(4) { background: color-mix(in srgb, var(--cmp-add) 12%, transparent); }
+.cmp-row:not(.same) > .cmp-num { background: color-mix(in srgb, var(--muted) 7%, transparent); }
+.cmp-blank { background: repeating-linear-gradient(-45deg, transparent 0 5px, color-mix(in srgb, var(--muted) 12%, transparent) 5px 6px) !important; box-shadow: none !important; }
+.cmp-code mark { border-radius: 3px; color: inherit; }
+.cmp-code mark.cmp-del { background: color-mix(in srgb, var(--cmp-del) 32%, transparent); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--cmp-del) 70%, transparent); }
+.cmp-code mark.cmp-add { background: color-mix(in srgb, var(--cmp-add) 32%, transparent); }
+.cmp-row.current > .cmp-num:first-child { box-shadow: inset 3px 0 0 var(--accent); color: var(--accent-text); opacity: 1; font-weight: 700; }
+.cmp-gap { display: block; width: 100%; padding: 3px 12px; border: 0; border-block: 1px dashed var(--line); background: color-mix(in srgb, var(--muted) 6%, var(--paper)); color: var(--muted); font: 550 11.5px var(--sans); text-align: center; cursor: pointer; }
+.cmp-gap:hover { color: var(--accent-text); background: var(--hover); }
+.cmp-empty { margin: 48px auto; max-width: 420px; color: var(--muted); font: 13px/1.5 var(--sans); text-align: center; }
+.cmp-map { position: relative; border-left: 1px solid var(--line-soft); background: color-mix(in srgb, var(--muted) 5%, var(--panel)); cursor: pointer; }
+.cmp-map i { position: absolute; left: 3px; right: 3px; border-radius: 1px; }
+.cmp-map i.change { background: var(--cmp-change); }
+.cmp-map i.del { background: var(--cmp-del); }
+.cmp-map i.add { background: var(--cmp-add); }
+.cmp-thumb { position: absolute; left: 0; right: 0; border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent); border-radius: 3px; background: color-mix(in srgb, var(--accent) 10%, transparent); pointer-events: none; }
+textarea.cmp-paste { width: 100%; min-height: 260px; font: 12.5px/1.5 var(--mono); resize: vertical; }
+.code-compare { display: inline-grid; place-items: center; width: 26px; height: 24px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--copy); cursor: pointer; }
+.code-compare:hover { color: var(--ink); background: var(--hover); }
+.code-compare .icon { width: 14px; height: 14px; }
+@media (max-width: 760px) {
+  .cmp-sources { grid-template-columns: minmax(0, 1fr); }
+  .cmp-swap { justify-self: center; transform: rotate(90deg); }
+  .cmp-row { grid-template-columns: 2.6em minmax(0, 1fr) 2.6em minmax(0, 1fr); }
+  .cmp-view { font-size: 11.5px; }
+  .cmp-head h2 { font-size: 14px; }
+  .cmp-head { flex-wrap: wrap; }
+  .cmp-stats { order: 3; flex-basis: 100%; margin-left: 0; }
+  .cmp-tools { gap: 8px 12px; }
+}
+.si-transfer { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3.5' width='18' height='12' rx='2'/%3E%3Cpath d='M8 20h8M12 15.5V20'/%3E%3Cpath d='M7.5 8h8l-2-2M16.5 11h-8l2 2'/%3E%3C/svg%3E"); }
 .si-update { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7.5v8.5M8.5 12.5 12 16l3.5-3.5'/%3E%3C/svg%3E"); }
 .si-pdf { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2'/%3E%3Crect x='7' y='14' width='10' height='7' rx='1'/%3E%3C/svg%3E"); }
 .si-keys { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='6' width='19' height='12' rx='2.5'/%3E%3Cpath d='M6.5 10h1M10.5 10h1M14.5 10h1M17 10h.5M8 14h8'/%3E%3C/svg%3E"); }
@@ -466,6 +549,8 @@ button:disabled { opacity: .4; cursor: default; }
 .tree-selection-bar .icon { width: 13px; height: 13px; }
 .tree-selection-bar .icon-button { width: 26px; height: 26px; }
 .tree-selection-bar [data-selection='delete'] { grid-column: 2 / 4; }
+.tree-selection-bar [data-selection='compare'] { grid-column: 1 / -1; }
+.tree-selection-bar [data-selection='compare'][hidden] { display: none; }
 .selection-list { display: grid; gap: 3px; max-height: 220px; margin: 8px 0 4px; padding: 8px 10px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--canvas); list-style: none; font-size: 12.5px; }
 .selection-list li { display: flex; align-items: center; gap: 7px; min-width: 0; }
 .selection-list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2083,7 +2168,7 @@ dialog .tag-skipped span { color: var(--muted); }
 .editor [data-ext='pdf'][data-embed-kind='file'] .pdf-status { display: none; }
 .file-list { padding: 6px 0; font: 12.5px/1.45 var(--sans); }
 /* Lettore audio di Itaca */
-/* Lettore di Itaca: un solo riquadro per i file (forma d'onda) e per la radio in diretta (LIVE).
+/* Lettore di Itaca: un solo riquadro per i file (forma d'onda) e per la radio («In diretta»).
    data-kind='file' | 'live' sceglie la seconda riga; --live è il colore della diretta. */
 .audio-dock { --progress: 0; --live: var(--danger-text); color: var(--copy); font: 550 11.5px/1.3 var(--sans); }
 .audio-dock[hidden] { display: none !important; }
@@ -2132,11 +2217,11 @@ dialog .tag-skipped span { color: var(--muted); }
 .ad-wave canvas { display: block; width: 100%; height: 100%; }
 .ad-speed { flex: none; min-width: 2.9em; padding: 2px 5px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--copy); font-weight: 650; cursor: pointer; }
 .ad-speed:hover { color: var(--ink); background: var(--hover); }
-/* Diretta: etichetta LIVE, livello animato, tempo d'ascolto, «un'altra stazione» */
+/* Diretta: etichetta «In diretta», livello animato, tempo d'ascolto, «un'altra stazione» */
 .ad-live { display: none; flex: 1; align-items: center; gap: 8px; min-width: 0; }
 .audio-dock[data-kind='live'] .ad-live { display: flex; }
 .audio-dock[data-kind='live'] :is(.ad-now, .ad-wave, .ad-total, .ad-speed), .audio-dock[data-kind='file'] .ad-fav { display: none; }
-.ad-badge { display: inline-flex; align-items: center; gap: 5px; flex: none; padding: 3px 7px 3px 6px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 14%, transparent); color: var(--muted); font: 750 9.5px/1.1 var(--sans); letter-spacing: .09em; transition: background-color .2s, color .2s; }
+.ad-badge { display: inline-flex; align-items: center; gap: 5px; flex: none; padding: 3px 7px 3px 6px; border-radius: 999px; background: color-mix(in srgb, var(--muted) 14%, transparent); color: var(--muted); font: 750 9.5px/1.1 var(--sans); letter-spacing: .05em; text-transform: uppercase; white-space: nowrap; transition: background-color .2s, color .2s; }
 .ad-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .audio-dock.playing:not(.buffering) .ad-badge { background: color-mix(in srgb, var(--live) 14%, transparent); color: var(--live); }
 .audio-dock.playing:not(.buffering) .ad-badge::before { animation: ad-pulse 1.8s ease-out infinite; }
@@ -2206,6 +2291,22 @@ dialog .tag-skipped span { color: var(--muted); }
 #radioButton.on-air::after { content: ''; position: absolute; top: 5px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--danger-text); box-shadow: 0 0 0 2px var(--paper); }
 .radio-panel { position: fixed; inset: auto; box-sizing: border-box; width: min(390px, calc(100vw - 16px)); height: min(580px, calc(100vh - 70px)); margin: 0; padding: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--ink); box-shadow: var(--floating-shadow); font: 13px/1.35 var(--sans); }
 .radio-panel:popover-open { display: flex; flex-direction: column; animation: ad-open .14s ease-out; transform-origin: var(--origin, 50% 100%); }
+/* Stazioni attaccate sopra il lettore: un solo riquadro con lui. */
+.radio-panel.attached { border-bottom: 0; border-radius: 14px 14px 0 0; box-shadow: 0 -10px 30px -12px color-mix(in srgb, var(--dash-shade) 24%, transparent); animation-name: rp-attach; animation-duration: .18s; }
+.radio-panel.attached.below { border-top: 0; border-bottom: 1px solid var(--line); border-radius: 0 0 14px 14px; box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--dash-shade) 24%, transparent); }
+.radio-panel.attached .rp-head { padding: 10px 8px 8px 12px; }
+.radio-panel.attached .rp-logo { display: none; }
+.radio-panel.attached .rp-heading small { display: none; }
+.radio-panel.attached .rp-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.radio-panel.attached .rp-random { grid-column: 1 / -1; justify-content: center; }
+.radio-panel.attached .rp-foot { padding-bottom: 10px; border-bottom: 1px solid var(--line-soft); }
+.radio-panel.attached.below .rp-foot { border-bottom: 0; }
+.audio-dock.radio-open { border-top-left-radius: 0; border-top-right-radius: 0; box-shadow: 0 12px 30px -12px color-mix(in srgb, var(--dash-shade) 24%, transparent); }
+body:has(.radio-panel.attached.below) .audio-dock.radio-open { border-radius: 14px 14px 0 0; }
+.audio-dock .ad-radio[aria-pressed='true'] { background: var(--tint); color: var(--accent-text); }
+@keyframes rp-attach { from { opacity: 0; transform: translateY(10px) scaleY(.97); } }
+.radio-panel.attached.below { animation-name: rp-attach-below; }
+@keyframes rp-attach-below { from { opacity: 0; transform: translateY(-10px) scaleY(.97); } }
 .rp-head { display: flex; align-items: center; gap: 10px; padding: 12px 8px 10px 14px; }
 .rp-logo { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; background: var(--tint); color: var(--accent-text); }
 .rp-logo .icon { width: 17px; height: 17px; }
@@ -2321,7 +2422,7 @@ dialog .tag-skipped span { color: var(--muted); }
 .code-title ~ .code-language { margin-left: auto; }
 .code-title ~ .code-options { margin-left: 0; }
 .code-title { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
-.code-block-header > :is(.code-language, .code-language-label, .code-options, .code-copy) { flex: none; white-space: nowrap; }
+.code-block-header > :is(.code-language, .code-language-label, .code-options, .code-compare, .code-copy) { flex: none; white-space: nowrap; }
 /* Tabelle in Lettura: ordinamento e filtro */
 .editor th[data-sortable] { position: relative; padding-right: 28px; cursor: pointer; user-select: none; }
 .editor th[data-sortable]::after { content: ''; position: absolute; top: 50%; right: 10px; width: 10px; height: 14px; margin-top: -7px; background: currentColor; opacity: .25;
@@ -2380,8 +2481,8 @@ dialog .tag-skipped span { color: var(--muted); }
 .code-editor:focus-visible { outline-offset: -2px; }
 .code-editor::selection { background: color-mix(in srgb, var(--focus) 36%, transparent); color: transparent; }
 .code-language { min-width: 0; max-width: 70%; padding: 3px 5px; border: 1px solid var(--line); border-radius: 5px; background: var(--paper); font: inherit; }
-.editor pre { --syntax-keyword: #79348a; --syntax-string: #21653a; --syntax-number: #9c391f; --syntax-comment: #536d80; --syntax-name: #14578e; }
-[data-theme='dark'] .editor pre { --syntax-keyword: #e0a8f0; --syntax-string: #a9d59e; --syntax-number: #ffc481; --syntax-comment: #9eb0c2; --syntax-name: #93caff; }
+.editor pre, .compare-dialog { --syntax-keyword: #79348a; --syntax-string: #21653a; --syntax-number: #9c391f; --syntax-comment: #536d80; --syntax-name: #14578e; }
+[data-theme='dark'] .editor pre, [data-theme='dark'] .compare-dialog { --syntax-keyword: #e0a8f0; --syntax-string: #a9d59e; --syntax-number: #ffc481; --syntax-comment: #9eb0c2; --syntax-name: #93caff; }
 .hljs-keyword, .hljs-selector-tag, .hljs-doctag, .hljs-meta { color: var(--syntax-keyword); }
 .hljs-string, .hljs-regexp, .hljs-addition { color: var(--syntax-string); }
 .hljs-number, .hljs-literal, .hljs-symbol, .hljs-deletion { color: var(--syntax-number); }
@@ -2452,6 +2553,8 @@ dialog::backdrop { background: var(--overlay); }
 #presentation .pr-content pre { font-size: .78em; }
 #presentation .pr-content table { font-size: .74em; }
 #presentation .pr-content a:not([href]) { cursor: default; }
+#presentation .pr-content input[type='checkbox'] { width: .78em; height: .78em; margin-left: 0; vertical-align: -.08em; cursor: default; }
+#presentation .pr-content input[type='checkbox'] + [data-checkbox-text] { padding-left: .4em; }
 .pr-loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--muted); font: 15px var(--sans); }
 .pr-blank { position: absolute; inset: 0; z-index: 5; background: #000; cursor: none; }
 .pr-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: color-mix(in srgb, var(--line) 60%, transparent); }
@@ -3937,6 +4040,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
   <div class="file-menu doc-menu" id="docMenu" popover role="menu" aria-label="Altre azioni del documento">
     <button type="button" role="menuitem" id="exportPdf" aria-haspopup="dialog"><i class="icon i-export" aria-hidden="true"></i>Esporta PDF…</button>
     <button type="button" role="menuitem" id="exportWord" title="Un file .docx da mandare a chi usa Word"><i class="icon i-ft-word" aria-hidden="true"></i>Esporta in Word…</button>
+ <button type="button" role="menuitem" id="compareTexts" title="Due blocchi di codice, due file di testo o due testi incollati, uno accanto all’altro con le differenze"><i class="icon i-diff" aria-hidden="true"></i>Confronta testi…</button>
     <button type="button" role="menuitem" id="presentDocument" title="Il documento a schermo intero, una sezione alla volta; avanti e indietro con le frecce"><i class="icon i-present" aria-hidden="true"></i>Presenta<kbd class="menu-key" data-keys="Mod Enter"></kbd></button>
     <button type="button" role="menuitem" id="gitHistory" aria-haspopup="dialog" hidden><i class="icon i-history" aria-hidden="true"></i>Versioni e confronto…</button>
     <button type="button" role="menuitem" id="gitBlame" aria-haspopup="dialog" hidden title="Chi ha scritto o cambiato per ultimo la riga dove si trova il cursore"><i class="icon i-git-blame" aria-hidden="true"></i>Chi ha modificato questo punto…</button>
@@ -3973,6 +4077,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
     <button type="button" data-file-action="start"><i class="icon i-book" aria-hidden="true"></i><span id="startActionLabel">Apri all’avvio</span></button>
     <button type="button" data-file-action="favorite"><i class="icon i-star" aria-hidden="true"></i><span id="favoriteActionLabel">Aggiungi ai preferiti</span></button>
     <button type="button" data-file-action="markdown" title="Crea un documento Markdown con il testo, i titoli, gli elenchi, le tabelle e le immagini del file"><i class="icon i-ft-word" aria-hidden="true"></i>Converti in Markdown</button>
+    <button type="button" data-file-action="compare" title="Confronta questo file con un altro file di testo, riga per riga (se ne hai selezionati due, li confronta)"><i class="icon i-diff" aria-hidden="true"></i>Confronta con…</button>
     <button type="button" data-file-action="unused" title="File di questa cartella che nessun documento usa, e il cestino di Itaca"><i class="icon i-attach" aria-hidden="true"></i>Allegati non usati…</button>
     <hr>
     <button type="button" data-file-action="rename"><i class="icon i-edit" aria-hidden="true"></i>Rinomina<kbd class="menu-key" data-keys="F2"></kbd></button>
@@ -4025,6 +4130,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
           <button type="button" role="tab" id="settingsTab-pdf" aria-controls="settingsPanel-pdf" aria-selected="false" tabindex="-1"><i class="icon si-pdf" aria-hidden="true"></i><span>PDF</span></button>
           <button type="button" role="tab" id="settingsTab-diagrams" aria-controls="settingsPanel-diagrams" aria-selected="false" tabindex="-1"><i class="icon si-diagram" aria-hidden="true"></i><span>Diagrammi</span></button>
           <button type="button" role="tab" id="settingsTab-updates" aria-controls="settingsPanel-updates" aria-selected="false" tabindex="-1"><i class="icon si-update" aria-hidden="true"></i><span>Aggiornamenti</span><i class="update-dot" id="updateTabDot" hidden></i></button>
+          <button type="button" role="tab" id="settingsTab-transfer" aria-controls="settingsPanel-transfer" aria-selected="false" tabindex="-1"><i class="icon si-transfer" aria-hidden="true"></i><span>Su un altro PC</span></button>
         </div>
         <button type="button" class="settings-reset" id="settingsReset" title="Aspetto, documenti, barra e pannelli, file, audio, PDF e diagrammi tornano come al primo avvio. Restano la cartella di lavoro, le cartelle salvate, i percorsi, il tuo nome e i documenti.">Ripristina predefinite</button>
         <span class="settings-about" id="settingsAbout"></span>
@@ -4411,6 +4517,22 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
             <div class="update-actions"><button type="button" class="outline" id="updateRollback">Ripristina</button></div>
           </div>
         </div>
+      </section>
+      <section role="tabpanel" id="settingsPanel-transfer" aria-labelledby="settingsTab-transfer" hidden>
+        <h3>Su un altro PC</h3>
+        <p class="transfer-intro">Porta con te la tua Itaca: salva in un file tema, impostazioni, preferiti e disposizione, e aprilo su un altro computer (o dopo aver cambiato browser) per ritrovare tutto com’era. I documenti e le cartelle non sono nel file.</p>
+        <div class="set-card">
+          <div class="set-row" data-keywords="esporta salva copia backup trasferisci impostazioni file json">
+            <span class="set-label"><b>Esporta le impostazioni</b><small>Scegli cosa portare: crea il file «Itaca - impostazioni.json»</small></span>
+            <div class="update-actions"><button type="button" class="outline" id="settingsExport"><i class="icon i-download" aria-hidden="true"></i>Esporta…</button></div>
+          </div>
+          <div class="set-row" data-keywords="importa carica ripristina trasferisci impostazioni file json altro computer">
+            <span class="set-label"><b>Importa le impostazioni</b><small>Apri un file esportato da Itaca: i preferiti si aggiungono ai tuoi, il resto prende il posto di quello di adesso</small></span>
+            <div class="update-actions"><button type="button" class="outline" id="settingsImport"><i class="icon i-upload" aria-hidden="true"></i>Importa…</button></div>
+          </div>
+        </div>
+        <p class="transfer-note">Le cartelle non passano da un computer all’altro (il browser le dà solo a chi le sceglie): preferiti e documento iniziale valgono per le cartelle con lo stesso nome.</p>
+        <input type="file" id="settingsImportInput" accept=".json,application/json" hidden>
       </section>
       </div>
       </div>
@@ -11258,7 +11380,7 @@ audioDock.innerHTML = '<button type="button" class="ad-mini" aria-label="Mostra 
   '<div class="ad-bar"><button type="button" class="ad-play" aria-label="Riproduci" title="Riproduci">' + playIcons + stopIcon + '</button>' +
   '<span class="ad-now">0:00</span><div class="ad-wave" role="slider" tabindex="0" aria-label="Posizione"><canvas></canvas></div><span class="ad-total">–:––</span>' +
   '<button type="button" class="ad-speed" title="Velocità di riproduzione">1×</button>' +
-  '<span class="ad-live"><span class="ad-badge">LIVE</span><span class="ad-signal" aria-hidden="true">' + liveBars + '</span><span class="ad-elapsed" title="Da quanto ascolti"></span>' +
+  '<span class="ad-live"><span class="ad-badge">In diretta</span><span class="ad-signal" aria-hidden="true">' + liveBars + '</span><span class="ad-elapsed" title="Da quanto ascolti"></span>' +
   '<button type="button" class="icon-button ad-shuffle" hidden><i class="icon i-shuffle" aria-hidden="true"></i></button></span>' +
   '<button type="button" class="icon-button ad-vol" aria-expanded="false" aria-label="Volume" title="Volume di Itaca">' + volumeIcons + '</button></div>' +
   '<div class="ad-volrow" hidden><button type="button" class="icon-button ad-mute" aria-pressed="false" aria-label="Silenzia" title="Silenzia">' + volumeIcons + '</button>' +
@@ -11291,6 +11413,7 @@ function placeAudioDock() {
   const rect = bar?.offsetHeight ? bar.getBoundingClientRect() : null;
   if (rect && rect.right > innerWidth - 380 && rect.top < innerHeight - 50) audioDock.style.bottom = (innerHeight - rect.top + 10) + 'px';
   else audioDock.style.removeProperty('bottom');
+  if (typeof placeRadioPanel === 'function') placeRadioPanel();
 }
 
 function positionFloatingDock(left, top) {
@@ -11308,6 +11431,7 @@ function positionFloatingDock(left, top) {
   top = Math.min(Math.max(8, top), innerHeight - height - 8);
   audioDock.style.left = left + 'px';
   audioDock.style.top = top + 'px';
+  if (typeof placeRadioPanel === 'function') placeRadioPanel();
   return { left, top };
 }
 
@@ -11387,7 +11511,7 @@ function renderAudioDock() {
 const radioSongsShown = 3;   // brani «Prima:» nel suggerimento (se ne ricordano radioSongsKept)
 const radioSongsKept = 6;
 
-// Seconda riga della diretta: LIVE, livello, da quanto si ascolta, un'altra stazione dello stesso genere.
+// Seconda riga della diretta: «In diretta», livello, da quanto si ascolta, un'altra stazione dello stesso genere.
 function renderLiveDock(playing, buffering) {
   const station = nowPlaying.station;
   const format = station.codec ? station.codec + (station.bitrate ? ' ' + station.bitrate + ' kbps' : '') : '';
@@ -11404,7 +11528,9 @@ function renderLiveDock(playing, buffering) {
     .map(item => new Date(item.time).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) + '  ' + item.title);
   const infoTitle = station.name + (song ? '\nIn onda: ' + song + '\n' + details + (earlier.length ? '\n\nPrima:\n' + earlier.join('\n') : '') : '\n' + details);
   if (info.title !== infoTitle) info.title = infoTitle;
-  setDockText('.ad-elapsed', buffering ? 'Connessione…' : playing ? formatMediaTime((Date.now() - nowPlaying.since) / 1000) : 'In pausa');
+  // Stesse parole del riquadro Radio della panoramica: «In diretta» / «In pausa».
+  setDockText('.ad-badge', buffering ? 'Connessione…' : playing ? 'In diretta' : 'In pausa');
+  setDockText('.ad-elapsed', playing && !buffering ? formatMediaTime((Date.now() - nowPlaying.since) / 1000) : '');
   const favorite = radioIsFavorite(station.uuid);
   const fav = dockPart('.ad-fav');
   if (fav.getAttribute('aria-pressed') !== String(favorite)) {
@@ -12198,6 +12324,8 @@ radioPanel.innerHTML = '<header class="rp-head"><span class="rp-logo" aria-hidde
   '<div class="rp-status" role="status"></div><ul class="rp-list" aria-label="Stazioni"></ul>' +
   '<footer class="rp-foot">Elenco libero e collaborativo di <a href="https://www.radio-browser.info/" target="_blank" rel="noopener noreferrer">radio-browser.info</a></footer>';
 document.body.append(radioPanel);
+new ResizeObserver(() => { if (radioPanel.classList.contains('attached')) placeRadioPanel(); }).observe(audioDock);
+addEventListener('resize', () => placeRadioPanel());
 const radioPart = selector => radioPanel.querySelector(selector);
 const radioQueryInput = radioPart('.rp-query');
 const radioGenre = radioPart('.rp-genre');
@@ -12253,6 +12381,22 @@ function startRadioPanel() {
   if (radioTab === 'search') runRadioSearch();
 }
 
+// Aperto dal lettore (fluttuante o nell'angolo): le stazioni compaiono attaccate SOPRA il
+// lettore, larghe come lui, e insieme formano un solo riquadro (come il riquadro Radio della
+// panoramica). Dalla barra in basso resta il pannello di sempre.
+const radioFromDock = () => Boolean(radioAnchor && audioDock.contains(radioAnchor)) &&
+  !audioDock.hidden && !audioDock.classList.contains('collapsed') && audioDock.dataset.style !== 'docked';
+
+function syncRadioAttachment() {
+  const attached = radioPanelOpen() && radioFromDock();
+  radioPanel.classList.toggle('attached', attached);
+  audioDock.classList.toggle('radio-open', attached);
+  const button = dockPart('.ad-radio');
+  button.setAttribute('aria-pressed', String(attached));
+  button.title = attached ? 'Nascondi le stazioni (Esc)' : 'Stazioni radio';
+  button.setAttribute('aria-label', button.title);
+}
+
 function openRadioPanel(anchor = $('radioButton')) {
   radioAnchor = anchor;
   startRadioPanel();
@@ -12269,12 +12413,35 @@ function closeRadioPanel(focusBack = false) {
   const inside = radioPanel.contains(document.activeElement);
   radioPanel.hidePopover();
   $('radioButton').setAttribute('aria-expanded', 'false');
+  syncRadioAttachment();
   if (focusBack || inside) (radioAnchor?.isConnected && !radioAnchor.closest('[hidden]') ? radioAnchor : $('radioButton')).focus({ preventScroll: true });
 }
 
 // Sopra (o sotto) il pulsante che l'ha aperto, dentro la finestra.
 function placeRadioPanel() {
   if (!radioPanelOpen()) return;
+  if (radioAnchor && audioDock.contains(radioAnchor) && !radioFromDock()) {
+    // Il lettore si è chiuso, ridotto o spostato nella barra laterale: le stazioni vanno via con lui.
+    if (audioDock.hidden || audioDock.classList.contains('collapsed')) return closeRadioPanel();
+    radioAnchor = $('radioButton');
+  }
+  syncRadioAttachment();
+  if (radioPanel.classList.contains('attached')) {
+    const dock = audioDock.getBoundingClientRect();
+    const room = dock.top - 8;
+    const below = room < 300 && innerHeight - dock.bottom - 8 > room;
+    const height = Math.max(200, Math.min(520, below ? innerHeight - dock.bottom - 8 : room));
+    radioPanel.classList.toggle('below', below);
+    radioPanel.style.left = dock.left + 'px';
+    radioPanel.style.width = dock.width + 'px';
+    radioPanel.style.height = height + 'px';
+    radioPanel.style.top = (below ? dock.bottom - 1 : dock.top - height + 1) + 'px';
+    radioPanel.style.setProperty('--origin', '50% ' + (below ? '0' : '100%'));
+    return;
+  }
+  radioPanel.classList.remove('below');
+  radioPanel.style.removeProperty('width');
+  radioPanel.style.removeProperty('height');
   const anchor = radioAnchor?.isConnected && radioAnchor.offsetParent ? radioAnchor : $('radioButton');
   const rect = anchor.getBoundingClientRect();
   const width = radioPanel.offsetWidth;
@@ -19444,6 +19611,190 @@ $('settingsReset').onclick = async () => {
   toast('Impostazioni predefinite ripristinate');
 };
 
+// ── Impostazioni che ti seguono: esporta e importa ──────────────────────────
+// Un file JSON con le chiavi di localStorage scelte per gruppi. Le cartelle (handle in
+// IndexedDB) non si possono portare: preferiti e documento iniziale sono legati al NOME della
+// cartella e valgono di nuovo quando si apre una cartella con lo stesso nome.
+// Importando: preferiti, radio preferite, cose da fare ed eventi si UNISCONO a quelli che ci
+// sono; il resto prende il posto di quello attuale. Poi Itaca si ricarica (dopo guardAll).
+const settingsTransferMark = 'itaca-impostazioni';
+const settingsTransferGroups = [
+  { id: 'look', title: 'Aspetto e impostazioni', desc: 'Colori, tema, dimensione del testo, larghezza della barra, PDF, diagrammi, presentazione',
+    keys: () => [settingsKey, 'itaca-palette', 'itaca-text-scale', 'quaderno-theme', 'itaca-pdf-options', 'itaca-sidebar-width', 'itaca-drawio-config', 'itaca-present-options', 'itaca-rich-paste', 'itaca-critters-before-xmas'] },
+  { id: 'layout', title: 'Barra in basso e panoramica', desc: 'Ordine delle icone, riquadri della panoramica, durate del timer, santo patrono',
+    keys: () => ['itaca-statusbar-layout', 'itaca-dashboard', 'itaca-deadline-box', 'itaca-patron', 'itaca-timer'] },
+  { id: 'favorites', title: 'Preferiti', desc: 'Documenti preferiti e documento iniziale di ogni cartella, radio preferite',
+    keys: () => [favoriteDocsKey, 'itaca-start-documents', radioFavoritesKey] },
+  { id: 'mine', title: 'Le tue cose', desc: 'Cose da fare, eventi del conto alla rovescia, il tuo nome, volume',
+    keys: () => [todoKey, eventsKey, 'itaca-user-name', audioVolumeKey] },
+];
+const timerTransferFields = ['mode', 'minutes', 'work', 'short', 'long', 'every', 'auto', 'sound'];
+
+function readStoredJson(text, fallback = null) {
+  try { return JSON.parse(text) ?? fallback; } catch { return fallback; }
+}
+
+// Valore da esportare (null = niente da portare).
+function settingsExportValue(key) {
+  let text = null;
+  try { text = localStorage.getItem(key); } catch {}
+  if (text === null) return null;
+  if (key === favoriteDocsKey) {
+    // I file fuori dalla cartella (ext:) sono handle del browser: non si portano.
+    const data = readStoredJson(text, {});
+    const kept = {};
+    for (const [folder, paths] of Object.entries(data || {})) {
+      const list = Array.isArray(paths) ? paths.filter(path => typeof path === 'string' && !path.startsWith('ext:')) : [];
+      if (list.length) kept[folder] = list;
+    }
+    return Object.keys(kept).length ? JSON.stringify(kept) : null;
+  }
+  if (key === 'itaca-timer') {
+    // Solo le durate e le scelte, non un conto in corso.
+    const data = readStoredJson(text, {});
+    return JSON.stringify(Object.fromEntries(timerTransferFields.filter(field => field in (data || {})).map(field => [field, data[field]])));
+  }
+  return text;
+}
+
+// Valore da scrivere importando: unisce dove ha senso.
+function settingsImportValue(key, incoming) {
+  let currentText = null;
+  try { currentText = localStorage.getItem(key); } catch {}
+  if (currentText === null) return incoming;
+  const mine = readStoredJson(currentText);
+  const theirs = readStoredJson(incoming);
+  const byId = (a = [], b = [], id = item => item?.id) => {
+    const seen = new Set(a.map(id));
+    return [...a, ...b.filter(item => item && !seen.has(id(item)))];
+  };
+  if (key === favoriteDocsKey && mine && theirs) {
+    const merged = { ...mine };
+    for (const [folder, paths] of Object.entries(theirs)) {
+      if (!Array.isArray(paths)) continue;
+      const have = Array.isArray(merged[folder]) ? merged[folder] : [];
+      merged[folder] = [...have, ...paths.filter(path => typeof path === 'string' && !have.includes(path))];
+    }
+    return JSON.stringify(merged);
+  }
+  if (key === 'itaca-start-documents' && mine && theirs) return JSON.stringify({ ...mine, ...theirs });
+  if (key === radioFavoritesKey && Array.isArray(mine) && Array.isArray(theirs)) return JSON.stringify(byId(mine, theirs, item => item?.uuid));
+  if ((key === todoKey || key === eventsKey) && mine && theirs) {
+    const merged = { ...mine, items: byId(mine.items, theirs.items) };
+    if (key === eventsKey && !mine.pinned && theirs.pinned) merged.pinned = theirs.pinned;
+    return JSON.stringify(merged);
+  }
+  if (key === 'itaca-timer' && mine && theirs) return JSON.stringify({ ...mine, ...theirs, running: false });
+  return incoming;
+}
+
+function settingsTransferChoices(groups, counts) {
+  return groups.map(group => '<label class="choice transfer-choice"><input type="checkbox" name="' + group.id + '" checked>' +
+    '<span><b>' + escapeHtml(group.title) + '</b>' + (counts?.[group.id] ? ' <em>' + counts[group.id] + '</em>' : '') +
+    '<small>' + escapeHtml(group.desc) + '</small></span></label>').join('');
+}
+
+async function exportPersonalSettings() {
+  const available = settingsTransferGroups.filter(group => group.keys().some(key => settingsExportValue(key) !== null));
+  if (!available.length) return toast('Non ci sono ancora impostazioni da esportare: valgono quelle predefinite');
+  const chosen = await modal('Esporta le impostazioni',
+    '<p>Scegli cosa mettere nel file. Su un altro computer lo apri da <b>Impostazioni › Su un altro PC › Importa</b>.</p>' +
+    '<div class="transfer-choices">' + settingsTransferChoices(available) + '</div>', 'Esporta');
+  if (!chosen) return;
+  const groups = available.filter(group => chosen[group.id]);
+  if (!groups.length) return toast('Nessun gruppo scelto: niente da esportare');
+  const data = {};
+  for (const group of groups) {
+    for (const key of group.keys()) {
+      const value = settingsExportValue(key);
+      if (value !== null) data[key] = value;
+    }
+  }
+  const file = { [settingsTransferMark]: 1, version: APP_VERSION, date: new Date().toISOString(), groups: groups.map(group => group.id), data };
+  const day = new Date().toLocaleDateString('sv-SE');
+  const name = 'Itaca - impostazioni ' + day + '.json';
+  const text = JSON.stringify(file, null, 2);
+  if ('showSaveFilePicker' in window) {
+    try {
+      const handle = await showSaveFilePicker({ id: 'itaca-settings', suggestedName: name, types: [{ description: 'Impostazioni di Itaca', accept: { 'application/json': ['.json'] } }] });
+      const writable = await handle.createWritable();
+      await writable.write(text);
+      await writable.close();
+      return toast('Impostazioni esportate in «' + handle.name + '»', 'success');
+    } catch (error) {
+      if (error?.name === 'AbortError') return;
+    }
+  }
+  const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+  const link = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  toast('Impostazioni esportate in «' + name + '» (cartella Download)', 'success');
+}
+
+async function importPersonalSettings(file) {
+  let parsed = null;
+  try { parsed = JSON.parse(await file.text()); } catch {}
+  if (!parsed || parsed[settingsTransferMark] !== 1 || typeof parsed.data !== 'object' || !parsed.data) {
+    return toast('«' + file.name + '» non è un file di impostazioni di Itaca', 'error');
+  }
+  const counts = {};
+  const groups = settingsTransferGroups.filter(group => {
+    const keys = group.keys().filter(key => typeof parsed.data[key] === 'string' && parsed.data[key].length < 4e6);
+    if (!keys.length) return false;
+    if (group.id === 'favorites') {
+      const docs = readStoredJson(parsed.data[favoriteDocsKey], {}) || {};
+      const radios = readStoredJson(parsed.data[radioFavoritesKey], []) || [];
+      const total = Object.values(docs).reduce((sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0);
+      counts.favorites = [total ? total + (total === 1 ? ' documento' : ' documenti') : '', radios.length ? radios.length + (radios.length === 1 ? ' radio' : ' radio') : ''].filter(Boolean).join(', ');
+    }
+    if (group.id === 'mine') {
+      const todos = readStoredJson(parsed.data[todoKey], {})?.items?.length || 0;
+      const events = readStoredJson(parsed.data[eventsKey], {})?.items?.length || 0;
+      counts.mine = [todos ? todos + (todos === 1 ? ' cosa da fare' : ' cose da fare') : '', events ? events + (events === 1 ? ' evento' : ' eventi') : ''].filter(Boolean).join(', ');
+    }
+    return true;
+  });
+  if (!groups.length) return toast('Il file non contiene impostazioni che questa versione di Itaca conosce', 'warning');
+  const when = Date.parse(parsed.date);
+  const origin = (Number.isFinite(when) ? 'del ' + new Date(when).toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) : '') +
+    (typeof parsed.version === 'string' ? ' · Itaca ' + escapeHtml(parsed.version.slice(0, 20)) : '');
+  const chosen = await modal('Importa le impostazioni',
+    '<p>File <b>' + escapeHtml(file.name) + '</b>' + (origin ? ' <span class="transfer-origin">(' + origin + ')</span>' : '') + '.</p>' +
+    '<div class="transfer-choices">' + settingsTransferChoices(groups, counts) + '</div>' +
+    '<p class="transfer-note">Preferiti, radio preferite, cose da fare ed eventi si aggiungono ai tuoi. Il resto sostituisce le scelte di adesso. Poi Itaca si ricarica.</p>', 'Importa');
+  if (!chosen) return;
+  const picked = groups.filter(group => chosen[group.id]);
+  if (!picked.length) return;
+  if (!await guardAll()) return;
+  for (const group of picked) {
+    for (const key of group.keys()) {
+      if (typeof parsed.data[key] !== 'string') continue;
+      try { localStorage.setItem(key, settingsImportValue(key, parsed.data[key])); } catch {}
+    }
+  }
+  try { sessionStorage.setItem('itaca-settings-imported', picked.map(group => group.title).join(', ')); } catch {}
+  reloadApproved = true;
+  clearDraftCheckpoint();
+  location.reload();
+}
+
+$('settingsExport').onclick = () => exportPersonalSettings();
+$('settingsImport').onclick = () => $('settingsImportInput').click();
+$('settingsImportInput').addEventListener('change', event => {
+  const file = event.target.files?.[0];
+  event.target.value = '';
+  if (file) importPersonalSettings(file);
+});
+// Dopo il ricaricamento: conferma di ciò che è stato importato.
+setTimeout(() => {
+  let done = null;
+  try { done = sessionStorage.getItem('itaca-settings-imported'); sessionStorage.removeItem('itaca-settings-imported'); } catch {}
+  if (done) toast('Impostazioni importate: ' + done, 'success');
+}, 1200);
+
 // ── Aggiornamenti da GitHub ─────────────────────────────────────────────────
 // Le versioni sono le Release di github.com/eleamsi/itaca-lite (tag vX.Y.Z). Il controllo
 // legge l'API pubblica (CORS aperto, funziona anche da file://), all'avvio una volta sola
@@ -20476,6 +20827,10 @@ const shortcutGroups = [
     ['Tema della presentazione: come Itaca, chiaro, scuro', 'T'],
     ['Esci dalla presentazione', 'Esc'],
   ]],
+  ['Confronto affiancato', [
+    ['Differenza successiva / precedente', 'Alt ↓|Alt ↑'],
+    ['Chiudi il confronto', 'Esc'],
+  ]],
   ['Modifica', [
     ['Grassetto', 'Mod B'],
     ['Corsivo', 'Mod I'],
@@ -20636,6 +20991,10 @@ const glossaryMarkdown = [
   ]],
   ['Presentazione', [
     ['Presenta il documento', 'Menu ⋯ › Presenta, oppure Ctrl/⌘ + Invio: il documento a schermo intero, una diapositiva alla volta, a partire dalla sezione che stai leggendo. Le diapositive sono le sezioni (titoli 1 e 2), oppure i pezzi separati da righe --- se il documento ne ha. Una sezione troppo lunga prima si rimpicciolisce un poco, poi si divide ai sottotitoli e poi tra i paragrafi («segue»); elenchi e tabelle lunghi continuano nella diapositiva dopo. Frecce, Spazio o clic per andare avanti e indietro, G per vederle tutte, B per lo schermo nero, Esc per uscire: il documento torna alla sezione dove eri arrivato.', '# Titolo della presentazione\n\nSottotitolo\n\n## Prima diapositiva\n\n- Un punto\n- Un altro punto\n\n## Seconda diapositiva\n\nTesto.'],
+  ]],
+  ['Strumenti', [
+    ['Confronto affiancato', 'Due testi uno accanto all’altro, come in WinMerge: righe uguali bianche, cambiate in giallo con le parole diverse evidenziate, solo a sinistra in rosso, solo a destra in verde. Si apre dal pulsante ± di un blocco di codice (con due soli blocchi li confronta subito), dal menu ⋯ di un file di testo («Confronta con…»), selezionando due file nell’elenco (Ctrl/⌘ + clic) o dal menu ⋯ del documento («Confronta testi…», anche con un testo incollato). Si possono ignorare spazi e maiuscole e mostrare solo le differenze; Alt + ↓/↑ passa da una all’altra, la striscia a destra mostra dove sono.'],
+    ['Impostazioni su un altro PC', 'Impostazioni › Su un altro PC › Esporta crea un file con tema, impostazioni, barra in basso e panoramica, preferiti e le tue cose da fare. Sull’altro computer: Importa. I preferiti si aggiungono ai tuoi, il resto prende il posto di quello di prima. Le cartelle vanno riaperte (il browser le dà solo a chi le sceglie).'],
   ]],
   ['Panoramica', [
     ['Panoramica della cartella', 'Quando nessun documento è aperto (o all’apertura, se in Impostazioni › Documenti › Apertura scegli «Panoramica»): riquadri alti quanto il loro contenuto, da spostare trascinandone l’intestazione e da allargare trascinando il bordo destro (doppio clic: larghezza successiva). Il menu ⋯ di ogni riquadro cambia larghezza e opzioni o lo nasconde; il pulsante a quadretti con il + (Personalizza) mostra la disposizione in miniatura e i riquadri da aggiungere. La disposizione resta in questo browser.'],
@@ -33010,7 +33369,14 @@ function decorateCodeBlock(block) {
   options.textContent = 'Opzioni';
   options.title = 'Titolo o nome del file, righe evidenziate, numerazione';
   options.onclick = () => editCodeOptions(block);
-  header.append(label, language, options, copy);
+  const compare = document.createElement('button');
+  compare.type = 'button';
+  compare.className = 'code-compare';
+  compare.title = 'Confronta con un altro blocco di codice o con un file';
+  compare.setAttribute('aria-label', compare.title);
+  compare.innerHTML = '<i class="icon i-diff" aria-hidden="true"></i>';
+  compare.onclick = () => compareCodeBlock(block);
+  header.append(label, language, options, compare, copy);
 
   const body = document.createElement('span');
   body.className = 'code-block-body';
@@ -38582,6 +38948,7 @@ function showFileMenu(item, trigger) {
     toMarkdown.querySelector('.icon').className = 'icon ' + (markdownSource.label === 'PDF' ? 'i-ft-pdf' : 'i-ft-word');
     toMarkdown.title = 'Crea un documento Markdown accanto al file ' + markdownSource.label + ', con testo, titoli, elenchi, tabelle e immagini' + (markdownSource.label === 'PDF' ? ' (le pagine scansionate restano immagini)' : '');
   }
+  fileMenu.querySelector('[data-file-action="compare"]').hidden = item.isFolder || !comparablePath(item.path);
   fileMenu.querySelector('[data-file-action="unused"]').hidden = !item.isFolder || item.path.split('/').pop() !== attachmentFolderName || !root;
   const send = fileMenu.querySelector('[data-file-action="send"]');
   send.hidden = !root || !window.showDirectoryPicker;
@@ -39104,6 +39471,7 @@ function runFileAction(item, action) {
     return;
   }
   if (action === 'unused') return showTrash({ tab: 'unused' });
+  if (action === 'compare') return compareFileFrom(item.path);
   if (!canChangeFiles()) return;
   if (action === 'markdown') return convertFileToMarkdown(item.path);
   if (action === 'duplicate') return copyEntryTo(item, parent(item.path));
@@ -39167,13 +39535,18 @@ treeSelectionBar.hidden = true;
 treeSelectionBar.innerHTML = '<span class="tree-selection-count" role="status"></span>' +
   '<button type="button" data-selection="move" title="Sposta gli elementi selezionati in un’altra cartella (M)"><i class="icon i-folder-open" aria-hidden="true"></i>Sposta…</button>' +
   '<button type="button" data-selection="delete" class="danger" title="Elimina gli elementi selezionati"><i class="icon i-close" aria-hidden="true"></i>Elimina</button>' +
-  '<button type="button" data-selection="clear" class="icon-button" title="Annulla la selezione (Esc)" aria-label="Annulla la selezione"><i class="icon i-close" aria-hidden="true"></i></button>';
+  '<button type="button" data-selection="clear" class="icon-button" title="Annulla la selezione (Esc)" aria-label="Annulla la selezione"><i class="icon i-close" aria-hidden="true"></i></button>' +
+  '<button type="button" data-selection="compare" title="I due file uno accanto all’altro, con le differenze riga per riga" hidden><i class="icon i-diff" aria-hidden="true"></i>Confronta</button>';
 $('tree').after(treeSelectionBar);
 treeSelectionBar.addEventListener('click', event => {
   const action = event.target.closest('[data-selection]')?.dataset.selection;
   if (action === 'move') moveTreeSelection();
   else if (action === 'delete') deleteTreeSelection();
   else if (action === 'clear') clearTreeSelection();
+  else if (action === 'compare') {
+    const [a, b] = [...treeSelection.keys()];
+    openCompare('f:' + a, 'f:' + b);
+  }
 });
 
 function treeItemExists(item) {
@@ -39196,6 +39569,7 @@ function paintTreeSelection() {
   treeSelectionBar.hidden = !count;
   $('tree').classList.toggle('selecting', count > 0);
   treeSelectionBar.querySelector('.tree-selection-count').textContent = count === 1 ? '1 selezionato' : count + ' selezionati';
+  treeSelectionBar.querySelector('[data-selection="compare"]').hidden = count !== 2 || ![...treeSelection].every(([path, isFolder]) => !isFolder && comparablePath(path) && files.has(path));
 }
 
 function clearTreeSelection() {
@@ -39602,13 +39976,24 @@ async function presentContent(path) {
     }
     for (const frame of article.querySelectorAll('[data-ext="pdf"] .pdf-frame')) frame.remove();
   }
-  for (const element of article.querySelectorAll('.adm-tools, .code-block-header, .code-gutter, textarea, select, button:not(.tab-bar button), .media-notes, .table-filter, [data-caret-boundary], .md-suggest, .pdf-selection-ring, [data-ext="abbrdefs"], [data-ext="attrs"]')) element.remove();
+  for (const element of article.querySelectorAll('.adm-tools, .code-block-header, .code-gutter, textarea, select, button:not(.tab-bar button), .media-notes, .table-filter, .md-suggest, .pdf-selection-ring, [data-ext="abbrdefs"], [data-ext="attrs"]')) element.remove();
+  // I segnaposto del cursore possono contenere il testo scritto subito dopo (per esempio
+  // accanto a una casella appena creata): si tolgono lasciando il testo.
+  for (const boundary of article.querySelectorAll('[data-caret-boundary]')) {
+    const walker = document.createTreeWalker(boundary, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) walker.currentNode.data = walker.currentNode.data.replaceAll(caretBoundary, '');
+    boundary.replaceWith(...boundary.childNodes);
+  }
   for (const group of article.querySelectorAll('[data-ext="tabs"]')) decorateTabs(group, false);
   for (const element of article.querySelectorAll('[contenteditable]')) element.removeAttribute('contenteditable');
   for (const table of article.querySelectorAll('table')) table.removeAttribute('data-grid'), table.removeAttribute('data-wide');
   for (const code of article.querySelectorAll('pre code')) renderHighlightedCode(code, code.textContent, codeLanguage(code));
   decorateCheckboxes(article);
-  for (const box of article.querySelectorAll('input')) box.disabled = true;
+  // Caselle come in Lettura (colore del tema, non grigie da «disattivate»), ma non si spuntano.
+  for (const box of article.querySelectorAll('input')) {
+    if (box.type === 'checkbox') box.inert = true;
+    else box.disabled = true;
+  }
   for (const link of article.querySelectorAll('a')) {
     const target = link.dataset.href || link.getAttribute('href') || '';
     if (/^(https?:\/\/|mailto:)/i.test(target)) {
@@ -40175,10 +40560,47 @@ function presentLaserMove(event) {
     canvas.width = Math.round(rect.width * ratio);
     canvas.height = Math.round(rect.height * ratio);
   }
+  // Tutti i punti del movimento (anche quelli che il browser raggruppa in un solo evento):
+  // la scia segue la mano senza salti.
+  const samples = event.getCoalescedEvents?.() || [];
+  const now = performance.now();
+  for (const sample of samples.length ? samples : [event]) {
+    const x = sample.clientX - rect.left;
+    const y = sample.clientY - rect.top;
+    const last = presentLaser.points.at(-1);
+    if (last && Math.hypot(x - last.x, y - last.y) < 1.5) continue;
+    presentLaser.points.push({ x, y, t: now });
+  }
   presentLaser.x = event.clientX - rect.left;
   presentLaser.y = event.clientY - rect.top;
-  presentLaser.points.push({ x: presentLaser.x, y: presentLaser.y, t: performance.now() });
   if (!presentLaser.frame) presentLaser.frame = requestAnimationFrame(drawPresentLaser);
+}
+// La scia è UNA sola forma piena che si assottiglia verso la coda (prima erano tanti tratti
+// sovrapposti con trasparenze diverse: muovendo veloce si vedeva una fila di pallini).
+function presentLaserRibbon(context, points, width) {
+  const n = points.length;
+  if (n < 2) return;
+  const left = [], right = [];
+  for (let index = 0; index < n; index++) {
+    const before = points[Math.max(0, index - 1)];
+    const after = points[Math.min(n - 1, index + 1)];
+    let dx = after.x - before.x, dy = after.y - before.y;
+    const length = Math.hypot(dx, dy) || 1;
+    dx /= length; dy /= length;
+    const half = width(index / (n - 1)) / 2;
+    left.push({ x: points[index].x - dy * half, y: points[index].y + dx * half });
+    right.push({ x: points[index].x + dy * half, y: points[index].y - dx * half });
+  }
+  const outline = [...left, ...right.reverse()];
+  context.beginPath();
+  context.moveTo(outline[0].x, outline[0].y);
+  for (let index = 1; index < outline.length - 1; index++) {
+    const point = outline[index], next = outline[index + 1];
+    context.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2);
+  }
+  context.lineTo(outline.at(-1).x, outline.at(-1).y);
+  context.closePath();
+  context.fill();
 }
 function drawPresentLaser() {
   presentLaser.frame = 0;
@@ -40187,41 +40609,52 @@ function drawPresentLaser() {
   const context = canvas.getContext('2d');
   const ratio = devicePixelRatio || 1;
   const now = performance.now();
-  const life = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220;
+  const life = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180;
   presentLaser.points = presentLaser.points.filter(point => now - point.t < life);
   context.setTransform(ratio, 0, 0, ratio, 0, 0);
   context.clearRect(0, 0, canvas.width, canvas.height);
-  context.lineCap = 'round';
-  context.lineJoin = 'round';
-  const points = presentLaser.points;
-  for (let index = 1; index < points.length; index++) {
-    const age = 1 - (now - points[index].t) / life;
-    context.strokeStyle = 'rgba(255, 40, 40, ' + (age * .55).toFixed(3) + ')';
-    context.lineWidth = 2 + 6 * age;
-    context.beginPath();
-    context.moveTo(points[index - 1].x, points[index - 1].y);
-    context.lineTo(points[index].x, points[index].y);
-    context.stroke();
+  const x = presentLaser.x, y = presentLaser.y;
+  const points = [...presentLaser.points];
+  const last = points.at(-1);
+  if (!last || last.x !== x || last.y !== y) points.push({ x, y, t: now });
+  if (points.length > 2) {
+    // La coda si accorcia da sola: la parte più vecchia diventa sottile e poi sparisce.
+    const fade = point => Math.max(0, 1 - (now - point.t) / life);
+    const youngest = fade(points[0]);
+    context.save();
+    context.shadowColor = 'rgba(255, 40, 40, .6)';
+    context.shadowBlur = 10;
+    context.fillStyle = 'rgba(255, 50, 45, .32)';
+    presentLaserRibbon(context, points, k => 11 * Math.pow(k, 1.4) * (0.35 + 0.65 * (youngest + (1 - youngest) * k)));
+    context.shadowBlur = 0;
+    context.fillStyle = 'rgba(255, 70, 60, .55)';
+    presentLaserRibbon(context, points, k => 4.5 * Math.pow(k, 1.6));
+    context.restore();
   }
-  const glow = context.createRadialGradient(presentLaser.x, presentLaser.y, 0, presentLaser.x, presentLaser.y, 22);
-  glow.addColorStop(0, 'rgba(255, 70, 60, .55)');
+  const glow = context.createRadialGradient(x, y, 0, x, y, 24);
+  glow.addColorStop(0, 'rgba(255, 70, 60, .5)');
+  glow.addColorStop(.45, 'rgba(255, 40, 40, .18)');
   glow.addColorStop(1, 'rgba(255, 40, 40, 0)');
   context.fillStyle = glow;
   context.beginPath();
-  context.arc(presentLaser.x, presentLaser.y, 22, 0, Math.PI * 2);
+  context.arc(x, y, 24, 0, Math.PI * 2);
   context.fill();
   context.fillStyle = '#ff2b2b';
   context.beginPath();
-  context.arc(presentLaser.x, presentLaser.y, 5.5, 0, Math.PI * 2);
+  context.arc(x, y, 5.5, 0, Math.PI * 2);
   context.fill();
   context.fillStyle = 'rgba(255, 235, 230, .9)';
   context.beginPath();
-  context.arc(presentLaser.x - 1.2, presentLaser.y - 1.2, 1.8, 0, Math.PI * 2);
+  context.arc(x - 1.2, y - 1.2, 1.8, 0, Math.PI * 2);
   context.fill();
-  if (points.length) presentLaser.frame = requestAnimationFrame(drawPresentLaser);
+  if (presentLaser.points.length) presentLaser.frame = requestAnimationFrame(drawPresentLaser);
 }
 
 $('presentDocument').onclick = openPresentation;
+$('compareTexts').onclick = () => {
+  const blocks = compareBlocks();
+  openCompare(blocks.length >= 2 ? 'b:0' : null, blocks.length >= 2 ? 'b:1' : null);
+};
 // Ctrl/⌘ + Invio: presenta il documento (non dentro le caselle di testo e con un dialog aperto).
 addEventListener('keydown', event => {
   if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey || event.isComposing) return;
@@ -45866,6 +46299,418 @@ function linesDiffView(fromText, toText) {
     added: items.filter(item => item.type === 'add').length,
     removed: items.filter(item => item.type === 'del').length,
   };
+}
+
+// ── Confronto di testi affiancati (stile WinMerge) ──────────────────────────
+// Due blocchi di codice del documento, due file di testo della cartella (script iFix, VBA,
+// SQL, Markdown…) o un testo incollato, uno accanto all'altro con le differenze riga per riga
+// e, nelle righe cambiate, parola per parola. Riusa il diff delle versioni git (sequenceDiff,
+// wordDiff). Le righe si confrontano con una «chiave» (spazi e maiuscole ignorabili) ma si
+// mostrano come sono. Solo lettura: niente si scrive.
+const compareState = { left: null, right: null, pasted: { left: '', right: '' }, hunk: -1, hunks: [], onlyDiff: false, ignoreSpace: false, ignoreCase: false };
+var compareDialog = null;
+
+function comparablePath(path) {
+  const ext = (path.match(/\.([^./]+)$/)?.[1] || '').toLowerCase();
+  return isMD(path) || textEmbedExtensions.has(ext) || ['vba', 'bas', 'cls', 'frm', 'vbs', 'sql', 'ps1', 'bat', 'cmd'].includes(ext);
+}
+function comparableFiles() {
+  return [...files.keys()].filter(comparablePath).sort((a, b) => a.localeCompare(b, 'it', { numeric: true }));
+}
+function compareBlocks() {
+  return sourceMode ? [] : [...ed.querySelectorAll('pre')].filter(block => block.querySelector('code') && !block.closest('[data-ext="pdf"]'));
+}
+function compareBlockLabel(block, index) {
+  const code = block.querySelector('code');
+  const info = parseCodeInfo(code?.dataset.extInfo || '');
+  const language = codeLanguage(code);
+  const name = codeLanguages.find(([value]) => value === language)?.[1] || language || 'Testo';
+  const first = codeBlockText(block).split('\n').find(line => line.trim())?.trim().slice(0, 40) || 'vuoto';
+  return 'Blocco ' + (index + 1) + ' · ' + name + ' · ' + (info.title || first);
+}
+function compareFileLanguage(path) {
+  const ext = (path.match(/\.([^./]+)$/)?.[1] || '').toLowerCase();
+  if (isMD(path)) return 'markdown';
+  return textLanguage(ext) || (['bas', 'cls', 'frm', 'vbs', 'vba'].includes(ext) ? 'vba' : '');
+}
+
+// Sorgente → {key, label, detail, text, language}
+async function compareSource(key, side) {
+  if (!key) return null;
+  if (key.startsWith('b:')) {
+    const blocks = compareBlocks();
+    const index = Number(key.slice(2));
+    const block = blocks[index];
+    if (!block) return null;
+    const code = block.querySelector('code');
+    return { key, label: compareBlockLabel(block, index), detail: 'In «' + docLabel(current) + '»', text: codeBlockText(block), language: codeLanguage(code) };
+  }
+  if (key.startsWith('f:')) {
+    const path = key.slice(2);
+    const handle = files.get(path);
+    if (!handle) return null;
+    const version = await readTextFile(await handle.getFile());
+    return { key, label: path.split('/').pop(), detail: path.includes('/') ? path.slice(0, path.lastIndexOf('/')) : 'Cartella principale', text: version.text, language: compareFileLanguage(path), encoding: version.encoding };
+  }
+  if (key === 'paste') return { key, label: 'Testo incollato', detail: 'Scritto qui', text: compareState.pasted[side], language: '' };
+  return null;
+}
+
+function compareLines(left, right) {
+  const a = splitLines(left.text);
+  const b = splitLines(right.text);
+  const keyOf = line => {
+    let value = compareState.ignoreSpace ? line.replace(/\s+/g, ' ').trim() : line;
+    if (compareState.ignoreCase) value = value.toLocaleLowerCase('it');
+    return value;
+  };
+  const items = sequenceDiff(a.map(keyOf), b.map(keyOf));
+  // Righe da mostrare: uguali, cambiate (una tolta + una aggiunta nello stesso punto), solo a sinistra, solo a destra.
+  const rows = [];
+  for (let i = 0; i < items.length;) {
+    if (items[i].type === 'same') {
+      rows.push({ type: 'same', a: items[i].a, b: items[i].b });
+      i++;
+      continue;
+    }
+    const dels = [], adds = [];
+    while (i < items.length && items[i].type !== 'same') (items[i].type === 'del' ? dels : adds).push(items[i++]);
+    const pairs = Math.min(dels.length, adds.length);
+    for (let k = 0; k < Math.max(dels.length, adds.length); k++) {
+      if (k < pairs) rows.push({ type: 'change', a: dels[k].a, b: adds[k].b });
+      else if (k < dels.length) rows.push({ type: 'del', a: dels[k].a, b: null });
+      else rows.push({ type: 'add', a: null, b: adds[k].b });
+    }
+  }
+  return { rows, a, b };
+}
+
+// Avvolge negli intervalli [da, a) del testo dell'elemento un <mark> (le parole cambiate).
+function markCompareRanges(element, ranges, className) {
+  if (!ranges.length) return;
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  let offset = 0;
+  while (walker.nextNode()) nodes.push({ node: walker.currentNode, start: offset, end: offset += walker.currentNode.data.length });
+  for (const { node, start, end } of nodes) {
+    const here = ranges.filter(([from, to]) => from < end && to > start);
+    if (!here.length) continue;
+    const fragment = document.createDocumentFragment();
+    let at = start;
+    for (const [from, to] of here) {
+      const a = Math.max(from, start), b = Math.min(to, end);
+      if (a > at) fragment.append(node.data.slice(at - start, a - start));
+      fragment.append(Object.assign(document.createElement('mark'), { className, textContent: node.data.slice(a - start, b - start) }));
+      at = b;
+    }
+    if (at < end) fragment.append(node.data.slice(at - start));
+    node.replaceWith(fragment);
+  }
+}
+
+function compareCell(text, language, ranges, kind) {
+  const cell = document.createElement('div');
+  cell.className = 'cmp-code';
+  if (text === null) {
+    cell.classList.add('cmp-blank');
+    return cell;
+  }
+  if (language && compareState.highlight && text.length < 2000) {
+    try { cell.innerHTML = hljs.highlight(text, { language: highlightLanguage(language), ignoreIllegals: true }).value; }
+    catch { cell.textContent = text; }
+  } else cell.textContent = text;
+  if (!text) cell.append('​');
+  if (ranges) markCompareRanges(cell, ranges, kind);
+  return cell;
+}
+
+function renderCompare() {
+  const view = compareDialog.querySelector('.cmp-view');
+  const map = compareDialog.querySelector('.cmp-map');
+  const stats = compareDialog.querySelector('.cmp-stats');
+  const { left, right } = compareState;
+  view.replaceChildren();
+  map.replaceChildren();
+  compareState.hunks = [];
+  compareState.hunk = -1;
+  for (const side of ['left', 'right']) {
+    const source = compareState[side];
+    const box = compareDialog.querySelector('.cmp-side[data-side="' + side + '"]');
+    box.querySelector('.cmp-detail').textContent = source ? [source.detail, splitLines(source.text).length + ' righe', source.encoding === 'windows-1252' ? 'ANSI' : ''].filter(Boolean).join(' · ') : 'Scegli cosa confrontare';
+    box.querySelector('.cmp-edit').hidden = source?.key !== 'paste';
+  }
+  if (!left || !right) {
+    stats.textContent = '';
+    view.append(Object.assign(document.createElement('p'), { className: 'cmp-empty', textContent: 'Scegli a sinistra e a destra due blocchi di codice, due file di testo o un testo da incollare.' }));
+    syncCompareNav();
+    return;
+  }
+  const { rows, a, b } = compareLines(left, right);
+  const language = left.language || right.language;
+  compareState.highlight = a.length + b.length <= 12000;
+  let added = 0, removed = 0, changed = 0;
+  // Gruppi di righe diverse vicine = una differenza (per ↑ ↓).
+  let open = false;
+  rows.forEach((row, index) => {
+    if (row.type === 'same') { open = false; return; }
+    if (row.type === 'add') added++;
+    else if (row.type === 'del') removed++;
+    else changed++;
+    if (!open) compareState.hunks.push(index);
+    row.hunk = compareState.hunks.length - 1;
+    open = true;
+  });
+  const differences = compareState.hunks.length;
+  stats.replaceChildren();
+  if (!differences) {
+    stats.append(Object.assign(document.createElement('span'), { className: 'cmp-pill same', textContent: compareState.ignoreSpace || compareState.ignoreCase ? 'Uguali (con le regole scelte)' : 'Identici' }));
+  } else {
+    stats.append(Object.assign(document.createElement('span'), { className: 'cmp-pill', textContent: differences + (differences === 1 ? ' differenza' : ' differenze') }));
+    if (changed) stats.append(Object.assign(document.createElement('span'), { className: 'cmp-pill change', textContent: changed + (changed === 1 ? ' cambiata' : ' cambiate'), title: 'Righe diverse nello stesso punto' }));
+    if (removed) stats.append(Object.assign(document.createElement('span'), { className: 'cmp-pill del', textContent: removed + ' solo a sinistra' }));
+    if (added) stats.append(Object.assign(document.createElement('span'), { className: 'cmp-pill add', textContent: added + ' solo a destra' }));
+  }
+  // Solo le differenze: le righe uguali lontane (oltre 3) diventano una riga «⋯ N righe uguali».
+  const keep = new Uint8Array(rows.length).fill(compareState.onlyDiff ? 0 : 1);
+  if (compareState.onlyDiff) rows.forEach((row, index) => {
+    if (row.type === 'same') return;
+    for (let k = Math.max(0, index - 3); k <= Math.min(rows.length - 1, index + 3); k++) keep[k] = 1;
+  });
+  const fragment = document.createDocumentFragment();
+  const rowElement = row => {
+    const line = document.createElement('div');
+    line.className = 'cmp-row ' + row.type;
+    if (row.hunk !== undefined) line.dataset.hunk = row.hunk;
+    let leftRanges = null, rightRanges = null;
+    if (row.type === 'change') {
+      const segments = wordDiff(a[row.a], b[row.b]);
+      if (wordSimilarity(segments) >= .25) {
+        leftRanges = []; rightRanges = [];
+        let pa = 0, pb = 0;
+        for (const segment of segments) {
+          const length = segment.text.length;
+          if (segment.type === 'same') { pa += length; pb += length; }
+          else if (segment.type === 'del') { if (segment.text.trim() || !compareState.ignoreSpace) leftRanges.push([pa, pa + length]); pa += length; }
+          else { if (segment.text.trim() || !compareState.ignoreSpace) rightRanges.push([pb, pb + length]); pb += length; }
+        }
+      }
+    }
+    line.append(
+      Object.assign(document.createElement('span'), { className: 'cmp-num', textContent: row.a === null ? '' : row.a + 1 }),
+      compareCell(row.a === null ? null : a[row.a], language, leftRanges, 'cmp-del'),
+      Object.assign(document.createElement('span'), { className: 'cmp-num', textContent: row.b === null ? '' : row.b + 1 }),
+      compareCell(row.b === null ? null : b[row.b], language, rightRanges, 'cmp-add'));
+    return line;
+  };
+  let hidden = [];
+  const flush = () => {
+    if (!hidden.length) return;
+    const list = hidden;
+    hidden = [];
+    const gap = document.createElement('button');
+    gap.type = 'button';
+    gap.className = 'cmp-gap';
+    gap.textContent = '⋯ ' + list.length + (list.length === 1 ? ' riga uguale' : ' righe uguali') + ' · mostra';
+    gap.onclick = () => { gap.replaceWith(...list.map(rowElement)); drawCompareMap(); };
+    fragment.append(gap);
+  };
+  rows.forEach((row, index) => {
+    if (!keep[index]) return void hidden.push(row);
+    flush();
+    fragment.append(rowElement(row));
+  });
+  flush();
+  view.append(fragment);
+  view.scrollTop = 0;
+  drawCompareMap();
+  syncCompareNav();
+}
+
+// Mappa a destra: dove sono le differenze nel testo intero (clic = vai lì).
+function drawCompareMap() {
+  const view = compareDialog.querySelector('.cmp-view');
+  const map = compareDialog.querySelector('.cmp-map');
+  map.replaceChildren();
+  const total = view.scrollHeight || 1;
+  for (const row of view.querySelectorAll('.cmp-row:not(.same)')) {
+    const mark = document.createElement('i');
+    mark.className = row.classList.contains('change') ? 'change' : row.classList.contains('del') ? 'del' : 'add';
+    mark.style.top = (row.offsetTop / total * 100) + '%';
+    mark.style.height = 'max(2px, ' + (row.offsetHeight / total * 100) + '%)';
+    map.append(mark);
+  }
+  const thumb = document.createElement('b');
+  thumb.className = 'cmp-thumb';
+  map.append(thumb);
+  syncCompareThumb();
+}
+function syncCompareThumb() {
+  const view = compareDialog.querySelector('.cmp-view');
+  const thumb = compareDialog.querySelector('.cmp-thumb');
+  if (!thumb) return;
+  const total = view.scrollHeight || 1;
+  thumb.style.top = (view.scrollTop / total * 100) + '%';
+  thumb.style.height = (view.clientHeight / total * 100) + '%';
+}
+
+function syncCompareNav() {
+  const total = compareState.hunks.length;
+  const position = compareDialog.querySelector('.cmp-position');
+  position.textContent = total ? (compareState.hunk < 0 ? '– / ' + total : (compareState.hunk + 1) + ' / ' + total) : '';
+  compareDialog.querySelector('.cmp-prev').disabled = !total || compareState.hunk <= 0;
+  compareDialog.querySelector('.cmp-next').disabled = !total || compareState.hunk >= total - 1;
+  compareDialog.querySelector('.cmp-swap').disabled = !compareState.left && !compareState.right;
+}
+
+function goToCompareHunk(index) {
+  const total = compareState.hunks.length;
+  if (!total) return;
+  compareState.hunk = Math.max(0, Math.min(total - 1, index));
+  const view = compareDialog.querySelector('.cmp-view');
+  for (const row of view.querySelectorAll('.cmp-row.current')) row.classList.remove('current');
+  const rows = view.querySelectorAll('.cmp-row[data-hunk="' + compareState.hunk + '"]');
+  for (const row of rows) row.classList.add('current');
+  if (rows[0]) view.scrollTo({ top: Math.max(0, rows[0].offsetTop - view.clientHeight / 3), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  syncCompareNav();
+}
+
+// Le voci delle due tendine: blocchi di codice del documento aperto, file di testo, testo incollato.
+function fillCompareSelect(select, side) {
+  const chosen = compareState[side]?.key || '';
+  select.replaceChildren(new Option('Scegli…', ''));
+  const blocks = compareBlocks();
+  if (blocks.length) {
+    const group = document.createElement('optgroup');
+    group.label = 'Blocchi di codice di questo documento';
+    blocks.forEach((block, index) => group.append(new Option(compareBlockLabel(block, index), 'b:' + index)));
+    select.append(group);
+  }
+  const list = comparableFiles();
+  if (list.length) {
+    const group = document.createElement('optgroup');
+    group.label = 'File di testo della cartella';
+    for (const path of list) group.append(new Option(path, 'f:' + path));
+    select.append(group);
+  }
+  const other = document.createElement('optgroup');
+  other.label = 'Altro';
+  other.append(new Option('Incolla un testo…', 'paste'));
+  select.append(other);
+  select.value = chosen;
+}
+
+async function setCompareSide(side, key, render = true) {
+  if (key === 'paste' && !compareState.pasted[side]) {
+    if (!await askCompareText(side)) return void fillCompareSelect(compareDialog.querySelector('.cmp-side[data-side="' + side + '"] select'), side);
+  }
+  try { compareState[side] = await compareSource(key, side); }
+  catch { compareState[side] = null; toast('Non riesco a leggere il file', 'error'); }
+  fillCompareSelect(compareDialog.querySelector('.cmp-side[data-side="' + side + '"] select'), side);
+  if (render) renderCompare();
+}
+
+async function askCompareText(side) {
+  const result = await modal('Testo da confrontare (' + (side === 'left' ? 'sinistra' : 'destra') + ')',
+    '<p>Incolla o scrivi il testo da mettere ' + (side === 'left' ? 'a sinistra' : 'a destra') + '.</p>' +
+    '<textarea name="text" class="cmp-paste" rows="14" spellcheck="false" autofocus>' + escapeHtml(compareState.pasted[side]) + '</textarea>', 'Confronta');
+  if (!result || !result.text.trim()) return false;
+  compareState.pasted[side] = result.text.replace(/\r\n?/g, '\n');
+  return true;
+}
+
+function buildCompareDialog() {
+  compareDialog = document.createElement('dialog');
+  compareDialog.id = 'compareDialog';
+  compareDialog.className = 'compare-dialog';
+  compareDialog.setAttribute('aria-labelledby', 'compareTitle');
+  const side = (name, label) => '<div class="cmp-side" data-side="' + name + '"><span class="cmp-tag">' + label + '</span>' +
+    '<select aria-label="Testo ' + label.toLowerCase() + '"></select>' +
+    '<button type="button" class="icon-button cmp-edit" title="Cambia il testo incollato" aria-label="Cambia il testo incollato" hidden><i class="icon i-edit" aria-hidden="true"></i></button>' +
+    '<small class="cmp-detail"></small></div>';
+  compareDialog.innerHTML = '<header class="cmp-head"><i class="icon i-diff" aria-hidden="true"></i><h2 id="compareTitle">Confronto affiancato</h2>' +
+    '<span class="cmp-stats" role="status"></span>' +
+    '<button type="button" class="icon-button cmp-close" title="Chiudi (Esc)" aria-label="Chiudi"><i class="icon i-close" aria-hidden="true"></i></button></header>' +
+    '<div class="cmp-sources">' + side('left', 'Sinistra') +
+    '<button type="button" class="icon-button cmp-swap" title="Scambia sinistra e destra" aria-label="Scambia sinistra e destra"><i class="icon i-swap" aria-hidden="true"></i></button>' +
+    side('right', 'Destra') + '</div>' +
+    '<div class="cmp-tools">' +
+    '<span class="cmp-nav"><button type="button" class="icon-button cmp-prev" title="Differenza precedente (Alt + ↑)" aria-label="Differenza precedente"><i class="icon i-chevron-up" aria-hidden="true"></i></button>' +
+    '<span class="cmp-position"></span>' +
+    '<button type="button" class="icon-button cmp-next" title="Differenza successiva (Alt + ↓)" aria-label="Differenza successiva"><i class="icon i-chevron-down" aria-hidden="true"></i></button></span>' +
+    '<label class="cmp-toggle" title="Nasconde le righe uguali lontane dalle differenze"><input type="checkbox" class="switch" data-option="onlyDiff"><span>Solo le differenze</span></label>' +
+    '<label class="cmp-toggle" title="Spazi e tabulazioni in più o in meno non contano"><input type="checkbox" class="switch" data-option="ignoreSpace"><span>Ignora gli spazi</span></label>' +
+    '<label class="cmp-toggle" title="«Dim» e «DIM» sono uguali (utile per VBA e SQL)"><input type="checkbox" class="switch" data-option="ignoreCase"><span>Ignora maiuscole</span></label>' +
+    '</div>' +
+    '<div class="cmp-body"><div class="cmp-view" tabindex="0" aria-label="Differenze"></div><div class="cmp-map" aria-hidden="true"></div></div>';
+  document.body.append(compareDialog);
+  closeOnBackdrop(compareDialog);
+  const q = selector => compareDialog.querySelector(selector);
+  q('.cmp-close').onclick = () => compareDialog.close();
+  q('.cmp-prev').onclick = () => goToCompareHunk(compareState.hunk - 1);
+  q('.cmp-next').onclick = () => goToCompareHunk(compareState.hunk + 1);
+  q('.cmp-swap').onclick = () => {
+    [compareState.left, compareState.right] = [compareState.right, compareState.left];
+    [compareState.pasted.left, compareState.pasted.right] = [compareState.pasted.right, compareState.pasted.left];
+    for (const name of ['left', 'right']) fillCompareSelect(q('.cmp-side[data-side="' + name + '"] select'), name);
+    renderCompare();
+  };
+  for (const name of ['left', 'right']) {
+    const box = q('.cmp-side[data-side="' + name + '"]');
+    box.querySelector('select').addEventListener('change', event => setCompareSide(name, event.target.value));
+    box.querySelector('.cmp-edit').onclick = async () => {
+      if (await askCompareText(name)) await setCompareSide(name, 'paste');
+    };
+  }
+  for (const input of compareDialog.querySelectorAll('[data-option]')) {
+    input.addEventListener('change', () => {
+      compareState[input.dataset.option] = input.checked;
+      renderCompare();
+    });
+  }
+  q('.cmp-view').addEventListener('scroll', syncCompareThumb, { passive: true });
+  q('.cmp-map').addEventListener('pointerdown', event => {
+    const view = q('.cmp-view');
+    const rect = event.currentTarget.getBoundingClientRect();
+    view.scrollTop = (event.clientY - rect.top) / rect.height * view.scrollHeight - view.clientHeight / 2;
+  });
+  compareDialog.addEventListener('keydown', event => {
+    if (!event.altKey || event.ctrlKey || event.metaKey || !['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+    event.preventDefault();
+    goToCompareHunk(compareState.hunk + (event.key === 'ArrowDown' ? 1 : -1));
+  });
+  new ResizeObserver(() => compareDialog.open && drawCompareMap()).observe(q('.cmp-view'));
+}
+
+// left/right: chiavi delle sorgenti ('b:N', 'f:percorso', 'paste') o null.
+async function openCompare(leftKey = null, rightKey = null) {
+  if (!compareDialog) buildCompareDialog();
+  compareState.left = compareState.right = null;
+  for (const input of compareDialog.querySelectorAll('[data-option]')) input.checked = compareState[input.dataset.option];
+  await setCompareSide('left', leftKey, false);
+  await setCompareSide('right', rightKey, false);
+  renderCompare();
+  if (!compareDialog.open) compareDialog.showModal();
+  drawCompareMap();
+  const empty = !compareState.left ? 'left' : !compareState.right ? 'right' : '';
+  if (empty) compareDialog.querySelector('.cmp-side[data-side="' + empty + '"] select').focus();
+  else {
+    compareDialog.querySelector('.cmp-view').focus({ preventScroll: true });
+    if (compareState.hunks.length) goToCompareHunk(0);
+  }
+}
+
+// Dal blocco di codice: l'altro blocco se nel documento ce ne sono solo due.
+function compareCodeBlock(block) {
+  const blocks = compareBlocks();
+  const index = blocks.indexOf(block);
+  const other = blocks.length === 2 ? 1 - index : -1;
+  openCompare(index >= 0 ? 'b:' + index : null, other >= 0 ? 'b:' + other : null);
+}
+
+// Dall'elenco: il file con l'altro selezionato (se sono due), altrimenti si sceglie a destra.
+function compareFileFrom(path) {
+  const selected = [...treeSelection.keys()].filter(item => item !== path && comparablePath(item) && files.has(item));
+  openCompare('f:' + path, treeSelection.has(path) && selected.length === 1 ? 'f:' + selected[0] : null);
 }
 
 // ── Chi ha cambiato ogni riga ────────────────────────────────────────────────
