@@ -575,7 +575,10 @@ button:disabled { opacity: .4; cursor: default; }
 .doc-loading-bar { position: absolute; inset: 0 0 auto; height: 3px; overflow: hidden; }
 .doc-loading-bar::before { content: ''; position: absolute; inset: 0; width: 40%; border-radius: 2px; background: var(--accent); animation: doc-loading-bar 1.1s cubic-bezier(.45, 0, .35, 1) infinite; }
 .doc-loading-pill { display: inline-flex; align-items: center; gap: 10px; max-width: calc(100% - 32px); padding: 9px 16px 9px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); color: var(--copy); font-size: 13px; box-shadow: 0 1px 3px #17212b14, 0 10px 30px #17212b24; }
-.doc-loading-pill > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-loading-pill > #docLoadingText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.doc-loading-cancel { flex: none; margin: -4px -8px -4px 2px; padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--copy); font: inherit; font-size: 12px; cursor: pointer; }
+.doc-loading-cancel:hover { border-color: var(--accent); color: var(--accent-text); background: var(--tint); }
+.doc-loading-cancel:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .doc-spinner { flex: none; width: 16px; height: 16px; border: 2px solid color-mix(in srgb, var(--accent) 22%, transparent); border-top-color: var(--accent); border-radius: 50%; animation: doc-spin .7s linear infinite; }
 @keyframes doc-loading-in { from { opacity: 0; } }
 @keyframes doc-loading-bar { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
@@ -3543,7 +3546,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
 
     <main class="main" id="main">
       <div class="document-area">
-        <div class="doc-loading" id="docLoading" role="status" aria-live="polite" hidden><span class="doc-loading-bar" aria-hidden="true"></span><span class="doc-loading-pill"><span class="doc-spinner" aria-hidden="true"></span><span id="docLoadingText">Caricamento…</span></span></div>
+        <div class="doc-loading" id="docLoading" role="status" aria-live="polite" hidden><span class="doc-loading-bar" aria-hidden="true"></span><span class="doc-loading-pill"><span class="doc-spinner" aria-hidden="true"></span><span id="docLoadingText">Caricamento…</span><button type="button" class="doc-loading-cancel" id="docLoadingCancel" title="Ferma (Esc)" hidden>Annulla</button></span></div>
         <div class="workspace" id="workspace">
           <section class="work-start" id="workStart" aria-labelledby="startTitle">
             <i class="icon i-folder-open" aria-hidden="true"></i>
@@ -3815,7 +3818,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
     <button type="button" data-file-action="copy"><i class="icon i-copy" aria-hidden="true"></i>Copia percorso<kbd class="menu-key" data-keys="Mod Alt C"></kbd></button>
     <button type="button" data-file-action="start"><i class="icon i-book" aria-hidden="true"></i><span id="startActionLabel">Apri all’avvio</span></button>
     <button type="button" data-file-action="favorite"><i class="icon i-star" aria-hidden="true"></i><span id="favoriteActionLabel">Aggiungi ai preferiti</span></button>
-    <button type="button" data-file-action="markdown" title="Crea un documento Markdown con il testo, i titoli, gli elenchi, le tabelle e le immagini del file Word"><i class="icon i-ft-word" aria-hidden="true"></i>Converti in Markdown</button>
+    <button type="button" data-file-action="markdown" title="Crea un documento Markdown con il testo, i titoli, gli elenchi, le tabelle e le immagini del file"><i class="icon i-ft-word" aria-hidden="true"></i>Converti in Markdown</button>
     <button type="button" data-file-action="unused" title="File di questa cartella che nessun documento usa, e il cestino di Itaca"><i class="icon i-attach" aria-hidden="true"></i>Allegati non usati…</button>
     <hr>
     <button type="button" data-file-action="rename"><i class="icon i-edit" aria-hidden="true"></i>Rinomina<kbd class="menu-key" data-keys="F2"></kbd></button>
@@ -9401,8 +9404,8 @@ function decoratePdfEmbeds(container, editable) {
     }
     const inlineButton = box.querySelector('[data-pdf-action="inline"]');
     if (inlineButton) {
-      inlineButton.hidden = !textTools && !(editable && kind === 'word');
-      inlineButton.title = kind === 'word' ? 'Converte «' + fileName + '» in Markdown al posto del riquadro: testo, titoli, elenchi, tabelle e immagini diventano parte del documento'
+      inlineButton.hidden = !textTools && !(editable && (kind === 'word' || kind === 'pdf'));
+      inlineButton.title = kind === 'word' || kind === 'pdf' ? 'Converte «' + fileName + '» in Markdown al posto del riquadro: testo, titoli, elenchi, tabelle e immagini diventano parte del documento'
         : 'Porta il contenuto di «' + fileName + '» dentro il documento, senza più collegamento al file';
     }
     const link = box.querySelector('[data-pdf-action="link"]');
@@ -12567,7 +12570,7 @@ async function runPdfAction(box, action) {
   const target = pdfEmbedTarget(box, from);
   if (action === 'link') return pdfEmbedToLink(box);
   if (action === 'edit') return editEmbeddedText(box);
-  if (action === 'inline') return boxKind(box) === 'word' ? inlineEmbeddedWord(box) : inlineEmbeddedText(box);
+  if (action === 'inline') return boxKind(box) === 'word' || boxKind(box) === 'pdf' ? inlineEmbeddedDocument(box) : inlineEmbeddedText(box);
   if (action === 'contents') return toggleFileList(box);
   const kind = boxKind(box);
   const word = kind === 'word';
@@ -13591,15 +13594,31 @@ function wordWarningsHtml(warnings) {
   return warnings.length ? '<ul class="word-warnings">' + warnings.map(text => '<li>' + escapeHtml(text) + '</li>').join('') + '</ul>' : '';
 }
 
-// Menu ⋯ di un .docx: nuovo documento accanto al Word, immagini in _allegati/<nome>/.
-async function convertWordFile(path) {
+// Formati che diventano Markdown: menu ⋯ «Converti in Markdown» e «Nel documento» del riquadro.
+const markdownSources = [
+  { test: /\.docx$/i, label: 'Word', convert: (file, options) => docxToMarkdown(file, options) },
+  { test: /\.pdf$/i, label: 'PDF', convert: (file, options) => pdfToMarkdown(file, options) }
+];
+const markdownSourceOf = path => markdownSources.find(source => source.test.test(path || '')) || null;
+
+// Conversione con «Annulla» nell'indicatore e i passaggi scritti lì (un PDF lungo richiede tempo).
+function conversionProgress() {
+  const controller = new AbortController();
+  loadingCancel(() => controller.abort());
+  return { signal: controller.signal, progress: text => { $('docLoadingText').textContent = text; }, done: () => loadingCancel(null) };
+}
+const conversionFailed = (error, name) => error?.name === 'AbortError' ? toast('Conversione annullata.') : toast('Conversione di «' + name + '» non riuscita: ' + error.message, 'error');
+
+// Menu ⋯ di un .docx o di un .pdf: nuovo documento accanto al file, immagini in _allegati/<nome>/.
+async function convertFileToMarkdown(path) {
   const directory = root;
   const handle = files.get(path);
   const folder = folderHandles.get(parent(path));
-  if (!directory || !handle || !folder || importedFolderName) return;
+  const source = markdownSourceOf(path);
+  if (!directory || !handle || !folder || importedFolderName || !source) return;
   if (!await allowFolderWrite(directory)) return;
   const wordName = path.split('/').pop();
-  const base = attachmentName(wordName.replace(/\.docx$/i, ''));
+  const base = attachmentName(wordName.replace(source.test, ''));
   // Un Word in _allegati: il documento va nella cartella dei documenti, non tra gli allegati.
   const segments = parent(path).split('/');
   const attachmentsAt = segments.indexOf(attachmentFolderName);
@@ -13607,6 +13626,7 @@ async function convertWordFile(path) {
   const mdFolder = folderHandles.get(mdFolderPath) || folder;
   startLoading('Conversione di «' + wordName + '» in Markdown…', 0);
   fileActionBusy = true;
+  const task = conversionProgress();
   try {
     const file = await handle.getFile();
     const mdName = await freeDestinationName(mdFolder, base + '.md', false);
@@ -13614,7 +13634,7 @@ async function convertWordFile(path) {
     const attachDir = attachmentDirFor(mdPath);
     const existing = await directoryAt(directory, attachDir);
     const imageDir = attachDir + '/' + (existing ? await freeDestinationName(existing, base, true) : base);
-    const result = await docxToMarkdown(file, { from: mdPath, imageDir });
+    const result = await source.convert(file, { from: mdPath, imageDir, name: wordName, signal: task.signal, progress: task.progress });
     if (root !== directory) return;
     files = new Map(files);
     if (result.images.length) {
@@ -13628,19 +13648,21 @@ async function convertWordFile(path) {
     files.set(mdPath, mdHandle);
     recordEdit(mdHandle, mdPath);
     renderTree();
+    task.done();
     fileActionBusy = false;
     stopLoading();
     await openPath(mdPath);
     const what = wordConversionNotes(result);
     if (result.warnings.length) {
       await modal('Convertito in Markdown', '<p>«' + escapeHtml(mdName) + '» è pronto' + (what.length ? ' (con ' + escapeHtml(what.join(', ')) + ' in ' + escapeHtml(imageDir) + ')' : '') +
-        '. Il file Word resta nella cartella. Da controllare:</p>' + wordWarningsHtml(result.warnings), 'OK');
+        '. Il file ' + source.label + ' resta nella cartella. Da controllare:</p>' + wordWarningsHtml(result.warnings), 'OK');
     } else {
-      toast('«' + mdName + '» creato dal Word' + (what.length ? ' · ' + what.join(', ') + ' in ' + imageDir : '') + '. Il file Word resta nella cartella.', 'success');
+      toast('«' + mdName + '» creato dal ' + source.label + (what.length ? ' · ' + what.join(', ') + ' in ' + imageDir : '') + '. Il file ' + source.label + ' resta nella cartella.', 'success');
     }
   } catch (error) {
-    toast('Conversione non riuscita: ' + error.message);
+    conversionFailed(error, wordName);
   } finally {
+    task.done();
     if (fileActionBusy) {
       fileActionBusy = false;
       stopLoading();
@@ -13648,28 +13670,33 @@ async function convertWordFile(path) {
   }
 }
 
-// Riquadro di un Word incorporato › «Nel documento»: il contenuto prende il posto del riquadro.
+const convertWordFile = convertFileToMarkdown;
+
+// Riquadro di un Word o di un PDF incorporato › «Nel documento»: il contenuto prende il posto del riquadro.
 // Le immagini restano in bozza (draftImages) e finiscono in _allegati/<nome>/ quando si salva.
-async function inlineEmbeddedWord(box) {
+async function inlineEmbeddedDocument(box) {
   if (!ed.contains(box) || !canEditVisual()) return;
   const target = pdfEmbedTarget(box);
   const name = target.name;
+  const source = markdownSourceOf(name) || markdownSources[0];
   if (!root && !target.external) {
-    toast('Apri la cartella di lavoro con Scegli cartella per portare il Word nel documento.');
+    toast('Apri la cartella di lavoro con Scegli cartella per portare il ' + source.label + ' nel documento.');
     return;
   }
   startLoading('Conversione di «' + name + '»…', 0);
+  const task = conversionProgress();
   let result;
   try {
     const file = target.external ? await fetch(target.url).then(response => response.ok ? response.blob() : null) : draftImages.get(target.path) || await files.get(target.path)?.getFile();
     if (!file) throw new Error('file non trovato');
-    const base = attachmentName(name.replace(/\.docx$/i, ''));
+    const base = attachmentName(name.replace(source.test, ''));
     const taken = lower => [...files.keys(), ...draftImages.keys(), ...folderHandles.keys()].some(item => item.toLowerCase() === lower || item.toLowerCase().startsWith(lower + '/'));
-    result = await docxToMarkdown(file, { from: current, imageDir: wordImageFolder(base, taken, attachmentDirFor(current)), shift: ed.querySelector(':scope > h1') ? 1 : 0 });
+    result = await source.convert(file, { from: current, imageDir: wordImageFolder(base, taken, attachmentDirFor(current)), shift: ed.querySelector(':scope > h1') ? 1 : 0, name, signal: task.signal, progress: task.progress });
   } catch (error) {
-    toast('Impossibile convertire «' + name + '»: ' + error.message);
+    conversionFailed(error, name);
     return;
   } finally {
+    task.done();
     stopLoading();
   }
   if (!box.isConnected || !canEditVisual()) return;
@@ -13685,13 +13712,1203 @@ async function inlineEmbeddedWord(box) {
   pushLiveUndo(before);
   mark();
   queueOutline();
-  // Un Word tra gli allegati che nessun altro usa va nel cestino di Itaca al salvataggio.
+  // Un file tra gli allegati che nessun altro usa va nel cestino di Itaca al salvataggio.
   const leaving = !target.external && isAttachmentPath(target.path) && settings.attachmentTrash
     ? ' Se nessun altro documento usa «' + name + '», al salvataggio va nel cestino di Itaca.' : '';
   if (result.warnings.length) {
-    await modal('Word nel documento', '<p>Il contenuto di «' + escapeHtml(name) + '» è ora nel documento (Ctrl/⌘ + Z per tornare al riquadro).' + escapeHtml(leaving) + ' Da controllare:</p>' + wordWarningsHtml(result.warnings), 'OK');
+    await modal(source.label + ' nel documento', '<p>Il contenuto di «' + escapeHtml(name) + '» è ora nel documento (Ctrl/⌘ + Z per tornare al riquadro).' + escapeHtml(leaving) + ' Da controllare:</p>' + wordWarningsHtml(result.warnings), 'OK');
   } else {
     toast('Il contenuto di «' + name + '» è ora nel documento' + (result.images.length ? '; le immagini vanno in _allegati quando salvi' : '') + '. Ctrl/⌘ + Z per tornare al riquadro.' + leaving, 'success');
+  }
+}
+
+const inlineEmbeddedWord = inlineEmbeddedDocument;
+
+// ── Da PDF a Markdown ───────────────────────────────────────────────────────
+// Un PDF non sa quali sono i paragrafi: contiene pezzi di testo con posizione e carattere.
+// Per leggerlo si usa pdf.js (Mozilla, Apache-2.0), scaricato solo la prima volta che serve e
+// controllato con l'impronta SHA-384 (come hls.js: il file di Itaca non cresce). Poi:
+// - PDF «con tag» (Word, LibreOffice, InDesign, Chrome li esportano così): la struttura logica
+//   dice titoli e livelli, paragrafi, elenchi, tabelle, figure con il testo alternativo e
+//   l'ordine di lettura; intestazioni e piè di pagina sono «artefatti» e restano fuori.
+// - PDF senza tag: righe ricostruite dalle posizioni, titoli dalla dimensione del carattere e
+//   dai segnalibri, paragrafi dalle distanze tra le righe, elenchi dai segni, tabelle dalle
+//   colonne allineate, codice dai caratteri a spaziatura fissa, due colonne rimesse in fila.
+// Sempre: intestazioni, piè di pagina e numeri di pagina ripetuti tolti, sillabazione a fine
+// riga ricucita, paragrafi e tabelle spezzati tra due pagine riuniti, grassetto, corsivo,
+// apici, collegamenti, immagini (ritagliate dalla pagina come si vedono). Le pagine senza
+// testo (scansioni) diventano immagini: il riconoscimento del testo (OCR) non c'è.
+const pdfjsLibrary = {
+  base: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/',
+  main: ['build/pdf.min.mjs', 'sha384-6MTG6VynDVMfHzijur0VKc9BdrA6HaXHZd+pK6iGWh2acDj3CibR0CRwHizMoy1N'],
+  worker: ['build/pdf.worker.min.mjs', 'sha384-/+r9qqXFj/8aZJ0d2yiuf6sqAR9T1UyN6NdZoI8cMvzccicdUNx62wDS8JsPedce']
+};
+var pdfjsLoading = null;
+
+function loadPdfJs() {
+  return (pdfjsLoading ||= (async () => {
+    const get = async ([path, integrity]) => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 90000);
+      try {
+        const response = await fetch(pdfjsLibrary.base + path, { integrity, signal: controller.signal, credentials: 'omit', referrerPolicy: 'no-referrer' });
+        if (!response.ok) throw new Error(response.status);
+        return new Blob([await response.blob()], { type: 'text/javascript' });
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+    try {
+      const [main, workerCode] = await Promise.all([get(pdfjsLibrary.main), get(pdfjsLibrary.worker)]);
+      const pdfjs = await import(URL.createObjectURL(main));
+      const workerUrl = URL.createObjectURL(workerCode);
+      pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+      // Il lettore lavora in un worker (la pagina resta libera). Da file:// Chrome rifiuta il
+      // worker da blob: si prova con un indirizzo data:; se nemmeno quello parte, pdf.js lavora
+      // nella pagina (più lento, ma funziona).
+      const port = location.protocol !== 'file:' && await pdfWorkerFrom(workerUrl) || await pdfWorkerFrom(await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(workerCode);
+      }));
+      if (port) pdfjs.GlobalWorkerOptions.workerPort = port;
+      return pdfjs;
+    } catch {
+      pdfjsLoading = null;
+      throw new Error('il lettore di PDF (pdf.js) non si scarica: la prima volta serve la connessione a Internet');
+    }
+  })());
+}
+
+// Worker avviato solo se risponde (pdf.js manda «ready» appena parte).
+function pdfWorkerFrom(url) {
+  return new Promise(resolve => {
+    if (!url) return resolve(null);
+    let worker;
+    try { worker = new Worker(url, { type: 'module', name: 'pdf.js' }); } catch { return resolve(null); }
+    const done = ok => {
+      clearTimeout(timer);
+      worker.removeEventListener('message', ready);
+      worker.removeEventListener('error', failed);
+      if (!ok) worker.terminate();
+      resolve(ok ? worker : null);
+    };
+    const ready = () => done(true), failed = () => done(false);
+    const timer = setTimeout(failed, 15000);
+    worker.addEventListener('message', ready);
+    worker.addEventListener('error', failed);
+  });
+}
+
+const pdfCancelled = () => Object.assign(new Error('conversione annullata'), { name: 'AbortError' });
+
+async function openPdfDocument(pdfjs, file, name, signal) {
+  const base = pdfjsLibrary.base;
+  const task = pdfjs.getDocument({
+    data: new Uint8Array(await file.arrayBuffer()), cMapUrl: base + 'cmaps/', cMapPacked: true,
+    standardFontDataUrl: base + 'standard_fonts/', wasmUrl: base + 'wasm/', iccUrl: base + 'iccs/',
+    fontExtraProperties: true, enableXfa: false, verbosity: 0
+  });
+  let refused = false;
+  task.onPassword = async (update, reason) => {
+    stopLoading();
+    const wrong = reason === pdfjs.PasswordResponses.INCORRECT_PASSWORD;
+    const answer = await modal('PDF protetto da password', '<p>' + (wrong ? '<b>La password non è giusta.</b> ' : '') + '«' + escapeHtml(name) +
+      '» è protetto: scrivi la password per convertirlo. Itaca la usa solo per aprire il file e non la ricorda.</p><label>Password</label><input name="password" type="password" autocomplete="off" spellcheck="false">', 'Apri');
+    startLoading('Apertura di «' + name + '»…', 0);
+    if (answer?.password && !signal.aborted) update(answer.password);
+    else { refused = true; task.destroy(); }
+  };
+  const abort = () => task.destroy();
+  signal.addEventListener('abort', abort, { once: true });
+  try {
+    return await task.promise;
+  } catch (error) {
+    if (signal.aborted) throw pdfCancelled();
+    if (refused) throw pdfCancelled();
+    if (error?.name === 'PasswordException') throw new Error('serve la password del PDF');
+    if (error?.name === 'InvalidPDFException') throw new Error('il file non è un PDF valido');
+    throw new Error('il PDF non si apre (' + (error?.message || error) + ')');
+  } finally {
+    signal.removeEventListener('abort', abort);
+  }
+}
+
+// ── Lettura delle pagine ──
+const pdfBulletPattern = /^\s*([•◦▪▫●○■□►▸▹‣⁃∙·✓✔✗➢➤➔→❖◆◇♦•▪●◦\uf0a7\uf0b7\uf0d8\uf076\uf0fc\uf0e0\uf06e\uf0a8\uf0d7\uf09f]|[-–—*](?=\s))\s*/u;
+const pdfNumberPattern = /^\s*\(?((\d{1,3})|([a-z])|([ivxlcdm]{1,6}))[.)](?=\s|$)(?!\s*\d)\s*/i;
+const pdfSentenceEnd = /[.!?:;…»"”’)\]]$/;
+
+function pdfFontInfo(page, id, style, cache) {
+  if (cache.has(id)) return cache.get(id);
+  let font = null;
+  try { if (page.commonObjs.has(id)) font = page.commonObjs.get(id); } catch {}
+  const name = String(font?.name || font?.fallbackName || '').replace(/^[A-Z]{6}\+/, '');
+  const info = {
+    name,
+    bold: Boolean(font?.bold || font?.black) || /bold|black|heavy|semibold|demibold|extrabold|ultrabold|[-,]w[6-9]\b|[-,]bd?$/i.test(name),
+    italic: Boolean(font?.italic) || /italic|oblique|[-,](it|bi|boldit|ital|bdit)$/i.test(name),
+    mono: Boolean(font?.isMonospace) || wordMonoFont.test(name) || style?.fontFamily === 'monospace'
+  };
+  // Prima che il carattere arrivi non si ricorda: si riprova al pezzo successivo.
+  if (font) cache.set(id, info);
+  return info;
+}
+
+// Rettangolo del PDF (origine in basso) → coordinate della pagina (origine in alto).
+const pdfViewRect = (viewport, [x1, y1, x2, y2]) => [...viewport.convertToViewportPoint(x1, y1), ...viewport.convertToViewportPoint(x2, y2)];
+
+async function pdfReadPage(pdf, pdfjs, number, ctx) {
+  const page = await pdf.getPage(number);
+  const viewport = page.getViewport({ scale: 1 });
+  const ops = await page.getOperatorList();
+  const content = await page.getTextContent({ includeMarkedContent: true });
+  const annotations = await page.getAnnotations().catch(() => []);
+  const struct = ctx.tagged ? await page.getStructTree().catch(() => null) : null;
+  const { Util, OPS } = pdfjs;
+  const result = { number, page, viewport, width: viewport.width, height: viewport.height, items: [], images: [], struct, rotated: 0 };
+  // Collegamenti verso l'esterno: rettangoli della pagina.
+  const links = [];
+  for (const annotation of annotations) {
+    const url = annotation.subtype === 'Link' && (annotation.url || annotation.unsafeUrl);
+    if (!url || !/^(https?:|mailto:)/i.test(url) || !annotation.rect) continue;
+    const [x1, y1, x2, y2] = pdfViewRect(viewport, annotation.rect);
+    links.push({ url, x0: Math.min(x1, x2) - 1, x1: Math.max(x1, x2) + 1, y0: Math.min(y1, y2) - 1, y1: Math.max(y1, y2) + 1 });
+  }
+  // Testo: il verso più usato nella pagina diventa «orizzontale» (pagine girate senza /Rotate).
+  const raw = [];
+  const marked = [];
+  for (const item of content.items) {
+    if (item.type === 'beginMarkedContent' || item.type === 'beginMarkedContentProps') { marked.push({ tag: item.tag, id: item.id || null }); continue; }
+    if (item.type === 'endMarkedContent') { marked.pop(); continue; }
+    if (item.type || typeof item.str !== 'string') continue;
+    if (!item.str) { if (item.hasEOL && raw.length) raw.at(-1).eol = true; continue; }
+    const m = Util.transform(viewport.transform, item.transform);
+    const angle = Math.round(Math.atan2(m[1], m[0]) / (Math.PI / 2)) * 90;
+    const exact = Math.abs(Math.atan2(m[1], m[0]) * 180 / Math.PI - angle) < 3;
+    let mcid = null, artifact = false;
+    for (const entry of marked) {
+      if (entry.tag === 'Artifact') artifact = true;
+      if (entry.id) mcid = entry.id;
+    }
+    raw.push({ item, m, angle: exact ? (angle + 360) % 360 : -1, mcid, artifact, eol: item.hasEOL });
+  }
+  const weight = new Map();
+  for (const entry of raw) if (entry.angle >= 0 && !entry.artifact) weight.set(entry.angle, (weight.get(entry.angle) || 0) + entry.item.str.length);
+  const main = [...weight].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 0;
+  const turn = -main * Math.PI / 180, cos = Math.cos(turn), sin = Math.sin(turn);
+  const rotate = (x, y) => main ? [x * cos - y * sin, x * sin + y * cos] : [x, y];
+  for (const entry of raw) {
+    const { item, m } = entry;
+    if (entry.angle !== main) {
+      if (!entry.artifact && item.str.trim()) result.rotated += item.str.length;
+      continue;
+    }
+    const [x, y] = rotate(m[4], m[5]);
+    const size = Math.hypot(m[2], m[3]) || item.height || 1;
+    const width = Math.abs(item.width) || size * 0.5 * item.str.length;
+    const font = pdfFontInfo(page, item.fontName, content.styles[item.fontName], ctx.fonts);
+    const mid = rotate(m[4] + Math.cos(main * Math.PI / 180) * width / 2, m[5] + Math.sin(main * Math.PI / 180) * width / 2);
+    const link = !main && links.find(box => mid[0] >= box.x0 && mid[0] <= box.x1 && y - size * 0.3 >= box.y0 && y - size * 0.3 <= box.y1);
+    result.items.push({
+      str: item.str.replace(/[\u0000-\u0008\u000b-\u001f�]/g, '').replace(/[\t\n\r]/g, ' '), x, x1: x + width, y, size, font,
+      mcid: entry.mcid, artifact: entry.artifact, page: number, href: link ? link.url : '', eol: entry.eol
+    });
+  }
+  if (main) {
+    result.turned = main;
+    const box = [rotate(0, 0), rotate(viewport.width, viewport.height)];
+    const minX = Math.min(box[0][0], box[1][0]), minY = Math.min(box[0][1], box[1][1]);
+    for (const item of result.items) { item.x -= minX; item.x1 -= minX; item.y -= minY; }
+    if (main % 180) [result.width, result.height] = [result.height, result.width];
+  }
+  // Immagini: dove finiscono sulla pagina (matrice corrente seguita nell'elenco delle operazioni).
+  let ctm = [1, 0, 0, 1, 0, 0];
+  const saved = [], marks = [];
+  const pageId = 'p' + page.ref.num + 'R' + (page.ref.gen || '');
+  const { fnArray, argsArray } = ops;
+  for (let index = 0; index < fnArray.length; index++) {
+    const fn = fnArray[index], args = argsArray[index];
+    if (fn === OPS.save) saved.push(ctm);
+    else if (fn === OPS.restore) ctm = saved.pop() || ctm;
+    else if (fn === OPS.transform) ctm = Util.transform(ctm, args);
+    else if (fn === OPS.paintFormXObjectBegin) { saved.push(ctm); if (args?.[0]) ctm = Util.transform(ctm, args[0]); }
+    else if (fn === OPS.paintFormXObjectEnd) ctm = saved.pop() || ctm;
+    else if (fn === OPS.beginMarkedContentProps) marks.push(Number.isInteger(args?.[1]) ? pageId + '_mc' + args[1] : marks.at(-1) || null);
+    else if (fn === OPS.beginMarkedContent) marks.push(marks.at(-1) || null);
+    else if (fn === OPS.endMarkedContent) marks.pop();
+    else if (fn === OPS.paintImageXObject || fn === OPS.paintInlineImageXObject || fn === OPS.paintImageMaskXObject) {
+      const full = Util.transform(viewport.transform, ctm);
+      const corners = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([u, v]) => rotate(full[0] * u + full[2] * v + full[4], full[1] * u + full[3] * v + full[5]));
+      const xs = corners.map(point => point[0]), ys = corners.map(point => point[1]);
+      const native = fn === OPS.paintImageXObject ? [args[1], args[2]] : [args[0]?.width, args[0]?.height];
+      // Diritta (niente specchio né rotazione; la pagina ha l'asse y in giù): si può prendere
+      // l'immagine originale così com'è.
+      const upright = full[0] > 0 && full[3] < 0 && Math.abs(full[1]) < 1e-3 && Math.abs(full[2]) < 1e-3 && !main;
+      result.images.push({ x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys), nativeWidth: Number(native[0]) || 0, mcid: marks.at(-1) || null,
+        mask: fn === OPS.paintImageMaskXObject, objId: fn === OPS.paintImageXObject && upright && typeof args[0] === 'string' ? args[0] : null });
+    }
+  }
+  if (main) {
+    const box = [rotate(0, 0), rotate(viewport.width, viewport.height)];
+    const minX = Math.min(box[0][0], box[1][0]), minY = Math.min(box[0][1], box[1][1]);
+    for (const image of result.images) { image.x0 -= minX; image.x1 -= minX; image.y0 -= minY; image.y1 -= minY; }
+  }
+  return result;
+}
+
+// Immagini utili della pagina: niente icone minuscole né sfondi sotto il testo; i pezzi
+// attaccati (immagini divise a strisce) diventano un'immagine sola.
+function pdfPageFigures(data) {
+  if (data.turned) return [];
+  const clip = image => {
+    const box = { ...image, x0: Math.max(0, image.x0), y0: Math.max(0, image.y0), x1: Math.min(data.width, image.x1), y1: Math.min(data.height, image.y1) };
+    if ((box.x1 - box.x0) * (box.y1 - box.y0) < (image.x1 - image.x0) * (image.y1 - image.y0) * 0.97) box.objId = null;
+    return box;
+  };
+  let boxes = data.images.map(clip).filter(box => box.x1 - box.x0 >= 18 && box.y1 - box.y0 >= 18 && (box.x1 - box.x0) * (box.y1 - box.y0) >= 900);
+  const text = data.items.filter(item => !item.skip && item.str.trim()).length;
+  const pageArea = data.width * data.height;
+  if (text) boxes = boxes.filter(box => (box.x1 - box.x0) * (box.y1 - box.y0) < pageArea * 0.8);
+  boxes.sort((a, b) => a.y0 - b.y0 || a.x0 - b.x0);
+  for (let merged = true; merged;) {
+    merged = false;
+    for (let i = 0; i < boxes.length && !merged; i++) {
+      for (let j = i + 1; j < boxes.length; j++) {
+        const a = boxes[i], b = boxes[j];
+        if (a.x0 <= b.x1 + 2 && b.x0 <= a.x1 + 2 && a.y0 <= b.y1 + 2 && b.y0 <= a.y1 + 2) {
+          boxes[i] = { x0: Math.min(a.x0, b.x0), y0: Math.min(a.y0, b.y0), x1: Math.max(a.x1, b.x1), y1: Math.max(a.y1, b.y1),
+            nativeWidth: Math.max(a.nativeWidth * (a.x1 - a.x0), b.nativeWidth * (b.x1 - b.x0)) / Math.max(1, Math.max(a.x1, b.x1) - Math.min(a.x0, b.x0)),
+            mcid: a.mcid || b.mcid, mask: a.mask && b.mask, objId: null };
+          boxes.splice(j, 1);
+          merged = true;
+          break;
+        }
+      }
+    }
+  }
+  return boxes;
+}
+
+// Immagine originale dal PDF (piena risoluzione, senza disegnare la pagina): la via veloce.
+async function pdfOriginalImage(data, objId) {
+  const store = objId.startsWith('g_') ? data.page.commonObjs : data.page.objs;
+  const image = await Promise.race([new Promise(resolve => { try { store.get(objId, resolve); } catch { resolve(null); } }), new Promise(resolve => setTimeout(() => resolve(null), 4000))]);
+  if (!image?.width || !image.height || !image.bitmap && !image.data) return null;
+  const ratio = Math.min(1, 2400 / Math.max(image.width, image.height));
+  const width = Math.max(1, Math.round(image.width * ratio)), height = Math.max(1, Math.round(image.height * ratio));
+  let source = image.bitmap;
+  if (!source) {
+    const { width: w, height: h, data: bytes, kind } = image;
+    const pixels = new ImageData(w, h);
+    const out = pixels.data;
+    if (kind === 3 && bytes.length >= w * h * 4) out.set(bytes.subarray(0, w * h * 4));
+    else if (kind === 2 && bytes.length >= w * h * 3) for (let i = 0, j = 0; i < w * h; i++, j += 3) { out[i * 4] = bytes[j]; out[i * 4 + 1] = bytes[j + 1]; out[i * 4 + 2] = bytes[j + 2]; out[i * 4 + 3] = 255; }
+    else if (kind === 1) {
+      const row = (w + 7) >> 3;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const value = bytes[y * row + (x >> 3)] & (128 >> (x & 7)) ? 255 : 0;
+        const at = (y * w + x) * 4;
+        out[at] = out[at + 1] = out[at + 2] = value;
+        out[at + 3] = 255;
+      }
+    } else return null;
+    source = document.createElement('canvas');
+    source.width = w;
+    source.height = h;
+    source.getContext('2d').putImageData(pixels, 0, 0);
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  context.drawImage(source, 0, 0, width, height);
+  if (source instanceof HTMLCanvasElement) source.width = source.height = 0;
+  // Trasparente → PNG (resta trasparente); grande e opaca (una foto) → JPEG.
+  const sample = context.getImageData(0, 0, width, height).data;
+  let transparent = false;
+  for (let i = 3; i < sample.length; i += 4 * 7) if (sample[i] < 250) { transparent = true; break; }
+  const photo = !transparent && width * height > 250000;
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, photo ? 'image/jpeg' : 'image/png', 0.9));
+  canvas.width = canvas.height = 0;
+  return blob ? { blob, extension: photo ? 'jpg' : 'png' } : null;
+}
+
+// Ritaglio dalla pagina disegnata (quello che si vede: anche testo e segni sopra l'immagine).
+async function pdfCropFigures(data, figures, signal) {
+  const wanted = Math.max(...figures.map(box => box.nativeWidth / Math.max(1, box.x1 - box.x0)), 1.5);
+  let scale = Math.min(2.5, Math.max(1.5, wanted));
+  scale = Math.min(scale, 5000 / data.width, 5000 / data.height, Math.sqrt(24e6 / (data.width * data.height)));
+  const viewport = data.page.getViewport({ scale });
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  const context = canvas.getContext('2d', { alpha: false });
+  const task = data.page.render({ canvasContext: context, viewport, background: '#ffffff' });
+  const abort = () => task.cancel();
+  signal.addEventListener('abort', abort, { once: true });
+  try { await task.promise; } finally { signal.removeEventListener('abort', abort); }
+  if (signal.aborted) throw pdfCancelled();
+  const results = [];
+  for (const box of figures) {
+    const sx = Math.max(0, Math.floor(box.x0 * scale)), sy = Math.max(0, Math.floor(box.y0 * scale));
+    const sw = Math.min(canvas.width - sx, Math.ceil((box.x1 - box.x0) * scale)), sh = Math.min(canvas.height - sy, Math.ceil((box.y1 - box.y0) * scale));
+    if (sw < 4 || sh < 4) { results.push(null); continue; }
+    const piece = document.createElement('canvas');
+    piece.width = sw;
+    piece.height = sh;
+    piece.getContext('2d', { alpha: false }).drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+    const photo = sw * sh > 250000 && !box.mask;
+    const blob = await new Promise(resolve => piece.toBlob(resolve, photo ? 'image/jpeg' : 'image/png', 0.9));
+    piece.width = piece.height = 0;
+    results.push(blob ? { blob, extension: photo ? 'jpg' : 'png' } : null);
+  }
+  canvas.width = canvas.height = 0;
+  return results;
+}
+
+// ── Righe ──
+// Pezzi nell'ordine del PDF: un pezzo sulla stessa linea di base, più a destra, continua la riga.
+function pdfLines(items, split = null) {
+  const lines = [];
+  let line = null;
+  for (const item of items) {
+    if (item.skip) continue;
+    // Spazi a sé (pdf.js li aggiunge tra i pezzi): solo «qui c'è uno spazio», senza larghezza,
+    // altrimenti coprirebbero lo stacco tra le colonne di una tabella.
+    if (!item.str.trim()) {
+      if (line && line.page === item.page) {
+        line.pending = true;
+        if (item.eol) line.items.at(-1).eol = true;
+      }
+      continue;
+    }
+    const size = Math.max(item.size, 1);
+    let same = false;
+    if (line && line.page === item.page && !(split && split(line.items.at(-1), item)) && !line.items.at(-1).eol) {
+      const ref = line.size, big = Math.max(ref, size), dy = item.y - line.y;
+      if (Math.abs(dy) < big * 0.42 && item.x > line.x1 - big * 0.6) same = true;
+      else if (size < ref * 0.85 && dy > -ref * 0.75 && dy < ref * 0.45 && item.x > line.x1 - ref * 0.6 && item.x < line.x1 + ref * 2) same = true;
+    } else if (line && line.items.at(-1).eol && line.page === item.page && Math.abs(item.y - line.y) < Math.max(line.size, size) * 0.2 && item.x > line.x1 - size * 0.3 && item.x < line.x1 + size * 3 && !(split && split(line.items.at(-1), item))) same = true;
+    item.space = item.cell = item.sup = item.sub = false;
+    if (same) {
+      const last = line.items.at(-1);
+      const gap = item.x - line.x1, ref = Math.max(Math.min(size, line.size), 1);
+      if ((gap > ref * 0.16 || line.pending) && !/\s$/.test(last.str) && !/^\s/.test(item.str)) item.space = true;
+      if (gap > Math.max(line.size, size) * 1.6) item.cell = true;
+      if (size < line.size * 0.85) {
+        if (line.y - item.y > line.size * 0.18) item.sup = true;
+        else if (item.y - line.y > line.size * 0.08) item.sub = true;
+      }
+      line.items.push(item);
+      line.x1 = Math.max(line.x1, item.x1);
+      line.pending = false;
+    } else {
+      line = { page: item.page, y: item.y, x0: item.x, x1: item.x1, size, items: [item] };
+      lines.push(line);
+    }
+  }
+  for (const line of lines) pdfFinishLine(line);
+  return lines.filter(line => line.text.trim());
+}
+
+function pdfFinishLine(line) {
+  const sizes = new Map();
+  let chars = 0, bold = 0, italic = 0, mono = 0;
+  for (const item of line.items) {
+    const count = item.str.replace(/\s/g, '').length;
+    if (!count) continue;
+    chars += count;
+    if (!item.sup && !item.sub) sizes.set(Math.round(item.size * 2) / 2, (sizes.get(Math.round(item.size * 2) / 2) || 0) + count);
+    if (item.font.bold) bold += count;
+    if (item.font.italic) italic += count;
+    if (item.font.mono) mono += count;
+  }
+  const main = [...sizes].sort((a, b) => b[1] - a[1])[0];
+  if (main) line.size = main[0];
+  const first = line.items.find(item => !item.sup && !item.sub) || line.items[0];
+  line.y = first.y;
+  line.x0 = Math.min(...line.items.map(item => item.x));
+  line.x1 = Math.max(...line.items.map(item => item.x1));
+  line.text = line.items.map(item => (item.space ? ' ' : '') + item.str).join('').replace(/\s+/g, ' ');
+  line.bold = chars > 0 && bold >= chars * 0.9;
+  line.italic = chars > 0 && italic >= chars * 0.9;
+  line.mono = chars > 0 && mono >= chars * 0.95;
+  line.chars = chars;
+  // Colonne (per le tabelle): pezzi separati da uno spazio largo.
+  line.cells = [];
+  for (const item of line.items) {
+    if (!line.cells.length || item.cell) line.cells.push({ x0: item.x, x1: item.x1, items: [item] });
+    else { const cell = line.cells.at(-1); cell.items.push(item); cell.x1 = Math.max(cell.x1, item.x1); }
+  }
+  for (const cell of line.cells) cell.text = cell.items.map((item, index) => (index && item.space ? ' ' : '') + item.str).join('').trim();
+  line.cells = line.cells.filter(cell => cell.text);
+}
+
+// Pezzi di testo con il loro formato (per wordInline).
+function pdfSegments(items, { plain = false, noBold = false } = {}) {
+  const out = [];
+  for (const [index, item] of items.entries()) {
+    const text = (index && (item.space || item.cell) ? ' ' : '') + item.str;
+    if (!text) continue;
+    out.push({ text, b: !plain && !noBold && item.font.bold, i: !plain && item.font.italic, code: !plain && item.font.mono, sup: item.sup, sub: item.sub, href: item.href || '' });
+  }
+  return out;
+}
+
+// Righe di un paragrafo una dopo l'altra: «comuni-» + «cazione» = «comunicazione».
+function pdfJoinLines(lines, options = {}) {
+  const out = [];
+  lines.forEach((line, index) => {
+    const segments = pdfSegments(line.items, options);
+    if (index && out.length) {
+      const last = out.at(-1);
+      const previous = lines[index - 1];
+      const next = line.text.trimStart();
+      if (typeof last.text !== 'string') {
+        if (segments[0]) segments[0].text = segments[0].text.trimStart();
+      } else if (/\p{L}[-\u00ad\u2010\u2011]$/u.test(last.text.trimEnd()) && /^\p{Ll}/u.test(next)) {
+        last.text = last.text.trimEnd().slice(0, -1);
+        if (segments[0]) segments[0].text = segments[0].text.trimStart();
+      } else if (/\u00ad$/.test(last.text)) {
+        last.text = last.text.slice(0, -1);
+      } else if (previous.lineBreak) {
+        out.push({ br: true });
+        if (segments[0]) segments[0].text = segments[0].text.trimStart();
+      } else if (!/[\s/]$/.test(last.text) && segments[0] && !/^\s/.test(segments[0].text)) {
+        segments[0].text = ' ' + segments[0].text;
+      }
+    }
+    out.push(...segments);
+  });
+  return out;
+}
+
+// ── Intestazioni, piè di pagina, numeri di pagina ──
+function pdfMarkRunningHeads(pages) {
+  const pageNumber = /^(?:pag(?:ina|\.)?|page|p\.)?\s*[-–—]?\s*(?:\d{1,4}|[ivxlcdm]{1,7})\s*[-–—]?(?:\s*(?:di|\/|of|de|su)\s*\d{1,4})?$/i;
+  const key = text => foldSearch(text).replace(/\d+/g, '#').replace(/[^\p{L}#]+/gu, ' ').trim();
+  const counts = new Map();
+  const zones = pages.map(data => {
+    const lines = pdfLines(data.items.filter(item => !item.artifact)).sort((a, b) => a.y - b.y);
+    const top = lines.filter(line => line.y < data.height * 0.12).slice(0, 3);
+    const bottom = lines.filter(line => line.y > data.height * 0.88).slice(-3);
+    const edge = [...top, ...bottom];
+    const seen = new Set();
+    for (const line of edge) {
+      const value = (line.y < data.height / 2 ? 't' : 'b') + key(line.text);
+      if (value.length > 1 && !seen.has(value)) { seen.add(value); counts.set(value, (counts.get(value) || 0) + 1); }
+    }
+    return edge;
+  });
+  const enough = Math.max(3, Math.ceil(pages.length * 0.4));
+  let removed = 0;
+  zones.forEach((edge, index) => {
+    for (const line of edge) {
+      const value = (line.y < pages[index].height / 2 ? 't' : 'b') + key(line.text);
+      if (pageNumber.test(line.text.trim()) || (pages.length >= 3 && value.length > 1 && counts.get(value) >= enough)) {
+        for (const item of line.items) item.skip = true;
+        removed++;
+      }
+    }
+  });
+  return removed;
+}
+
+// ── PDF senza tag: blocchi dalla geometria ──
+function pdfMarker(line) {
+  const text = line.text;
+  const first = line.items.find(item => item.str.trim());
+  // «o» della Courier usata da Word per il secondo livello, staccata dal testo.
+  if (first && first.str.trim() === 'o' && line.items.length > 1) {
+    const next = line.items[line.items.indexOf(first) + 1];
+    if (next && next.x - first.x1 > first.size * 0.6) return { ordered: false, marker: 'o', x: first.x, length: text.indexOf('o') + 1 };
+  }
+  const bullet = pdfBulletPattern.exec(text);
+  if (bullet && text.length > bullet[0].length) return { ordered: false, marker: bullet[1], x: line.x0, length: bullet[0].length };
+  const pua = /^\s*([\ue000-\uf8ff])\s*/u.exec(text);
+  if (pua && text.length > pua[0].length) return { ordered: false, marker: pua[1], x: line.x0, length: pua[0].length };
+  const number = pdfNumberPattern.exec(text);
+  if (number && text.length > number[0].length && (number[2] || line.items[0].str.trim().length <= 5)) {
+    const value = number[2] ? Number(number[2]) : number[3] ? number[3].toLowerCase().charCodeAt(0) - 96 : 0;
+    return { ordered: true, marker: number[1], number: value, x: line.x0, length: number[0].length };
+  }
+  return null;
+}
+
+// Toglie il segno dell'elenco dai pezzi della riga.
+function pdfStripMarker(items, length) {
+  let left = length;
+  const out = [];
+  for (const item of items) {
+    if (left <= 0) { out.push(item); continue; }
+    const text = (out.length || item !== items[0]) && item.space ? ' ' + item.str : item.str;
+    if (text.length <= left) { left -= text.length; continue; }
+    out.push({ ...item, str: text.slice(left).replace(/^\s+/, ''), space: false, cell: false });
+    left = 0;
+  }
+  return out;
+}
+
+function pdfIsToc(line) {
+  return /\p{L}.*(?:\.\s?|·\s?|…|_){4,}\s*(?:\d{1,4}|[ivxlcdm]{1,6})\s*$/iu.test(line.text);
+}
+
+function pdfMedian(values, fallback) {
+  if (!values.length) return fallback;
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted[Math.floor(sorted.length / 2)];
+}
+
+// Tabella: righe vicine con le stesse colonne (intervalli che non si sovrappongono).
+function pdfTableAt(lines, start, ctx) {
+  const rows = [];
+  let index = start;
+  while (index < lines.length) {
+    const line = lines[index];
+    const previous = rows.at(-1)?.at(-1);
+    if (previous && (line.page !== previous.page || line.y - previous.y > Math.max(line.size, previous.size) * 3 || line.y < previous.y)) break;
+    if (line.cells.length >= 2 && !line.mono) rows.push([line]);
+    else if (rows.length && line.cells.length === 1 && line.cells[0].x0 > rows[0][0].cells[0].x1 && line.y - previous.y < line.size * 1.6) rows.at(-1).push(line);
+    else break;
+    index++;
+  }
+  if (rows.filter(row => row[0].cells.length >= 2).length < 2) return null;
+  // Colonne: intervalli orizzontali uniti finché si toccano.
+  const spans = rows.flat().flatMap(line => line.cells.map(cell => [cell.x0, cell.x1])).sort((a, b) => a[0] - b[0]);
+  const columns = [];
+  for (const [x0, x1] of spans) {
+    const last = columns.at(-1);
+    if (last && x0 <= last[1] + 1) last[1] = Math.max(last[1], x1);
+    else columns.push([x0, x1]);
+  }
+  if (columns.length < 2 || columns.length > 14) return null;
+  const columnOf = cell => columns.findIndex(([x0, x1]) => cell.x0 >= x0 - 1 && cell.x0 <= x1 + 1);
+  const table = [];
+  for (const row of rows) {
+    const cells = Array.from({ length: columns.length }, () => []);
+    let clash = false;
+    for (const line of row) {
+      for (const cell of line.cells) {
+        const column = columnOf(cell);
+        if (column < 0) { clash = true; continue; }
+        if (line === row[0] && cells[column].length) clash = true;
+        cells[column].push(cell);
+      }
+    }
+    if (clash) return null;
+    // Riga che continua quella sopra (testo andato a capo dentro le celle): prima colonna vuota, vicina.
+    const before = table.at(-1);
+    if (before && !cells[0].length && row[0].y - before.lines.at(-1).y < row[0].size * 1.5 && cells.some(cell => cell.length)) {
+      cells.forEach((cell, column) => before.cells[column].push(...cell));
+      before.lines.push(...row);
+      continue;
+    }
+    table.push({ cells, lines: [...row] });
+  }
+  const filled = table.filter(row => row.cells.filter(cell => cell.length).length >= 2).length;
+  if (table.length < 2 || filled < table.length * 0.6) return null;
+  // Due colonne di testo lungo affiancate: è una pagina a due colonne, non una tabella.
+  const average = column => table.reduce((sum, row) => sum + row.cells[column].reduce((total, cell) => total + cell.text.length, 0), 0) / table.length;
+  if (columns.length === 2 && table.length >= 6 && average(0) > 28 && average(1) > 28) return { columns: true, end: index, rows, split: (columns[0][1] + columns[1][0]) / 2 };
+  return { end: index, rows: table, width: columns.length };
+}
+
+function pdfTableBlock(table) {
+  const rows = table.rows.map((row, rowIndex) => row.cells.map(cells => {
+    const out = [];
+    for (const cell of cells) {
+      if (out.length) out.push({ text: ' ' });
+      out.push(...pdfSegments(cell.items, { noBold: !rowIndex }));
+    }
+    return out;
+  }));
+  const first = table.rows[0].lines[0];
+  return { type: 'table', rows, header: true, page: first.page, y: first.y, endPage: first.page, endY: table.rows.at(-1).lines.at(-1).y };
+}
+
+function pdfFlowBlocks(lines, ctx) {
+  const blocks = [];
+  const body = ctx.bodySize;
+  const leading = pdfMedian(lines.slice(1).map((line, index) => line.y - lines[index].y)
+    .filter((gap, index) => gap > 0 && Math.abs(lines[index + 1].size - body) < body * 0.1 && gap < body * 2.2), body * 1.25);
+  const right = pdfMedian(lines.filter(line => Math.abs(line.size - body) < body * 0.1 && line.text.length > 30).map(line => line.x1), Math.max(0, ...lines.map(line => line.x1)));
+  let block = null;
+  const close = () => { if (block) blocks.push(block); block = null; };
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index];
+    if (pdfIsToc(line)) { ctx.toc++; close(); continue; }
+    if (line.cells.length >= 2 && !line.mono) {
+      const table = pdfTableAt(lines, index, ctx);
+      if (table?.columns) {
+        // Pagina a due colonne scritta riga per riga: prima la colonna sinistra, poi la destra.
+        const part = lines.slice(index, table.end);
+        const split = (side) => part.map(row => {
+          const items = row.items.filter(item => side ? item.x >= table.split : item.x < table.split);
+          return items.length ? Object.assign({ ...row, items }, {}) : null;
+        }).filter(Boolean);
+        const reflow = [...split(false), ...split(true)].map(row => { const copy = { page: row.page, items: row.items.map(item => ({ ...item })) }; pdfFinishLine(copy); return copy; });
+        close();
+        blocks.push(...pdfFlowBlocks(reflow.filter(row => row.text.trim()), ctx));
+        index = table.end - 1;
+        continue;
+      }
+      if (table) {
+        close();
+        blocks.push(pdfTableBlock(table));
+        ctx.tables++;
+        index = table.end - 1;
+        continue;
+      }
+    }
+    const marker = line.mono ? null : pdfMarker(line);
+    const kind = line.mono ? 'code' : marker ? 'li' : 'para';
+    const previous = block?.lines.at(-1);
+    let fresh = !block;
+    if (block && previous) {
+      const gap = line.y - previous.y;
+      const size = Math.max(line.size, previous.size);
+      const spacing = Math.abs(previous.size - body) < body * 0.1 ? leading : size * 1.25;
+      if (line.page !== previous.page || gap < -size * 0.5 || gap > Math.max(spacing * 1.45, size * 1.6)) fresh = true;
+      else if (kind === 'code' || block.type === 'code') fresh = kind !== block.type;
+      else if (kind === 'li') fresh = true;
+      else if (Math.abs(line.size - previous.size) > previous.size * 0.12) fresh = true;
+      else if (previous.bold !== line.bold && (previous.bold ? previous.text.length < 120 : line.text.length < 120 && block.lines.length > 1)) fresh = true;
+      else if (block.type === 'li') {
+        // Riga che continua la voce: rientrata almeno quanto il testo della voce.
+        if (line.x0 < block.marker.x + line.size * 0.3) fresh = true;
+      } else if (line.x0 - previous.x0 > line.size * 1.2 && block.lines.length > 1 && Math.abs(previous.x0 - block.lines[0].x0) < line.size * 0.5) fresh = true;
+      else if (line.x0 - previous.x0 > line.size * 1.2 && block.lines.length === 1 && previous.x1 < right - line.size * 3) fresh = true;
+      else if (previous.x1 < right - size * 3 && pdfSentenceEnd.test(previous.text.trim()) && Math.abs(line.x0 - block.lines[0].x0) < size * 2.5) fresh = true;
+      else if (previous.x1 < right - size * 6 && /^[\p{Lu}\d]/u.test(line.text.trim())) previous.lineBreak = true;
+    }
+    if (fresh) {
+      close();
+      block = { type: kind, lines: [line], page: line.page, y: line.y, marker };
+    } else block.lines.push(line);
+    block.endPage = line.page;
+    block.endY = line.y;
+  }
+  close();
+  return blocks;
+}
+
+// ── PDF con tag: blocchi dalla struttura ──
+const pdfContainerRoles = new Set(['Document', 'DocumentFragment', 'Part', 'Art', 'Sect', 'Div', 'NonStruct', 'Private', 'Aside', 'Index', 'BibEntry', 'Form', 'Annot', 'Ruby', 'Warichu', 'Root', 'StructTreeRoot']);
+const pdfBlockRoles = /^(P|H[1-6]?|Title|Sub|L|LI|Lbl|LBody|Table|TR|TH|TD|THead|TBody|TFoot|Figure|Caption|BlockQuote|Note|FENote|Code|Formula|TOC|TOCI|Artifact)$/;
+
+function pdfStructLeaves(node, ctx, out = []) {
+  if (!node) return out;
+  if (node.type === 'content') {
+    const items = ctx.byMcid.get(node.id);
+    if (items) { out.push(...items); ctx.used.add(node.id); }
+    return out;
+  }
+  if (node.role === 'Artifact') return out;
+  for (const child of node.children || []) pdfStructLeaves(child, ctx, out);
+  return out;
+}
+
+// Figli che sono blocchi (Code, Note, Formula, Lbl possono stare anche dentro una riga).
+const pdfStructHasBlocks = node => (node.children || []).some(child => child.role && (pdfBlockRoles.test(child.role) && !/^(Lbl|Code|Note|FENote|Formula)$/.test(child.role) || pdfContainerRoles.has(child.role) && pdfStructHasBlocks(child)));
+
+function pdfStructImages(node, ctx, out = []) {
+  if (node.type === 'content') {
+    for (const figure of ctx.figuresByMcid.get(node.id) || []) if (!out.includes(figure)) out.push(figure);
+    return out;
+  }
+  for (const child of node.children || []) pdfStructImages(child, ctx, out);
+  return out;
+}
+
+function pdfTextBlock(type, items, extra = {}) {
+  const lines = pdfLines(items);
+  if (!lines.length) return null;
+  return { type, lines, page: lines[0].page, y: lines[0].y, endPage: lines.at(-1).page, endY: lines.at(-1).y, ...extra };
+}
+
+function pdfStructBlocks(node, ctx, out, depth = 0) {
+  if (!node || node.type) return;
+  const role = node.role || '';
+  if (role === 'Artifact') return;
+  if (role === 'TOC') { pdfStructLeaves(node, ctx); ctx.toc++; return; }
+  const heading = /^H([1-6])$/.exec(role);
+  if (heading || role === 'H' || role === 'Title') {
+    const block = pdfTextBlock('heading', pdfStructLeaves(node, ctx), { level: heading ? Number(heading[1]) : role === 'Title' ? 1 : Math.min(6, ctx.sections + 1), title: role === 'Title' });
+    if (block) out.push(block);
+    return;
+  }
+  if (role === 'L') return pdfStructList(node, ctx, out, 0);
+  if (role === 'Table') return pdfStructTable(node, ctx, out);
+  if (role === 'Figure' || role === 'Formula' && pdfStructImages(node, ctx).length) {
+    const figures = pdfStructImages(node, ctx);
+    const items = pdfStructLeaves(node, ctx);
+    if (figures.length) {
+      for (const figure of figures) out.push({ type: 'image', figure, alt: node.alt || '', page: figure.page, y: figure.y0, endPage: figure.page, endY: figure.y1 });
+    } else if (node.bbox && items.length) {
+      // Disegno vettoriale (grafico, schema) con un riquadro: si ritaglia dalla pagina.
+      const data = ctx.pages[items[0].page - 1];
+      const [x0, y0, x1, y1] = pdfViewRect(data.viewport, node.bbox);
+      const figure = { page: items[0].page, x0: Math.min(x0, x1), x1: Math.max(x0, x1), y0: Math.min(y0, y1), y1: Math.max(y0, y1), nativeWidth: 0 };
+      if (!data.turned && figure.x1 - figure.x0 > 18 && figure.y1 - figure.y0 > 18) {
+        data.figures.push(figure);
+        out.push({ type: 'image', figure, alt: node.alt || '', page: figure.page, y: figure.y0, endPage: figure.page, endY: figure.y1 });
+      } else { const block = pdfTextBlock('para', items); if (block) out.push(block); }
+    } else if (items.length) {
+      const block = pdfTextBlock('para', items);
+      if (block) out.push(block);
+    }
+    return;
+  }
+  if (role === 'Code' && !pdfStructHasBlocks(node)) {
+    const block = pdfTextBlock('code', pdfStructLeaves(node, ctx));
+    if (block) out.push(block);
+    return;
+  }
+  if (!pdfContainerRoles.has(role) && role && !pdfStructHasBlocks(node)) {
+    const block = pdfTextBlock(role === 'BlockQuote' ? 'quote' : 'para', pdfStructLeaves(node, ctx));
+    if (block) {
+      if (pdfStructImages(node, ctx).length) for (const figure of pdfStructImages(node, ctx)) out.push({ type: 'image', figure, alt: node.alt || '', page: figure.page, y: figure.y0, endPage: figure.page, endY: figure.y1 });
+      out.push(block);
+    }
+    return;
+  }
+  // Contenitore: testo «sciolto» tra i figli a blocchi = paragrafi dalla geometria.
+  if (role === 'Sect') ctx.sections++;
+  let loose = [];
+  const flush = () => {
+    if (!loose.length) return;
+    out.push(...pdfFlowBlocks(pdfLines(loose), ctx));
+    loose = [];
+  };
+  for (const child of node.children || []) {
+    if (child.type === 'content' || child.role && !pdfBlockRoles.test(child.role) && !pdfContainerRoles.has(child.role)) pdfStructLeaves(child, ctx, loose);
+    else { flush(); pdfStructBlocks(child, ctx, out, depth + 1); }
+  }
+  flush();
+  if (role === 'Sect') ctx.sections--;
+}
+
+function pdfStructList(node, ctx, out, level, list = ++ctx.lists) {
+  for (const child of node.children || []) {
+    if (child.role === 'L') { pdfStructList(child, ctx, out, level + 1); continue; }
+    if (child.role !== 'LI') { pdfStructBlocks(child, ctx, out); continue; }
+    const kids = child.children || [];
+    const label = kids.find(kid => kid.role === 'Lbl');
+    const labelText = label ? pdfStructLeaves(label, ctx).map(item => item.str).join('').trim() : '';
+    const parts = [];
+    let text = [];
+    const flush = () => { if (text.length) parts.push(text); text = []; };
+    const nested = [];
+    const walk = kid => {
+      if (kid === label) return;
+      if (kid.role === 'L') { flush(); nested.push(kid); return; }
+      if (kid.role === 'Table' || kid.role === 'Figure') { flush(); nested.push(kid); return; }
+      if (kid.role === 'LBody' || kid.role === 'Div' || kid.role === 'NonStruct') { for (const inner of kid.children || []) walk(inner); return; }
+      if (kid.role === 'P' && text.length) flush();
+      pdfStructLeaves(kid, ctx, text);
+    };
+    kids.forEach(walk);
+    flush();
+    const number = pdfNumberPattern.exec(labelText);
+    let marker = labelText ? { ordered: Boolean(number), number: number ? (number[2] ? Number(number[2]) : number[3] ? number[3].toLowerCase().charCodeAt(0) - 96 : 0) : 0 } : null;
+    const groups = parts.map(part => pdfLines(part)).filter(group => group.length);
+    const first = groups[0] || [];
+    if (first.length && !marker) {
+      // Segno dentro il corpo della voce (alcuni programmi non usano Lbl).
+      const found = pdfMarker(first[0]);
+      marker = found ? { ordered: found.ordered, number: found.number || 0 } : { ordered: false, number: 0 };
+      if (found) { first[0].items = pdfStripMarker(first[0].items, found.length); pdfFinishLine(first[0]); }
+    }
+    if (first.length) out.push({ type: 'li', lines: first, marker, level, list, page: first[0].page, y: first[0].y, endPage: first.at(-1).page, endY: first.at(-1).y });
+    for (const rest of groups.slice(1)) out.push({ type: 'li-more', lines: rest, level, page: rest[0].page, y: rest[0].y, endPage: rest.at(-1).page, endY: rest.at(-1).y });
+    for (const kid of nested) {
+      if (kid.role === 'L') pdfStructList(kid, ctx, out, level + 1);
+      else pdfStructBlocks(kid, ctx, out);
+    }
+  }
+}
+
+function pdfStructTable(node, ctx, out) {
+  const rows = [];
+  let header = false;
+  const collect = (kid, head) => {
+    if (kid.role === 'TR') rows.push({ node: kid, head });
+    else if (['THead', 'TBody', 'TFoot'].includes(kid.role)) for (const inner of kid.children || []) collect(inner, head || kid.role === 'THead');
+  };
+  for (const kid of node.children || []) {
+    if (kid.role === 'Caption') pdfStructBlocks(kid, ctx, out);
+    else collect(kid, false);
+  }
+  if (!rows.length) { pdfStructBlocks({ ...node, role: 'Div' }, ctx, out); return; }
+  const grid = [];
+  const spans = [];
+  let first = null, last = null;
+  rows.forEach(({ node: tr, head }, rowIndex) => {
+    const cells = [];
+    let column = 0;
+    const take = () => { while (spans[rowIndex]?.[column]) { cells.push([]); column++; } };
+    for (const cell of tr.children || []) {
+      if (cell.role !== 'TH' && cell.role !== 'TD') continue;
+      take();
+      const items = pdfStructLeaves(cell, ctx);
+      const lines = pdfLines(items);
+      if (lines.length) { first ||= lines[0]; last = lines.at(-1); }
+      const segments = [];
+      for (const [index, part] of pdfStructCellParagraphs(cell, ctx, lines).entries()) {
+        if (index) segments.push({ br: true });
+        segments.push(...pdfJoinLines(part, { noBold: cell.role === 'TH' || head }));
+      }
+      cells.push(segments);
+      if (cell.role === 'TH' && rowIndex === 0) header = true;
+      const colSpan = Math.max(1, cell.colSpan || 1), rowSpan = Math.max(1, cell.rowSpan || 1);
+      for (let r = 0; r < rowSpan; r++) for (let c = 0; c < colSpan; c++) if (r || c) ((spans[rowIndex + r] ||= [])[column + c] = true);
+      for (let c = 1; c < colSpan; c++) cells.push([]);
+      column += colSpan;
+    }
+    take();
+    if (head && rowIndex === 0) header = true;
+    grid.push(cells);
+  });
+  if (!first) return;
+  ctx.tables++;
+  out.push({ type: 'table', rows: grid, header, page: first.page, y: first.y, endPage: last.page, endY: last.y });
+}
+
+// Paragrafi dentro una cella (P separati dentro TD): righe raggruppate per P.
+function pdfStructCellParagraphs(cell, ctx, lines) {
+  const paragraphs = (cell.children || []).filter(kid => kid.role === 'P');
+  if (paragraphs.length < 2) return lines.length ? [lines] : [];
+  const groups = [];
+  for (const paragraph of paragraphs) {
+    const items = new Set(pdfStructLeaves(paragraph, { ...ctx, used: new Set() }));
+    const part = lines.filter(line => line.items.some(item => items.has(item)));
+    if (part.length) groups.push(part);
+  }
+  return groups.length ? groups : [lines];
+}
+
+// ── Titoli per i PDF senza tag (e per quelli con tag che non ne hanno) ──
+function pdfGuessHeadings(blocks, ctx) {
+  const body = ctx.bodySize;
+  const outline = ctx.outline;
+  const candidates = [];
+  blocks.forEach((block, index) => {
+    if (block.type !== 'para' || block.lines.length > 4) return;
+    const text = block.lines.map(line => line.text).join(' ').trim();
+    if (!/\p{L}{2}/u.test(text) || text.length > 200) return;
+    const size = Math.max(...block.lines.map(line => line.size));
+    const fold = foldSearch(text).replace(/[^\p{L}\d]+/gu, ' ').trim();
+    const depth = outline.get(fold);
+    const next = blocks[index + 1];
+    const caps = text.length <= 70 && text === text.toUpperCase() && /\p{Lu}{3}/u.test(text);
+    if (depth !== undefined) candidates.push({ block, depth });
+    else if (size >= body * 1.15 && text.length <= 160) candidates.push({ block, size });
+    else if ((block.lines.every(line => line.bold) || caps && size >= body) && text.length <= 110 && !/[.,;:]$/.test(text) && size >= body * 0.95 &&
+      next && next.type !== 'heading' && !(next.lines?.every(line => line.bold))) candidates.push({ block, bold: true });
+  });
+  const sizes = [];
+  for (const candidate of candidates.filter(item => item.size).sort((a, b) => b.size - a.size)) {
+    if (!sizes.length || sizes.at(-1) > candidate.size * 1.05) sizes.push(candidate.size);
+  }
+  const levels = Math.min(sizes.length, 4);
+  for (const candidate of candidates) {
+    let level;
+    if (candidate.depth !== undefined) level = candidate.depth + 1;
+    else if (candidate.size) level = Math.min(4, sizes.findIndex(size => candidate.size >= size / 1.05) + 1 || levels);
+    else level = Math.min(6, levels + 1);
+    candidate.block.type = 'heading';
+    candidate.block.level = level;
+  }
+}
+
+// Riga breve in grassetto o più grande in cima, prima di ogni titolo: è il titolo del documento
+// (come lo stile «Titolo» di Word). Diventa # e gli altri titoli scendono di un livello.
+function pdfDocumentTitle(blocks, ctx) {
+  const first = blocks.findIndex(block => block.type !== 'image');
+  const block = blocks[first];
+  if (!block || block.type !== 'para' || block.lines.length > 2 || block.page > 1) return;
+  const text = block.lines.map(line => line.text).join(' ').trim();
+  const size = Math.max(...block.lines.map(line => line.size));
+  if (text.length > 90 || !/\p{L}{2}/u.test(text) || /[.,;:]$/.test(text) || !(block.lines.every(line => line.bold) || size >= ctx.bodySize * 1.25)) return;
+  if (!blocks.slice(first + 1).some(item => item.type === 'heading')) return;
+  if (blocks.some(item => item.type === 'heading' && item.level === 1)) for (const item of blocks) if (item.type === 'heading') item.level = Math.min(6, item.level + 1);
+  block.type = 'heading';
+  block.level = 1;
+}
+
+// ── Da blocchi a Markdown ──
+function pdfCodeText(lines) {
+  const chars = lines.flatMap(line => line.items).filter(item => item.str.length > 1).map(item => (item.x1 - item.x) / item.str.length);
+  const width = pdfMedian(chars, lines[0].size * 0.6) || 1;
+  const left = Math.min(...lines.map(line => line.x0));
+  const out = [];
+  lines.forEach((line, index) => {
+    if (index && line.y - lines[index - 1].y > line.size * 2.2) out.push('');
+    let text = '';
+    for (const item of line.items) {
+      const column = Math.max(0, Math.round((item.x - left) / width));
+      if (column > text.length) text += ' '.repeat(column - text.length);
+      else if (item.space && !/\s$/.test(text)) text += ' ';
+      text += item.str;
+    }
+    out.push(text.replace(/\s+$/, ''));
+  });
+  return out.join('\n');
+}
+
+function pdfMergeAcrossPages(blocks) {
+  const out = [];
+  for (const block of blocks) {
+    const last = out.at(-1);
+    const nextPage = last && block.page === last.endPage + 1;
+    if (nextPage && last.type === 'para' && block.type === 'para') {
+      const end = last.lines.at(-1).text.trim(), start = block.lines[0].text.trim();
+      if ((!pdfSentenceEnd.test(end) || /\p{L}[-\u2010]$/u.test(end)) && /^[\p{Ll}\d(,;]/u.test(start)) {
+        last.lines.push(...block.lines);
+        last.endPage = block.endPage;
+        last.endY = block.endY;
+        continue;
+      }
+    }
+    if (nextPage && last.type === 'table' && block.type === 'table' && Math.max(...last.rows.map(row => row.length)) === Math.max(...block.rows.map(row => row.length))) {
+      const text = row => JSON.stringify(row.map(cell => cell.map(segment => segment.text || '').join('')));
+      const rows = text(block.rows[0]) === text(last.rows[0]) ? block.rows.slice(1) : block.rows;
+      last.rows.push(...rows);
+      last.endPage = block.endPage;
+      last.endY = block.endY;
+      continue;
+    }
+    if (block.type === 'code' && last?.type === 'code' && nextPage) {
+      last.lines.push(...block.lines);
+      last.endPage = block.endPage;
+      continue;
+    }
+    out.push(block);
+  }
+  return out;
+}
+
+// Testo alternativo, ma non quello inventato da Word («Immagine che contiene… generato automaticamente»).
+const pdfAltText = alt => /generat[oa] (?:dall['’]IA|automaticamente)|automatically generated|AI-generated/i.test(alt || '') ? '' : String(alt || '').replace(/\s+/g, ' ').trim();
+
+function pdfBlocksMarkdown(blocks, ctx) {
+  const parts = [];
+  let listRun = null;
+  for (const [index, block] of blocks.entries()) {
+    const isList = block.type === 'li' || block.type === 'li-more';
+    if (!isList) listRun = null;
+    // Elenco nuovo: un altro elenco della struttura, o puntato ↔ numerato al primo livello.
+    if (listRun && block.type === 'li' && (block.list && listRun.list && block.list !== listRun.list && !block.level ||
+      !block.list && block.marker && Boolean(block.marker.ordered) !== listRun.ordered && Math.abs(block.marker.x - Math.min(...listRun.levels, block.marker.x)) < block.lines[0].size * 0.8)) listRun = null;
+    if (block.type === 'heading') {
+      const text = wordInline(pdfJoinLines(block.lines, { noBold: true }), ctx);
+      if (text) parts.push({ text: '#'.repeat(Math.min(6, Math.max(1, block.level + ctx.shift))) + ' ' + text.replace(/<br>/g, ' ') });
+    } else if (block.type === 'para' || block.type === 'quote') {
+      const allBold = block.lines.every(line => line.bold) && block.lines.length > 3;
+      const text = wordInline(pdfJoinLines(block.lines, { noBold: allBold }), ctx);
+      if (text) parts.push({ text: block.type === 'quote' ? text.split('\n').map(line => '> ' + line).join('\n') : text });
+    } else if (block.type === 'code') {
+      const text = pdfCodeText(block.lines);
+      const fence = '`'.repeat(Math.max(3, ...(text.match(/`+/g) || []).map(run => run.length + 1)));
+      parts.push({ text: fence + '\n' + text + '\n' + fence });
+    } else if (block.type === 'table') {
+      const width = Math.max(...block.rows.map(row => row.length));
+      const cells = block.rows.map(row => Array.from({ length: width }, (_, column) => wordInline(row[column] || [], ctx, { table: true }).replace(/\n/g, '<br>')));
+      let rows = cells;
+      if (!block.header && rows.length > 1 && rows[0].every(cell => cell && cellNumber(cell.replace(/\\/g, '')) !== null)) rows = [Array.from({ length: width }, (_, column) => 'Colonna ' + (column + 1)), ...rows];
+      const plain = rows.slice(1).map(row => row.map(cell => cell.replace(/\\(.)/g, '$1').replace(/<[^>]+>/g, '').trim()));
+      const line = row => '| ' + row.map(cell => cell || ' ').join(' | ') + ' |';
+      parts.push({ text: [line(rows[0]), '| ' + rows[0].map((_, column) => numericColumn(plain, column) ? '---:' : '---').join(' | ') + ' |', ...rows.slice(1).map(line)].join('\n') });
+    } else if (block.type === 'image') {
+      const image = block.figure.file;
+      if (!image) continue;
+      const width = Math.round((block.figure.x1 - block.figure.x0) * 96 / 72);
+      const full = block.figure.x1 - block.figure.x0 > ctx.pageWidth * 0.75;
+      parts.push({ text: '![' + mdText(pdfAltText(block.alt)) + '](' + relative(ctx.from, image.path) + ')' + (!full && width > 0 ? '{ width="' + width + '" }' : '') });
+    } else if (isList) {
+      const marker = block.marker || listRun?.marker || { ordered: false, number: 0 };
+      if (!listRun) listRun = { levels: [], start: index, marker, list: block.list, ordered: Boolean(marker.ordered) };
+      // Livello: dal rientro del segno (senza tag) o dalla struttura.
+      let level = block.level ?? 0;
+      if (block.level === undefined && block.marker) {
+        const levels = listRun.levels;
+        const x = block.marker.x;
+        let found = levels.findIndex(value => Math.abs(value - x) < block.lines[0].size * 0.8);
+        if (found < 0) { levels.push(x); levels.sort((a, b) => a - b); found = levels.findIndex(value => value === x); }
+        level = found;
+      } else if (block.level === undefined) level = listRun.lastLevel || 0;
+      // Un livello alla volta: un rientro di troppo diventerebbe un blocco di codice.
+      level = Math.min(level, (listRun.lastLevel ?? -1) + 1);
+      listRun.lastLevel = level;
+      const indent = '    '.repeat(level);
+      const lines = block.type === 'li' && block.marker && block.level === undefined
+        ? [Object.assign({}, block.lines[0], { items: pdfStripMarker(block.lines[0].items, block.marker.length) }), ...block.lines.slice(1)] : block.lines;
+      const text = wordInline(pdfJoinLines(lines), ctx);
+      if (!text) continue;
+      if (block.type === 'li-more') {
+        parts.push({ text: indent + '    ' + text, tight: false });
+        continue;
+      }
+      const lead = marker.ordered ? (listRun.count?.[level] === undefined ? Math.max(1, marker.number || 1) : listRun.count[level] + 1) + '. ' : '- ';
+      (listRun.count ||= [])[level] = parseInt(lead) || 0;
+      listRun.count.length = level + 1;
+      parts.push({ text: indent + lead + text.replace(/<br>/g, ' '), tight: index > listRun.start });
+    }
+  }
+  return parts.map((part, index) => (index ? (part.tight ? '\n' : '\n\n') : '') + part.text).join('') + '\n';
+}
+
+// Segnalibri del PDF: titolo → livello (per i titoli dei PDF senza tag).
+async function pdfOutlineLevels(pdf) {
+  const levels = new Map();
+  const walk = (items, depth) => {
+    for (const item of items || []) {
+      const title = foldSearch(String(item.title || '')).replace(/[^\p{L}\d]+/gu, ' ').trim();
+      if (title && !levels.has(title)) levels.set(title, Math.min(depth, 5));
+      walk(item.items, depth + 1);
+    }
+  };
+  try { walk(await pdf.getOutline(), 0); } catch {}
+  return levels;
+}
+
+// file: Blob del PDF. from: percorso del documento Markdown (per i collegamenti relativi alle immagini).
+async function pdfToMarkdown(file, { from, imageDir, shift = 0, name = 'PDF', signal, progress = () => {} }) {
+  progress('Preparazione del lettore di PDF…');
+  const pdfjs = await loadPdfJs();
+  if (signal.aborted) throw pdfCancelled();
+  const pdf = await openPdfDocument(pdfjs, file, name, signal);
+  try {
+    // Struttura (tag) letta sempre: alcuni programmi (Chrome) non dichiarano /Marked.
+    const ctx = { tagged: true, fonts: new Map(), toc: 0, tables: 0, sections: 0, lists: 0, shift, from, pages: [], warnings: new Set() };
+    ctx.outline = await pdfOutlineLevels(pdf);
+    const total = pdf.numPages;
+    for (let number = 1; number <= total; number++) {
+      if (signal.aborted) throw pdfCancelled();
+      progress('Lettura della pagina ' + number + ' di ' + total + '…');
+      const data = await pdfReadPage(pdf, pdfjs, number, ctx);
+      ctx.pages.push(data);
+    }
+    // Carattere del testo normale: quello con più lettere.
+    const sizes = new Map();
+    for (const data of ctx.pages) for (const item of data.items) if (!item.artifact) {
+      const key = Math.round(item.size * 2) / 2;
+      sizes.set(key, (sizes.get(key) || 0) + item.str.length);
+    }
+    ctx.bodySize = [...sizes].sort((a, b) => b[1] - a[1])[0]?.[0] || 10;
+    ctx.pageWidth = pdfMedian(ctx.pages.map(data => data.width), 595);
+    pdfMarkRunningHeads(ctx.pages);
+    for (const data of ctx.pages) for (const item of data.items) if (item.artifact) item.skip = true;
+    // Con tag? Solo se la struttura copre quasi tutto il testo.
+    let covered = 0, chars = 0;
+    const structIds = new Set();
+    const collectIds = node => { if (node?.type === 'content') structIds.add(node.id); else for (const child of node?.children || []) collectIds(child); };
+    for (const data of ctx.pages) collectIds(data.struct);
+    for (const data of ctx.pages) for (const item of data.items) if (!item.skip) { chars += item.str.length; if (item.mcid && structIds.has(item.mcid)) covered += item.str.length; }
+    const structured = ctx.tagged && chars > 0 && covered >= chars * 0.8;
+    // Figure di ogni pagina; con tag, quelle segnate da un MCID vanno dove dice la struttura.
+    ctx.figuresByMcid = new Map();
+    for (const data of ctx.pages) {
+      data.figures = pdfPageFigures(data).map(box => ({ ...box, page: data.number }));
+      if (structured) for (const figure of data.figures) if (figure.mcid) (ctx.figuresByMcid.get(figure.mcid) || ctx.figuresByMcid.set(figure.mcid, []).get(figure.mcid)).push(figure);
+    }
+    progress('Ricostruzione di titoli, paragrafi e tabelle…');
+    let blocks = [];
+    const orphans = [];
+    if (structured) {
+      ctx.byMcid = new Map();
+      ctx.used = new Set();
+      for (const data of ctx.pages) for (const item of data.items) if (!item.skip && item.mcid) (ctx.byMcid.get(item.mcid) || ctx.byMcid.set(item.mcid, []).get(item.mcid)).push(item);
+      for (const data of ctx.pages) {
+        const before = blocks.length;
+        if (data.struct) pdfStructBlocks({ role: 'Root', children: data.struct.children }, ctx, blocks);
+        // Testo della pagina fuori dalla struttura: paragrafi dalla geometria, messi dove stanno.
+        const loose = data.items.filter(item => !item.skip && !(item.mcid && ctx.used.has(item.mcid)));
+        if (loose.length) orphans.push(...pdfFlowBlocks(pdfLines(loose), ctx));
+        if (blocks.length === before && !loose.length && !data.figures.length) continue;
+      }
+      const placed = new Set(blocks.filter(block => block.type === 'image').map(block => block.figure));
+      for (const data of ctx.pages) for (const figure of data.figures) if (!placed.has(figure)) orphans.push({ type: 'image', figure, alt: '', page: figure.page, y: figure.y0, endPage: figure.page, endY: figure.y1 });
+      // Un titolo «Title» fa scendere di un livello gli altri titoli (come nel Word).
+      if (blocks.some(block => block.title) && blocks.some(block => block.type === 'heading' && !block.title && block.level === 1)) for (const block of blocks) if (block.type === 'heading' && !block.title) block.level = Math.min(6, block.level + 1);
+      if (!blocks.some(block => block.type === 'heading')) pdfGuessHeadings(blocks, ctx);
+    } else {
+      for (const data of ctx.pages) {
+        blocks.push(...pdfFlowBlocks(pdfLines(data.items), ctx));
+        for (const figure of data.figures) orphans.push({ type: 'image', figure, alt: '', page: figure.page, y: figure.y0, endPage: figure.page, endY: figure.y1 });
+      }
+      pdfGuessHeadings(blocks, ctx);
+    }
+    // Immagini e testo fuori posto: dopo l'ultimo blocco della stessa pagina che sta sopra.
+    for (const orphan of orphans.sort((a, b) => a.page - b.page || a.y - b.y)) {
+      let at = -1;
+      for (let index = 0; index < blocks.length; index++) {
+        const block = blocks[index];
+        if (block.page < orphan.page || block.page === orphan.page && block.y <= orphan.y) at = index;
+      }
+      if (at < 0 || blocks[at].page !== orphan.page) {
+        const first = blocks.findIndex(block => block.page >= orphan.page);
+        if (first >= 0) at = first - 1;
+      }
+      blocks.splice(at + 1, 0, orphan);
+    }
+    // Pagine senza testo (scansioni): la pagina intera come immagine.
+    const scanned = [];
+    for (const data of ctx.pages) {
+      if (data.items.some(item => !item.skip && item.str.trim())) continue;
+      if (!data.images.length) continue;
+      scanned.push(data.number);
+      const figure = { page: data.number, x0: 0, y0: 0, x1: data.width, y1: data.height, nativeWidth: Math.max(...data.images.map(image => image.nativeWidth)) * data.width / Math.max(1, ...data.images.map(image => image.x1 - image.x0)) };
+      data.figures = [figure];
+      blocks = blocks.filter(block => !(block.type === 'image' && block.page === data.number));
+      const at = blocks.findIndex(block => block.page > data.number);
+      blocks.splice(at < 0 ? blocks.length : at, 0, { type: 'image', figure, alt: 'Pagina ' + data.number, page: data.number, y: 0, endPage: data.number, endY: data.height });
+    }
+    blocks = pdfMergeAcrossPages(blocks);
+    pdfDocumentTitle(blocks, ctx);
+    // Immagini: ritagliate dalla pagina disegnata, solo quelle che finiscono nel documento.
+    const images = [];
+    const used = new Set(blocks.filter(block => block.type === 'image').map(block => block.figure));
+    for (const data of ctx.pages) {
+      const figures = data.figures.filter(figure => used.has(figure));
+      if (!figures.length) continue;
+      if (signal.aborted) throw pdfCancelled();
+      progress('Immagini della pagina ' + data.number + ' di ' + total + '…');
+      const crops = [];
+      for (const figure of figures) crops.push(figure.objId ? await pdfOriginalImage(data, figure.objId).catch(() => null) : null);
+      const rest = figures.filter((figure, index) => !crops[index]);
+      if (rest.length) {
+        try {
+          const drawn = await pdfCropFigures(data, rest, signal);
+          rest.forEach((figure, index) => { crops[figures.indexOf(figure)] = drawn[index]; });
+        } catch {
+          if (signal.aborted) throw pdfCancelled();
+          ctx.warnings.add('Alcune immagini non si sono potute ritagliare (pagina ' + data.number + ').');
+        }
+      }
+      figures.forEach((figure, index) => {
+        if (!crops[index]) return;
+        const path = imageDir + '/immagine-' + (images.length + 1) + '.' + crops[index].extension;
+        figure.file = { path };
+        images.push({ path, blob: crops[index].blob });
+      });
+    }
+    for (const data of ctx.pages) data.page.cleanup();
+    const markdown = pdfBlocksMarkdown(blocks, ctx).replace(/\n{3,}/g, '\n\n');
+    // Avvisi.
+    const rotated = ctx.pages.reduce((sum, data) => sum + data.rotated, 0);
+    if (scanned.length === total) ctx.warnings.add('Il PDF è fatto di immagini (una scansione): ogni pagina è diventata un’immagine, il testo non si può leggere senza un programma di riconoscimento (OCR).');
+    else if (scanned.length) ctx.warnings.add((scanned.length === 1 ? 'La pagina ' + scanned[0] + ' è un’immagine' : 'Le pagine ' + scanned.join(', ') + ' sono immagini') + ' (scansione): ' + (scanned.length === 1 ? 'è stata inserita' : 'sono state inserite') + ' come immagine, senza testo.');
+    if (rotated > 20) ctx.warnings.add('Del testo scritto in verticale o di traverso (' + rotated + ' caratteri) è stato lasciato fuori.');
+    const strange = markdown.match(/[\ue000-\uf8ff]/gu)?.length || 0;
+    if (strange > 20 || strange > markdown.length * 0.02) ctx.warnings.add('Alcuni caratteri non si leggono (caratteri del PDF senza corrispondenza con le lettere): controlla il testo.');
+    if (!structured && blocks.some(block => block.type === 'table')) ctx.warnings.add('Le tabelle sono state riconosciute dalle colonne allineate: controlla che le celle siano al posto giusto.');
+    if (!markdown.trim()) throw new Error('nel PDF non c’è testo né immagini da portare nel documento');
+    return { markdown, images, warnings: [...ctx.warnings], pages: total, structured };
+  } finally {
+    pdf.loadingTask.destroy();
   }
 }
 
@@ -14329,6 +15546,19 @@ function stopLoading() {
   clearTimeout(docLoadingTimer);
   docLoading.hidden = true;
 }
+// Pulsante «Annulla» (ed Esc) mentre l'indicatore è visibile; null lo toglie.
+let loadingCancelHandler = null;
+function loadingCancel(handler) {
+  loadingCancelHandler = handler;
+  $('docLoadingCancel').hidden = !handler;
+}
+$('docLoadingCancel').addEventListener('click', () => loadingCancelHandler?.());
+window.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !loadingCancelHandler || docLoading.hidden || document.querySelector('dialog[open]')) return;
+  event.preventDefault();
+  event.stopPropagation();
+  loadingCancelHandler();
+}, true);
 function paintLoading(message) {
   if (message) $('docLoadingText').textContent = message;
   clearTimeout(docLoadingTimer);
@@ -18349,7 +19579,7 @@ const glossaryMarkdown = [
     ['Collegamento a un sito', 'Indirizzo completo; tra < > se vuoi mostrare l’indirizzo stesso.', '[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)\n<https://www.mkdocs.org>'],
     ['Immagine', 'Come un collegamento, con ! davanti. Il testo tra parentesi quadre descrive l’immagine. Le immagini incollate finiscono in _allegati.', '![Schema dell’impianto](_allegati/schema.png)'],
     ['Diagramma (draw.io)', 'Un’immagine .drawio.svg contiene anche il diagramma: in Modifica il doppio clic (o «Modifica diagramma») lo riapre in draw.io. Il pulsante Diagramma della barra ne crea uno nuovo in _allegati.', '![Flusso di approvazione](_allegati/Flusso.drawio.svg)'],
-    ['PDF incorporato', 'Come un’immagine, ma il file è un PDF, da solo su una riga: il PDF si legge dentro il documento (con i comandi del browser: pagine, zoom, scarica, stampa) e il pulsante Apri lo mostra in una nuova scheda. I PDF incollati o trascinati nel documento finiscono in _allegati.', '![Manuale d’uso](_allegati/manuale.pdf)'],
+    ['PDF incorporato', 'Come un’immagine, ma il file è un PDF, da solo su una riga: il PDF si legge dentro il documento (con i comandi del browser: pagine, zoom, scarica, stampa) e il pulsante Apri lo mostra in una nuova scheda. I PDF incollati o trascinati nel documento finiscono in _allegati. In Modifica, «Nel documento» converte il PDF in Markdown al posto del riquadro; dal menu ⋯ di un .pdf nell’elenco, «Converti in Markdown» crea un documento nuovo accanto al file (titoli, paragrafi, elenchi, tabelle, collegamenti e immagini; le pagine scansionate restano immagini).', '![Manuale d’uso](_allegati/manuale.pdf)'],
     ['Documento Word incorporato', 'Come il PDF incorporato, ma con un file .docx: Itaca mostra un’anteprima delle pagine (sola lettura; caratteri e impaginazione possono differire un po’ da Word). Apri la mostra in una nuova scheda, Scarica scarica il file. I vecchi .doc non si possono mostrare: restano un collegamento. In Modifica, «Nel documento» converte il Word in Markdown al posto del riquadro; dal menu ⋯ di un .docx nell’elenco, «Converti in Markdown» crea un documento nuovo accanto al file.', '![Relazione](_allegati/relazione.docx)'],
     ['Foglio Excel incorporato', 'Come il Word incorporato, ma con un file .xlsx o .xlsm: Itaca mostra i fogli come in Excel, con le lettere delle colonne, i numeri delle righe e le schede dei fogli in basso (sola lettura; i valori sono quelli salvati nel file, la formula compare passando sopra la cella; colori e caratteri delle celle non si vedono). I vecchi .xls non si possono mostrare: restano un collegamento.', '![Budget](_allegati/budget.xlsx)'],
     ['Presentazione PowerPoint incorporata', 'Come il Word incorporato, ma con un file .pptx: Itaca mostra le diapositive una sotto l’altra, con testi, immagini, forme e tabelle (sola lettura; grafici, animazioni e video non si vedono, e caratteri e posizioni possono differire un po’ da PowerPoint). I vecchi .ppt non si possono mostrare.', '![Presentazione](_allegati/riunione.pptx)'],
@@ -35707,7 +36937,13 @@ function showFileMenu(item, trigger) {
   favoriteButton.title = favorite ? 'Toglilo dal riquadro Preferiti della panoramica' : 'Lo trovi nel riquadro Preferiti della panoramica';
   $('startActionLabel').textContent = isStart ? 'Non aprire più all’avvio' : 'Apri all’avvio';
   startButton.title = isStart ? 'Torna a index.md come documento iniziale' : 'Itaca si aprirà su questo documento';
-  fileMenu.querySelector('[data-file-action="markdown"]').hidden = item.isFolder || !/\.docx$/i.test(item.path) || !root;
+  const toMarkdown = fileMenu.querySelector('[data-file-action="markdown"]');
+  const markdownSource = !item.isFolder && markdownSourceOf(item.path);
+  toMarkdown.hidden = !markdownSource || !root;
+  if (markdownSource) {
+    toMarkdown.querySelector('.icon').className = 'icon ' + (markdownSource.label === 'PDF' ? 'i-ft-pdf' : 'i-ft-word');
+    toMarkdown.title = 'Crea un documento Markdown accanto al file ' + markdownSource.label + ', con testo, titoli, elenchi, tabelle e immagini' + (markdownSource.label === 'PDF' ? ' (le pagine scansionate restano immagini)' : '');
+  }
   fileMenu.querySelector('[data-file-action="unused"]').hidden = !item.isFolder || item.path.split('/').pop() !== attachmentFolderName || !root;
   const send = fileMenu.querySelector('[data-file-action="send"]');
   send.hidden = !root || !window.showDirectoryPicker;
@@ -36231,7 +37467,7 @@ function runFileAction(item, action) {
   }
   if (action === 'unused') return showTrash({ tab: 'unused' });
   if (!canChangeFiles()) return;
-  if (action === 'markdown') return convertWordFile(item.path);
+  if (action === 'markdown') return convertFileToMarkdown(item.path);
   if (action === 'duplicate') return copyEntryTo(item, parent(item.path));
   if (action === 'send') return sendEntries(treeSelection.size > 1 && treeSelection.has(item.path) ? treeSelectionItems() : [item]);
   return manageEntry(item, action);

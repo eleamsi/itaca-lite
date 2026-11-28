@@ -205,6 +205,12 @@ Nel Markdown un PDF incorporato è un’immagine che punta a un PDF, **da sola s
 
 `#page=3` apre il PDF alla pagina indicata. Nel PDF esportato compare solo il titolo; nel sito HTML esportato il PDF resta incorporato, con il link Apri.
 
+**Da PDF a Markdown.** Un PDF si può trasformare in testo modificabile in due modi: in **Modifica**, il pulsante **Nel documento** del riquadro mette il contenuto del PDF al posto del riquadro (`Ctrl/⌘ + Z` lo riporta); dal menu ⋯ di un `.pdf` nell’elenco, **Converti in Markdown** crea un documento nuovo accanto al file (se il PDF sta in `_allegati`, nella cartella sopra) e lo apre. Il PDF resta dov’è.
+
+Itaca ricostruisce **titoli** con i loro livelli, **paragrafi** (anche quelli spezzati tra due pagine, con le parole sillabate a fine riga ricucite), **elenchi** puntati e numerati con i sottolivelli, **tabelle**, **blocchi di codice**, **grassetto**, *corsivo*, apici, **collegamenti** e **immagini** (in `_allegati/<nome del PDF>/`, alla larghezza che avevano). Intestazioni, piè di pagina, numeri di pagina e sommario restano fuori. I PDF esportati da Word, LibreOffice, Chrome e simili contengono la loro struttura («tag»): in quel caso il risultato è il più fedele, con il testo alternativo delle immagini. Negli altri PDF Itaca guarda caratteri, posizioni e allineamenti (anche le pagine a due colonne). Le pagine scansionate, che non contengono testo, diventano immagini: il riconoscimento del testo (OCR) non c’è. Un PDF protetto chiede la password, che non viene ricordata.
+
+Per leggere i PDF Itaca usa [pdf.js](https://mozilla.github.io/pdf.js/) di Mozilla, scaricato solo la prima volta che serve (serve la connessione; il file di Itaca non cresce). La conversione mostra a che pagina è arrivata e si ferma con **Annulla** o `Esc`.
+
 ### Documenti Word incorporati
 
 Allo stesso modo si possono incorporare i **documenti Word** (`.docx`): incollati, trascinati o scelti con 📎 compaiono in un riquadro con un’**anteprima delle pagine** (testo, stili, tabelle, immagini, intestazioni e piè di pagina), rimpicciolite se serve per stare nella larghezza del documento. In alto ci sono **Apri** (l’anteprima in una nuova scheda), **Scarica** (il file `.docx`, per aprirlo con Word) e, in Modifica, **Collegamento**. Anche un semplice collegamento a un `.docx`, o un clic sul file nell’elenco, apre l’anteprima in una nuova scheda, con in alto il pulsante **Scarica**. Cursore, selezione, trascinamento e **Incorpora** funzionano come per i PDF.
