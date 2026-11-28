@@ -437,10 +437,20 @@ In alto a destra, da sinistra a destra:
 
 - **Lettura · Modifica · Markdown**: come vedi il documento. In **Lettura** non si può modificare; **Modifica** apre l’editor visuale con la barra di formattazione; **Markdown** modifica il sorgente e compare solo quando sei in **Modifica**. Nelle finestre strette restano solo le icone. `Ctrl/⌘ + E` passa da **Lettura** a **Modifica** e viceversa (dal **Markdown** torna a **Modifica**).
 - **Cerca** (`Ctrl/⌘ + F`, o `Ctrl/⌘ + H` con la sostituzione): trova e sostituisci nel documento. La stessa scorciatoia la chiude (se intanto hai selezionato un altro testo nel documento, cerca quello).
-- **⋯ Altre azioni**: **Esporta PDF…**, **Esporta in Word…** (vedi [Esportare in Word](#esportare-in-word)), se la cartella è un repository git **Versioni e confronto…** e **Chi ha modificato questo punto…** (vedi [Versioni e confronto con git](#versioni-e-confronto-con-git)), **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
+- **⋯ Altre azioni**: **Esporta PDF…**, **Esporta in Word…** (vedi [Esportare in Word](#esportare-in-word)), **Presenta** (`Ctrl/⌘ + Invio`, vedi [Presentazione](#presentazione)), se la cartella è un repository git **Versioni e confronto…** e **Chi ha modificato questo punto…** (vedi [Versioni e confronto con git](#versioni-e-confronto-con-git)), **Chiudi documento** (`Alt + W`, `⌥W` sul Mac) e, con più documenti aperti, **Chiudi tutti** (`Alt + Maiusc + W`, `⌥⇧W` sul Mac). Chiuso l’ultimo documento resta la schermata della cartella: scegline un altro dalla barra laterale.
 - **Salva** (`Ctrl/⌘ + S`): compare quando modifichi o quando ci sono modifiche non salvate.
 
 Nella barra in basso il percorso del documento è modificabile: un clic sul **nome del documento** o su una delle sue **cartelle** lo trasforma in una casella (con un percorso lungo ogni cartella si accorcia ma resta cliccabile; il nome completo è nel suggerimento); **Invio** rinomina e aggiorna i collegamenti (come indicato in **Impostazioni › File › Aggiorna i collegamenti**), **Esc** o un clic altrove annullano. L’estensione `.md` resta da sola.
+
+A destra della barra in basso ci sono il timer, il conto alla rovescia e il tema; **radio**, **cestino di Itaca**, **segnalazioni**, **glossario** e **impostazioni** stanno dietro la freccia **‹**, che si apre passandoci sopra. Le icone si **spostano trascinandole**, come nell’area di notifica di Windows: tra di loro, da fuori dentro la freccia (che si apre da sola mentre trascini) e da dentro verso la barra. L’ordine resta salvato in questo browser; **Impostazioni › Ripristina** lo rimette com’era.
+
+## Presentazione
+
+**⋯ › Presenta** (o `Ctrl/⌘ + Invio`) mostra il documento a schermo intero, una diapositiva alla volta, partendo dalla sezione che stai leggendo (dall’inizio, se sei in cima). Ogni sezione (titoli 1 e 2) è una diapositiva; se il documento ha delle righe `---`, le diapositive sono i pezzi tra una riga e l’altra. Il titolo del documento con poco testo sotto diventa la copertina.
+
+Una sezione che non sta nello schermo prima si rimpicciolisce un poco, poi si divide ai sottotitoli (il titolo della sezione resta in alto, piccolo) e poi tra i paragrafi, con l’etichetta **segue**; elenchi e tabelle lunghi proseguono nella diapositiva dopo (le tabelle ripetono l’intestazione). Immagini, codice colorato, tabelle e caselle restano come nel documento.
+
+Avanti con **→**, **Spazio**, **PagGiù** o un clic; indietro con **←**, **Maiusc + Spazio**, **PagSu** o un clic sul bordo sinistro. **Home** e **Fine** vanno alla prima e all’ultima, **G** mostra tutte le diapositive in miniatura, **F** entra o esce dallo schermo intero, **B** rende lo schermo nero (un tasto qualsiasi per tornare). La barra in basso (numero, sezione, tempo trascorso) sparisce quando il mouse sta fermo. **Esc** esce e il documento torna alla sezione dell’ultima diapositiva mostrata.
 
 ## Caricamento
 

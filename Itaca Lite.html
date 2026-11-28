@@ -1109,6 +1109,12 @@ label.dp-label { cursor: pointer; }
 .td-done-list { margin-top: 4px !important; padding-top: 4px !important; border-top: 1px dashed var(--line); }
 .td-done-list[hidden], .td-done[hidden] { display: none; }
 .td-done .dash-more { margin: 0; }
+.td-undo { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 10px; border-radius: 8px; background: var(--tint); color: var(--copy); font-size: 12.5px; }
+.td-undo span { flex: 1; }
+.td-undo-button { padding: 3px 10px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--accent-text); font: 600 12px var(--sans); }
+.td-undo-button:hover { border-color: var(--accent); }
+.fv-external > .icon { flex: none; width: 15px; height: 15px; margin: 0 1px; color: var(--muted); }
+.fv-external .dash-name small { font-style: italic; }
 .fv-row, .td-row, .zn-row { display: flex; align-items: center; gap: 4px; min-width: 0; padding-left: 2px; border-radius: 8px; }
 .fv-row .dash-row { flex: 1; min-width: 0; }
 .fv-remove, .td-remove, .zn-remove { width: 26px; height: 26px; opacity: 0; }
@@ -1477,6 +1483,8 @@ button.cal-item:hover { background: var(--tint); }
 .i-sliders { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h9M17 7h3M4 17h3M11 17h9'/%3E%3Ccircle cx='15' cy='7' r='2.2'/%3E%3Ccircle cx='9' cy='17' r='2.2'/%3E%3C/svg%3E"); }
 .i-eye-off { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l18 18'/%3E%3Cpath d='M10.6 6.1A10 10 0 0 1 12 6c5 0 8.5 4 9.5 6a13 13 0 0 1-2.6 3.4M6.6 7.6C4.6 8.9 3.2 10.7 2.5 12c1 2 4.5 6 9.5 6a9.7 9.7 0 0 0 4.4-1'/%3E%3Cpath d='M9.9 10a3 3 0 0 0 4.1 4.1'/%3E%3C/svg%3E"); }
 .i-clock { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E"); }
+.i-trash { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h16M9.5 7V4.5h5V7M6 7l1 12.5h10L18 7M10 11v5M14 11v5'/%3E%3C/svg%3E"); }
+.i-present { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='12' rx='1.5'/%3E%3Cpath d='M12 16v3M8 21l4-2 4 2M10 8.2v4.6l4-2.3z'/%3E%3C/svg%3E"); }
 .i-timer { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='13.5' r='7.5'/%3E%3Cpath d='M12 9.5v4l2.5 1.5M9.5 3h5M18.5 6.5l1.5-1.5'/%3E%3C/svg%3E"); }
 .i-globe { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M3.5 12h17M12 3.5c2.4 2.6 3.5 5.4 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.4-3.5-8.5s1.1-5.9 3.5-8.5z'/%3E%3C/svg%3E"); }
 .i-sun { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4'/%3E%3C/svg%3E"); }
@@ -1659,6 +1667,15 @@ dialog .folder-hint.chosen > .icon { color: var(--success-text, var(--accent-tex
 .sd-toggle.has-dot.on-air::after { background: var(--danger-text); }
 .status-drawer.open .sd-toggle.has-dot::after { display: none; }
 @media (prefers-reduced-motion: reduce) { .sd-items, .sd-items > *, .sd-toggle .icon { transition: none; } }
+.status-drawer.empty:not(.drop-ready) { display: none; }
+.sb-ghost { position: fixed; z-index: 2147483000; margin: 0; pointer-events: none; border-radius: 8px; background: var(--panel); color: var(--accent-text); box-shadow: 0 8px 22px color-mix(in srgb, var(--ink) 22%, transparent), 0 0 0 1px var(--line); transform: scale(1.12) rotate(-4deg); opacity: .96; }
+.sb-drop-line { position: fixed; z-index: 2147482999; width: 3px; border-radius: 3px; background: var(--accent); pointer-events: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+.sb-drag-source { opacity: .3; }
+:root.dragging-status, :root.dragging-status * { cursor: grabbing !important; user-select: none; }
+:root.dragging-status .status-drawer.open .sd-items { outline: 1.5px dashed color-mix(in srgb, var(--accent) 55%, transparent); outline-offset: 1px; border-radius: 8px; }
+.sb-dropped { animation: sb-dropped .45s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes sb-dropped { from { transform: scale(1.25); } }
+@media (prefers-reduced-motion: reduce) { .sb-ghost { transform: none; } .sb-dropped { animation: none; } }
 .events-chip { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; min-width: 28px; padding: 0 6px; border-radius: 8px; color: var(--muted); font: 600 12px var(--sans); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .events-chip:hover { background: var(--hover); color: var(--ink); }
 .events-chip .icon { width: 16px; height: 16px; }
@@ -2340,6 +2357,64 @@ dialog .tag-skipped span { color: var(--muted); }
 
 dialog { max-width: min(92vw, 480px); width: 450px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--paper); box-shadow: 0 2px 6px #17212b14, 0 24px 64px #17212b2e; }
 dialog::backdrop { background: var(--overlay); }
+/* Modalità presentazione */
+#presentation { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; overflow: hidden; color: var(--ink); background: var(--paper); }
+#presentation[open] { display: block; }
+#presentation::backdrop { background: var(--paper); }
+#presentation:focus { outline: none; }
+#presentation.idle, #presentation.idle * { cursor: none; }
+.pr-stage, .pr-measure { position: absolute; inset: 0; }
+.pr-measure { visibility: hidden; pointer-events: none; overflow: hidden; }
+.pr-slide { --pr-fit: 1; position: absolute; inset: 0; display: flex; flex-direction: column; padding: clamp(28px, 7vh, 84px) clamp(28px, 8vw, 140px) clamp(64px, 11vh, 110px); overflow: hidden auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.pr-slide.pr-cover { justify-content: center; }
+.pr-slide.pr-cover .pr-content { text-align: center; }
+#presentation .pr-cover .pr-content .pr-title { font-size: 2.6em; margin-bottom: .45em; }
+#presentation .pr-content p { margin: 0 0 .9em; color: inherit; font-size: inherit; }
+#presentation .pr-content :is(h1, h2, h3, h4, h5, h6) { font-family: var(--display); line-height: 1.2; color: var(--ink); }
+#presentation .pr-cover .pr-content > p { color: var(--muted); font-size: 1.15em; }
+#presentation .pr-content.editor { width: 100%; max-width: 48em; min-height: 0; margin: 0 auto; padding: 0; color: var(--copy); font-size: calc(var(--pr-fit) * clamp(17px, calc(1.1vw + 1.3vh), 38px)); line-height: 1.5; }
+#presentation .pr-content > :first-child { margin-top: 0; }
+#presentation .pr-content > :last-child { margin-bottom: 0; }
+#presentation .pr-content .pr-title { margin: 0 0 .7em; font-size: 1.75em; line-height: 1.15; letter-spacing: -.02em; border: 0; padding: 0; }
+#presentation .pr-content :is(h1, h2, h3, h4, h5, h6):not(.pr-title) { margin: 1.1em 0 .45em; font-size: 1.15em; }
+.pr-kicker { margin: 0 0 .35em !important; color: var(--accent-text); font: 650 .62em/1.3 var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.pr-continued { margin-left: .6em; padding: .15em .55em; border-radius: 999px; background: var(--tint); color: var(--accent-text); font: 600 .32em/1.4 var(--sans); letter-spacing: .04em; vertical-align: middle; text-transform: uppercase; }
+#presentation .pr-content :is(p, li) { text-wrap: pretty; }
+#presentation .pr-content img { max-width: 100%; max-height: 58vh; height: auto; object-fit: contain; }
+#presentation .pr-only-media .pr-content img, #presentation .pr-content .pr-tall img { max-height: 66vh; }
+#presentation .pr-only-media .pr-content > :not(.pr-title, .pr-kicker) { text-align: center; }
+#presentation .pr-content pre { font-size: .78em; }
+#presentation .pr-content table { font-size: .74em; }
+#presentation .pr-content a:not([href]) { cursor: default; }
+.pr-loading { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--muted); font: 15px var(--sans); }
+.pr-blank { position: absolute; inset: 0; z-index: 5; background: #000; cursor: none; }
+.pr-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: color-mix(in srgb, var(--line) 60%, transparent); }
+.pr-progress i { display: block; height: 100%; background: var(--accent); transition: width .3s cubic-bezier(.2, .8, .2, 1); }
+.pr-bar { position: absolute; left: 50%; bottom: 16px; z-index: 3; display: flex; align-items: center; gap: 4px; max-width: calc(100vw - 32px); padding: 4px 6px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--panel) 92%, transparent); color: var(--muted); font: 12.5px var(--sans); box-shadow: var(--floating-shadow, 0 10px 30px #0002); backdrop-filter: blur(8px); transform: translateX(-50%); transition: opacity .25s ease, transform .25s ease; }
+#presentation.idle .pr-bar { opacity: 0; transform: translate(-50%, 8px); pointer-events: none; }
+.pr-bar .icon-button { width: 30px; height: 30px; border-radius: 8px; }
+.pr-bar .icon-button:hover:not(:disabled) { color: var(--accent-text); background: var(--tint); }
+.pr-bar .icon-button:disabled { opacity: .35; }
+.pr-count { min-width: 54px; color: var(--ink); font-weight: 650; text-align: center; font-variant-numeric: tabular-nums; }
+.pr-where { overflow: hidden; max-width: 34vw; margin: 0 8px; padding-left: 10px; border-left: 1px solid var(--line); text-overflow: ellipsis; white-space: nowrap; }
+.pr-clock { margin-right: 4px; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent-text); font-variant-numeric: tabular-nums; }
+.pr-clock:empty { display: none; }
+#presentation.is-full .pr-full .icon { transform: rotate(180deg); }
+.pr-overview { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(6px); }
+.pr-overview[hidden] { display: none; }
+.pr-overview-head { display: flex; align-items: center; gap: 10px; padding: 18px 24px 8px; color: var(--muted); font: 13px var(--sans); }
+.pr-overview-head b { color: var(--ink); font-size: 16px; }
+.pr-overview-head .icon-button { margin-left: auto; }
+.pr-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--pr-thumb, 232px), 1fr)); gap: 14px; align-content: start; padding: 8px 24px 32px; overflow: auto; }
+.pr-card { display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 6px; border: 1px solid transparent; border-radius: 10px; background: none; color: var(--copy); text-align: left; cursor: pointer; }
+.pr-card:hover, .pr-card:focus-visible { border-color: var(--line); background: var(--tint); outline: none; }
+.pr-card[aria-selected='true'] { border-color: var(--accent); }
+.pr-thumb { position: relative; display: block; overflow: hidden; width: var(--pr-thumb, 232px); border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+.pr-thumb .pr-slide { transform-origin: 0 0; inset: 0 auto auto 0; }
+.pr-card-label { display: flex; gap: 6px; overflow: hidden; font: 12.5px/1.3 var(--sans); white-space: nowrap; text-overflow: ellipsis; }
+.pr-card-label b { color: var(--accent-text); }
+@media (max-width: 640px) { .pr-where, .pr-clock { display: none; } }
+@media (prefers-reduced-motion: reduce) { .pr-bar, .pr-progress i { transition: none; } }
 dialog h2 { margin: 0 0 14px; font: 600 18px/1.3 var(--display); letter-spacing: -.01em; }
 dialog label { display: block; color: var(--copy); margin: 12px 0 4px; font-size: 13px; }
 #dialog .field-hint { margin: 4px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
@@ -3735,11 +3810,12 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
         <div class="status-drawer" id="statusDrawer">
           <div class="sd-items" id="statusDrawerItems" role="group" aria-label="Altri comandi" inert>
             <button type="button" class="icon-button" id="radioButton" aria-label="Radio" title="Radio online" aria-haspopup="dialog" aria-expanded="false" aria-controls="radioPanel"><i class="icon i-radio" aria-hidden="true"></i></button>
+            <button type="button" class="icon-button" id="trashButton" aria-label="Cestino di Itaca" title="Cestino di Itaca: ripristina ciò che hai eliminato e gli allegati non più usati" aria-haspopup="dialog"><i class="icon i-trash" aria-hidden="true"></i></button>
             <button type="button" class="icon-button" id="feedbackButton" aria-label="Segnalazioni" title="Segnala un problema o un’idea" aria-haspopup="dialog"><i class="icon i-feedback" aria-hidden="true"></i></button>
             <button type="button" class="icon-button" id="glossaryButton" aria-label="Glossario" title="Glossario: scorciatoie, Markdown, Material per MkDocs (Ctrl+/)" aria-haspopup="dialog"><i class="icon i-glossary" aria-hidden="true"></i></button>
             <button type="button" class="icon-button" id="settingsButton" aria-label="Impostazioni" title="Impostazioni (Ctrl+,)" aria-haspopup="dialog"><i class="icon i-settings" aria-hidden="true"></i></button>
           </div>
-          <button type="button" class="icon-button sd-toggle" id="statusMore" aria-expanded="false" aria-controls="statusDrawerItems" aria-label="Altri comandi" title="Radio, segnalazioni, glossario e impostazioni"><i class="icon i-chevron" aria-hidden="true"></i></button>
+          <button type="button" class="icon-button sd-toggle" id="statusMore" aria-expanded="false" aria-controls="statusDrawerItems" aria-label="Altri comandi" title="Radio, cestino, segnalazioni, glossario e impostazioni"><i class="icon i-chevron" aria-hidden="true"></i></button>
         </div>
         <button type="button" class="events-chip" id="eventsButton" aria-label="Conto alla rovescia" aria-haspopup="dialog" aria-expanded="false" aria-controls="eventsPanel"><i class="icon i-calendar" aria-hidden="true"></i></button>
         <button type="button" class="icon-button theme-toggle" id="themeToggle" aria-label="Tema scuro" aria-pressed="false" title="Tema scuro"><i class="icon i-theme" aria-hidden="true"></i></button>
@@ -3784,6 +3860,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
   <div class="file-menu doc-menu" id="docMenu" popover role="menu" aria-label="Altre azioni del documento">
     <button type="button" role="menuitem" id="exportPdf" aria-haspopup="dialog"><i class="icon i-export" aria-hidden="true"></i>Esporta PDF…</button>
     <button type="button" role="menuitem" id="exportWord" title="Un file .docx da mandare a chi usa Word"><i class="icon i-ft-word" aria-hidden="true"></i>Esporta in Word…</button>
+    <button type="button" role="menuitem" id="presentDocument" title="Il documento a schermo intero, una sezione alla volta; avanti e indietro con le frecce"><i class="icon i-present" aria-hidden="true"></i>Presenta<kbd class="menu-key" data-keys="Mod Enter"></kbd></button>
     <button type="button" role="menuitem" id="gitHistory" aria-haspopup="dialog" hidden><i class="icon i-history" aria-hidden="true"></i>Versioni e confronto…</button>
     <button type="button" role="menuitem" id="gitBlame" aria-haspopup="dialog" hidden title="Chi ha scritto o cambiato per ultimo la riga dove si trova il cursore"><i class="icon i-git-blame" aria-hidden="true"></i>Chi ha modificato questo punto…</button>
     <button type="button" role="menuitem" id="moveTabLeft" hidden><i class="icon i-arrow-left" aria-hidden="true"></i><span>Sposta a sinistra</span></button>
@@ -18393,7 +18470,7 @@ function openSettings(section = '') {
 // Ripristina le impostazioni del primo avvio. Non tocca ciò che è «critico» o
 // personale: cartella di lavoro e cartelle salvate (IndexedDB), percorsi delle
 // cartelle, nome utente, blocchi di modifica, documenti e bozze.
-const resettableKeys = [settingsKey, 'itaca-palette', 'itaca-text-scale', 'quaderno-theme', 'itaca-pdf-options', 'itaca-critters-before-xmas', 'itaca-drawio-config', 'itaca-sidebar-width'];
+const resettableKeys = [settingsKey, 'itaca-palette', 'itaca-text-scale', 'quaderno-theme', 'itaca-pdf-options', 'itaca-critters-before-xmas', 'itaca-drawio-config', 'itaca-sidebar-width', 'itaca-statusbar-layout'];
 $('settingsReset').onclick = async () => {
   const ok = await modal('Ripristinare le impostazioni predefinite?',
     '<p>Aspetto, documenti, barra e pannelli, file, audio, PDF e diagrammi tornano come al primo avvio.</p>' +
@@ -18402,6 +18479,7 @@ $('settingsReset').onclick = async () => {
   const openDocs = settings.openDocs;
   for (const key of resettableKeys) storeSetting(key, null);
   applySidebarWidth();
+  applyStatusLayout();
   syncSettingsExtras();
   for (const key of Object.keys(settings)) delete settings[key];
   Object.assign(settings, structuredClone(defaultSettings));
@@ -19429,9 +19507,11 @@ const shortcutGroups = [
     ['Salva il documento', 'Mod S'],
     ['Passa da Lettura a Modifica e viceversa', 'Mod E'],
     ['Panoramica della cartella / di nuovo per tornare ai documenti', 'Alt P'],
+    ['Presenta il documento (a schermo intero, una sezione alla volta)', 'Mod Enter'],
     ['Chiudi il documento (la scheda o la colonna attiva)', 'Alt W'],
     ['Chiudi tutti i documenti', 'Alt Shift W'],
     ['Cambia l’ordine di schede e colonne (scheda o dorso)', 'trascina'],
+    ['Sposta le icone della barra in basso, anche dentro e fuori da ‹', 'trascina'],
     ['Chiudi finestre e menu', 'Esc'],
   ]],
   ['Panoramica', [
@@ -19451,6 +19531,16 @@ const shortcutGroups = [
     ['Apri un collegamento in Modifica', 'Mod clic'],
     ['Video a schermo intero con gli appunti', 'doppioclic'],
     ['Scrivi un appunto (video a schermo intero, in Modifica)', 'N'],
+  ]],
+  ['Presentazione', [
+    ['Avvia la presentazione (dalla sezione che stai leggendo)', 'Mod Enter'],
+    ['Diapositiva successiva', '→|Space|PagGiù'],
+    ['Diapositiva precedente', '←|Shift Space|PagSu'],
+    ['Prima / ultima diapositiva', 'Home|End'],
+    ['Tutte le diapositive', 'G'],
+    ['Schermo intero sì / no', 'F'],
+    ['Schermo nero (un tasto qualsiasi per tornare)', 'B'],
+    ['Esci dalla presentazione', 'Esc'],
   ]],
   ['Modifica', [
     ['Grassetto', 'Mod B'],
@@ -19604,15 +19694,18 @@ const glossaryMarkdown = [
     ['Scadenza del documento', 'Entro quando va finito il documento: una data nell’intestazione, che vedono tutti. In Modifica si sceglie con «+ Scadenza» sopra il documento; sopra c’è «Scade tra 12 giorni», nell’elenco un segno quando mancano 7 giorni o meno, e il riquadro «In scadenza». Nella ricerca: scadenza: (tutte), scadenza:7 (entro 7 giorni), scadenza:scadute. Togliendo lo stato si toglie anche la scadenza. MkDocs la ignora.', '---\nstatus: da-finire\nscadenza: 2026-12-15\n---\n# Sostituzione del toner'],
     ['Stato del documento', 'Uno solo per documento: pianificato, da-finire, da-revisionare, new (Nuovo) o deprecated (Obsoleto). In Modifica si sceglie con «+ Stato» sopra il documento; nella ricerca si trova con stato:… Material per MkDocs usa la stessa chiave.', '---\nstatus: da-revisionare\n---\n# Sostituzione del toner'],
   ]],
+  ['Presentazione', [
+    ['Presenta il documento', 'Menu ⋯ › Presenta, oppure Ctrl/⌘ + Invio: il documento a schermo intero, una diapositiva alla volta, a partire dalla sezione che stai leggendo. Le diapositive sono le sezioni (titoli 1 e 2), oppure i pezzi separati da righe --- se il documento ne ha. Una sezione troppo lunga prima si rimpicciolisce un poco, poi si divide ai sottotitoli e poi tra i paragrafi («segue»); elenchi e tabelle lunghi continuano nella diapositiva dopo. Frecce, Spazio o clic per andare avanti e indietro, G per vederle tutte, B per lo schermo nero, Esc per uscire: il documento torna alla sezione dove eri arrivato.', '# Titolo della presentazione\n\nSottotitolo\n\n## Prima diapositiva\n\n- Un punto\n- Un altro punto\n\n## Seconda diapositiva\n\nTesto.'],
+  ]],
   ['Panoramica', [
     ['Panoramica della cartella', 'Quando nessun documento è aperto (o all’apertura, se in Impostazioni › Documenti › Apertura scegli «Panoramica»): riquadri alti quanto il loro contenuto, da spostare trascinandone l’intestazione e da allargare trascinando il bordo destro (doppio clic: larghezza successiva). Il menu ⋯ di ogni riquadro cambia larghezza e opzioni o lo nasconde; il pulsante a quadretti con il + (Personalizza) mostra la disposizione in miniatura e i riquadri da aggiungere. La disposizione resta in questo browser.'],
     ['Cercare dalla panoramica', 'Con la barra laterale chiusa, in alto c’è una casella di ricerca (Ctrl/⌘ + K): i risultati compaiono subito sotto e il clic apre il documento sul punto trovato, senza aprire la barra. Valgono le frasi, #tag, stato: e scadenza: come nella barra laterale.'],
     ['La cartella e Recenti', 'Documenti in scadenza, da rivedere, da finire o pianificati (clic su un numero per vederli), la barra dello stato di tutti, i modificati di recente con chi li ha salvati e quelli che hai aperto tu.'],
     ['Calendario', 'Mese o anno intero con i numeri delle settimane, le feste italiane (anche il santo patrono, dal menu ⋯), i ponti a righe, le scadenze dei documenti, i conti alla rovescia e le cose da fare con una data. Clic su un giorno per vedere cosa c’è e aggiungere un’attività.', '---\nscadenza: 2026-12-15\n---'],
-    ['Da fare', 'Le tue cose da fare, con una data se serve: Invio per aggiungerle, clic sul testo per cambiarle, il pallino per segnarle fatte. Sono solo tue, salvate in questo browser.'],
+    ['Da fare', 'Le tue cose da fare, con una data se serve: Invio per aggiungerle, clic sul testo per cambiarle, il pallino per segnarle fatte. Il cestino in alto le toglie tutte in una volta («Annulla» le rimette, per qualche secondo). Sono solo tue, salvate in questo browser.'],
     ['Timer e pomodoro', 'Pomodoro: 25 minuti di lavoro e 5 di pausa, una pausa lunga ogni 4 (si cambia dal menu ⋯). Timer: un conto alla rovescia semplice. È sempre nella barra in basso (icona del cronometro, o il tempo che resta mentre conta): il clic apre gli stessi comandi, con durate e suono. Alla fine un suono e un avviso.'],
-    ['Barra in basso', 'A destra restano il tema chiaro/scuro, il conto alla rovescia e il timer. Radio, segnalazioni, glossario e impostazioni sono dietro la freccia ‹: si aprono passandoci sopra con il mouse (o con un clic) e si richiudono da sole. Un pallino sulla freccia avvisa di una radio in onda o di una novità.'],
-    ['Preferiti, orologio, fusi orari, alba e tramonto, radio', 'Preferiti: i documenti più usati (anche dal menu ⋯ dell’elenco o trascinandoli). Orologio digitale o con le lancette. Fusi orari: l’ora di clienti e sedi, se sono in ufficio e un cursore per confrontare un orario. Alba e tramonto della tua città. Radio: la stazione in onda con il brano, la stella, un’altra dello stesso genere e il volume; sotto le preferite, le recenti e la ricerca per nome o per genere, tutto dentro il riquadro.'],
+    ['Barra in basso', 'A destra restano il tema chiaro/scuro, il conto alla rovescia e il timer. Radio, cestino di Itaca, segnalazioni, glossario e impostazioni sono dietro la freccia ‹: si aprono passandoci sopra con il mouse (o con un clic) e si richiudono da sole. Un pallino sulla freccia avvisa di una radio in onda o di una novità. Le icone si spostano trascinandole: tra loro, dalla barra dentro la freccia ‹ (che si apre da sola) e viceversa. Ripristina nelle Impostazioni rimette l’ordine iniziale.'],
+    ['Preferiti, orologio, fusi orari, alba e tramonto, radio', 'Preferiti: i documenti più usati (anche dal menu ⋯ dell’elenco o trascinandoli), anche file che stanno altrove sul computer: trascinali dal Finder o da Esplora file, oppure scegli 📎. Un documento Markdown di fuori si apre da solo in Itaca (la cartella si chiude), gli altri file in una scheda del browser. Orologio digitale o con le lancette. Fusi orari: l’ora di clienti e sedi, se sono in ufficio e un cursore per confrontare un orario. Alba e tramonto della tua città. Radio: la stazione in onda con il brano, la stella, un’altra dello stesso genere e il volume; sotto le preferite, le recenti e la ricerca per nome o per genere, tutto dentro il riquadro.'],
   ]],
 ];
 
@@ -23454,31 +23547,50 @@ addEventListener('storage', event => {
 setTimeout(renderEventsChip);
 
 // ── Cassetto della barra in basso ──
-// Radio, segnalazioni, glossario e impostazioni stanno dietro la freccia ‹: col mouse si apre
-// passandoci sopra (dopo un attimo, per non aprirlo attraversando la barra) e si richiude poco
-// dopo l'uscita; resta aperto finché un suo pannello è aperto o il fuoco della tastiera è lì.
-// Clic, Invio o tocco lo aprono e chiudono; Esc lo chiude. Un pallino sulla freccia segnala
-// quello che c'è dentro (radio in onda, aggiornamento, risposte alle segnalazioni).
+// Le icone meno usate stanno dietro la freccia ‹: col mouse si apre passandoci sopra (dopo un
+// attimo, per non aprirlo attraversando la barra) e si richiude poco dopo l'uscita; resta aperto
+// finché un suo pannello è aperto o il fuoco della tastiera è lì. Clic, Invio o tocco lo aprono
+// e chiudono; Esc lo chiude. Un pallino sulla freccia segnala quello che c'è dentro (radio in
+// onda, aggiornamento, risposte alle segnalazioni).
+// Le icone si riordinano trascinandole (come l'area di notifica di Windows): da fuori verso il
+// cassetto, che si apre da solo, e dal cassetto verso la barra. Ordine in localStorage
+// itaca-statusbar-layout {inside, outside}; Ripristina le impostazioni lo rimette com'era.
+const statusLayoutKey = 'itaca-statusbar-layout';
+const statusMovable = ['radioButton', 'trashButton', 'feedbackButton', 'glossaryButton', 'settingsButton', 'timerChip', 'eventsButton', 'themeToggle'];
+const statusDefaultLayout = { inside: ['radioButton', 'trashButton', 'feedbackButton', 'glossaryButton', 'settingsButton'], outside: ['timerChip', 'eventsButton', 'themeToggle'] };
+var applyStatusLayout = () => {};
+$('trashButton')?.addEventListener('click', () => showTrash({ tab: 'trash', from: null }));
 (() => {
   const drawer = $('statusDrawer'), items = $('statusDrawerItems'), more = $('statusMore');
   if (!drawer) return;
-  let openTimer = 0, closeTimer = 0, hovered = false, byHover = false;
+  const bar = drawer.parentElement;
+  let openTimer = 0, closeTimer = 0, hovered = false, byHover = false, drag = null;
   const isOpen = () => drawer.classList.contains('open');
-  const busy = () => Boolean(items.querySelector('[aria-expanded="true"]')) || (drawer.contains(document.activeElement) && document.activeElement.matches(':focus-visible'));
+  const busy = () => Boolean(drag?.started) || Boolean(items.querySelector('[aria-expanded="true"]')) || (drawer.contains(document.activeElement) && document.activeElement.matches(':focus-visible'));
+  const shownInside = () => [...items.children].filter(child => !child.hidden);
+  const outsideItems = () => [...bar.children].filter(child => statusMovable.includes(child.id));
+  const itemName = element => (element.getAttribute('aria-label') || element.title || '').split(/[:(]/)[0].trim();
+  function measure() {
+    const shown = shownInside();
+    shown.forEach((child, index) => child.style.setProperty('--k', index));
+    items.style.setProperty('--sd-count', shown.length);
+    items.style.setProperty('--sd-width', items.scrollWidth + 12 + 'px');
+  }
+  function describe() {
+    const names = shownInside().map(itemName).filter(Boolean).map((name, index) => index ? name[0].toLowerCase() + name.slice(1) : name);
+    const list = names.length > 1 ? names.slice(0, -1).join(', ') + ' e ' + names.at(-1) : names[0] || 'Vuoto';
+    more.title = isOpen() ? 'Chiudi' : list + '\nTrascina le icone per spostarle tra la barra e qui';
+    drawer.classList.toggle('empty', !items.children.length || !shownInside().length);
+  }
   function setOpen(open) {
     clearTimeout(openTimer);
     clearTimeout(closeTimer);
     if (open === isOpen()) return;
-    if (open) {
-      const shown = [...items.children].filter(child => !child.hidden);
-      shown.forEach((child, index) => child.style.setProperty('--k', index));
-      items.style.setProperty('--sd-count', shown.length);
-      items.style.setProperty('--sd-width', items.scrollWidth + 12 + 'px');
-    }
+    if (open) measure();
     items.inert = !open;
     drawer.classList.toggle('open', open);
     more.setAttribute('aria-expanded', String(open));
-    more.title = open ? 'Chiudi' : 'Radio, segnalazioni, glossario e impostazioni';
+    describe();
   }
   function closeSoon(delay = 420) {
     clearTimeout(closeTimer);
@@ -23491,7 +23603,7 @@ setTimeout(renderEventsChip);
     if (event.pointerType !== 'mouse') return;
     hovered = true;
     clearTimeout(closeTimer);
-    if (!isOpen()) openTimer = setTimeout(() => {
+    if (!isOpen() && !drag?.started) openTimer = setTimeout(() => {
       byHover = true;
       setOpen(true);
     }, 110);
@@ -23510,7 +23622,7 @@ setTimeout(renderEventsChip);
     }
     byHover = false;
     setOpen(!isOpen());
-    if (isOpen() && !event.detail) [...items.children].find(child => !child.hidden)?.focus();
+    if (isOpen() && !event.detail) shownInside()[0]?.focus();
   });
   drawer.addEventListener('keydown', event => {
     if (event.key !== 'Escape' || !isOpen() || busy() && items.querySelector('[aria-expanded="true"]')) return;
@@ -23532,9 +23644,147 @@ setTimeout(renderEventsChip);
     more.classList.toggle('has-dot', Boolean(dot));
     more.classList.toggle('on-air', Boolean(items.querySelector('.on-air:not([hidden])')) && !items.querySelector('.has-update:not([hidden])'));
     more.setAttribute('aria-label', 'Altri comandi' + (dot ? ' (' + (dot.id === 'radioButton' ? 'radio in onda' : 'novità') + ')' : ''));
+    describe();
     if (isOpen() && !hovered && !busy()) closeSoon();
   };
   new MutationObserver(sync).observe(items, { subtree: true, attributes: true, attributeFilter: ['class', 'aria-expanded', 'hidden'] });
+
+  // Ordine salvato.
+  function storedLayout() {
+    try {
+      const value = JSON.parse(localStorage.getItem(statusLayoutKey));
+      if (Array.isArray(value?.inside) && Array.isArray(value?.outside)) return value;
+    } catch {}
+    return null;
+  }
+  applyStatusLayout = () => {
+    const saved = storedLayout() || statusDefaultLayout;
+    const known = new Set([...saved.inside, ...saved.outside]);
+    // Icone nuove (versioni future) al loro posto predefinito.
+    const inside = [...saved.inside], outside = [...saved.outside];
+    for (const id of statusMovable) if (!known.has(id)) (statusDefaultLayout.inside.includes(id) ? inside : outside).push(id);
+    for (const id of inside) { const element = $(id); if (element) items.append(element); }
+    let after = drawer;
+    for (const id of outside) {
+      const element = $(id);
+      if (!element) continue;
+      after.after(element);
+      after = element;
+    }
+    measure();
+    sync();
+  };
+  function storeLayout() {
+    const value = { inside: [...items.children].map(child => child.id).filter(id => statusMovable.includes(id)), outside: outsideItems().map(child => child.id) };
+    const same = JSON.stringify(value) === JSON.stringify(statusDefaultLayout);
+    try { same ? localStorage.removeItem(statusLayoutKey) : localStorage.setItem(statusLayoutKey, JSON.stringify(value)); } catch {}
+  }
+
+  // Trascinamento delle icone (mouse e penna; sul touch no).
+  const movableAt = target => {
+    const element = target?.closest?.('button, .events-chip');
+    return element && statusMovable.includes(element.id) && (element.parentElement === items || element.parentElement === bar) ? element : null;
+  };
+  bar.addEventListener('pointerdown', event => {
+    if (event.button !== 0 || event.pointerType === 'touch' || drag) return;
+    const element = movableAt(event.target);
+    if (element) drag = { element, id: event.pointerId, x: event.clientX, y: event.clientY, started: false, slot: null };
+  });
+  function slots() {
+    const list = [];
+    const zone = (name, elements, emptyX) => {
+      const shown = elements.filter(child => !child.hidden && child !== drag.element);
+      if (!shown.length) return list.push({ zone: name, before: null, x: emptyX });
+      shown.forEach(child => list.push({ zone: name, before: child, x: child.getBoundingClientRect().left - 1 }));
+      list.push({ zone: name, before: null, x: shown.at(-1).getBoundingClientRect().right + 1 });
+    };
+    const toggle = more.getBoundingClientRect();
+    zone('inside', [...items.children], toggle.left - 4);
+    zone('outside', outsideItems(), toggle.right + 4);
+    return list;
+  }
+  function startDrag() {
+    drag.started = true;
+    clearTimeout(openTimer);
+    document.documentElement.classList.add('dragging-status');
+    drawer.classList.add('drop-ready');
+    if (!isOpen()) setOpen(true);
+    else measure();
+    const rect = drag.element.getBoundingClientRect();
+    drag.dx = drag.x - rect.left;
+    drag.dy = drag.y - rect.top;
+    drag.ghost = drag.element.cloneNode(true);
+    drag.ghost.removeAttribute('id');
+    drag.ghost.className += ' sb-ghost';
+    drag.ghost.style.width = rect.width + 'px';
+    drag.ghost.style.height = rect.height + 'px';
+    document.body.append(drag.ghost);
+    drag.line = document.createElement('div');
+    drag.line.className = 'sb-drop-line';
+    document.body.append(drag.line);
+    drag.element.classList.add('sb-drag-source');
+    // Il cassetto si apre con un'animazione: le posizioni si rileggono a ogni movimento.
+  }
+  function moveDrag(event) {
+    drag.ghost.style.left = event.clientX - drag.dx + 'px';
+    drag.ghost.style.top = event.clientY - drag.dy - 4 + 'px';
+    const list = slots();
+    let best = null;
+    for (const slot of list) if (!best || Math.abs(slot.x - event.clientX) < Math.abs(best.x - event.clientX)) best = slot;
+    drag.slot = best;
+    const barRect = bar.getBoundingClientRect();
+    drag.line.style.left = best.x - 1 + 'px';
+    drag.line.style.top = barRect.top + 7 + 'px';
+    drag.line.style.height = barRect.height - 14 + 'px';
+    drag.line.dataset.zone = best.zone;
+  }
+  function endDrag(drop) {
+    const current = drag;
+    drag = null;
+    if (!current?.started) return;
+    document.documentElement.classList.remove('dragging-status');
+    drawer.classList.remove('drop-ready');
+    current.ghost.remove();
+    current.line.remove();
+    current.element.classList.remove('sb-drag-source');
+    // Il clic che segue il rilascio non deve aprire il pannello dell'icona.
+    const swallow = event => { event.stopPropagation(); event.preventDefault(); };
+    addEventListener('click', swallow, { capture: true, once: true });
+    setTimeout(() => removeEventListener('click', swallow, true), 0);
+    if (drop && current.slot) {
+      const { zone, before } = current.slot;
+      if (before) before.before(current.element);
+      else if (zone === 'inside') items.append(current.element);
+      else (outsideItems().filter(child => child !== current.element).at(-1) || drawer).after(current.element);
+      storeLayout();
+      current.element.classList.add('sb-dropped');
+      setTimeout(() => current.element.classList.remove('sb-dropped'), 500);
+    }
+    measure();
+    describe();
+    if (!drawer.matches(':hover')) closeSoon(drop && current.slot?.zone === 'inside' ? 900 : 300);
+  }
+  addEventListener('pointermove', event => {
+    if (!drag || event.pointerId !== drag.id) return;
+    if (!drag.started) {
+      if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 6) return;
+      startDrag();
+    }
+    event.preventDefault();
+    moveDrag(event);
+  });
+  addEventListener('pointerup', event => { if (drag && event.pointerId === drag.id) endDrag(true); });
+  addEventListener('pointercancel', () => drag && endDrag(false));
+  addEventListener('blur', () => drag && endDrag(false));
+  addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !drag?.started) return;
+    event.preventDefault();
+    event.stopPropagation();
+    endDrag(false);
+  }, true);
+  bar.addEventListener('dragstart', event => { if (movableAt(event.target)) event.preventDefault(); });
+  // Il chip del timer nasce più avanti nello script: l'ordine si applica dopo.
+  setTimeout(applyStatusLayout);
   sync();
 })();
 
@@ -26098,16 +26348,101 @@ const favoriteDocsKey = 'itaca-favorite-docs';
 function favoriteDocsAll() {
   try { return JSON.parse(localStorage.getItem(favoriteDocsKey) || '{}') || {}; } catch { return {}; }
 }
+// Voci «ext:<id>» = file fuori dalla cartella (trascinati dal computer o scelti con 📎): handle in
+// IndexedDB (quaderno-workspaces, chiave itaca-favorite-files = [{id, name, handle, added}]).
+const favoriteFilesKey = 'itaca-favorite-files';
+var externalFavorites = new Map();
+var externalFavoritesLoaded = false;
+const favoriteExternalId = key => typeof key === 'string' && key.startsWith('ext:') ? key.slice(4) : '';
+const favoriteShown = key => favoriteExternalId(key) ? externalFavorites.has(favoriteExternalId(key)) : files.has(key);
 function favoriteDocs() {
   const list = favoriteDocsAll()[dashFolderName()];
-  return Array.isArray(list) ? list.filter(path => typeof path === 'string' && files.has(path)) : [];
+  return Array.isArray(list) ? list.filter(path => typeof path === 'string' && favoriteShown(path)) : [];
+}
+setTimeout(async () => {
+  try {
+    const saved = await workspaceRecord(favoriteFilesKey);
+    if (Array.isArray(saved)) externalFavorites = new Map(saved.filter(item => item?.id && item.handle).map(item => [item.id, item]));
+  } catch {}
+  externalFavoritesLoaded = true;
+  dashRefresh('favorites');
+});
+async function storeExternalFavorites() {
+  // Tolti da tutte le cartelle: l'handle non serve più.
+  const used = new Set(Object.values(favoriteDocsAll()).flat().map(favoriteExternalId).filter(Boolean));
+  for (const id of externalFavorites.keys()) if (!used.has(id)) externalFavorites.delete(id);
+  try { await workspaceRecord(favoriteFilesKey, [...externalFavorites.values()]); }
+  catch { toast('Non è stato possibile ricordare i file fuori dalla cartella in questo browser.', 'warning'); }
+}
+// File trascinati o scelti dal computer: quelli della cartella aperta diventano preferiti normali.
+async function addFavoriteHandles(handles) {
+  const list = favoriteDocs();
+  let added = 0, skipped = 0;
+  for (const handle of handles) {
+    if (!handle || handle.kind !== 'file') { skipped++; continue; }
+    const inside = root && await withTimeout(root.resolve(handle), 4000).catch(() => null);
+    const path = inside?.join('/');
+    if (path && files.has(path) && isMD(path)) {
+      if (!list.includes(path)) { list.push(path); added++; }
+      continue;
+    }
+    let known = null;
+    for (const item of externalFavorites.values()) {
+      if (item.name === handle.name && await item.handle.isSameEntry(handle).catch(() => false)) { known = item; break; }
+    }
+    if (!known) {
+      known = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name: handle.name, handle, added: Date.now() };
+      externalFavorites.set(known.id, known);
+    }
+    if (!list.includes('ext:' + known.id)) { list.push('ext:' + known.id); added++; }
+  }
+  storeFavoriteDocs(list);
+  await storeExternalFavorites();
+  if (added) toast(added === 1 ? 'Aggiunto ai preferiti' : added + ' file aggiunti ai preferiti', 'success');
+  else if (skipped) toast('Le cartelle non si possono mettere tra i preferiti: trascina i file.');
+}
+async function pickFavoriteFiles() {
+  if (!window.showOpenFilePicker) return toast('Questo browser non permette di scegliere file da ricordare: usa Chrome o Edge.');
+  try { await addFavoriteHandles(await showOpenFilePicker({ id: 'itaca-favorites', multiple: true })); }
+  catch (error) { if (error.name !== 'AbortError') toast(error.message); }
+}
+// Apre un preferito fuori dalla cartella: un documento Markdown si apre da solo in Itaca (come
+// «Apri file…»), gli altri file in una scheda del browser.
+async function openExternalFavorite(item) {
+  const markdown = /\.(md|markdown)$/i.test(item.name);
+  const tab = markdown ? null : window.open('', '_blank');
+  try {
+    const mode = markdown ? 'readwrite' : 'read';
+    if (await item.handle.queryPermission({ mode }) !== 'granted' && await item.handle.requestPermission({ mode }) !== 'granted') {
+      tab?.close();
+      return toast('Senza il permesso del browser «' + item.name + '» non si può aprire.');
+    }
+    const file = await withTimeout(item.handle.getFile(), fileReadTimeoutMs, 'Il file');
+    if (!markdown) {
+      const url = URL.createObjectURL(file);
+      if (tab) tab.location.replace(url);
+      else window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      return;
+    }
+    if (fileActionBusy || documentOpening || folderOpening || loading || !await guardAll()) return;
+    const text = await withTimeout(file.text(), fileReadTimeoutMs, 'Il file');
+    const folder = root?.name;
+    clearWorkingFolder();
+    resetDoc(text, file.name, item.handle);
+    if (folder) toast('«' + file.name + '» è fuori da «' + folder + '»: si è aperto da solo. Per tornare alla cartella usa Cartelle e file.', 'info');
+  } catch (error) {
+    tab?.close();
+    toast(error.name === 'NotFoundError' ? '«' + item.name + '» non c’è più: è stato spostato o eliminato. Toglilo dai preferiti e aggiungilo di nuovo.' : 'Impossibile aprire «' + item.name + '»: ' + error.message, 'error');
+  }
 }
 function storeFavoriteDocs(list) {
   const folder = dashFolderName();
   if (!folder) return;
   const all = favoriteDocsAll();
-  // Restano anche quelli che ora non ci sono (cartella letta a metà): li toglie solo l'utente.
-  const missing = (all[folder] || []).filter(path => !files.has(path) && !list.includes(path));
+  // Restano anche quelli che ora non ci sono (cartella letta a metà, file esterni non ancora
+  // letti dal browser): li toglie solo l'utente.
+  const missing = (all[folder] || []).filter(path => !(favoriteExternalId(path) ? externalFavoritesLoaded && externalFavorites.has(favoriteExternalId(path)) : files.has(path)) && !list.includes(path));
   if (list.length || missing.length) all[folder] = [...list, ...missing];
   else delete all[folder];
   try { localStorage.setItem(favoriteDocsKey, JSON.stringify(all)); } catch {}
@@ -26137,6 +26472,7 @@ function dashFavoritesWidget() {
     mount(ctx) {
       ctx.list = dashScroller(dashEl('ul', 'fv-list cols'));
       dashSortable(ctx.list, keys => storeFavoriteDocs(keys));
+      ctx.tools.append(dashButton('icon-button fv-add-file', '', 'Aggiungi un file da un’altra posizione del computer\n(puoi anche trascinarlo qui dal Finder o da Esplora file)', pickFavoriteFiles, 'attach'));
       ctx.picker = dashPicker({
         placeholder: 'Aggiungi documento…', label: 'Aggiungi un documento ai preferiti', iconName: 'star',
         items: query => linkFileMatches(query, isMD).filter(item => item.kind === 'file' && !item.trashed && files.has(item.path) && !isFavoriteDoc(item.path)).slice(0, 7)
@@ -26148,15 +26484,27 @@ function dashFavoritesWidget() {
       });
       ctx.body.append(ctx.list, ctx.picker);
       // Si possono trascinare qui i documenti dall'elenco dei file.
+      // E i file da qualsiasi posizione del computer (Finder, Esplora file, scrivania).
       ctx.el.addEventListener('dragover', event => {
-        if (!event.dataTransfer.types.includes(itacaPathType)) return;
+        const types = event.dataTransfer.types;
+        if (!types.includes(itacaPathType) && !types.includes('Files')) return;
         event.preventDefault();
-        event.dataTransfer.dropEffect = 'link';
+        event.stopPropagation();
+        event.dataTransfer.dropEffect = types.includes(itacaPathType) ? 'link' : 'copy';
         ctx.el.classList.add('dw-drop');
       });
       ctx.el.addEventListener('dragleave', event => { if (!ctx.el.contains(event.relatedTarget)) ctx.el.classList.remove('dw-drop'); });
       ctx.el.addEventListener('drop', event => {
         ctx.el.classList.remove('dw-drop');
+        if (!event.dataTransfer.types.includes(itacaPathType) && event.dataTransfer.types.includes('Files')) {
+          event.preventDefault();
+          event.stopPropagation();
+          // Gli handle vanno chiesti subito, durante il rilascio.
+          const pending = [...event.dataTransfer.items].filter(item => item.kind === 'file').map(item => item.getAsFileSystemHandle?.() || null);
+          if (!pending.length || pending.some(item => !item)) return toast('Questo browser non permette di ricordare i file trascinati: usa Chrome o Edge.');
+          Promise.all(pending.map(item => item.catch(() => null))).then(addFavoriteHandles);
+          return;
+        }
         const paths = treeDragging?.items?.map(item => item.path) || [event.dataTransfer.getData(itacaPathType)];
         const docs = paths.filter(path => path && isMD(path) && files.has(path) && !isFavoriteDoc(path));
         if (!docs.length) return;
@@ -26172,15 +26520,29 @@ function dashFavoritesWidget() {
         row.dataset.key = path;
         const grip = dashEl('span', 'dw-grip');
         grip.title = 'Trascina per cambiare l’ordine';
-        const open = dashDocRow(item);
-        const remove = dashButton('icon-button fv-remove', '', 'Togli dai preferiti', () => storeFavoriteDocs(favoriteDocs().filter(other => other !== path)), 'close');
+        const external = externalFavorites.get(favoriteExternalId(path));
+        let open;
+        if (external) {
+          open = dashEl('button', 'dash-row fv-external');
+          open.type = 'button';
+          const name = dashEl('span', 'dash-name');
+          const markdown = /\.(md|markdown)$/i.test(external.name);
+          name.append(dashEl('b', '', markdown ? external.name.replace(/\.(md|markdown)$/i, '') : external.name), dashEl('small', '', 'Fuori dalla cartella'));
+          open.append(dashIcon(markdown ? 'file' : fileIconName(external.name)), name);
+          open.title = external.name + '\n' + (markdown ? 'Si apre da solo in Itaca, fuori dalla cartella di lavoro' : 'Si apre in una scheda del browser');
+          open.onclick = () => openExternalFavorite(external);
+        } else open = dashDocRow(item);
+        const remove = dashButton('icon-button fv-remove', '', 'Togli dai preferiti', () => {
+          storeFavoriteDocs(favoriteDocs().filter(other => other !== path));
+          if (external) storeExternalFavorites();
+        }, 'close');
         row.append(grip, open, remove);
         return row;
       });
       ctx.list.replaceChildren(...rows);
       ctx.list.hidden = !rows.length;
       ctx.body.querySelector('.dash-empty')?.remove();
-      if (!rows.length) ctx.list.before(dashEmpty('star', 'Scrivi qui sotto il nome di un documento, oppure trascinalo dall’elenco dei file.'));
+      if (!rows.length) ctx.list.before(dashEmpty('star', 'Scrivi qui sotto il nome di un documento, oppure trascinalo dall’elenco dei file o da un’altra cartella del computer.'));
     },
   };
 }
@@ -26319,7 +26681,19 @@ function dashTodoWidget() {
       });
       ctx.done = dashEl('div', 'td-done');
       ctx.count = dashEl('span', 'dw-count');
-      ctx.tools.append(ctx.count);
+      // Svuota con un clic; per qualche secondo «Annulla» rimette tutto com'era.
+      ctx.clear = dashButton('icon-button td-clear-all', '', 'Elimina tutte le attività (anche le completate)', () => {
+        if (!todoItems.length) return;
+        clearTimeout(ctx.s.undoTimer);
+        ctx.s.undo = todoItems;
+        todoItems = [];
+        storeTodos();
+        ctx.s.undoTimer = setTimeout(() => {
+          ctx.s.undo = null;
+          dashUpdate(ctx);
+        }, 10000);
+      }, 'trash');
+      ctx.tools.append(ctx.count, ctx.clear);
       ctx.body.append(form, ctx.scroll, ctx.done);
       ctx.input = input;
     },
@@ -26336,7 +26710,23 @@ function dashTodoWidget() {
       ctx.doneList.replaceChildren(...(showDone ? done.sort((a, b) => (b.doneAt || 0) - (a.doneAt || 0)).slice(0, 30).map(item => todoRow(item, ctx, false)) : []));
       ctx.doneList.hidden = !showDone;
       ctx.done.replaceChildren();
-      ctx.done.hidden = !done.length;
+      ctx.done.hidden = !done.length && !ctx.s.undo;
+      ctx.clear.hidden = !todoItems.length;
+      if (ctx.s.undo && !todoItems.length) {
+        const count = ctx.s.undo.length;
+        const bar = dashEl('div', 'td-undo');
+        bar.append(dashEl('span', '', count === 1 ? 'Eliminata 1 attività' : 'Eliminate ' + count + ' attività'), dashButton('td-undo-button', 'Annulla', 'Rimette tutte le attività', () => {
+          clearTimeout(ctx.s.undoTimer);
+          todoItems = ctx.s.undo;
+          ctx.s.undo = null;
+          storeTodos();
+        }));
+        ctx.done.append(bar);
+        ctx.scroll.querySelector(':scope > .dash-empty')?.remove();
+      } else if (ctx.s.undo) {
+        clearTimeout(ctx.s.undoTimer);
+        ctx.s.undo = null;
+      }
       if (done.length) {
         const toggle = dashButton('td-done-toggle', (showDone ? 'Nascondi' : 'Mostra') + ' le completate (' + done.length + ')', '', () => {
           ctx.opt.showDone = !ctx.opt.showDone;
@@ -30442,13 +30832,15 @@ async function trashUnusedAttachments(directory, candidates, from, quiet = false
     const { used, failed } = await usedAttachments(candidates);
     if (failed || root !== directory) return 0;
     let moved = 0, bytes = 0;
+    const emptied = new Set();
     for (const path of candidates.filter(item => !used.has(item) && files.has(item))) {
       if (root !== directory) break;
       try {
         const size = await trashFile(directory, path, { reason: 'unused', from: from || '', ...extra });
-        if (size) { moved++; bytes += size; }
+        if (size) { moved++; bytes += size; emptied.add(parent(path)); }
       } catch {}
     }
+    if (moved && root === directory) await dropEmptyAttachmentFolders(emptied);
     if (moved) {
       renderTree();
       if (!quiet) toast(attachmentCount(moved) + ' non più ' + (moved === 1 ? 'usato spostato' : 'usati spostati') + ' nel cestino di Itaca (' +
@@ -30457,6 +30849,32 @@ async function trashUnusedAttachments(directory, candidates, from, quiet = false
     return moved;
   } finally {
     attachmentTrashBusy = false;
+  }
+}
+
+// Sottocartelle di _allegati rimaste vuote (immagini di un PDF o di un Word convertiti): si
+// tolgono, risalendo fino a _allegati esclusa. Una cartella con file che Itaca non elenca resta.
+async function dropEmptyAttachmentFolders(folders) {
+  const paths = [...folders].sort((a, b) => b.split('/').length - a.split('/').length);
+  const done = new Set();
+  for (let path of paths) {
+    while (path && !done.has(path)) {
+      const segments = path.split('/');
+      const at = segments.lastIndexOf(attachmentFolderName);
+      if (at < 0 || at === segments.length - 1) break;   // fuori da _allegati, o _allegati stessa
+      done.add(path);
+      if ([...files.keys()].some(item => inFolder(item, path))) break;
+      const handle = folderHandles.get(path), above = folderHandles.get(parent(path));
+      if (!handle || !above) break;
+      try {
+        let empty = true;
+        for await (const _ of handle.entries()) { empty = false; break; }
+        if (!empty) break;
+        await above.removeEntry(segments.at(-1));
+      } catch { break; }
+      for (const folder of [...folderHandles.keys()]) if (folder === path || inFolder(folder, path)) folderHandles.delete(folder);
+      path = parent(path);
+    }
   }
 }
 
@@ -37845,6 +38263,573 @@ addEventListener('keydown', event => {
   event.stopPropagation();
   toggleDashboard();
 }, true);
+// ── Modalità presentazione ──
+// Il documento a schermo intero, una diapositiva alla volta. Diapositive: separate dalle righe
+// orizzontali (---) se il documento ne ha, altrimenti una per sezione (titoli 1 e 2, o 3 se i 2
+// sono meno di due). Una sezione che non sta nello schermo prima si rimpicciolisce un poco, poi
+// si divide ai sottotitoli, poi tra i blocchi (elenchi e tabelle anche a metà, con «segue»).
+// Si parte dalla sezione che si stava leggendo; uscendo il documento torna alla sezione mostrata.
+// Tasti: frecce, Spazio, PagSu/PagGiù, Home/Fine, G indice, F schermo intero, B schermo nero, Esc.
+var presentation = null;
+const presentHeadings = 'h1, h2, h3, h4, h5, h6';
+
+function presentDialog() {
+  let dialog = $('presentation');
+  if (dialog) return dialog;
+  dialog = document.createElement('dialog');
+  dialog.id = 'presentation';
+  dialog.className = 'presentation';
+  dialog.setAttribute('aria-label', 'Presentazione');
+  dialog.innerHTML = '<div class="pr-stage" aria-live="polite"></div><div class="pr-measure" aria-hidden="true"></div>' +
+    '<div class="pr-progress" aria-hidden="true"><i></i></div><div class="pr-blank" hidden></div>' +
+    '<nav class="pr-bar" aria-label="Comandi della presentazione">' +
+    '<button type="button" class="icon-button pr-prev" title="Diapositiva precedente (←)" aria-label="Diapositiva precedente"><i class="icon i-arrow-left" aria-hidden="true"></i></button>' +
+    '<span class="pr-count"></span>' +
+    '<button type="button" class="icon-button pr-next" title="Diapositiva successiva (→ o Spazio)" aria-label="Diapositiva successiva"><i class="icon i-arrow-right" aria-hidden="true"></i></button>' +
+    '<span class="pr-where"></span><span class="pr-clock" title="Tempo dall’inizio"></span>' +
+    '<button type="button" class="icon-button pr-grid" title="Tutte le diapositive (G)" aria-label="Tutte le diapositive"><i class="icon i-widgets" aria-hidden="true"></i></button>' +
+    '<button type="button" class="icon-button pr-full" title="Schermo intero (F)" aria-label="Schermo intero"><i class="icon i-expand" aria-hidden="true"></i></button>' +
+    '<button type="button" class="icon-button pr-exit" title="Esci dalla presentazione (Esc)" aria-label="Esci dalla presentazione"><i class="icon i-close" aria-hidden="true"></i></button>' +
+    '</nav><div class="pr-overview" hidden><div class="pr-overview-head"><b>Diapositive</b><span></span><button type="button" class="icon-button pr-overview-close" title="Chiudi (Esc o G)" aria-label="Chiudi"><i class="icon i-close" aria-hidden="true"></i></button></div><div class="pr-cards" role="listbox" aria-label="Diapositive"></div></div>';
+  document.body.append(dialog);
+  const q = selector => dialog.querySelector(selector);
+  q('.pr-prev').onclick = () => presentGo(presentation.index - 1);
+  q('.pr-next').onclick = () => presentGo(presentation.index + 1);
+  q('.pr-grid').onclick = () => presentOverview(true);
+  q('.pr-overview-close').onclick = () => presentOverview(false);
+  q('.pr-full').onclick = presentToggleFullscreen;
+  q('.pr-exit').onclick = () => closePresentation();
+  dialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    if (!q('.pr-overview').hidden) presentOverview(false);
+    else closePresentation();
+  });
+  dialog.addEventListener('close', () => presentation && closePresentation());
+  dialog.addEventListener('keydown', presentKey);
+  dialog.addEventListener('pointermove', presentWake);
+  dialog.addEventListener('pointerdown', presentWake);
+  q('.pr-stage').addEventListener('click', event => {
+    if (event.target.closest('a[href], button, input, video, audio, summary, details, select, textarea, .audio-player') || getSelection().toString()) return;
+    presentGo(presentation.index + (event.clientX < innerWidth * .25 ? -1 : 1));
+  });
+  q('.pr-blank').onclick = () => presentBlank(false);
+  let wheelAt = 0;
+  q('.pr-stage').addEventListener('wheel', event => {
+    const slide = event.target.closest('.pr-slide');
+    if (slide && slide.scrollHeight > slide.clientHeight + 2) return;   // diapositiva lunga: scorre
+    if (Math.abs(event.deltaY) < 12 || event.ctrlKey || Date.now() - wheelAt < 550) return;
+    wheelAt = Date.now();
+    presentGo(presentation.index + (event.deltaY > 0 ? 1 : -1));
+  }, { passive: true });
+  let touch = null;
+  q('.pr-stage').addEventListener('touchstart', event => { touch = event.touches.length === 1 ? { x: event.touches[0].clientX, y: event.touches[0].clientY } : null; }, { passive: true });
+  q('.pr-stage').addEventListener('touchend', event => {
+    if (!touch) return;
+    const dx = event.changedTouches[0].clientX - touch.x, dy = event.changedTouches[0].clientY - touch.y;
+    touch = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4) presentGo(presentation.index + (dx < 0 ? 1 : -1));
+  });
+  document.addEventListener('fullscreenchange', () => {
+    if (!presentation) return;
+    const full = document.fullscreenElement === dialog;
+    dialog.classList.toggle('is-full', full);
+    q('.pr-full').title = full ? 'Esci dallo schermo intero (F)' : 'Schermo intero (F)';
+    // Esc del browser esce dallo schermo intero: esce anche dalla presentazione.
+    if (!full && presentation.wasFull && !presentation.leavingFull) closePresentation();
+    presentation.wasFull = full;
+    presentation.leavingFull = false;
+  });
+  new ResizeObserver(() => {
+    if (!presentation?.ready) return;
+    clearTimeout(presentation.resizeTimer);
+    presentation.resizeTimer = setTimeout(presentLayout, 120);
+  }).observe(dialog);
+  return dialog;
+}
+
+// Contenuto da presentare: la stessa copia del documento che va in stampa, senza i comandi
+// dell'editor, con immagini, codice colorato e caselle.
+async function presentContent(path) {
+  const article = document.createElement('div');
+  article.append(pdfContent());
+  for (const element of article.querySelectorAll('[data-code-chrome], select, button, .media-notes, .table-filter, [data-caret-boundary], .md-suggest, .pdf-selection-ring')) element.remove();
+  for (const element of article.querySelectorAll('[contenteditable]')) element.removeAttribute('contenteditable');
+  for (const table of article.querySelectorAll('table')) table.removeAttribute('data-grid'), table.removeAttribute('data-wide');
+  for (const code of article.querySelectorAll('pre code')) renderHighlightedCode(code, code.textContent, codeLanguage(code));
+  decorateCheckboxes(article);
+  for (const box of article.querySelectorAll('input')) box.disabled = true;
+  for (const link of article.querySelectorAll('a')) {
+    const target = link.dataset.href || link.getAttribute('href') || '';
+    if (/^(https?:\/\/|mailto:)/i.test(target)) {
+      link.href = target;
+      link.target = '_blank';
+      link.rel = 'noopener';
+    } else link.removeAttribute('href');
+  }
+  const urls = [];
+  await Promise.all([...article.querySelectorAll('img[data-src]')].map(async image => {
+    try {
+      const file = await documentImage(image, path);
+      if (file) {
+        const url = URL.createObjectURL(file);
+        urls.push(url);
+        image.src = url;
+        await Promise.race([image.decode().catch(() => {}), new Promise(resolve => setTimeout(resolve, 4000))]);
+        return;
+      }
+    } catch {}
+    image.classList.add('missing');
+  }));
+  [...article.querySelectorAll(presentHeadings)].forEach((heading, index) => { heading.dataset.prH = index; });
+  const blocks = [...article.childNodes].filter(node => node.nodeType === 1 || node.textContent.trim());
+  blocks.forEach((node, index) => {
+    if (node.nodeType !== 1) {
+      const p = document.createElement('p');
+      p.textContent = node.textContent;
+      blocks[index] = node = p;
+    }
+    node.dataset.prI = index;
+  });
+  return { blocks, urls };
+}
+
+// Sezioni: [{heading, blocks}] (heading null per ciò che sta prima del primo titolo).
+function presentSections(blocks) {
+  const sections = [];
+  let section = null;
+  const start = heading => sections.push(section = { heading, blocks: [] });
+  if (blocks.some(block => block.tagName === 'HR')) {
+    start(null);
+    for (const block of blocks) {
+      if (block.tagName === 'HR') { start(null); continue; }
+      if (!section.heading && !section.blocks.length && /^H[1-6]$/.test(block.tagName)) section.heading = block;
+      else section.blocks.push(block);
+    }
+  } else {
+    const level = block => /^H([1-6])$/.exec(block.tagName)?.[1] * 1 || 0;
+    const count = n => blocks.filter(block => level(block) === n).length;
+    const split = count(2) >= 2 ? 2 : count(3) >= 2 && count(2) <= 1 ? 3 : count(2) ? 2 : 1;
+    for (const block of blocks) {
+      const n = level(block);
+      if (n && n <= split) start(block);
+      else (section || (start(null), section)).blocks.push(block);
+    }
+  }
+  return sections.filter(item => item.heading || item.blocks.some(block => block.textContent.trim() || block.querySelector?.('img, table, pre, input, video, audio, iframe, [data-ext]')));
+}
+
+function presentSlideElement(heading, kicker, continued) {
+  const slide = document.createElement('section');
+  slide.className = 'pr-slide';
+  const content = document.createElement('div');
+  content.className = 'editor pr-content';
+  if (kicker) content.append(Object.assign(document.createElement('p'), { className: 'pr-kicker', textContent: kicker }));
+  if (heading) {
+    const title = heading.cloneNode(true);
+    title.classList.add('pr-title');
+    if (continued) title.append(Object.assign(document.createElement('small'), { className: 'pr-continued', textContent: 'segue' }));
+    content.append(title);
+  }
+  slide.append(content);
+  return slide;
+}
+
+const presentFits = slide => slide.scrollHeight <= slide.clientHeight + 1 && slide.scrollWidth <= slide.clientWidth + 1;
+
+// Un elenco o una tabella troppo lunghi per una diapositiva: si dividono tra le voci/le righe.
+function presentSplitBlock(block, page, fresh) {
+  const content = () => page.slide.firstChild;
+  if (/^(UL|OL)$/.test(block.tagName)) {
+    const items = [...block.children];
+    const pieces = [];
+    let start = Number(block.getAttribute('start') || 1);
+    while (items.length) {
+      const list = block.cloneNode(false);
+      if (block.tagName === 'OL') list.setAttribute('start', start);
+      content().append(list);
+      while (items.length) {
+        list.append(items[0].cloneNode(true));
+        if (!presentFits(page.slide) && list.children.length > 1) { list.lastChild.remove(); break; }
+        items.shift();
+        start++;
+      }
+      pieces.push(list);
+      if (items.length) page = fresh();
+    }
+    return page;
+  }
+  if (block.tagName === 'TABLE' && block.tBodies[0]?.rows.length > 1) {
+    const rows = [...block.tBodies[0].rows];
+    while (rows.length) {
+      const table = block.cloneNode(false);
+      for (const part of block.children) if (part.tagName !== 'TBODY') table.append(part.cloneNode(true));
+      const body = document.createElement('tbody');
+      table.append(body);
+      content().append(table);
+      while (rows.length) {
+        body.append(rows[0].cloneNode(true));
+        if (!presentFits(page.slide) && body.rows.length > 1) { body.lastChild.remove(); break; }
+        rows.shift();
+      }
+      if (rows.length) page = fresh();
+    }
+    return page;
+  }
+  // Immagine, codice, paragrafo enorme: resta intero (le immagini si adattano, il resto scorre).
+  const copy = block.cloneNode(true);
+  copy.classList?.add('pr-tall');
+  content().append(copy);
+  return page;
+}
+
+function presentPaginate(section, host, kicker = '') {
+  const pages = [];
+  const first = block => Number(block?.dataset?.prI ?? -1);
+  const fresh = (continued = true) => {
+    const slide = presentSlideElement(section.heading, kicker, continued && pages.length > 0);
+    host.append(slide);
+    const page = { slide, first: section.heading ? first(section.heading) : first(section.blocks[0]), heading: section.heading, kicker };
+    pages.push(page);
+    return page;
+  };
+  let page = fresh(false);
+  // Tutta la sezione: se non ci sta, un po' più piccola.
+  for (const block of section.blocks) page.slide.firstChild.append(block.cloneNode(true));
+  if (presentFits(page.slide)) return pages;
+  page.slide.style.setProperty('--pr-fit', '.86');
+  if (presentFits(page.slide)) return pages;
+  page.slide.style.removeProperty('--pr-fit');
+  // Sottotitoli: ogni sottosezione su una diapositiva propria (il titolo della sezione sopra).
+  const level = section.heading ? Number(section.heading.tagName[1]) : 0;
+  const subAt = section.blocks.findIndex(block => /^H[1-6]$/.test(block.tagName) && Number(block.tagName[1]) > level);
+  if (section.heading && subAt >= 0 && !kicker) {
+    pages.pop().slide.remove();
+    const subs = [{ heading: section.heading, blocks: section.blocks.slice(0, subAt) }];
+    const subLevel = Number(section.blocks[subAt].tagName[1]);
+    for (const block of section.blocks.slice(subAt)) {
+      if (/^H[1-6]$/.test(block.tagName) && Number(block.tagName[1]) <= subLevel) subs.push({ heading: block, blocks: [] });
+      else subs.at(-1).blocks.push(block);
+    }
+    const title = section.heading.textContent.trim();
+    subs.forEach((sub, index) => {
+      if (!index && !sub.blocks.length) return;
+      pages.push(...presentPaginate(sub, host, index ? title : ''));
+    });
+    return pages;
+  }
+  // Blocco per blocco.
+  page.slide.firstChild.replaceChildren(...[...page.slide.firstChild.children].filter(child => child.classList.contains('pr-title') || child.classList.contains('pr-kicker')));
+  let used = 0;
+  for (const block of section.blocks) {
+    const copy = block.cloneNode(true);
+    page.slide.firstChild.append(copy);
+    if (presentFits(page.slide)) { used++; continue; }
+    copy.remove();
+    if (used) {
+      page = fresh();
+      used = 0;
+      const again = block.cloneNode(true);
+      page.slide.firstChild.append(again);
+      if (presentFits(page.slide)) { used++; continue; }
+      again.remove();
+    }
+    page = presentSplitBlock(block, page, () => fresh());
+    used++;
+  }
+  return pages;
+}
+
+function presentLayout() {
+  const p = presentation;
+  if (!p) return;
+  const dialog = presentDialog();
+  const host = dialog.querySelector('.pr-measure');
+  const keep = p.slides?.[p.index]?.first;
+  host.replaceChildren();
+  const slides = [];
+  presentSections(p.blocks).forEach((section, index) => {
+    const pages = presentPaginate(section, host);
+    // Prima diapositiva con il titolo del documento e poco altro: copertina.
+    if (!index && section.heading?.tagName === 'H1' && pages.length === 1 && section.blocks.every(block => /^(P|BLOCKQUOTE)$/.test(block.tagName)) && section.blocks.reduce((sum, block) => sum + block.textContent.length, 0) < 320) {
+      pages[0].slide.classList.add('pr-cover');
+    }
+    for (const page of pages) {
+      const media = page.slide.firstChild.querySelectorAll(':scope > :not(.pr-title):not(.pr-kicker)');
+      if (media.length && [...media].every(node => node.matches('p, figure') && !node.textContent.trim() && node.querySelector('img'))) page.slide.classList.add('pr-only-media');
+    }
+    slides.push(...pages);
+  });
+  if (!slides.length) slides.push({ slide: presentSlideElement(null, '', false), first: 0 });
+  for (const page of slides) {
+    page.slide.remove();
+    page.title = page.heading?.textContent.replace(/segue$/, '').trim() || page.slide.textContent.trim().slice(0, 60) || 'Diapositiva';
+    page.headings = [...page.slide.querySelectorAll('[data-pr-h]')].map(heading => Number(heading.dataset.prH));
+  }
+  p.slides = slides;
+  let index = p.index || 0;
+  if (keep !== undefined) {
+    index = 0;
+    slides.forEach((page, i) => { if (page.first <= keep) index = i; });
+  }
+  p.index = -1;
+  presentGo(index, true);
+  if (!dialog.querySelector('.pr-overview').hidden) presentOverview(true);
+}
+
+function presentGo(index, instant = false) {
+  const p = presentation;
+  if (!p?.slides) return;
+  index = Math.max(0, Math.min(p.slides.length - 1, index));
+  if (index === p.index) return;
+  const dialog = presentDialog();
+  const stage = dialog.querySelector('.pr-stage');
+  const direction = index > p.index ? 1 : -1;
+  const page = p.slides[index];
+  page.slide.scrollTop = 0;
+  stage.replaceChildren(page.slide);
+  p.index = index;
+  if (!instant && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    page.slide.animate([{ opacity: 0, transform: 'translateX(' + direction * 28 + 'px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+  }
+  dialog.querySelector('.pr-count').textContent = index + 1 + ' / ' + p.slides.length;
+  dialog.querySelector('.pr-where').textContent = page.kicker ? page.kicker + ' › ' + page.title : page.title;
+  dialog.querySelector('.pr-progress i').style.width = (index + 1) / p.slides.length * 100 + '%';
+  dialog.querySelector('.pr-prev').disabled = index === 0;
+  dialog.querySelector('.pr-next').disabled = index === p.slides.length - 1;
+}
+
+function presentKey(event) {
+  const p = presentation;
+  if (!p?.slides || event.isComposing) return;
+  const dialog = presentDialog();
+  const overview = dialog.querySelector('.pr-overview');
+  const key = event.key;
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+  presentWake();
+  if (!overview.hidden) {
+    const cards = [...overview.querySelectorAll('.pr-card')];
+    const at = Math.max(0, cards.indexOf(document.activeElement));
+    const columns = Math.max(1, Math.round(overview.querySelector('.pr-cards').clientWidth / (cards[0]?.offsetWidth + 14 || 1)));
+    const moves = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: columns, ArrowUp: -columns, Home: -Infinity, End: Infinity };
+    if (key in moves) {
+      event.preventDefault();
+      cards[Math.max(0, Math.min(cards.length - 1, at + moves[key]))]?.focus();
+    } else if (key === 'g' || key === 'G') {
+      event.preventDefault();
+      presentOverview(false);
+    }
+    return;
+  }
+  if (!dialog.querySelector('.pr-blank').hidden && key !== 'Escape') {
+    event.preventDefault();
+    presentBlank(false);
+    return;
+  }
+  if (event.target.closest?.('.pr-bar button') && (key === 'Enter' || key === ' ')) return;
+  const slide = dialog.querySelector('.pr-stage .pr-slide');
+  const scrolls = slide && slide.scrollHeight > slide.clientHeight + 2;
+  const next = ['ArrowRight', 'PageDown', 'Enter', 'n', 'N'].includes(key) || key === ' ' && !event.shiftKey || key === 'ArrowDown' && !scrolls;
+  const prev = ['ArrowLeft', 'PageUp', 'Backspace', 'p', 'P'].includes(key) || key === ' ' && event.shiftKey || key === 'ArrowUp' && !scrolls;
+  if (next || prev) {
+    event.preventDefault();
+    // Diapositiva che scorre (un'immagine o una tabella grandi): prima si arriva in fondo.
+    if (scrolls && (key === ' ' || key.startsWith('Page'))) {
+      const room = slide.scrollHeight - slide.clientHeight;
+      if (next && slide.scrollTop < room - 2) return slide.scrollBy({ top: slide.clientHeight * .85, behavior: 'smooth' });
+      if (prev && slide.scrollTop > 2) return slide.scrollBy({ top: -slide.clientHeight * .85, behavior: 'smooth' });
+    }
+    presentGo(p.index + (next ? 1 : -1));
+  } else if (key === 'Home' || key === 'End') {
+    event.preventDefault();
+    presentGo(key === 'Home' ? 0 : p.slides.length - 1);
+  } else if (key === 'g' || key === 'G') {
+    event.preventDefault();
+    presentOverview(true);
+  } else if (key === 'f' || key === 'F') {
+    event.preventDefault();
+    presentToggleFullscreen();
+  } else if (key === 'b' || key === 'B' || key === '.') {
+    event.preventDefault();
+    presentBlank(true);
+  }
+}
+
+function presentBlank(on) {
+  presentDialog().querySelector('.pr-blank').hidden = !on;
+}
+
+function presentOverview(open) {
+  const p = presentation;
+  const dialog = presentDialog();
+  const overview = dialog.querySelector('.pr-overview');
+  if (!open) {
+    overview.hidden = true;
+    dialog.focus();
+    return;
+  }
+  const cards = overview.querySelector('.pr-cards');
+  const stage = dialog.querySelector('.pr-stage');
+  const width = stage.clientWidth, height = stage.clientHeight;
+  const thumb = 232, scale = thumb / width;
+  overview.querySelector('.pr-overview-head span').textContent = p.slides.length === 1 ? '1 diapositiva' : p.slides.length + ' diapositive';
+  cards.style.setProperty('--pr-thumb', thumb + 'px');
+  cards.replaceChildren(...p.slides.map((page, index) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'pr-card';
+    card.setAttribute('role', 'option');
+    card.setAttribute('aria-selected', String(index === p.index));
+    const box = document.createElement('span');
+    box.className = 'pr-thumb';
+    box.style.height = Math.round(height * scale) + 'px';
+    const copy = page.slide.cloneNode(true);
+    copy.style.cssText += ';width:' + width + 'px;height:' + height + 'px;transform:scale(' + scale + ');overflow:hidden';
+    copy.inert = true;
+    box.append(copy);
+    const label = document.createElement('span');
+    label.className = 'pr-card-label';
+    label.append(Object.assign(document.createElement('b'), { textContent: index + 1 }), document.createTextNode(page.title));
+    card.append(box, label);
+    card.title = (index + 1) + ' · ' + (page.kicker ? page.kicker + ' › ' : '') + page.title;
+    card.onclick = () => {
+      presentOverview(false);
+      presentGo(index);
+    };
+    return card;
+  }));
+  overview.hidden = false;
+  const active = cards.children[p.index];
+  active?.focus({ preventScroll: true });
+  active?.scrollIntoView({ block: 'center' });
+}
+
+function presentToggleFullscreen() {
+  const dialog = presentDialog();
+  if (document.fullscreenElement === dialog) {
+    presentation.leavingFull = true;
+    document.exitFullscreen().catch(() => {});
+  } else dialog.requestFullscreen?.().catch(() => toast('Lo schermo intero non è disponibile qui: la presentazione resta nella finestra.'));
+}
+
+// Barra e puntatore spariscono dopo un attimo senza movimento.
+function presentWake() {
+  const dialog = $('presentation');
+  if (!dialog || !presentation) return;
+  dialog.classList.remove('idle');
+  clearTimeout(presentation.idleTimer);
+  presentation.idleTimer = setTimeout(() => {
+    if (!dialog.querySelector('.pr-bar').matches(':hover') && dialog.querySelector('.pr-overview').hidden) dialog.classList.add('idle');
+  }, 2600);
+}
+
+function presentClock() {
+  const p = presentation;
+  if (!p) return;
+  const seconds = Math.floor((Date.now() - p.started) / 1000);
+  const text = (seconds >= 3600 ? Math.floor(seconds / 3600) + ':' : '') + String(Math.floor(seconds / 60) % 60).padStart(seconds >= 3600 ? 2 : 1, '0') + ':' + String(seconds % 60).padStart(2, '0');
+  $('presentation').querySelector('.pr-clock').textContent = text;
+}
+
+// Titolo del documento da cui partire: l'ultimo sopra il punto che si sta leggendo.
+function presentStartHeading() {
+  if (sourceMode || !current) return -1;
+  const headings = [...ed.querySelectorAll(presentHeadings)];
+  if (editingEnabled && ed.contains(getSelection().anchorNode)) {
+    const node = getSelection().anchorNode;
+    let at = -1;
+    headings.forEach((heading, index) => {
+      if (heading === node || heading.contains(node) || heading.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING) at = index;
+    });
+    return at;
+  }
+  if (workspace.scrollTop < 40) return -1;   // in cima al documento: dalla copertina
+  // Un titolo nella parte alta dello schermo conta già come «la sezione che si sta leggendo».
+  const box = workspace.getBoundingClientRect();
+  const top = box.top + Math.max(130, box.height * .35);
+  let at = -1;
+  headings.forEach((heading, index) => { if (heading.getBoundingClientRect().top <= top) at = index; });
+  return at;
+}
+
+async function openPresentation() {
+  if (presentation || !current || document.querySelector('dialog[open]')) return;
+  const path = current;
+  const dialog = presentDialog();
+  const startHeading = presentStartHeading();
+  dialog.classList.remove('idle', 'is-full');
+  dialog.querySelector('.pr-stage').replaceChildren(Object.assign(document.createElement('p'), { className: 'pr-loading', textContent: 'Preparazione della presentazione…' }));
+  dialog.querySelector('.pr-overview').hidden = true;
+  dialog.querySelector('.pr-blank').hidden = true;
+  presentation = { path, index: 0, started: Date.now(), urls: [], ready: false, wasFull: false };
+  dialog.showModal();
+  dialog.focus();
+  // Schermo intero subito, nel gesto (dopo il caricamento delle immagini il browser lo rifiuterebbe).
+  dialog.requestFullscreen?.().catch(() => {});
+  try {
+    const { blocks, urls } = await presentContent(path);
+    if (!presentation || presentation.path !== path) {
+      for (const url of urls) URL.revokeObjectURL(url);
+      return;
+    }
+    presentation.urls = urls;
+    presentation.blocks = blocks;
+    if (!blocks.length) {
+      closePresentation();
+      toast('Il documento è vuoto.');
+      return;
+    }
+    // Lo schermo intero cambia le misure: si impagina quando è arrivato (o dopo poco).
+    await new Promise(resolve => setTimeout(resolve, document.fullscreenElement === dialog || !dialog.requestFullscreen ? 0 : 180));
+    presentLayout();
+    presentation.ready = true;
+    if (startHeading > 0) {
+      const index = presentation.slides.findIndex(page => page.headings.includes(startHeading));
+      if (index > 0) presentGo(index, true);
+    }
+    presentation.started = Date.now();
+    presentClock();
+    presentation.clockTimer = setInterval(presentClock, 1000);
+    presentWake();
+  } catch (error) {
+    closePresentation();
+    toast('Impossibile preparare la presentazione: ' + error.message, 'error');
+  }
+}
+
+function closePresentation() {
+  const p = presentation;
+  if (!p) return;
+  presentation = null;
+  const dialog = presentDialog();
+  clearInterval(p.clockTimer);
+  clearTimeout(p.idleTimer);
+  clearTimeout(p.resizeTimer);
+  if (document.fullscreenElement === dialog) document.exitFullscreen().catch(() => {});
+  if (dialog.open) dialog.close();
+  dialog.querySelector('.pr-stage').replaceChildren();
+  dialog.querySelector('.pr-measure').replaceChildren();
+  dialog.querySelector('.pr-cards').replaceChildren();
+  for (const url of p.urls) URL.revokeObjectURL(url);
+  // Il documento torna alla sezione dell'ultima diapositiva mostrata.
+  const page = p.slides?.[p.index];
+  if (page && current === p.path && !sourceMode) {
+    const at = page.headings[0] ?? Math.max(-1, ...p.slides.slice(0, p.index + 1).flatMap(item => item.headings));
+    const heading = at >= 0 ? ed.querySelectorAll(presentHeadings)[at] : null;
+    if (heading) setTimeout(() => heading.scrollIntoView({ block: 'start' }), 30);
+    else if (p.index === 0) workspace.scrollTop = 0;
+  }
+}
+
+$('presentDocument').onclick = openPresentation;
+// Ctrl/⌘ + Invio: presenta il documento (non dentro le caselle di testo e con un dialog aperto).
+addEventListener('keydown', event => {
+  if (event.key !== 'Enter' || !(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey || event.isComposing) return;
+  if (document.querySelector('dialog[open]') || !current || event.target.closest?.('input, textarea, select, .code-editor')) return;
+  event.preventDefault();
+  event.stopPropagation();
+  openPresentation();
+}, true);
+
 for (const kbd of $('docMenu').querySelectorAll('.menu-key')) kbd.textContent = menuKeyLabel(kbd.dataset.keys);
 
 // Ctrl/⌘ + Maiusc + E: porta il fuoco sull'elenco dei file (sul documento aperto).
