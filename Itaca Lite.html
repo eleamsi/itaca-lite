@@ -2358,10 +2358,12 @@ dialog .tag-skipped span { color: var(--muted); }
 dialog { max-width: min(92vw, 480px); width: 450px; padding: 24px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--paper); box-shadow: 0 2px 6px #17212b14, 0 24px 64px #17212b2e; }
 dialog::backdrop { background: var(--overlay); }
 /* Modalità presentazione */
-#presentation { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; overflow: hidden; color: var(--ink); background: var(--paper); }
+#presentation { position: fixed; inset: 0; z-index: 2147482000; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; overflow: hidden; color: var(--ink); background: var(--paper); }
 #presentation[open] { display: block; }
 #presentation::backdrop { background: var(--paper); }
-#presentation:focus { outline: none; }
+#presentation:focus, .pr-frame:focus { outline: none; }
+.pr-frame { position: absolute; inset: 0; overflow: hidden; color: var(--ink); background: var(--paper); }
+.pr-frame:fullscreen { width: 100vw; height: 100vh; }
 #presentation.idle, #presentation.idle * { cursor: none; }
 .pr-stage, .pr-measure { position: absolute; inset: 0; }
 .pr-measure { visibility: hidden; pointer-events: none; overflow: hidden; }
@@ -26490,7 +26492,8 @@ function dashFavoritesWidget() {
         if (!types.includes(itacaPathType) && !types.includes('Files')) return;
         event.preventDefault();
         event.stopPropagation();
-        event.dataTransfer.dropEffect = types.includes(itacaPathType) ? 'link' : 'copy';
+        // L'elenco dei file permette solo copia/sposta: con «link» il browser rifiuterebbe il rilascio.
+        event.dataTransfer.dropEffect = 'copy';
         ctx.el.classList.add('dw-drop');
       });
       ctx.el.addEventListener('dragleave', event => { if (!ctx.el.contains(event.relatedTarget)) ctx.el.classList.remove('dw-drop'); });
@@ -38280,7 +38283,9 @@ function presentDialog() {
   dialog.id = 'presentation';
   dialog.className = 'presentation';
   dialog.setAttribute('aria-label', 'Presentazione');
-  dialog.innerHTML = '<div class="pr-stage" aria-live="polite"></div><div class="pr-measure" aria-hidden="true"></div>' +
+  dialog.setAttribute('aria-modal', 'true');
+  dialog.tabIndex = -1;
+  dialog.innerHTML = '<div class="pr-frame" tabindex="-1"><div class="pr-stage" aria-live="polite"></div><div class="pr-measure" aria-hidden="true"></div>' +
     '<div class="pr-progress" aria-hidden="true"><i></i></div><div class="pr-blank" hidden></div>' +
     '<nav class="pr-bar" aria-label="Comandi della presentazione">' +
     '<button type="button" class="icon-button pr-prev" title="Diapositiva precedente (←)" aria-label="Diapositiva precedente"><i class="icon i-arrow-left" aria-hidden="true"></i></button>' +
@@ -38290,7 +38295,7 @@ function presentDialog() {
     '<button type="button" class="icon-button pr-grid" title="Tutte le diapositive (G)" aria-label="Tutte le diapositive"><i class="icon i-widgets" aria-hidden="true"></i></button>' +
     '<button type="button" class="icon-button pr-full" title="Schermo intero (F)" aria-label="Schermo intero"><i class="icon i-expand" aria-hidden="true"></i></button>' +
     '<button type="button" class="icon-button pr-exit" title="Esci dalla presentazione (Esc)" aria-label="Esci dalla presentazione"><i class="icon i-close" aria-hidden="true"></i></button>' +
-    '</nav><div class="pr-overview" hidden><div class="pr-overview-head"><b>Diapositive</b><span></span><button type="button" class="icon-button pr-overview-close" title="Chiudi (Esc o G)" aria-label="Chiudi"><i class="icon i-close" aria-hidden="true"></i></button></div><div class="pr-cards" role="listbox" aria-label="Diapositive"></div></div>';
+    '</nav><div class="pr-overview" hidden><div class="pr-overview-head"><b>Diapositive</b><span></span><button type="button" class="icon-button pr-overview-close" title="Chiudi (Esc o G)" aria-label="Chiudi"><i class="icon i-close" aria-hidden="true"></i></button></div><div class="pr-cards" role="listbox" aria-label="Diapositive"></div></div></div>';
   document.body.append(dialog);
   const q = selector => dialog.querySelector(selector);
   q('.pr-prev').onclick = () => presentGo(presentation.index - 1);
@@ -38331,7 +38336,7 @@ function presentDialog() {
   });
   document.addEventListener('fullscreenchange', () => {
     if (!presentation) return;
-    const full = document.fullscreenElement === dialog;
+    const full = document.fullscreenElement === q('.pr-frame');
     dialog.classList.toggle('is-full', full);
     q('.pr-full').title = full ? 'Esci dallo schermo intero (F)' : 'Schermo intero (F)';
     // Esc del browser esce dallo schermo intero: esce anche dalla presentazione.
@@ -38343,7 +38348,7 @@ function presentDialog() {
     if (!presentation?.ready) return;
     clearTimeout(presentation.resizeTimer);
     presentation.resizeTimer = setTimeout(presentLayout, 120);
-  }).observe(dialog);
+  }).observe(q('.pr-frame'));
   return dialog;
 }
 
@@ -38600,12 +38605,24 @@ function presentGo(index, instant = false) {
 
 function presentKey(event) {
   const p = presentation;
-  if (!p?.slides || event.isComposing) return;
+  if (!p || event.isComposing) return;
   const dialog = presentDialog();
   const overview = dialog.querySelector('.pr-overview');
   const key = event.key;
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   presentWake();
+  if (key === 'Escape' && !p.slides) {
+    event.preventDefault();
+    return closePresentation();
+  }
+  if (!p.slides) return;
+  if (key === 'Escape') {
+    event.preventDefault();
+    if (!overview.hidden) presentOverview(false);
+    else if (!dialog.querySelector('.pr-blank').hidden) presentBlank(false);
+    else closePresentation();
+    return;
+  }
   if (!overview.hidden) {
     const cards = [...overview.querySelectorAll('.pr-card')];
     const at = Math.max(0, cards.indexOf(document.activeElement));
@@ -38664,7 +38681,7 @@ function presentOverview(open) {
   const overview = dialog.querySelector('.pr-overview');
   if (!open) {
     overview.hidden = true;
-    dialog.focus();
+    dialog.querySelector('.pr-frame').focus();
     return;
   }
   const cards = overview.querySelector('.pr-cards');
@@ -38705,10 +38722,20 @@ function presentOverview(open) {
 
 function presentToggleFullscreen() {
   const dialog = presentDialog();
-  if (document.fullscreenElement === dialog) {
+  if (document.fullscreenElement) {
     presentation.leavingFull = true;
     document.exitFullscreen().catch(() => {});
-  } else dialog.requestFullscreen?.().catch(() => toast('Lo schermo intero non è disponibile qui: la presentazione resta nella finestra.'));
+  } else presentRequestFullscreen(true);
+}
+
+// A schermo intero va .pr-frame: Chrome rifiuta lo schermo intero di qualsiasi <dialog>
+// («Dialog elements are invalid»). Il dialog è aperto con show() e il resto di Itaca è inert.
+function presentRequestFullscreen(tell = false) {
+  const page = presentDialog().querySelector('.pr-frame');
+  if (!page.requestFullscreen) return tell && toast('Lo schermo intero non è disponibile in questo browser.');
+  page.requestFullscreen({ navigationUI: 'hide' }).catch(() => {
+    if (tell) toast('Il browser non ha permesso lo schermo intero: la presentazione resta nella finestra.', 'warning');
+  });
 }
 
 // Barra e puntatore spariscono dopo un attimo senza movimento.
@@ -38761,10 +38788,11 @@ async function openPresentation() {
   dialog.querySelector('.pr-overview').hidden = true;
   dialog.querySelector('.pr-blank').hidden = true;
   presentation = { path, index: 0, started: Date.now(), urls: [], ready: false, wasFull: false };
-  dialog.showModal();
-  dialog.focus();
+  dialog.show();
+  $('app').inert = true;
+  dialog.querySelector('.pr-frame').focus();
   // Schermo intero subito, nel gesto (dopo il caricamento delle immagini il browser lo rifiuterebbe).
-  dialog.requestFullscreen?.().catch(() => {});
+  presentRequestFullscreen();
   try {
     const { blocks, urls } = await presentContent(path);
     if (!presentation || presentation.path !== path) {
@@ -38779,7 +38807,7 @@ async function openPresentation() {
       return;
     }
     // Lo schermo intero cambia le misure: si impagina quando è arrivato (o dopo poco).
-    await new Promise(resolve => setTimeout(resolve, document.fullscreenElement === dialog || !dialog.requestFullscreen ? 0 : 180));
+    await new Promise(resolve => setTimeout(resolve, document.fullscreenElement ? 0 : 180));
     presentLayout();
     presentation.ready = true;
     if (startHeading > 0) {
@@ -38804,8 +38832,9 @@ function closePresentation() {
   clearInterval(p.clockTimer);
   clearTimeout(p.idleTimer);
   clearTimeout(p.resizeTimer);
-  if (document.fullscreenElement === dialog) document.exitFullscreen().catch(() => {});
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   if (dialog.open) dialog.close();
+  $('app').inert = false;
   dialog.querySelector('.pr-stage').replaceChildren();
   dialog.querySelector('.pr-measure').replaceChildren();
   dialog.querySelector('.pr-cards').replaceChildren();
