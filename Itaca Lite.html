@@ -1947,6 +1947,42 @@ dialog .tag-skipped span { color: var(--muted); }
 .text-file-foot { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); }
 .text-file-help { flex: 1; color: var(--muted); font-size: 12px; }
 .pdf-selection-ring { position: fixed; z-index: 4; border: 2px solid var(--focus); border-radius: 10px; pointer-events: none; }
+/* Blocchi: maniglia per selezionarli e trascinarli, barra delle azioni del blocco selezionato */
+.i-grip { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='black'%3E%3Ccircle cx='5.5' cy='3.5' r='1.35'/%3E%3Ccircle cx='10.5' cy='3.5' r='1.35'/%3E%3Ccircle cx='5.5' cy='8' r='1.35'/%3E%3Ccircle cx='10.5' cy='8' r='1.35'/%3E%3Ccircle cx='5.5' cy='12.5' r='1.35'/%3E%3Ccircle cx='10.5' cy='12.5' r='1.35'/%3E%3C/svg%3E"); }
+.block-handle { position: fixed; z-index: 6; display: grid; place-items: center; width: 22px; height: 24px; padding: 0; border: 0; border-radius: 6px; color: var(--muted); background: transparent; cursor: grab; opacity: .75; transition: opacity .12s ease, background-color .12s ease, color .12s ease; }
+.block-handle:hover { color: var(--accent); background: var(--hover); opacity: 1; }
+.block-handle[hidden] { display: none; }
+.block-handle .icon { width: 15px; height: 15px; }
+:root.dragging-block, :root.dragging-block * { cursor: grabbing !important; user-select: none; }
+:root.dragging-block .block-handle { opacity: 0; }
+.block-drag-ghost { position: fixed; z-index: 41; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 6px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); background: var(--paper); box-shadow: var(--floating-shadow); font: 600 12px/1.4 var(--sans); pointer-events: none; }
+.block-drag-ghost[hidden] { display: none; }
+.block-drag-ghost .icon { width: 14px; height: 14px; color: var(--accent); }
+.block-bar { position: fixed; z-index: 7; display: flex; align-items: center; gap: 1px; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); box-shadow: var(--floating-shadow); font: 550 12px/1.4 var(--sans); }
+.block-bar[hidden] { display: none; }
+.block-bar-label { padding: 0 8px 0 6px; color: var(--muted); font-weight: 600; white-space: nowrap; }
+.block-bar button { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 7px; border: 0; border-radius: 6px; color: var(--copy); background: transparent; font: inherit; cursor: pointer; }
+.block-bar button[hidden] { display: none; }
+.block-bar button:hover, .block-bar button:focus-visible { color: var(--ink); background: var(--hover); outline: none; }
+.block-bar button.danger:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, var(--paper)); }
+.block-bar .icon { width: 15px; height: 15px; }
+.block-bar [data-block-action='edit'] { margin-right: 2px; }
+@media (max-width: 520px) { .block-bar-label, .block-bar [data-block-action='edit'] span { display: none; } }
+/* Abbreviazioni: suggerimento immediato e righe della finestra */
+.abbr-tip { position: fixed; z-index: 45; max-width: min(360px, calc(100vw - 16px)); padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; color: var(--copy); background: var(--paper); box-shadow: var(--floating-shadow); font: 13px/1.45 var(--sans); pointer-events: none; }
+.abbr-tip[hidden] { display: none; }
+.abbr-tip b { margin-right: .5em; color: var(--ink); font-weight: 650; }
+::highlight(abbr-term) { text-decoration: underline dotted color-mix(in srgb, var(--accent) 75%, transparent); text-decoration-thickness: 1.5px; text-underline-offset: .2em; }
+.abbr-help { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+.abbr-rows { display: grid; gap: 6px; max-height: min(46vh, 360px); overflow: auto; }
+.abbr-row { display: grid; grid-template-columns: minmax(70px, 9em) 1fr 30px; gap: 6px; align-items: center; }
+#dialog .abbr-row input { width: 100%; min-width: 0; margin: 0; }
+.abbr-remove { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 6px; color: var(--muted); background: transparent; cursor: pointer; }
+.abbr-remove:hover { color: var(--danger); background: var(--hover); }
+.abbr-remove .icon { width: 13px; height: 13px; }
+.abbr-add { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 5px 10px; border: 1px dashed var(--line); border-radius: 7px; color: var(--accent-text, var(--accent)); background: transparent; font: 550 13px/1.4 var(--sans); cursor: pointer; }
+.abbr-add:hover { border-color: var(--accent); background: var(--tint); }
+.abbr-add .icon { width: 13px; height: 13px; }
 .editor[contenteditable='true'] [data-ext='pdf'] .pdf-head { cursor: default; }
 .editor [data-ext='pdf'] { --ft-pdf: #d64235; --ft-word: #2f6fd0; display: block; margin: 1.2em 0 1.5em; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--paper); clear: both; }
 [data-theme='dark'] .editor [data-ext='pdf'] { --ft-pdf: #f2867b; --ft-word: #82adf2; --ft-sheet: #6ccf92; --ft-code: #9aa8f2; }
@@ -2314,7 +2350,7 @@ dialog .tag-skipped span { color: var(--muted); }
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='8' rx='2'/%3E%3Cpath d='M7 7h.01M11 7h.01M12 11v5M3 19h7M14 19h7'/%3E%3Ccircle cx='12' cy='19' r='2'/%3E%3C/svg%3E") center / contain no-repeat; }
 .editor[contenteditable='true'] .code-line-numbers { cursor: pointer; }
 /* Blocco di codice selezionato per intero: basta il contorno, niente testo evidenziato dentro. */
-:root[data-block-selected] .editor :is(pre, table) ::selection, :root[data-block-selected] .editor :is(pre, table)::selection { background: transparent; }
+:root[data-block-selected] .editor ::selection, :root[data-block-selected] .editor::selection { background: transparent; }
 
 .code-block-body { display: grid; grid-template-columns: auto minmax(0, 1fr); font: 13px/1.65 var(--mono); tab-size: 4; white-space: pre; }
 .code-gutter { max-height: min(22rem, 48dvh); overflow: hidden; border-right: 1px solid var(--line); user-select: none; }
@@ -3009,10 +3045,12 @@ div[data-ext='admonition'] > [data-ext-part='title'] > .adm-tools { right: .6em;
 .editor [data-ext='math'] { color: var(--ink); font-family: var(--mono); font-size: .9em; }
 .editor [data-ext='math'][data-md-rendered] { font-family: inherit; font-size: 1em; }
 .editor div[data-ext='math'] { margin: 1em 0; overflow-x: auto; overflow-y: hidden; text-align: center; }
-.editor abbr[title] { text-decoration: underline dotted; cursor: help; }
+.editor abbr:is([title], [data-tip]) { text-decoration: underline dotted color-mix(in srgb, var(--accent) 75%, transparent); text-decoration-thickness: 1.5px; text-underline-offset: .2em; cursor: help; }
 .editor [data-ext='abbrdefs'] { display: none; }
-.editor[contenteditable='true'] [data-ext='abbrdefs'] { display: block; margin: 1em 0; padding: .4em .8em; border: 1px dashed var(--line); border-radius: 6px; color: var(--muted); font: 12px/1.5 var(--sans); }
-.editor[contenteditable='true'] [data-ext='abbrdefs'] p { margin: 0; }
+.editor[contenteditable='true'] [data-ext='abbrdefs'] { display: block; margin: 1em 0; padding: 8px 12px 9px; border: 1px dashed var(--line); border-radius: 10px; color: var(--copy); background: color-mix(in srgb, var(--tint) 35%, transparent); font: 13px/1.5 var(--sans); cursor: pointer; user-select: none; }
+.editor[contenteditable='true'] [data-ext='abbrdefs']::before { content: 'Abbreviazioni · valgono in tutto il documento · doppio clic per modificarle'; display: block; margin-bottom: 4px; color: var(--muted); font-size: 11.5px; font-weight: 600; letter-spacing: .01em; }
+.editor[contenteditable='true'] [data-ext='abbrdefs'] p { display: grid; grid-template-columns: minmax(3em, max-content) 1fr; gap: 12px; margin: 0; }
+.editor[contenteditable='true'] [data-ext='abbrdefs'] strong { color: var(--ink); font-weight: 650; }
 .editor [data-ext='annotation'], .code-annotation { display: inline-grid; place-items: center; width: 1.15rem; height: 1.15rem; border-radius: 50%; background: var(--accent); font-size: 0; vertical-align: .08em; cursor: help; }
 .editor [data-ext='annotation']::before, .code-annotation::before { content: attr(data-n); color: var(--on-accent); font: 700 .66rem/1 var(--sans); }
 .code-annotation-only { font-size: 0; }
@@ -15010,8 +15048,13 @@ async function pdfToMarkdown(file, { from, imageDir, shift = 0, name = 'PDF', si
 function insertBlockNodes(nodes, place = null) {
   restore();
   const selection = getSelection();
-  let top = place?.block?.isConnected && place.block.parentElement === ed ? place.block : null;
+  let top = place?.block?.isConnected && place.block !== ed && ed.contains(place.block) ? place.block : null;
   let mode = top ? place.mode : '';
+  const flow = top ? null : caretFlowPlace();
+  if (flow) {
+    top = flow.block;
+    mode = flow.mode;
+  }
   if (!top) {
     const node = selection.rangeCount && ed.contains(selection.anchorNode) ? selection.anchorNode : null;
     top = node && node !== ed ? (node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement) : null;
@@ -17032,7 +17075,7 @@ $('attachInput').onchange = event => {
   event.target.value = '';
   addAttachmentFiles(list);
 };
-async function insertTable(){remember();const a=await modal('Inserisci tabella','<label>Colonne (1–12)</label><input name="cols" type="number" min="1" max="12" value="3" required><label>Righe dati (1–30)</label><input name="rows" type="number" min="1" max="30" value="3" required>');if(!a)return;const c=Math.min(12,Math.max(1,+a.cols)),r=Math.min(30,Math.max(1,+a.rows));prepareBlockInsertion();addHTML('<table><thead><tr>'+Array.from({length:c},(_,i)=>'<th>Colonna '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+Array.from({length:r},()=>'<tr>'+'<td><br></td>'.repeat(c)+'</tr>').join('')+'</tbody></table><p><br></p>')}
+async function insertTable(){remember();const a=await modal('Inserisci tabella','<label>Colonne (1–12)</label><input name="cols" type="number" min="1" max="12" value="3" required><label>Righe dati (1–30)</label><input name="rows" type="number" min="1" max="30" value="3" required>');if(!a)return;const c=Math.min(12,Math.max(1,+a.cols)),r=Math.min(30,Math.max(1,+a.rows));insertEditorBlock('<table><thead><tr>'+Array.from({length:c},(_,i)=>'<th>Colonna '+(i+1)+'</th>').join('')+'</tr></thead><tbody>'+Array.from({length:r},()=>'<tr>'+'<td><br></td>'.repeat(c)+'</tr>').join('')+'</tbody></table>','select:th')}
 function tableEdit(col){if(!canEditVisual())return;restore();const node=getSelection().anchorNode,cell=(node?.nodeType===1?node:node?.parentElement)?.closest('td,th'),table=cell?.closest('table');if(!table){toast('Posiziona il cursore in una cella');return}if(col){for(const row of table.rows){const x=document.createElement(row.parentElement.tagName==='THEAD'?'th':'td');x.innerHTML='<br>';row.append(x)}}else{const body=table.tBodies[0]||table.createTBody(),r=body.insertRow();for(let i=0;i<table.rows[0].cells.length;i++)r.insertCell().innerHTML='<br>'}mark()}
 
 $('openFile').onclick = async () => {
@@ -17521,12 +17564,13 @@ function selectedPdfBox() {
   const range = selection.getRangeAt(0);
   if (range.startContainer !== range.endContainer || range.endOffset - range.startOffset !== 1) return null;
   const node = range.startContainer.childNodes[range.startOffset];
-  return node?.matches?.(atomicBlocks) && ed.contains(node) ? node : null;
+  return node?.matches?.(selectableBlocks) && ed.contains(node) ? node : null;
 }
-// Blocchi che si selezionano interi prima di cancellarli: PDF/Word/testo/schede, blocchi di codice e tabelle
+// Blocchi che si selezionano interi prima di cancellarli: PDF/Word/testo/schede, blocchi di codice, tabelle,
+// formule, abbreviazioni e linee
 // (Backspace dalla riga sotto o Canc da quella sopra selezionano la tabella, il secondo tasto la elimina;
 // le frecce invece entrano nelle celle).
-var atomicBlocks = '[data-ext="pdf"], pre, table';
+var atomicBlocks = '[data-ext="pdf"], pre, table, [data-ext="math"][data-ext-display], [data-ext="abbrdefs"], hr';
 
 // Pulsante «Elimina tabella» della barra: tutta la tabella in un passo, Ctrl/⌘+Z la riporta.
 function deleteTableAtCaret() {
@@ -17601,7 +17645,9 @@ function enterAtomicBlock(block, direction) {
     updatePdfSelectionRing();
     return true;
   }
-  return enterTableFrom(block, direction);
+  if (block.matches('table')) return enterTableFrom(block, direction);
+  selectPdfBox(block);
+  return true;
 }
 
 // Cursore nella tabella da fuori: ultima riga se si arriva da sotto (direction < 0), prima se da
@@ -17727,6 +17773,7 @@ ed.addEventListener('keydown', event => {
   const modifier = event.ctrlKey || event.metaKey;
   const box = selectedPdfBox();
   if (box) {
+    if (blockKeyAction(event, box)) return;
     if (key === 'Backspace' || key === 'Delete') {
       event.preventDefault();
       removePdfBox(box, key === 'Backspace' ? -1 : 1);
@@ -17825,7 +17872,10 @@ function updatePdfSelectionRing() {
   const box = document.activeElement === ed && canEditVisual() ? selectedPdfBox() : null;
   pdfSelectionRing.hidden = !box;
   document.documentElement.toggleAttribute('data-block-selected', Boolean(box));
-  if (!box) return;
+  if (!box) {
+    placeBlockBar(null);
+    return;
+  }
   const rect = box.getBoundingClientRect();
   const view = workspace.getBoundingClientRect();
   const top = Math.max(rect.top, view.top);
@@ -17835,11 +17885,803 @@ function updatePdfSelectionRing() {
   const bottom = Math.min(rect.bottom, limit);
   pdfSelectionRing.hidden = bottom <= top;
   Object.assign(pdfSelectionRing.style, { left: rect.left - 3 + 'px', top: top - 3 + 'px', width: rect.width + 6 + 'px', height: bottom - top + 6 + 'px' });
+  placeBlockBar(bottom > top ? box : null, { top: top - 3, bottom: bottom + 3, right: rect.right + 3 });
 }
 document.addEventListener('selectionchange', updatePdfSelectionRing);
 ed.addEventListener('blur', updatePdfSelectionRing);
 workspace.addEventListener('scroll', updatePdfSelectionRing, { passive: true });
 window.addEventListener('resize', updatePdfSelectionRing);
+
+// ── Blocchi: selezionarli, spostarli, duplicarli, eliminarli ──
+// Ogni blocco (ammonimenti, riquadri, schede, dettagli, citazioni, definizioni, griglie, note,
+// formule, abbreviazioni, linee, codice, tabelle, file incorporati) si seleziona intero come i
+// riquadri dei file: con la maniglia ⠿ che compare a sinistra passandoci sopra, con un clic sul
+// suo bordo, con Esc dal suo interno o con le frecce dalla riga accanto. Selezionato: Canc o
+// Backspace lo elimina, Alt + ↑/↓ lo sposta, Ctrl/⌘ + D lo duplica, Ctrl/⌘ + C/X lo copia o lo
+// taglia (come Markdown); la maniglia si trascina dove si vuole, anche dentro un altro blocco.
+var selectableBlocks = atomicBlocks + ', [data-ext="admonition"], [data-ext="tabs"], blockquote, details, dl, [data-ext="mdhtml"], [data-ext="footnote"], [data-ext="block"]';
+// Dove può stare un blocco: nel documento e dentro ammonimenti, schede, dettagli, citazioni, note, definizioni.
+const blockFlowParents = '[data-ext="admonition"], [data-ext="tab"], details, blockquote, [data-ext="footnote"], dd';
+const blockTitleParts = '[data-ext-part="title"], summary, [data-code-chrome], .callout-head, .fn-label, .tab-bar';
+
+// La riga «di primo livello» del contenitore in cui si trova l'elemento: il paragrafo dentro
+// l'ammonimento, l'elenco intero se si è in una voce, la tabella se si è in una cella.
+function blockFlowLine(element) {
+  for (let line = element; line && line !== ed && ed.contains(line); line = line.parentElement) {
+    const parent = line.parentElement;
+    if (parent === ed) return line;
+    if (parent?.matches(blockFlowParents) && !line.matches(blockTitleParts)) return line;
+  }
+  return null;
+}
+
+// Dove va un blocco nuovo: al posto della riga vuota del cursore o dopo la sua riga.
+function caretFlowPlace() {
+  const picked = selectedPdfBox();
+  if (picked) return { block: picked, mode: 'after' };
+  const selection = getSelection();
+  if (!selection.rangeCount || !ed.contains(selection.anchorNode)) return null;
+  const node = selection.anchorNode;
+  let element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+  if (element === ed) element = ed.children[Math.max(0, selection.anchorOffset - 1)] || null;
+  const line = element && blockFlowLine(element);
+  if (!line) return null;
+  const empty = line.matches('p, h1, h2, h3, h4, h5, h6') && emptyVisualText(line) && !line.querySelector('img, input, [data-ext]');
+  return { block: line, mode: empty ? 'replace' : 'after' };
+}
+
+// Inserisce un blocco nuovo (HTML) dove si trova il cursore, anche dentro un ammonimento o una
+// scheda come in MkDocs; il cursore va nel punto indicato da focus (selettore, 'select:' per
+// selezionarne il testo, 'code' per la casella del codice) o, senza, nella riga sotto.
+function insertEditorBlock(html, focus = '') {
+  if (!canEditVisual()) return null;
+  restore();
+  const selection = getSelection();
+  if (!selectedPdfBox() && selection.rangeCount && !selection.isCollapsed && ed.contains(selection.anchorNode)) {
+    document.execCommand('delete');
+    remember();
+  }
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  const nodes = [...template.content.children];
+  if (!nodes.length) return null;
+  insertBlockNodes(nodes, caretFlowPlace());
+  const block = nodes[0];
+  if (focus === 'code') {
+    const editor = block.querySelector('.code-editor');
+    if (editor) {
+      editor.focus({ preventScroll: true });
+      editor.setSelectionRange(0, 0);
+    }
+  } else if (focus) {
+    const selectText = focus.startsWith('select:');
+    const target = block.matches(focus.replace(/^select:/, '')) ? block : block.querySelector(focus.replace(/^select:/, ''));
+    if (target) {
+      const range = document.createRange();
+      range.selectNodeContents(target);
+      if (!selectText || !visibleBlockText(target).trim()) range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+      remember();
+    }
+  }
+  const rect = block.getBoundingClientRect(), view = workspace.getBoundingClientRect();
+  if (rect.top < view.top + 40 || rect.top > view.bottom - 120) block.scrollIntoView({ block: 'center' });
+  updateFormatButtons();
+  return block;
+}
+
+function blockKindLabel(block) {
+  if (block.matches('[data-ext="admonition"]')) return 'Ammonimento';
+  if (block.matches('[data-ext="tabs"]')) return 'Schede';
+  if (block.matches('blockquote[data-callout]')) return 'Riquadro';
+  if (block.matches('blockquote')) return 'Citazione';
+  if (block.matches('details')) return 'Sezione espandibile';
+  if (block.matches('dl')) return 'Definizioni';
+  if (block.matches('[data-ext="mdhtml"]')) return /\bgrid\b/.test(block.dataset.extClass || '') ? 'Griglia' : 'Blocco HTML';
+  if (block.matches('[data-ext="footnote"]')) return 'Nota a piè di pagina';
+  if (block.matches('[data-ext="block"]')) return 'Blocco ' + (block.dataset.extKind || '');
+  if (block.matches('[data-ext="math"]')) return 'Formula';
+  if (block.matches('[data-ext="abbrdefs"]')) return 'Abbreviazioni';
+  if (block.matches('hr')) return 'Linea';
+  if (block.matches('table')) return 'Tabella';
+  if (block.matches('pre')) return block.querySelector('code.language-mermaid') ? 'Diagramma Mermaid' : 'Codice';
+  const kind = block.dataset.embedKind || '';
+  return { pdf: 'PDF', word: 'Word', text: 'File di testo', video: 'Video', audio: 'Audio', sheet: 'Excel', slides: 'PowerPoint' }[kind] ||
+    (block.hasAttribute('data-ext-card') ? 'Scheda' : 'Allegato');
+}
+
+// Il Markdown di un blocco (per copiarlo o duplicarlo): lo stesso del salvataggio.
+function blockMarkdownOf(box) {
+  return block(box);
+}
+
+function blockSnapshot() {
+  return { html: ed.innerHTML, caret: liveCaretPath() };
+}
+
+// Un contenitore rimasto senza righe ne riceve una vuota (si deve poter scrivere dentro).
+function keepContainerWritable(container) {
+  if (!container || container === ed || !container.isConnected) return;
+  if (container.matches('blockquote, details, [data-ext="footnote"], dd') && !blockContentChildren(container).length) {
+    container.append(Object.assign(document.createElement('p'), { innerHTML: '<br>' }));
+  }
+}
+
+function blockChanged(before, box) {
+  configureVisualContent();
+  pushLiveUndo(before);
+  mark();
+  queueOutline();
+  if (box?.isConnected) selectPdfBox(box);
+}
+
+// Alt + ↑/↓: scavalca il blocco accanto; in cima (o in fondo) a un contenitore ne esce.
+function moveEditorBlock(box, direction) {
+  if (!box?.isConnected || !canEditVisual()) return false;
+  const before = blockSnapshot();
+  const parent = box.parentElement;
+  let sibling = direction < 0 ? box.previousElementSibling : box.nextElementSibling;
+  // Righe vuote lasciate solo per il cursore non contano.
+  while (sibling && sibling.matches('p[data-code-gap]') && emptyVisualText(sibling)) sibling = direction < 0 ? sibling.previousElementSibling : sibling.nextElementSibling;
+  if (sibling?.matches(blockTitleParts)) sibling = null;
+  if (sibling) {
+    if (direction < 0) sibling.before(box);
+    else sibling.after(box);
+  } else if (parent !== ed) {
+    const outer = outerBlockOf(parent.closest(blockFlowParents) || parent);
+    if (direction < 0) outer.before(box);
+    else outer.after(box);
+    keepContainerWritable(parent);
+  } else {
+    toast(direction < 0 ? 'Il blocco è già in cima' : 'Il blocco è già in fondo');
+    return false;
+  }
+  blockChanged(before, box);
+  return true;
+}
+
+function duplicateEditorBlock(box) {
+  if (!box?.isConnected || !canEditVisual()) return;
+  if (box.matches('[data-ext="footnote"]')) {
+    toast('Una nota a piè di pagina non si può duplicare: ogni nota ha il suo numero');
+    return;
+  }
+  const before = blockSnapshot();
+  const nodes = renderedPdfEmbed(blockMarkdownOf(box));
+  if (!nodes.length) return;
+  box.after(...nodes);
+  blockChanged(before, nodes[0]);
+  loadPdfEmbeds();
+}
+
+function deleteEditorBlock(box) {
+  if (!box?.isConnected || !canEditVisual()) return;
+  const parent = box.parentElement;
+  removePdfBox(box, 1);
+  keepContainerWritable(parent);
+  toast('Blocco eliminato (' + blockKindLabel(box).toLowerCase() + ') · Ctrl/⌘ + Z per ripristinarlo');
+}
+
+// Il blocco «sopra» quello selezionato (Esc di nuovo): l'ammonimento che contiene la tabella…
+function parentSelectableBlock(box) {
+  const parent = box.parentElement?.closest(selectableBlocks);
+  return parent && ed.contains(parent) ? parent : null;
+}
+
+// Esc con il cursore dentro un blocco: seleziona il blocco più vicino che lo contiene.
+function selectBlockAroundCaret() {
+  const selection = getSelection();
+  if (!selection.rangeCount || !ed.contains(selection.anchorNode)) return false;
+  const node = selection.anchorNode;
+  const element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+  const box = element?.closest(selectableBlocks);
+  if (!box || !ed.contains(box)) return false;
+  selectPdfBox(box);
+  return true;
+}
+
+// Tasti con un blocco selezionato (chiamata dal gestore dei riquadri): true se gestito.
+function blockKeyAction(event, box) {
+  const key = event.key;
+  const modifier = event.ctrlKey || event.metaKey;
+  if (event.altKey && !modifier && (key === 'ArrowUp' || key === 'ArrowDown')) {
+    event.preventDefault();
+    moveEditorBlock(box, key === 'ArrowUp' ? -1 : 1);
+    return true;
+  }
+  if (modifier && !event.altKey && !event.shiftKey && key.toLowerCase() === 'd') {
+    event.preventDefault();
+    duplicateEditorBlock(box);
+    return true;
+  }
+  if (key === 'Escape') {
+    event.preventDefault();
+    const parent = parentSelectableBlock(box);
+    if (parent) selectPdfBox(parent);
+    else caretBesidePdf(box, 1, false, false);
+    return true;
+  }
+  if (key === 'Backspace' || key === 'Delete') {
+    event.preventDefault();
+    deleteEditorBlock(box);
+    return true;
+  }
+  if (key === 'F2' || (key === 'Enter' && modifier)) {
+    const edit = blockEditAction(box);
+    if (edit) {
+      event.preventDefault();
+      edit();
+      return true;
+    }
+  }
+  return false;
+}
+
+// «Modifica» per i blocchi che non si scrivono direttamente.
+function blockEditAction(box) {
+  if (box.matches('[data-ext="abbrdefs"]')) return () => editAbbreviations(box);
+  if (box.matches('[data-ext="math"]')) return () => editRawBlock(box, 'Formula', 'Formula TeX (tra $$ e $$)');
+  if (box.matches('pre')) return () => enterAtomicBlock(box, 1);
+  if (box.matches('table')) return () => enterTableFrom(box, 1);
+  if (box.matches('[data-ext="tabs"]')) {
+    const panel = box.querySelector(':scope > [data-ext="tab"][data-tab-active]');
+    return panel ? () => editTab(box, panel) : null;
+  }
+  if (box.matches(atomicBlocks)) return null;
+  return () => caretIntoBlock(box.matches('details:not([open])') ? box.querySelector(':scope > summary') || box : box, false);
+}
+
+// ── Maniglia e barra delle azioni ──
+const blockHandle = Object.assign(document.createElement('button'), { type: 'button', className: 'block-handle', hidden: true });
+blockHandle.innerHTML = '<i class="icon i-grip" aria-hidden="true"></i>';
+blockHandle.setAttribute('aria-label', 'Seleziona o sposta il blocco');
+const blockBar = Object.assign(document.createElement('div'), { className: 'block-bar', hidden: true });
+blockBar.setAttribute('role', 'toolbar');
+blockBar.setAttribute('aria-label', 'Azioni sul blocco selezionato');
+blockBar.innerHTML = '<span class="block-bar-label"></span>' +
+  '<button type="button" data-block-action="edit"><i class="icon i-edit" aria-hidden="true"></i><span>Modifica</span></button>' +
+  '<button type="button" data-block-action="up" title="Sposta su (Alt + ↑)" aria-label="Sposta su"><i class="icon i-arrow-up" aria-hidden="true"></i></button>' +
+  '<button type="button" data-block-action="down" title="Sposta giù (Alt + ↓)" aria-label="Sposta giù"><i class="icon i-arrow-down" aria-hidden="true"></i></button>' +
+  '<button type="button" data-block-action="duplicate" title="Duplica (Ctrl/⌘ + D)" aria-label="Duplica"><i class="icon i-duplicate" aria-hidden="true"></i></button>' +
+  '<button type="button" data-block-action="delete" class="danger" title="Elimina (Canc)" aria-label="Elimina"><i class="icon i-trash" aria-hidden="true"></i></button>';
+document.body.append(blockHandle, blockBar);
+var handleBlock = null;
+var blockDrag = null;
+
+function blockHandleAllowed() {
+  return canEditVisual() && !document.querySelector('dialog[open]') && !document.fullscreenElement;
+}
+
+function placeBlockHandle(box) {
+  handleBlock = box;
+  if (!box?.isConnected || !blockHandleAllowed()) {
+    blockHandle.hidden = true;
+    handleBlock = null;
+    return;
+  }
+  const rect = box.getBoundingClientRect();
+  const view = workspace.getBoundingClientRect();
+  const top = box.matches('hr') ? rect.top + rect.height / 2 - 12 : rect.top + 3;
+  if (rect.bottom < view.top || top > view.bottom - 24) {
+    blockHandle.hidden = true;
+    return;
+  }
+  blockHandle.title = blockKindLabel(box) + ' · clic per selezionarlo, trascina per spostarlo';
+  blockHandle.style.left = Math.max(view.left + 2, rect.left - 30) + 'px';
+  blockHandle.style.top = Math.max(view.top + 2, top) + 'px';
+  blockHandle.hidden = false;
+}
+
+function hoveredBlock(event) {
+  const target = event.target;
+  if (target instanceof Element && ed.contains(target)) {
+    const box = target.closest(selectableBlocks);
+    if (box && ed.contains(box)) return box;
+  }
+  // Andando verso la maniglia si esce dal blocco: resta quello di prima.
+  if (handleBlock?.isConnected) {
+    const rect = handleBlock.getBoundingClientRect();
+    if (event.clientX >= rect.left - 46 && event.clientX <= rect.right && event.clientY >= rect.top - 4 && event.clientY <= rect.bottom + 4) return handleBlock;
+  }
+  return null;
+}
+
+workspace.addEventListener('pointermove', event => {
+  if (blockDrag || event.pointerType === 'touch') return;
+  if (blockHandle.contains(event.target)) return;
+  const box = blockHandleAllowed() ? hoveredBlock(event) : null;
+  if (box !== handleBlock || (box && blockHandle.hidden)) placeBlockHandle(box);
+}, { passive: true });
+workspace.addEventListener('pointerleave', event => {
+  if (!blockDrag && !blockHandle.contains(event.relatedTarget) && !blockBar.contains(event.relatedTarget)) placeBlockHandle(null);
+});
+blockHandle.addEventListener('pointerleave', event => {
+  if (!blockDrag && !workspace.contains(event.relatedTarget)) placeBlockHandle(null);
+});
+// Scrivendo la maniglia sparisce (torna al prossimo movimento del mouse).
+ed.addEventListener('keydown', () => { if (!blockDrag) blockHandle.hidden = true; });
+workspace.addEventListener('scroll', () => {
+  if (!blockDrag && handleBlock) placeBlockHandle(handleBlock);
+}, { passive: true });
+
+// Un clic sul bordo di un contenitore (fuori dal testo), sulla barra delle schede o sul numero
+// di una nota seleziona il blocco intero.
+ed.addEventListener('mousedown', event => {
+  if (!canEditVisual() || event.button !== 0 || event.detail > 1 || event.shiftKey) return;
+  const target = event.target;
+  let box = null;
+  if (target.matches?.('.tab-bar')) box = target.closest('[data-ext="tabs"]');
+  else if (target.matches?.('.fn-label')) box = target.closest('[data-ext="footnote"]');
+  else if (target.matches?.('[data-ext="admonition"], [data-ext="tabs"], blockquote, details, dl, [data-ext="mdhtml"], [data-ext="footnote"], [data-ext="block"], [data-ext="tab"]')) {
+    box = target.matches('[data-ext="tab"]') ? target.parentElement : target;
+  } else if (target.matches?.('[data-ext="math"], [data-ext="abbrdefs"], hr') || target.closest?.('[data-ext="math"][data-ext-display], [data-ext="abbrdefs"]')) {
+    box = target.closest('[data-ext="math"], [data-ext="abbrdefs"], hr');
+  }
+  if (!box || !ed.contains(box)) return;
+  event.preventDefault();
+  selectPdfBox(box);
+});
+
+// Esc dentro un blocco lo seleziona (di nuovo Esc: il blocco che lo contiene, poi fuori).
+ed.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || event.defaultPrevented || event.isComposing || !canEditVisual() || selectedPdfBox()) return;
+  if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey || selectedEditorImage?.()) return;
+  if (event.target !== ed && !event.target.matches?.('.code-editor')) return;
+  if (document.querySelector('.select-menu:popover-open, .md-suggest:not([hidden])')) return;
+  const box = event.target.matches?.('.code-editor') ? event.target.closest('pre') : null;
+  if (box) {
+    event.preventDefault();
+    selectPdfBox(box);
+  } else if (selectBlockAroundCaret()) event.preventDefault();
+}, true);
+
+blockHandle.addEventListener('pointerdown', event => {
+  if (event.button !== 0 || !handleBlock?.isConnected) return;
+  event.preventDefault();
+  blockDrag = { box: handleBlock, x: event.clientX, y: event.clientY, started: false, place: null, pointer: event.pointerId };
+  blockHandle.setPointerCapture(event.pointerId);
+});
+blockHandle.addEventListener('pointermove', event => {
+  if (!blockDrag || event.pointerId !== blockDrag.pointer) return;
+  if (!blockDrag.started) {
+    if (Math.hypot(event.clientX - blockDrag.x, event.clientY - blockDrag.y) < 5) return;
+    startBlockDrag();
+  }
+  moveBlockDrag(event.clientX, event.clientY);
+});
+blockHandle.addEventListener('pointerup', event => {
+  if (!blockDrag || event.pointerId !== blockDrag.pointer) return;
+  const drag = blockDrag;
+  if (!drag.started) {
+    blockDrag = null;
+    selectPdfBox(drag.box);
+    return;
+  }
+  finishBlockDrag(true);
+});
+blockHandle.addEventListener('pointercancel', () => finishBlockDrag(false));
+blockHandle.addEventListener('lostpointercapture', () => { if (blockDrag?.started) finishBlockDrag(Boolean(blockDrag.place)); else blockDrag = null; });
+window.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && blockDrag?.started) {
+    event.preventDefault();
+    event.stopPropagation();
+    finishBlockDrag(false);
+  }
+}, true);
+window.addEventListener('blur', () => { if (blockDrag?.started) finishBlockDrag(false); });
+
+const blockDragGhost = Object.assign(document.createElement('div'), { className: 'block-drag-ghost', hidden: true });
+document.body.append(blockDragGhost);
+
+function startBlockDrag() {
+  blockDrag.started = true;
+  selectPdfBox(blockDrag.box);
+  document.documentElement.classList.add('dragging-block');
+  blockDragGhost.innerHTML = '<i class="icon i-grip" aria-hidden="true"></i>';
+  blockDragGhost.append(blockKindLabel(blockDrag.box));
+  blockDragGhost.hidden = false;
+  blockBar.hidden = true;
+  blockDrag.scroll = setInterval(() => {
+    if (!blockDrag?.last) return;
+    const view = workspace.getBoundingClientRect();
+    const y = blockDrag.last[1];
+    const speed = y < view.top + 48 ? -(view.top + 48 - y) : y > view.bottom - 70 ? y - (view.bottom - 70) : 0;
+    if (speed) {
+      workspace.scrollTop += Math.max(-28, Math.min(28, speed / 2));
+      moveBlockDrag(...blockDrag.last);
+    }
+  }, 30);
+}
+
+// Dove andrebbe il blocco lasciato in (x, y): prima o dopo una riga, nel documento o in un contenitore.
+function blockDropPlace(x, y, dragged) {
+  const style = getComputedStyle(ed);
+  const area = ed.getBoundingClientRect();
+  const left = area.left + parseFloat(style.paddingLeft) + 4, right = area.right - parseFloat(style.paddingRight) - 4;
+  const px = Math.min(Math.max(x, left), right);
+  const lines = [...ed.children].filter(child => !child.hidden && child.getClientRects().length);
+  if (!lines.length) return null;
+  let target = document.elementFromPoint(px, y);
+  let line = target && ed.contains(target) && target !== ed ? blockFlowLine(target) : null;
+  if (!line) {
+    line = lines.find(child => child.getBoundingClientRect().bottom >= y) || lines.at(-1);
+  }
+  // Dentro il blocco trascinato non si lascia: vale il blocco stesso (nessuno spostamento).
+  if (dragged.contains(line)) line = dragged;
+  const rect = line.getBoundingClientRect();
+  let mode = y < rect.top + rect.height / 2 ? 'before' : 'after';
+  if (line === dragged) return null;
+  if ((mode === 'before' && line.previousElementSibling === dragged) || (mode === 'after' && line.nextElementSibling === dragged)) return null;
+  return { block: line, mode };
+}
+
+function moveBlockDrag(x, y) {
+  blockDrag.last = [x, y];
+  blockDragGhost.style.left = x + 14 + 'px';
+  blockDragGhost.style.top = y + 10 + 'px';
+  const place = blockDropPlace(x, y, blockDrag.box);
+  blockDrag.place = place;
+  if (!place) {
+    hideEditorDropMarker();
+    return;
+  }
+  const rect = place.block.getBoundingClientRect();
+  let top;
+  if (place.mode === 'before') {
+    const previous = place.block.previousElementSibling;
+    const above = previous && !previous.matches(blockTitleParts) ? previous.getBoundingClientRect() : null;
+    top = above ? (above.bottom + rect.top) / 2 : rect.top - 4;
+  } else {
+    const next = place.block.nextElementSibling?.getBoundingClientRect();
+    top = next ? (rect.bottom + next.top) / 2 : rect.bottom + 4;
+  }
+  editorDropMarker.className = 'editor-drop-marker block';
+  Object.assign(editorDropMarker.style, { left: rect.left + 'px', top: top - 1.5 + 'px', width: rect.width + 'px', height: '' });
+  editorDropMarker.hidden = false;
+}
+
+function finishBlockDrag(drop) {
+  const drag = blockDrag;
+  blockDrag = null;
+  if (!drag) return;
+  clearInterval(drag.scroll);
+  document.documentElement.classList.remove('dragging-block');
+  blockDragGhost.hidden = true;
+  hideEditorDropMarker();
+  const { box, place } = drag;
+  if (drop && place && box.isConnected && place.block.isConnected) {
+    const before = blockSnapshot();
+    const parent = box.parentElement;
+    if (place.mode === 'before') place.block.before(box);
+    else place.block.after(box);
+    keepContainerWritable(parent);
+    blockChanged(before, box);
+  } else if (box.isConnected) selectPdfBox(box);
+  placeBlockHandle(null);
+}
+
+function placeBlockBar(box, ring) {
+  if (!box || blockDrag?.started) {
+    blockBar.hidden = true;
+    return;
+  }
+  blockBar.querySelector('.block-bar-label').textContent = blockKindLabel(box);
+  const edit = blockBar.querySelector('[data-block-action="edit"]');
+  const action = blockEditAction(box);
+  edit.hidden = !action || box.matches('pre, table');
+  edit.title = box.matches('[data-ext="abbrdefs"]') ? 'Modifica le abbreviazioni (F2)' : box.matches('[data-ext="tabs"]') ? 'Rinomina la scheda aperta (F2)' : 'Modifica (F2)';
+  blockBar.querySelector('[data-block-action="duplicate"]').hidden = box.matches('[data-ext="footnote"], [data-ext="abbrdefs"]');
+  blockBar.hidden = false;
+  const view = workspace.getBoundingClientRect();
+  const width = blockBar.offsetWidth, height = blockBar.offsetHeight;
+  let top = ring.top - height - 6;
+  if (top < view.top + 4) top = ring.bottom + 6 + height < view.bottom - 60 ? ring.bottom + 6 : ring.top + 6;
+  blockBar.style.left = Math.max(view.left + 4, Math.min(ring.right - width, view.right - width - 8)) + 'px';
+  blockBar.style.top = top + 'px';
+}
+
+blockBar.addEventListener('mousedown', event => event.preventDefault());
+blockBar.addEventListener('click', event => {
+  const button = event.target.closest('[data-block-action]');
+  const box = selectedPdfBox();
+  if (!button || !box) return;
+  const action = button.dataset.blockAction;
+  if (action === 'up' || action === 'down') moveEditorBlock(box, action === 'up' ? -1 : 1);
+  else if (action === 'duplicate') duplicateEditorBlock(box);
+  else if (action === 'delete') deleteEditorBlock(box);
+  else if (action === 'edit') blockEditAction(box)?.();
+});
+
+// Copia e taglia del blocco selezionato: Markdown (per altri programmi) e, per Itaca, il blocco
+// da rimettere uguale incollandolo (anche in un altro documento).
+document.addEventListener('copy', event => {
+  const box = canEditVisual() && document.activeElement === ed ? selectedPdfBox() : null;
+  if (!box || !event.clipboardData) return;
+  const markdown = blockMarkdownOf(box);
+  if (!markdown) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  event.clipboardData.setData('text/plain', markdown);
+  event.clipboardData.setData('text/html', '<div data-itaca-blocks="' + escapeHtml(markdown) + '"><pre>' + escapeHtml(markdown) + '</pre></div>');
+}, true);
+document.addEventListener('cut', event => {
+  const box = canEditVisual() && document.activeElement === ed ? selectedPdfBox() : null;
+  if (!box || !event.clipboardData) return;
+  const markdown = blockMarkdownOf(box);
+  if (!markdown) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  event.clipboardData.setData('text/plain', markdown);
+  event.clipboardData.setData('text/html', '<div data-itaca-blocks="' + escapeHtml(markdown) + '"><pre>' + escapeHtml(markdown) + '</pre></div>');
+  deleteEditorBlock(box);
+}, true);
+document.addEventListener('paste', event => {
+  if (!canEditVisual() || !ed.contains(event.target instanceof Node ? event.target : null)) return;
+  const html = event.clipboardData?.getData('text/html') || '';
+  const match = /data-itaca-blocks="([^"]*)"/.exec(html);
+  if (!match) return;
+  const holder = document.createElement('textarea');
+  holder.innerHTML = match[1];
+  const markdown = holder.value;
+  if (!markdown.trim()) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  const nodes = renderedPdfEmbed(markdown);
+  if (!nodes.length) return;
+  restore();
+  insertBlockNodes(nodes, caretFlowPlace());
+  loadPdfEmbeds();
+}, true);
+
+// ── Abbreviazioni (*[SIGLA]: significato) ──
+// Come in MkDocs valgono in tutto il documento: ogni volta che la sigla compare nel testo è
+// sottolineata a puntini e mostra il significato. Il blocco con le definizioni si vede solo in
+// Modifica. In Lettura le sigle diventano <abbr> (rifatte a ogni passaggio, così valgono anche
+// quelle scritte dopo); in Modifica niente elementi nel testo (scrivere attorno a un <abbr> lo
+// allungava): solo un'evidenza CSS che segue la scrittura.
+function abbreviationMap(container = ed) {
+  const map = new Map();
+  for (const block of container.querySelectorAll('[data-ext="abbrdefs"]')) {
+    for (const match of (block.dataset.extRaw || '').matchAll(/^\*\[([^\]\n]+)\]:[ \t]*(.*)$/gm)) if (match[1].trim()) map.set(match[1].trim(), match[2].trim());
+  }
+  return map;
+}
+
+function abbreviationPattern(map) {
+  return new RegExp('(?<![\\p{L}\\p{N}_])(?:' + [...map.keys()].sort((a, b) => b.length - a.length).map(escapeRegex).join('|') + ')(?![\\p{L}\\p{N}_])', 'gu');
+}
+
+// Testi dove una sigla vale: fuori da codice, collegamenti, comandi e blocchi lasciati come Markdown.
+function abbreviationTexts(container, pattern) {
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  const texts = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    pattern.lastIndex = 0;
+    if (!node.parentElement?.closest('pre, code, abbr, [data-ext-raw], [data-code-chrome], a, .code-editor') && pattern.test(node.data)) texts.push(node);
+  }
+  return texts;
+}
+
+function unwrapAbbreviations(container) {
+  const parents = new Set();
+  for (const abbr of container.querySelectorAll('abbr[data-abbr]')) {
+    parents.add(abbr.parentNode);
+    abbr.replaceWith(...abbr.childNodes);
+  }
+  for (const parent of parents) parent?.normalize?.();
+}
+
+function wrapAbbreviations(container, map = abbreviationMap(container)) {
+  if (!map.size) return;
+  const pattern = abbreviationPattern(map);
+  for (const node of abbreviationTexts(container, pattern)) {
+    const fragment = document.createDocumentFragment();
+    let last = 0;
+    for (const match of node.data.matchAll(pattern)) {
+      const abbr = Object.assign(document.createElement('abbr'), { title: map.get(match[0]), textContent: match[0] });
+      abbr.dataset.abbr = '';
+      fragment.append(node.data.slice(last, match.index), abbr);
+      last = match.index + match[0].length;
+    }
+    fragment.append(node.data.slice(last));
+    node.replaceWith(fragment);
+  }
+}
+
+// Chiamata da configureVisualContent: in Lettura le sigle aggiornate, in Modifica l'evidenza.
+function refreshAbbreviations() {
+  if (!ed.querySelector('abbr[data-abbr], [data-ext="abbrdefs"]')) {
+    paintAbbreviationHighlights();
+    return;
+  }
+  unwrapAbbreviations(ed);
+  if (!editingEnabled) wrapAbbreviations(ed);
+  paintAbbreviationHighlights();
+}
+
+var abbreviationRanges = [];
+function paintAbbreviationHighlights() {
+  abbreviationRanges = [];
+  const map = editingEnabled ? abbreviationMap(ed) : new Map();
+  if (map.size) {
+    const pattern = abbreviationPattern(map);
+    for (const node of abbreviationTexts(ed, pattern)) {
+      for (const match of node.data.matchAll(pattern)) {
+        const range = new Range();
+        range.setStart(node, match.index);
+        range.setEnd(node, match.index + match[0].length);
+        range.abbrTerm = match[0];
+        range.abbrMeaning = map.get(match[0]);
+        abbreviationRanges.push(range);
+      }
+    }
+  }
+  if (!window.CSS?.highlights) return;
+  if (abbreviationRanges.length) CSS.highlights.set('abbr-term', new Highlight(...abbreviationRanges));
+  else CSS.highlights.delete('abbr-term');
+}
+var abbreviationTimer = 0;
+ed.addEventListener('input', () => {
+  if (!editingEnabled || (!abbreviationRanges.length && !ed.querySelector('[data-ext="abbrdefs"]'))) return;
+  clearTimeout(abbreviationTimer);
+  abbreviationTimer = setTimeout(paintAbbreviationHighlights, 250);
+});
+
+// Suggerimento immediato (quello del browser arriva dopo un secondo e non c'è sul touch).
+const abbrTip = Object.assign(document.createElement('div'), { className: 'abbr-tip', hidden: true });
+abbrTip.setAttribute('role', 'tooltip');
+document.body.append(abbrTip);
+var abbrTipFor = null;
+function showAbbrTip(term, meaning, rect, key) {
+  if (abbrTipFor === key && !abbrTip.hidden) return;
+  abbrTipFor = key;
+  abbrTip.replaceChildren(Object.assign(document.createElement('b'), { textContent: term }), document.createTextNode(meaning || 'Significato non indicato'));
+  abbrTip.hidden = false;
+  const width = abbrTip.offsetWidth, height = abbrTip.offsetHeight;
+  const left = Math.max(8, Math.min(rect.left + rect.width / 2 - width / 2, innerWidth - width - 8));
+  const top = rect.top - height - 8 > 8 ? rect.top - height - 8 : rect.bottom + 8;
+  Object.assign(abbrTip.style, { left: left + 'px', top: top + 'px' });
+}
+function hideAbbrTip() {
+  abbrTip.hidden = true;
+  abbrTipFor = null;
+}
+function abbrAtPoint(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  const abbr = target?.closest('abbr[title], abbr[data-tip]');
+  if (abbr && abbr.closest('.editor, .pane-scroll, .stack-pane')) {
+    // Il title resterebbe come secondo suggerimento del browser: lo si tiene da parte.
+    if (abbr.title) {
+      abbr.dataset.tip = abbr.title;
+      abbr.removeAttribute('title');
+    }
+    return { term: abbr.textContent, meaning: abbr.dataset.tip, rect: abbr.getBoundingClientRect(), key: abbr };
+  }
+  if (!abbreviationRanges.length || !target || !ed.contains(target) || !editingEnabled) return null;
+  for (const range of abbreviationRanges) {
+    if (!range.startContainer.isConnected) continue;
+    for (const rect of range.getClientRects()) {
+      if (event.clientX >= rect.left && event.clientX <= rect.right && event.clientY >= rect.top && event.clientY <= rect.bottom) {
+        return { term: range.abbrTerm, meaning: range.abbrMeaning, rect, key: range };
+      }
+    }
+  }
+  return null;
+}
+document.addEventListener('pointermove', event => {
+  if (event.pointerType === 'touch') return;
+  const hit = abbrAtPoint(event);
+  if (hit) showAbbrTip(hit.term, hit.meaning, hit.rect, hit.key);
+  else if (!abbrTip.hidden) hideAbbrTip();
+}, { passive: true });
+document.addEventListener('click', event => {
+  if (editingEnabled && ed.contains(event.target)) return;
+  const hit = abbrAtPoint(event);
+  if (hit) showAbbrTip(hit.term, hit.meaning, hit.rect, hit.key);
+}, true);
+for (const type of ['scroll', 'keydown']) document.addEventListener(type, () => { if (!abbrTip.hidden) hideAbbrTip(); }, { capture: true, passive: true });
+
+// Finestra delle abbreviazioni: una riga per sigla, si aggiungono e si tolgono.
+function abbreviationRowHtml(term = '', meaning = '') {
+  return '<div class="abbr-row"><input class="abbr-term" maxlength="40" placeholder="Sigla" aria-label="Sigla" value="' + escapeHtml(term) + '">' +
+    '<input class="abbr-meaning" placeholder="Significato" aria-label="Significato" value="' + escapeHtml(meaning) + '">' +
+    '<button type="button" class="abbr-remove" title="Togli questa abbreviazione" aria-label="Togli"><i class="icon i-close" aria-hidden="true"></i></button></div>';
+}
+
+async function editAbbreviations(existing = ed.querySelector('[data-ext="abbrdefs"]'), preset = '') {
+  if (!canEditVisual()) return;
+  remember();
+  const map = existing ? abbreviationMap(Object.assign(document.createElement('div'), { innerHTML: existing.outerHTML })) : new Map();
+  const rows = [...map].map(([term, meaning]) => abbreviationRowHtml(term, meaning));
+  const presetTerm = preset.replace(/[\]\n]/g, '').trim().slice(0, 40);
+  if (presetTerm && !map.has(presetTerm)) rows.push(abbreviationRowHtml(presetTerm, ''));
+  if (!rows.length) rows.push(abbreviationRowHtml());
+  const pending = modal('Abbreviazioni',
+    '<p class="abbr-help">Valgono in tutto il documento: ogni volta che la sigla compare nel testo è sottolineata a puntini e, passandoci sopra (o toccandola), mostra il significato. In MkDocs funzionano allo stesso modo.</p>' +
+    '<div class="abbr-rows">' + rows.join('') + '</div><button type="button" class="abbr-add"><i class="icon i-plus" aria-hidden="true"></i> Aggiungi un’abbreviazione</button>', 'Applica');
+  const body = $('dialogBody');
+  const list = body.querySelector('.abbr-rows');
+  body.querySelector('.abbr-add').onclick = () => {
+    list.insertAdjacentHTML('beforeend', abbreviationRowHtml());
+    list.lastElementChild.querySelector('input').focus();
+  };
+  list.addEventListener('click', event => {
+    const remove = event.target.closest('.abbr-remove');
+    if (!remove) return;
+    const row = remove.closest('.abbr-row');
+    const next = row.nextElementSibling || row.previousElementSibling;
+    row.remove();
+    if (!list.children.length) list.insertAdjacentHTML('beforeend', abbreviationRowHtml());
+    (next || list.firstElementChild).querySelector('input').focus();
+  });
+  const focusRow = presetTerm ? [...list.children].find(row => row.querySelector('.abbr-term').value === presetTerm) : null;
+  (focusRow?.querySelector('.abbr-meaning') || list.lastElementChild.querySelector(presetTerm || !existing ? 'input' : '.abbr-meaning'))?.focus();
+  const answer = await pending;
+  if (!answer) return;
+  const entries = new Map();
+  for (const row of list.children) {
+    const term = row.querySelector('.abbr-term').value.replace(/[\]\n]/g, '').trim();
+    const meaning = row.querySelector('.abbr-meaning').value.replace(/\n/g, ' ').trim();
+    if (term) entries.set(term, meaning);
+  }
+  const target = existing?.isConnected ? existing : ed.querySelector('[data-ext="abbrdefs"]');
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  if (!entries.size) {
+    if (!target) return;
+    const parent = target.parentElement;
+    target.remove();
+    if (parent && parent !== ed) keepContainerWritable(parent);
+  } else {
+    const raw = [...entries].map(([term, meaning]) => '*[' + term + ']: ' + meaning).join('\n');
+    const fresh = renderedPdfEmbed(raw)[0];
+    if (!fresh) return;
+    if (target) target.replaceWith(fresh);
+    else {
+      // In fondo al documento (prima di una riga vuota finale e delle note), come si usa in MkDocs.
+      let anchor = ed.lastElementChild;
+      while (anchor && (anchor.matches('[data-ext="footnote"]') || (anchor.matches('p') && emptyVisualText(anchor)))) anchor = anchor.previousElementSibling;
+      if (anchor) anchor.after(fresh);
+      else ed.prepend(fresh);
+    }
+  }
+  configureVisualContent();
+  pushLiveUndo(before);
+  mark();
+  const holder = ed.cloneNode(true);
+  holder.querySelectorAll('[data-ext="abbrdefs"], pre, code, ' + blockChrome).forEach(node => node.remove());
+  const text = holder.textContent;
+  const missing = [...entries.keys()].filter(term => !abbreviationPattern(new Map([[term, '']])).test(text));
+  if (!entries.size) toast('Abbreviazioni tolte dal documento');
+  else if (missing.length) toast('«' + missing.slice(0, 3).join('», «') + '» non ' + (missing.length === 1 ? 'compare' : 'compaiono') + ' ancora nel testo: ' + (missing.length === 1 ? 'sarà sottolineata' : 'saranno sottolineate') + ' appena le scriverai.', 'info');
+  else toast('Abbreviazioni aggiornate: le sigle sottolineate mostrano il significato.', 'success');
+  if (selected && ed.contains(selected.startContainer)) restore();
+}
+
+// Doppio clic (o «Modifica») su una formula o su un altro blocco lasciato come Markdown.
+async function editRawBlock(element, title = 'Modifica Markdown', label = 'Sorgente') {
+  if (!element?.isConnected || !canEditVisual()) return;
+  const isBlock = element.tagName === 'DIV';
+  const answer = await modal(title, '<label>' + escapeHtml(label) + '</label><textarea name="raw" rows="' + (isBlock ? 8 : 3) + '" spellcheck="false">' +
+    escapeHtml(element.dataset.extRaw) + '</textarea>', 'Applica');
+  if (!answer || !element.isConnected) return;
+  const value = answer.raw.replace(/\r\n?/g, '\n').trim();
+  if (value === element.dataset.extRaw) return;
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  let fresh = null;
+  if (!value) element.remove();
+  else {
+    fresh = enhanceRendered(sanitize(isBlock ? parseDocumentMarkdown(value) : marked.parseInline(value)), true);
+    const first = fresh.firstElementChild || fresh.firstChild;
+    element.replaceWith(fresh);
+    fresh = first;
+  }
+  configureVisualContent();
+  pushLiveUndo(before);
+  mark();
+  if (fresh?.isConnected && fresh.matches?.(selectableBlocks)) selectPdfBox(fresh);
+}
 const formatButtons = [...document.querySelectorAll('[data-cmd]:not([data-cmd=undo], [data-cmd=redo])')];
 let outlineTimer, outlineKey = '', headings = [], visualScroll = 0;
 const systemTheme = matchMedia('(prefers-color-scheme: dark)');
@@ -19623,6 +20465,11 @@ const shortcutGroups = [
     ['Tabella: a capo dentro la cella', 'Shift Enter'],
     ['Tabella: riga sopra / sotto (oltre il bordo esce dalla tabella)', '↑|↓'],
     ['Blocco di codice, tabella, PDF o documento incorporato: dalla riga accanto selezionalo e poi eliminalo', 'Backspace|Delete'],
+    ['Seleziona un blocco (ammonimento, schede, riquadro, codice…): maniglia ⠿ a sinistra o Esc dal suo interno', 'clic|Esc'],
+    ['Blocco selezionato: sposta su / giù', 'Alt ↑|Alt ↓'],
+    ['Blocco selezionato: duplica / modifica', 'Mod D|F2'],
+    ['Blocco selezionato: elimina, copia, taglia', 'Delete|Mod C|Mod X'],
+    ['Sposta un blocco, anche dentro un altro (trascina la maniglia ⠿)', 'trascina'],
     ['Modifica un’immagine (un clic la seleziona)', 'doppioclic'],
     ['Immagine selezionata: copia / taglia', 'Mod C|Mod X'],
     ['Immagine selezionata: elimina', 'Backspace|Delete'],
@@ -31731,6 +32578,7 @@ function configureVisualContent() {
   for (const image of ed.querySelectorAll('img[data-src]')) configureEditorImage(image);
   loadPdfEmbeds();
   if (!editingEnabled) decorateReadTables();
+  refreshAbbreviations();
 }
 
 function checkboxAnchor(checkbox) {
@@ -32327,23 +33175,12 @@ function insertCodeBlock(language = '') {
   remember();
   const activeBlock = document.activeElement.closest('pre');
   const text = activeBlock ? '' : selected?.toString() || '';
-  const node = selected?.startContainer;
-  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
-  let enclosing = activeBlock || element?.closest('li, table, blockquote, pre');
-  if (enclosing && ed.contains(enclosing)) {
-    while (enclosing.parentElement !== ed) enclosing = enclosing.parentElement;
-    const range = document.createRange();
-    range.setStartAfter(enclosing);
-    range.collapse(true);
-    selected = range;
-  }
+  // Dal codice di un altro blocco: il nuovo va sotto quel blocco.
+  if (activeBlock && ed.contains(activeBlock)) selectPdfBox(activeBlock);
   const languageClass = /^[\w+-]+$/.test(language) ? ' class="language-' + language + '"' : '';
-  addHTML('<pre data-new-code-block contenteditable="false"><code' + languageClass + '>' + escapeHtml(text) + '\n</code></pre><p data-code-gap><br></p>');
-  const block = ed.querySelector('[data-new-code-block]');
-  if (block) {
-    delete block.dataset.newCodeBlock;
-    block.querySelector('.code-editor')?.focus();
-  }
+  // Dove si trova il cursore, anche dentro un ammonimento o una scheda (il testo selezionato
+  // diventa il codice); in una voce d'elenco o in una cella va sotto l'elenco o la tabella.
+  insertEditorBlock('<pre contenteditable="false"><code' + languageClass + '>' + escapeHtml(text) + '\n</code></pre>', 'code');
 }
 
 $('codeBlock').onclick = () => insertCodeBlock();
@@ -39801,19 +40638,15 @@ function prepareBlockInsertion() {
   restore();
   const selection = getSelection();
   if (!selection.rangeCount || !ed.contains(selection.anchorNode)) return;
-  if (!selection.isCollapsed) document.execCommand('delete');
-  const node = selection.anchorNode;
-  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
-  if (!element || element === ed || !ed.contains(element)) {
+  if (!selection.isCollapsed && !selectedPdfBox()) document.execCommand('delete');
+  // Dentro un ammonimento, una scheda, una citazione… il blocco resta lì (come in MkDocs):
+  // prima finiva sempre dopo il blocco esterno.
+  const place = caretFlowPlace();
+  if (!place || place.mode === 'replace') {
     remember();
     return;
   }
-  let top = element;
-  while (top.parentElement !== ed) top = top.parentElement;
-  if (top.matches('p, h1, h2, h3, h4, h5, h6') && emptyVisualText(top) && !top.querySelector('img, input')) {
-    remember();
-    return;
-  }
+  const top = place.block;
   const range = document.createRange();
   range.setStartAfter(top);
   range.collapse(true);
@@ -39826,38 +40659,22 @@ function insertCallout() {
   if (!canEditVisual()) return;
   remember();
   const text = selected?.toString().trim();
-  prepareBlockInsertion();
-  addHTML('<blockquote data-callout="NOTE" data-new-block><p>' + (text ? escapeHtml(text) : '<br>') + '</p></blockquote><p><br></p>');
-  focusNewBlock('p');
+  insertEditorBlock('<blockquote data-callout="NOTE"><p>' + (text ? escapeHtml(text) : '<br>') + '</p></blockquote>', 'p');
 }
 
 // Linea di separazione (---) dove si trova il cursore.
 function insertRule() {
   if (!canEditVisual()) return;
   remember();
-  prepareBlockInsertion();
-  addHTML('<hr data-new-block><p><br></p>');
-  const rule = ed.querySelector('hr[data-new-block]');
-  if (!rule) return;
-  delete rule.dataset.newBlock;
-  const next = rule.nextElementSibling;
-  if (next) {
-    const range = document.createRange();
-    range.selectNodeContents(next);
-    range.collapse(true);
-    getSelection().removeAllRanges();
-    getSelection().addRange(range);
-    remember();
-  }
+  insertEditorBlock('<hr>');
   mark();
 }
 
 function insertDetails() {
   if (!canEditVisual()) return;
   remember();
-  prepareBlockInsertion();
-  addHTML('<details open data-new-block><summary>Dettagli</summary><p><br></p></details><p><br></p>');
-  focusNewBlock('summary');
+  const text = selected?.toString().trim();
+  insertEditorBlock('<details open><summary>Dettagli</summary><p>' + (text ? escapeHtml(text) : '<br>') + '</p></details>', 'select:summary');
 }
 
 function focusNewBlock(selector) {
@@ -40195,14 +41012,13 @@ function liveInsertBlock(block, markdown, replace = block, trailing = true) {
   const selection = getSelection();
   let undoBefore = null;
   if (replace === block) {
-    const range = document.createRange();
-    range.selectNodeContents(block);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    document.execCommand('delete');
-    remember();
-    prepareBlockInsertion();
-    addCleanHTML(holder.innerHTML + (trailing ? '<p><br></p>' : ''));
+    // Direttamente nel DOM, anche dentro un contenitore (insertHTML di Chrome spezzava il blocco
+    // che conteneva la riga); Ctrl/⌘ + Z riporta il testo scritto.
+    undoBefore = { html: ed.innerHTML, caret: liveCaretPath() };
+    const nodes = [...holder.childNodes];
+    if (trailing) nodes.push(Object.assign(document.createElement('p'), { innerHTML: '<br>' }));
+    block.replaceWith(...nodes);
+    configureVisualContent();
   } else {
     // Un blocco intero (la citazione che diventa riquadro): con insertHTML Chrome lo metteva
     // dentro la citazione stessa. Si sostituisce direttamente; Ctrl/⌘+Z passa da liveUndoSnapshot.
@@ -40280,7 +41096,9 @@ function liveEnter(event) {
     event.preventDefault();
     return liveInsertBlock(block, '> [!' + match[1] + ']' + match[2] + (match[3] ? ' ' + match[3] : '') + '\n> ' + liveMarkdownCaret, quote);
   }
-  if (!topLevel) return false;
+  // Anche dentro ammonimenti, schede, citazioni e dettagli (in MkDocs lì diventano blocchi lo stesso:
+  // prima restavano testo in Itaca e blocco nel sito).
+  if (!topLevel && blockFlowLine(block) !== block) return false;
   if ((match = /^(`{3,}|~{3,})\s*([\w+-]*)$/.exec(text))) {
     event.preventDefault();
     const range = document.createRange();
@@ -48007,30 +48825,7 @@ function enhanceMaterial(container) {
     }
   }
   // Abbreviations defined with «*[HTML]: …».
-  const abbreviations = new Map();
-  for (const block of container.querySelectorAll('[data-ext="abbrdefs"]')) {
-    for (const match of block.dataset.extRaw.matchAll(/^\*\[([^\]\n]+)\]:[ \t]*(.*)$/gm)) abbreviations.set(match[1], match[2]);
-  }
-  if (abbreviations.size) {
-    const pattern = new RegExp('(?<![\\p{L}\\p{N}_])(?:' + [...abbreviations.keys()].sort((a, b) => b.length - a.length).map(escapeRegex).join('|') + ')(?![\\p{L}\\p{N}_])', 'gu');
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-    const texts = [];
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      pattern.lastIndex = 0;
-      if (!node.parentElement?.closest('pre, code, abbr, [data-ext-raw], [data-code-chrome], a') && pattern.test(node.data)) texts.push(node);
-    }
-    for (const node of texts) {
-      const fragment = document.createDocumentFragment();
-      let last = 0;
-      for (const match of node.data.matchAll(pattern)) {
-        fragment.append(node.data.slice(last, match.index), Object.assign(document.createElement('abbr'), { title: abbreviations.get(match[0]), textContent: match[0] }));
-        last = match.index + match[0].length;
-      }
-      fragment.append(node.data.slice(last));
-      node.replaceWith(fragment);
-    }
-  }
+  wrapAbbreviations(container);
   // Inline code with a language: `#!python range()`.
   for (const code of container.querySelectorAll('code')) {
     if (code.closest('pre') || code.children.length) continue;
@@ -48432,19 +49227,15 @@ async function renderAsyncExtensions(container) {
 // ── Modifica in modalità visuale ──
 
 // Double click on an element kept as source (icons, formulas, keys, attributes…) edits its Markdown.
-ed.addEventListener('dblclick', async event => {
+ed.addEventListener('dblclick', event => {
   const element = event.target.closest('[data-ext-raw]');
   if (!element || !ed.contains(element) || !canEditVisual()) return;
+  // Nei riquadri dei file il doppio clic sul video, sul lettore o sull'anteprima è loro.
+  if (element.matches('[data-ext="pdf"]') && event.target.closest('video, .audio-player, .pdf-frame, .file-list, .media-notes, button, select')) return;
   event.preventDefault();
-  const isBlock = element.tagName === 'DIV';
-  const answer = await modal('Modifica Markdown', '<label>Sorgente</label><textarea name="raw" rows="' + (isBlock ? 8 : 3) + '" spellcheck="false">' +
-    escapeHtml(element.dataset.extRaw) + '</textarea>', 'Applica');
-  if (!answer || !element.isConnected) return;
-  const value = answer.raw.replace(/\r\n?/g, '\n').trim();
-  if (!value) element.remove();
-  else element.replaceWith(enhanceRendered(sanitize(isBlock ? parseDocumentMarkdown(value) : marked.parseInline(value)), true));
-  configureVisualContent();
-  mark();
+  if (element.matches('[data-ext="abbrdefs"]')) editAbbreviations(element);
+  else if (element.matches('[data-ext="math"]')) editRawBlock(element, 'Formula', element.hasAttribute('data-ext-display') ? 'Formula TeX (tra $$ e $$)' : 'Formula TeX (tra $ e $)');
+  else editRawBlock(element);
 });
 
 function selectedHtml() {
@@ -48494,9 +49285,7 @@ async function insertMaterialBlock(kind) {
       '<li><p><strong>Prima scheda</strong></p><hr><p>Descrizione</p></li><li><p><strong>Seconda scheda</strong></p><hr><p>Descrizione</p></li></ul></div>',
   };
   if (blocksHtml[kind]) {
-    prepareBlockInsertion();
-    addHTML(blocksHtml[kind] + '<p><br></p>');
-    focusNewBlock(kind === 'deflist' ? 'dt' : kind === 'grid' ? 'strong' : kind === 'tabs' ? '[data-ext="tab"] > p' : ':scope > p:not([data-ext-part])');
+    insertEditorBlock(blocksHtml[kind].replace(' data-new-block', ''), kind === 'deflist' ? 'select:dt' : kind === 'grid' ? 'select:strong' : kind === 'tabs' ? '[data-ext="tab"] > p' : ':scope > p:not([data-ext-part])');
     return;
   }
   if (kind === 'footnote') {
@@ -48521,35 +49310,19 @@ async function insertMaterialBlock(kind) {
     return;
   }
   if (kind === 'mermaid') {
-    prepareBlockInsertion();
-    addHTML('<pre data-new-code-block contenteditable="false"><code class="language-mermaid">graph LR\n  A[Inizio] --&gt; B{Scelta}\n  B --&gt;|Sì| C[Fine]\n  B --&gt;|No| A\n</code></pre><p data-code-gap><br></p>');
-    const block = ed.querySelector('[data-new-code-block]');
-    if (block) {
-      delete block.dataset.newCodeBlock;
-      block.querySelector('.code-editor')?.focus();
-    }
+    insertEditorBlock('<pre contenteditable="false"><code class="language-mermaid">graph LR\n  A[Inizio] --&gt; B{Scelta}\n  B --&gt;|Sì| C[Fine]\n  B --&gt;|No| A\n</code></pre>', 'code');
     return;
   }
-  if (kind === 'math' || kind === 'abbr') {
-    const answer = kind === 'math'
-      ? await modal('Formula', '<label>Formula TeX</label><textarea name="value" rows="4" spellcheck="false">' + escapeHtml(text || '\\int_0^1 x^2\\,dx = \\frac{1}{3}') + '</textarea>', 'Inserisci')
-      : await modal('Abbreviazione', '<label>Abbreviazione</label><input name="term" required value="' + escapeHtml(text || '') + '"><label>Significato</label><input name="value" required>', 'Inserisci');
-    if (!answer) return;
-    if (kind === 'math') {
-      prepareBlockInsertion();
-      addHTML(enhanceRenderedHtml('$$\n' + answer.value.trim() + '\n$$') + '<p><br></p>');
-    } else {
-      const line = '*[' + answer.term.trim() + ']: ' + answer.value.trim();
-      const existing = ed.querySelector('[data-ext="abbrdefs"]');
-      const raw = existing ? existing.dataset.extRaw + '\n' + line : line;
-      const fresh = enhanceRendered(sanitize(parseDocumentMarkdown(raw)), true).firstElementChild;
-      if (existing) existing.replaceWith(fresh);
-      else ed.append(fresh);
-      enhanceMaterial(ed);
-      configureVisualContent();
-      mark();
-      toast('Abbreviazione aggiunta: passa il mouse sulle parole sottolineate per vedere il significato.');
-    }
+  if (kind === 'abbr') {
+    // Una sola raccolta per documento: la finestra la mostra tutta, con la sigla selezionata pronta.
+    editAbbreviations(ed.querySelector('[data-ext="abbrdefs"]'), text || '');
+    return;
+  }
+  if (kind === 'math') {
+    const answer = await modal('Formula', '<label>Formula TeX</label><textarea name="value" rows="4" spellcheck="false">' + escapeHtml(text || '\\int_0^1 x^2\\,dx = \\frac{1}{3}') + '</textarea>', 'Inserisci');
+    if (!answer?.value.trim()) return;
+    restore();
+    insertEditorBlock(enhanceRenderedHtml('$$\n' + answer.value.trim() + '\n$$'));
   }
 }
 
