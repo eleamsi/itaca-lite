@@ -710,7 +710,7 @@ button:disabled { opacity: .4; cursor: default; }
 /* I comandi delle tabelle compaiono solo con il cursore in una tabella */
 .table-tools:not(:has(button:enabled)) { display: none; }
 .undo-tools #pasteRich { margin-right: 4px; }
-.tools button, .color-control { width: 29px; height: 29px; padding: 0; border-radius: 6px; display: inline-grid; place-items: center; font-size: 14px; color: var(--copy); }
+.tools button { width: 29px; height: 29px; padding: 0; border-radius: 6px; display: inline-grid; place-items: center; font-size: 14px; color: var(--copy); }
 .tools button[aria-pressed='true'], .tools button[aria-pressed='true']:hover { background: var(--tint); color: var(--accent-text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent); }
 .tools select {
   height: 29px;
@@ -728,11 +728,17 @@ button:disabled { opacity: .4; cursor: default; }
 .tools select:hover { background-color: var(--canvas); }
 #heading { width: 128px; }
 #fontSize { width: 51px; }
-.color-control { cursor: pointer; position: relative; padding-bottom: 5px; font-weight: 630; }
-.color-control:hover { background: var(--hover); }
-.color-control:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
-.color-control input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.color-control::after { content: ''; position: absolute; bottom: 5px; left: 8px; width: 13px; height: 2px; border-radius: 2px; background: var(--text-color, #38679c); pointer-events: none; }
+.tools .color-control { display: inline-flex; width: auto; gap: 0; }
+.tools .color-apply { position: relative; width: 25px; padding-bottom: 5px; border-radius: 6px 0 0 6px; font-weight: 630; }
+.color-apply::after { content: ''; position: absolute; bottom: 5px; left: 6px; width: 13px; height: 2px; border-radius: 2px; background: var(--text-color, #38679c); pointer-events: none; }
+.color-pick { position: relative; display: inline-grid; place-items: center; width: 14px; height: 29px; border-radius: 0 6px 6px 0; cursor: pointer; }
+.color-pick::before { content: ''; width: 4px; height: 4px; margin-top: -3px; border: solid var(--muted); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+.color-pick:hover { background: var(--hover); }
+.color-pick:hover::before { border-color: var(--copy); }
+.color-pick:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; }
+.color-pick input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+/* Testo colorato: anche collegamenti e codice dentro prendono il colore scelto. */
+.editor :is(font[color], span[style*='color']) :is(a, code) { color: inherit; }
 
 .workspace { flex: 1; min-width: 0; overflow: auto; padding: 64px min(5%, 56px) calc(var(--dock-height, 60px) + 26px); scroll-padding: 74px 0 calc(var(--dock-height, 60px) + 20px); overscroll-behavior: contain; scrollbar-color: var(--scrollbar) transparent; }
 .paper { position: relative; width: 100%; max-width: var(--paper-width); margin-inline: auto; border: 0; border-radius: 0; background: var(--paper); }
@@ -1333,8 +1339,11 @@ button.cal-item:hover { background: var(--tint); }
 .sun-arc { width: 100%; height: auto; max-height: 110px; overflow: visible; }
 .sun-path { fill: none; stroke: color-mix(in srgb, var(--muted) 55%, transparent); stroke-width: 1.4; stroke-dasharray: 3 4; }
 .sun-horizon { stroke: var(--line); stroke-width: 1.5; }
-.sun-dot { fill: #f2a516; stroke: color-mix(in srgb, #fff 70%, #f2a516); stroke-width: 1.5; }
-.sun-glow { fill: #f6b93b; opacity: .25; }
+.sun-dot { fill: color-mix(in srgb, #e8622a var(--sun-warm, 0%), #f2a516); stroke: color-mix(in srgb, #fff 70%, #f2a516); stroke-width: 1.5; }
+.sun-glow { opacity: calc(var(--sun-glow, 1) * .85); transform-box: fill-box; transform-origin: center; scale: calc(.55 + .45 * var(--sun-glow, 1)); animation: sun-breathe 4.8s ease-in-out infinite; }
+.sun[data-state='low'] { --sun-sky: #f08a4b; }
+@keyframes sun-breathe { 50% { opacity: calc(var(--sun-glow, 1) * .45); scale: calc(.65 + .55 * var(--sun-glow, 1)); } }
+@media (prefers-reduced-motion: reduce) { .sun-glow { animation: none; } }
 .moon-dot { fill: color-mix(in srgb, var(--muted) 70%, transparent); }
 .sun[data-state='night'] .sun-fill { opacity: .3; }
 .sun-times { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -1507,6 +1516,10 @@ button.cal-item:hover { background: var(--tint); }
 .editor h3 { margin: 1.6em 0 .5em; font-size: 1.15em; line-height: 1.35; }
 .editor h4, .editor h5, .editor h6 { margin: 1.4em 0 .45em; font-size: 1em; }
 .editor h5, .editor h6 { color: var(--copy); }
+/* Titoli uniformi: livello e dimensione decidono l'aspetto. Grassetto (il titolo lo è già), carattere e
+   interlinea dentro un titolo non lo cambiano: prima «## **Testo**» sembrava un titolo diverso dagli altri. */
+.editor :is(h1, h2, h3, h4, h5, h6) :is(strong, b) { font-weight: inherit; }
+.editor :is(h1, h2, h3, h4, h5, h6) :is(span, font, strong, b, em, i, u, s, a, mark) { font-family: inherit; line-height: inherit; letter-spacing: inherit; }
 .editor p { margin: 0 0 1em; }
 .editor strong, .editor b { font-weight: 700; }
 .editor ul, .editor ol { padding-left: 1.6em; margin: 0 0 1.1em; }
@@ -2740,7 +2753,7 @@ dialog .check-option input { width: 16px; height: 16px; margin: 0; accent-color:
 @media (max-width: 960px) {
   .sidebar { width: 240px; --side-x: 10px; }
   .tools { padding-inline: 4px; }
-  .tools button, .color-control { width: 27px; }
+  .tools button:not(.color-apply) { width: 27px; }
 }
 
 @media (max-width: 760px) {
@@ -2774,7 +2787,8 @@ dialog .check-option input { width: 16px; height: 16px; margin: 0; accent-color:
   .dock { inset-inline: 6px; }
   .toolbar { padding: 6px 5px; }
   .tools { height: 32px; gap: 1px; padding-inline: 3px; }
-  .tools button, .color-control { width: clamp(24px, 7.5vw, 31px); height: 31px; }
+  .tools button:not(.color-apply) { width: clamp(24px, 7.5vw, 31px); height: 31px; }
+  .tools .color-apply, .color-pick { height: 31px; }
   .editor { padding: 52px 18px 44px; font-size: calc(16px * var(--text-scale)); }
   .editor td, .editor th { padding: 7px 6px; }
   .source-paper.paper { border-radius: 8px; }
@@ -3715,7 +3729,7 @@ html.welcome-landing #itacaLogo { visibility: hidden; }
               <button type="button" data-cmd="italic" title="Corsivo" aria-label="Corsivo"><em aria-hidden="true">I</em></button>
               <button type="button" data-cmd="underline" title="Sottolineato" aria-label="Sottolineato"><u aria-hidden="true">U</u></button>
               <button type="button" data-cmd="strikeThrough" title="Barrato" aria-label="Barrato"><s aria-hidden="true">S</s></button>
-              <label class="color-control" title="Colore del testo"><span aria-hidden="true">A</span><input type="color" id="color" value="#38679c" aria-label="Colore del testo"></label>
+              <span class="color-control" role="group" aria-label="Colore del testo"><button type="button" class="color-apply" id="colorApply" title="Colora il testo selezionato con questo colore" aria-label="Colora il testo"><span aria-hidden="true">A</span></button><label class="color-pick" title="Scegli il colore del testo (lo applica subito alla selezione)"><input type="color" id="color" value="#38679c" aria-label="Scegli il colore del testo"></label></span>
               <label class="align-control" id="alignControl" title="Allineamento del testo" data-align="left"><i class="icon" aria-hidden="true"></i>
                 <select id="align" aria-label="Allineamento del testo o dell’immagine">
                   <option value="" selected hidden>Allineamento</option>
@@ -15182,7 +15196,18 @@ function findImagePath(image, from = current, index = files) {
   const path = resolvePath(target, from);
   const drafts = from === current ? draftImages : null;
   if (!image.dataset.wikiImg || index.has(path) || drafts?.has(path)) return path;
-  const matches = [...index.keys(), ...(drafts?.keys() || [])].filter(name => name.split('/').pop() === target);
+  // ![[cartella/immagine.png]]: percorso dalla cartella principale (come i [[collegamenti]]), poi
+  // un file che finisce con quel percorso, poi il solo nome. Prima valeva solo dalla cartella del
+  // documento: un'immagine scelta tra i suggerimenti da un documento in una sottocartella mancava.
+  const known = key => key && (index.has(key) || drafts?.has(key));
+  const fromRoot = normalize(target);
+  if (known(fromRoot)) return fromRoot;
+  const all = [...index.keys(), ...(drafts?.keys() || [])];
+  const lower = target.toLowerCase();
+  const tail = all.filter(name => ('/' + name.toLowerCase()).endsWith('/' + lower));
+  if (tail.length === 1) return tail[0];
+  const bare = lower.split('/').pop();
+  const matches = all.filter(name => name.split('/').pop().toLowerCase() === bare);
   return matches.length === 1 ? matches[0] : path;
 }
 const embeddedImage = /^data:image\/(png|jpeg|gif|webp|bmp|avif|x-icon|vnd\.microsoft\.icon);base64,[a-z\d+/]+={0,2}$/i;
@@ -17089,11 +17114,18 @@ $('heading').onchange = event => {
   updateFormatButtons();
 };
 $('check').onclick = () => toggleCheckboxOnLine(true);
+// Colore del testo: «A» colora con l'ultimo colore, la freccina sceglie un colore e lo applica.
+// Prima c'era solo il selettore: scegliendo lo stesso colore di prima il browser non manda
+// nessun evento e il testo selezionato restava com'era.
+function applyTextColor() {
+  if (!canEditVisual()) return;
+  command('foreColor', $('color').value);
+}
+$('colorApply').addEventListener('mousedown', event => event.preventDefault());
+$('colorApply').onclick = applyTextColor;
 $('color').onchange = event => {
-  const input = event.target;
-  input.parentElement.style.setProperty('--text-color', input.value);
-  remember();
-  command('foreColor', input.value);
+  $('colorApply').style.setProperty('--text-color', event.target.value);
+  applyTextColor();
 };
 
 function rtfClipboardImages(rtf) {
@@ -17569,15 +17601,39 @@ function enterAtomicBlock(block, direction) {
     updatePdfSelectionRing();
     return true;
   }
-  const cells = block.querySelectorAll('th, td');
-  const cell = direction < 0 ? cells[cells.length - 1] : cells[0];
-  if (!cell) return false;
-  const range = document.createRange();
-  range.selectNodeContents(cell);
-  range.collapse(direction > 0);
-  getSelection().removeAllRanges();
-  getSelection().addRange(range);
-  remember();
+  return enterTableFrom(block, direction);
+}
+
+// Cursore nella tabella da fuori: ultima riga se si arriva da sotto (direction < 0), prima se da
+// sopra; con x (frecce su/giù) la cella della colonna più vicina, altrimenti l'ultima o la prima.
+function enterTableFrom(table, direction, x = null) {
+  const rows = [...table.rows].filter(row => row.cells.length && !row.hidden);
+  const row = direction < 0 ? rows.at(-1) : rows[0];
+  if (!row) return false;
+  const cells = [...row.cells];
+  let cell = direction < 0 ? cells.at(-1) : cells[0];
+  if (Number.isFinite(x)) {
+    let best = Infinity;
+    for (const candidate of cells) {
+      const rect = candidate.getBoundingClientRect();
+      const distance = x < rect.left ? rect.left - x : x > rect.right ? x - rect.right : 0;
+      if (distance < best) { best = distance; cell = candidate; }
+    }
+  }
+  if (direction < 0) placeInCell(cell);
+  else {
+    const range = document.createRange();
+    const walker = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT);
+    let text = null;
+    while (!text && walker.nextNode()) if (walker.currentNode.data.replaceAll(caretBoundary, '').length) text = walker.currentNode;
+    if (text) range.setStart(text, 0);
+    else range.selectNodeContents(cell);
+    range.collapse(true);
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+    remember();
+    updateFormatButtons();
+  }
   updatePdfSelectionRing();
   return true;
 }
@@ -17603,17 +17659,19 @@ function removePdfBox(box, direction) {
   const before = { html: ed.innerHTML, caret: liveCaretPath() };
   const previous = box.previousElementSibling;
   const next = box.nextElementSibling;
-  box.remove();
-  let target = direction < 0 ? (caretTextBlock(previous) ? previous : next) : (caretTextBlock(next) ? next : previous);
-  if (!caretTextBlock(target)) {
+  // Al posto del blocco resta una riga vuota col cursore (come cancellando una riga di testo):
+  // prima il cursore saltava alla fine della riga sopra. Una riga vuota già accanto viene riusata.
+  const emptyLine = element => element?.matches('p') && emptyVisualText(element) && !element.querySelector('img, input, [data-ext]');
+  let target = emptyLine(next) ? next : emptyLine(previous) ? previous : null;
+  if (target) box.remove();
+  else {
     target = Object.assign(document.createElement('p'), { innerHTML: '<br>' });
-    if (next) next.before(target);
-    else if (previous) previous.after(target);
-    else ed.append(target);
+    box.replaceWith(target);
   }
+  parkingLines.delete(target);
   const range = document.createRange();
   range.selectNodeContents(target);
-  range.collapse(target === next);
+  range.collapse(true);
   getSelection().removeAllRanges();
   getSelection().addRange(range);
   remember();
@@ -17694,8 +17752,15 @@ ed.addEventListener('keydown', event => {
   const direction = backward ? -1 : 1;
   const hit = pdfBesideCaret(direction, key === 'ArrowUp' || key === 'ArrowDown' ? caretOnEdgeLine : caretAtEdgeOf);
   if (!hit) return;
-  // Con le frecce si entra nelle celle della tabella come nel testo.
-  if (hit.box.matches('table') && key !== 'Backspace' && key !== 'Delete') return;
+  // Con le frecce si entra nelle celle della tabella: da sotto nell'ultima riga (← = ultima cella,
+  // ↑ = cella della stessa colonna), da sopra nella prima. Prima lo faceva il browser, che con le
+  // tabelle a griglia portava il cursore in alto a destra.
+  if (hit.box.matches('table') && key !== 'Backspace' && key !== 'Delete') {
+    event.preventDefault();
+    const caretRect = getSelection().getRangeAt(0).getClientRects()[0];
+    enterTableFrom(hit.box, direction, key === 'ArrowUp' || key === 'ArrowDown' ? caretRect?.left : null);
+    return;
+  }
   // Con le frecce si entra nel codice (come se ne esce), senza selezionare il blocco.
   if (hit.box.matches('pre') && key !== 'Backspace' && key !== 'Delete') {
     const editor = hit.box.querySelector('.code-editor');
@@ -19584,6 +19649,7 @@ const shortcutGroups = [
   ['Ricerca nella barra laterale', [
     ['Passa ai risultati e scorrili', '↓|↑'],
     ['Torna alla casella / svuotala', 'Esc'],
+    ['Togli l’evidenza del punto trovato nel documento', 'Esc|clic'],
   ]],
   ['Grafo dei collegamenti (con il grafo selezionato)', [
     ['Ingrandisci / riduci', '+|−'],
@@ -19713,7 +19779,7 @@ const glossaryMarkdown = [
 
 const glossaryMaterial = [
   ['Blocchi', [
-    ['Ammonimento', 'Riquadro colorato con icona. Tipi: note, abstract, info, tip, success, question, warning, failure, danger, bug, example, quote. Il titolo tra virgolette è facoltativo ("" per toglierlo).', '!!! note "Da ricordare"\n    Il contenuto è rientrato di 4 spazi.\n\n!!! warning\n    Senza titolo si usa il nome del tipo.'],
+    ['Ammonimento', 'Riquadro colorato con icona. Tipi: note, abstract, info, tip, success, question, warning, failure, danger, bug, example, quote. Il titolo tra virgolette è facoltativo ("" per toglierlo). In Modifica Backspace e Canc non uniscono il testo al titolo né alle righe fuori dal riquadro (spostano il cursore); Invio nel titolo va al contenuto; con le frecce si esce anche dall’ultimo riquadro del documento; un riquadro rimasto senza testo si cancella con Backspace.', '!!! note "Da ricordare"\n    Il contenuto è rientrato di 4 spazi.\n\n!!! warning\n    Senza titolo si usa il nome del tipo.'],
     ['Riquadro espandibile', '??? chiuso, ???+ aperto. Stessi tipi degli ammonimenti.', '??? tip "Approfondimento"\n    Si apre con un clic.\n\n???+ example "Esempio aperto"\n    Visibile subito.'],
     ['Schede', 'Più schede di seguito formano un gruppo; il contenuto di ognuna è rientrato.', '=== "Windows"\n\n    Apri il Prompt dei comandi.\n\n=== "macOS"\n\n    Apri il Terminale.'],
     ['Griglia di schede', 'Un elenco dentro <div class="grid cards" markdown> diventa una griglia di riquadri.', '<div class="grid cards" markdown>\n\n- :material-clock-fast: **Veloce**\n\n    Installazione in 5 minuti.\n\n- :material-scale-balance: **Libero**\n\n    Licenza MIT.\n\n</div>'],
@@ -21252,6 +21318,17 @@ function clearSearchLocation() {
       src.selectionEnd === sourceSearchSelection[1]) src.setSelectionRange(src.selectionEnd, src.selectionEnd);
   sourceSearchSelection = null;
 }
+
+// L'evidenza del punto trovato serve a ritrovarlo: un clic nel documento o Esc la tolgono
+// (prima restava finché non si svuotava la ricerca, anche aprendo il documento dalla panoramica).
+document.addEventListener('pointerdown', event => {
+  if (CSS.highlights?.has('document-search') && event.target.closest?.('#workspace, .dock')) clearSearchLocation();
+}, true);
+window.addEventListener('keydown', event => {
+  if (event.key !== 'Escape' || !CSS.highlights?.has('document-search') || document.querySelector('dialog[open]')) return;
+  if (event.target.closest?.('input, textarea, select, .select-menu') && event.target !== src) return;
+  clearSearchLocation();
+});
 
 // Tutte le occorrenze dei termini nel testo ripiegato, in ordine e senza sovrapposizioni.
 function searchHits(folded, terms, limit = Infinity) {
@@ -27665,7 +27742,10 @@ function dashZonesWidget() {
 function sunTimes(date, lat, lon, h0 = -0.833) {
   const rad = Math.PI / 180;
   const noon = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 12);
-  const n = Math.ceil(noon / 864e5 + 2440587.5 - 2451545 + .0008);
+  // Giorno giuliano del mezzogiorno UTC (intero rispetto al 1° gennaio 2000 alle 12). Con
+  // Math.ceil(… + .0008) il numero passava al giorno dopo: alba e tramonto erano quelli di domani e
+  // di giorno il riquadro mostrava la notte (il sole non compariva mai sull'arco).
+  const n = Math.round(noon / 864e5 + 2440587.5 - 2451545);
   const meanNoon = n - lon / 360;
   const anomaly = (357.5291 + .98560028 * meanNoon) % 360;
   const center = 1.9148 * Math.sin(anomaly * rad) + .02 * Math.sin(2 * anomaly * rad) + .0003 * Math.sin(3 * anomaly * rad);
@@ -27704,6 +27784,12 @@ function dashDuration(ms) {
   const minutes = Math.round(Math.abs(ms) / 6e4);
   const hours = Math.floor(minutes / 60);
   return (hours ? hours + ' h ' : '') + (minutes % 60 || !hours ? minutes % 60 + ' min' : '').trim();
+}
+// Punto dell'arco del sole (curva di Bézier quadratica) per la frazione t del giorno.
+function dashSunPoint(t) {
+  const x = (1 - t) ** 2 * 14 + 2 * (1 - t) * t * 120 + t ** 2 * 226;
+  const y = (1 - t) ** 2 * 76 + 2 * (1 - t) * t * -22 + t ** 2 * 76;
+  return 'translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')';
 }
 function dashSunWidget() {
   return {
@@ -27752,16 +27838,22 @@ function dashSunWidget() {
       const today = sunTimes(now, lat, lon);
       const yesterday = sunTimes(addDays(now, -1), lat, lon);
       const civil = sunTimes(now, lat, lon, -6);
-      const svg = '<svg class="sun-arc" viewBox="0 0 240 92" aria-hidden="true"><defs><linearGradient id="sunSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sun-sky)" stop-opacity=".55"/><stop offset="1" stop-color="var(--sun-sky)" stop-opacity="0"/></linearGradient></defs>' +
+      const svg = '<svg class="sun-arc" viewBox="0 0 240 92" aria-hidden="true"><defs><linearGradient id="sunSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sun-sky)" stop-opacity=".55"/><stop offset="1" stop-color="var(--sun-sky)" stop-opacity="0"/></linearGradient>' +
+        '<radialGradient id="sunGlow"><stop offset=".3" stop-color="#ffd36a" stop-opacity=".9"/><stop offset=".62" stop-color="#ffb43a" stop-opacity=".35"/><stop offset="1" stop-color="#ff9d2e" stop-opacity="0"/></radialGradient></defs>' +
         '<path class="sun-fill" d="M14 76 Q120 -22 226 76 Z" fill="url(#sunSky)"/><path class="sun-path" d="M14 76 Q120 -22 226 76"/><line class="sun-horizon" x1="4" y1="76" x2="236" y2="76"/>';
-      let marker = '', state = 'night', countdown = '';
+      let marker = '', state = 'night', countdown = '', sunAt = null;
       if (today.rise) {
         const t = (now - today.rise) / (today.set - today.rise);
         if (t >= 0 && t <= 1) {
           state = 'day';
-          const x = (1 - t) ** 2 * 14 + 2 * (1 - t) * t * 120 + t ** 2 * 226;
-          const y = (1 - t) ** 2 * 76 + 2 * (1 - t) * t * -22 + t ** 2 * 76;
-          marker = '<circle class="sun-glow" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="13"/><circle class="sun-dot" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6.5"/>';
+          sunAt = t;
+          // Bagliore: pieno di giorno, attenuato vicino all'orizzonte (alba e tramonto), assente di notte.
+          const low = Math.min(t, 1 - t);
+          const glow = low >= .12 ? 1 : .25 + .75 * (low / .12);
+          const warm = low >= .12 ? 0 : 1 - low / .12;
+          marker = '<g class="sun-body" style="--sun-glow:' + glow.toFixed(2) + ';--sun-warm:' + Math.round(warm * 100) + '%" transform="' + dashSunPoint(t) + '">' +
+            '<circle class="sun-glow" r="17" fill="url(#sunGlow)"/><circle class="sun-dot" r="6.5"/></g>';
+          if (warm > .5) state = 'low';
           countdown = 'Il sole tramonta tra ' + dashDuration(today.set - now);
         } else {
           const tomorrow = sunTimes(addDays(now, 1), lat, lon);
@@ -27776,6 +27868,22 @@ function dashSunWidget() {
       const before = yesterday.rise ? yesterday.set - yesterday.rise : length;
       const change = Math.round((length - before) / 6e4);
       ctx.view.innerHTML = svg + marker + '</svg>';
+      // Al primo disegno il sole sale lungo l'arco dall'alba fino a dove si trova adesso.
+      const body = ctx.view.querySelector('.sun-body');
+      if (body && !ctx.s.sunRisen && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const start = performance.now(), span = 600 + 1200 * sunAt;
+        const step = time => {
+          if (!body.isConnected) return;
+          const k = Math.min(1, Math.max(0, (time - start) / span)), eased = 1 - (1 - k) ** 3;
+          body.setAttribute('transform', dashSunPoint(sunAt * eased));
+          if (k < 1) requestAnimationFrame(step);
+        };
+        body.setAttribute('transform', dashSunPoint(0));
+        requestAnimationFrame(step);
+        // Pannello nascosto (niente fotogrammi): il sole va comunque al suo posto.
+        setTimeout(() => body.isConnected && body.setAttribute('transform', dashSunPoint(sunAt)), span + 400);
+      }
+      if (body) ctx.s.sunRisen = true;
       const times = dashEl('div', 'sun-times');
       const cell = (label, date, iconName, note) => {
         const box = dashEl('div', 'sun-time');
@@ -40912,6 +41020,257 @@ function liveDeleteAtEnd(event) {
   pushLiveUndo(before);
   return true;
 }
+
+// ── Blocchi contenitore: Backspace e Canc ai bordi ──
+// Ammonimenti, schede, citazioni e riquadri, dettagli, note a piè di pagina, definizioni.
+// Ai bordi di questi blocchi Chrome univa le righe attraverso il bordo: il testo finiva nel
+// titolo dell'ammonimento, la riga dopo entrava nel blocco con <span style="font-size…">.
+// Regola: Backspace e Canc non uniscono mai attraverso il bordo. Spostano il cursore nel blocco
+// accanto, tolgono una riga vuota, e un blocco rimasto senza testo si cancella (resta una riga vuota).
+const blockContainers = '[data-ext="admonition"], [data-ext="tab"], blockquote, details, [data-ext="footnote"], dd';
+const blockOuters = '[data-ext="admonition"], [data-ext="tabs"], blockquote, details, [data-ext="footnote"], dl';
+const blockChrome = '[data-code-chrome], .callout-head, .fn-label, .tab-bar';
+const blockTitle = ':scope > [data-ext-part="title"], :scope > summary';
+const caretBlocks = 'p, li, h1, h2, h3, h4, h5, h6, dt, dd, summary, td, th';
+
+// Testo visibile (senza i comandi dei blocchi, che sono nell'editor ma non sono testo).
+function visibleBlockText(node) {
+  if (node.nodeType === Node.TEXT_NODE) return node.data.replaceAll(caretBoundary, '').replace(/﻿/g, '');
+  if (node.nodeType !== Node.ELEMENT_NODE && node.nodeType !== Node.DOCUMENT_FRAGMENT_NODE) return '';
+  const copy = node.cloneNode(true);
+  copy.querySelectorAll?.(blockChrome).forEach(chrome => chrome.remove());
+  return copy.textContent.replaceAll(caretBoundary, '').replace(/﻿/g, '');
+}
+function blockHasContent(node) {
+  if (node.nodeType !== Node.ELEMENT_NODE) return Boolean(visibleBlockText(node).trim());
+  if (node.matches(atomicBlocks) || node.querySelector(atomicBlocks + ', img, input, hr, [data-ext="fnref"]')) return true;
+  return Boolean(visibleBlockText(node).trim());
+}
+function blockContentChildren(container) {
+  return [...container.children].filter(child => !child.matches('[data-ext-part="title"], summary, ' + blockChrome));
+}
+function outerBlockOf(container) {
+  return container.matches('[data-ext="tab"]') ? container.closest('[data-ext="tabs"]') : container.matches('dd') ? container.closest('dl') : container;
+}
+
+// Il cursore (fermo) è all'inizio (side < 0) o alla fine (side > 0) dell'elemento.
+function caretAtBlockEdge(element, side) {
+  const selection = getSelection();
+  if (!selection.rangeCount || !selection.isCollapsed) return false;
+  const caret = selection.getRangeAt(0);
+  if (!element.contains(caret.startContainer)) return false;
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  if (side < 0) range.setEnd(caret.startContainer, caret.startOffset);
+  else range.setStart(caret.startContainer, caret.startOffset);
+  const part = range.cloneContents();
+  return !visibleBlockText(part).length && !part.querySelector(atomicBlocks + ', img, input, hr, [data-ext="fnref"]');
+}
+
+// Cursore nel blocco: alla fine (atEnd) o all'inizio; entra nei contenitori e nei riquadri.
+function caretIntoBlock(element, atEnd) {
+  if (!element) return false;
+  if (element.matches(atomicBlocks)) return enterAtomicBlock(element, atEnd ? -1 : 1);
+  if (element.matches('details:not([open])')) element = element.querySelector(':scope > summary') || element;
+  if (!element.matches(caretBlocks + ', [data-ext-part="title"]')) {
+    const children = [...element.children].filter(child => !child.matches(blockChrome) && !child.hidden && (child.matches('[data-ext="tab"]') ? child.hasAttribute('data-tab-active') : true));
+    const child = atEnd ? children.at(-1) : children[0];
+    if (child) return caretIntoBlock(child, atEnd);
+  }
+  // Ultimo (o primo) testo fuori dai comandi del blocco.
+  const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+    acceptNode: node => node.parentElement.closest(blockChrome) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+  });
+  let text = null;
+  while (walker.nextNode()) {
+    if (!walker.currentNode.data.trim() && !walker.currentNode.data.includes(caretBoundary)) continue;
+    if (!atEnd) { text = walker.currentNode; break; }
+    text = walker.currentNode;
+  }
+  ed.focus({ preventScroll: true });
+  if (text) placeCaret(text, atEnd ? text.data.length : 0);
+  else {
+    const chrome = element.querySelector(':scope > ' + blockChrome.split(', ').join(', :scope > '));
+    if (!element.hasChildNodes() || (element.childNodes.length === 1 && chrome)) element.prepend(document.createElement('br'));
+    placeCaret(element, atEnd && !chrome ? element.childNodes.length : 0);
+  }
+  const rect = element.getBoundingClientRect(), view = workspace.getBoundingClientRect();
+  if (rect.bottom < view.top + 60 || rect.top > view.bottom - 90) element.scrollIntoView({ block: 'nearest' });
+  return true;
+}
+
+// Toglie un blocco (o un contenitore) lasciando una riga vuota col cursore.
+function replaceWithEmptyLine(element) {
+  const line = Object.assign(document.createElement('p'), { innerHTML: '<br>' });
+  element.replaceWith(line);
+  placeCaret(line, 0);
+  return line;
+}
+
+function blockEdgeChange(event, change) {
+  event.preventDefault();
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  const changed = change();
+  if (changed === false) return true;
+  configureVisualContent();
+  pushLiveUndo(before);
+  mark();
+  queueOutline();
+  return true;
+}
+
+function blockEdgeKey(event) {
+  const backward = event.inputType === 'deleteContentBackward';
+  const selection = getSelection();
+  if (!selection.rangeCount || !selection.isCollapsed) return false;
+  const node = selection.anchorNode;
+  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  if (!element || !ed.contains(element) || element.closest('pre, .code-editor, td, th')) return false;
+  const side = backward ? -1 : 1;
+
+  // 1. Dentro un contenitore, al bordo del suo contenuto (o del titolo).
+  const container = element.closest(blockContainers);
+  if (container && ed.contains(container)) {
+    const child = [...container.children].find(item => item.contains(element));
+    const title = container.querySelector(blockTitle);
+    const allContents = blockContentChildren(container);
+    // Riquadro apribile chiuso: il contenuto nascosto non si raggiunge (né si cancella) dal titolo.
+    const contents = container.matches('details:not([open])') ? [] : allContents;
+    const outer = outerBlockOf(container);
+    // Un elenco all'inizio: prima esce la voce dall'elenco (come fuori dai blocchi).
+    if (child && !child.matches('ul, ol') && caretAtBlockEdge(child, side)) {
+      const isTitle = child === title;
+      const index = contents.indexOf(child);
+      const empty = !allContents.some(blockHasContent) && (!title || !visibleBlockText(title).trim());
+      // Tutto vuoto: via il blocco (anche una scheda sola, una nota, una definizione).
+      if (empty && (!container.matches('[data-ext="tab"], dd') || outer.querySelectorAll(container.matches('dd') ? 'dt, dd' : '[data-ext="tab"]').length <= (container.matches('dd') ? 2 : 1))) {
+        return blockEdgeChange(event, () => { replaceWithEmptyLine(outer); });
+      }
+      if (backward && (isTitle || index === 0 || (container.matches('dd') && index === 0))) {
+        // Riga vuota in testa al contenuto, con altro sotto: si toglie.
+        if (!isTitle && !blockHasContent(child) && contents.length > 1) {
+          return blockEdgeChange(event, () => { child.remove(); caretIntoBlock(title || contents[1], Boolean(title)); });
+        }
+        // Citazione semplice: la prima riga esce dalla citazione (come prima).
+        if (container.matches('blockquote:not([data-callout])')) return false;
+        event.preventDefault();
+        if (isTitle || !title) {
+          const previous = (container.matches('dd') ? container.previousElementSibling : null) || outer.previousElementSibling;
+          if (previous) caretIntoBlock(previous, true);
+        } else caretIntoBlock(title, true);
+        return true;
+      }
+      if (!backward && (index === contents.length - 1 || (isTitle && !contents.length))) {
+        if (!isTitle && !blockHasContent(child) && contents.length > 1) {
+          return blockEdgeChange(event, () => { child.remove(); caretIntoBlock(contents.at(-2), true); });
+        }
+        event.preventDefault();
+        const next = container.matches('dd') ? container.nextElementSibling || outer.nextElementSibling : outer.nextElementSibling;
+        if (next && next.matches('p') && !blockHasContent(next) && next.nextElementSibling) {
+          return blockEdgeChange(event, () => { next.remove(); });
+        }
+        if (next) caretIntoBlock(next, false);
+        return true;
+      }
+      if (!backward && isTitle && contents.length) {
+        event.preventDefault();
+        caretIntoBlock(contents[0], false);
+        return true;
+      }
+    }
+  }
+
+  // 2. Riga subito dopo (Backspace) o subito prima (Canc) di un contenitore.
+  const line = element.closest('p, h1, h2, h3, h4, h5, h6');
+  if (!line || line.matches('[data-ext-part]') || !ed.contains(line) || !caretAtBlockEdge(line, side)) return false;
+  const neighbour = backward ? line.previousElementSibling : line.nextElementSibling;
+  if (!neighbour?.matches(blockOuters)) return false;
+  if (!blockHasContent(line)) {
+    return blockEdgeChange(event, () => {
+      line.remove();
+      caretIntoBlock(neighbour, backward);
+    });
+  }
+  event.preventDefault();
+  caretIntoBlock(neighbour, backward);
+  return true;
+}
+// Invio nel titolo di un ammonimento o di un riquadro apribile: nuova riga all'inizio del
+// contenuto (prima nasceva un secondo «titolo» e quanto scritto lì spariva dal file).
+function blockTitleEnter(event) {
+  const selection = getSelection();
+  const node = selection.anchorNode;
+  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  const title = element?.closest('[data-ext-part="title"], summary');
+  const container = title?.parentElement;
+  if (!title || !ed.contains(title) || !container?.matches('[data-ext="admonition"], details')) return false;
+  return blockEdgeChange(event, () => {
+    if (!selection.isCollapsed) selection.deleteFromDocument();
+    if (container.matches('details')) container.open = true;
+    const first = blockContentChildren(container)[0];
+    let line = first?.matches('p') && !blockHasContent(first) ? first : null;
+    if (!line) {
+      line = Object.assign(document.createElement('p'), { innerHTML: '<br>' });
+      title.after(line);
+    }
+    placeCaret(line, 0);
+  });
+}
+ed.addEventListener('beforeinput', event => {
+  if (event.defaultPrevented || event.isComposing || !canEditVisual()) return;
+  if (event.inputType === 'insertParagraph' || event.inputType === 'insertLineBreak') blockTitleEnter(event);
+  if (event.inputType !== 'deleteContentBackward' && event.inputType !== 'deleteContentForward') return;
+  blockEdgeKey(event);
+}, true);
+
+// Il cursore è sulla prima (side < 0) o sull'ultima riga del testo del blocco (misurata sulle
+// righe vere: il bordo del blocco comprende i margini interni dei titoli e dei riquadri).
+function caretOnBlockLine(element, side) {
+  const selection = getSelection();
+  if (!selection.rangeCount || !selection.isCollapsed) return false;
+  const caret = selection.getRangeAt(0).getClientRects()[0];
+  if (!caret) return caretAtBlockEdge(element, side);
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  const rects = [...range.getClientRects()].filter(rect => rect.height);
+  if (!rects.length) return true;
+  const top = Math.min(...rects.map(rect => rect.top)), bottom = Math.max(...rects.map(rect => rect.bottom));
+  return side < 0 ? caret.top - top < caret.height / 2 : bottom - caret.bottom < caret.height / 2;
+}
+
+// Frecce: da un blocco contenitore in fondo (o in cima) al documento si esce su una riga nuova,
+// che sparisce se la si lascia vuota (come accanto ai riquadri). Prima il cursore restava dentro.
+ed.addEventListener('keydown', event => {
+  if (!canEditVisual() || event.isComposing || event.defaultPrevented || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return;
+  const key = event.key;
+  if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft'].includes(key) || event.target !== ed) return;
+  const selection = getSelection();
+  if (!selection.rangeCount || !selection.isCollapsed) return;
+  const node = selection.anchorNode;
+  const element = node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement;
+  const container = element?.closest(blockContainers);
+  if (!container || !ed.contains(container) || element.closest('pre, td, th')) return;
+  const side = key === 'ArrowDown' || key === 'ArrowRight' ? 1 : -1;
+  const outer = outerBlockOf(container);
+  if (side > 0 ? outer.nextElementSibling : outer.previousElementSibling) return;
+  // Il riferimento è il blocco di testo più interno al bordo (gli a capo tra i blocchi
+  // ingannerebbero il confronto): ultima riga del contenuto, o il titolo / la prima riga.
+  // Un riquadro apribile chiuso mostra solo il titolo.
+  let ref = container.matches('details:not([open])') ? container.querySelector(':scope > summary')
+    : side > 0 ? blockContentChildren(container).at(-1) : container.querySelector(blockTitle) || blockContentChildren(container)[0];
+  while (ref && !ref.matches(caretBlocks + ', [data-ext-part="title"]') && (side > 0 ? ref.lastElementChild : ref.firstElementChild)) ref = side > 0 ? ref.lastElementChild : ref.firstElementChild;
+  if (!ref || !ref.contains(element) && !element.contains(ref)) return;
+  const atEdge = key === 'ArrowDown' || key === 'ArrowUp' ? caretOnBlockLine(ref, side) : caretAtBlockEdge(ref, side);
+  if (!atEdge) return;
+  if (container.matches('dd') && side > 0 && container.nextElementSibling) return;
+  event.preventDefault();
+  const line = Object.assign(document.createElement('p'), { innerHTML: '<br>' });
+  if (side > 0) outer.after(line);
+  else outer.before(line);
+  parkingLines.add(line);
+  placeCaret(line, 0);
+  line.scrollIntoView({ block: 'nearest' });
+}, true);
 
 ed.addEventListener('beforeinput', event => {
   if (event.defaultPrevented || event.isComposing || !canEditVisual()) return;
