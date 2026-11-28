@@ -1244,6 +1244,15 @@ button.cal-item:hover { background: var(--tint); }
 .tm-track { stroke: color-mix(in srgb, var(--muted) 16%, transparent); }
 .tm-progress { stroke: var(--tm-tone); stroke-linecap: round; stroke-dasharray: 1000; transition: stroke-dashoffset 1s linear, stroke .3s; }
 .tm-time { position: relative; font: 650 clamp(26px, 9.5cqi, 32px)/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+button.tm-time { padding: 2px 6px; border: 0; border-radius: 8px; color: inherit; background: transparent; cursor: text; }
+button.tm-time:not(:disabled):hover { background: color-mix(in srgb, var(--tm-tone) 12%, transparent); }
+button.tm-time:disabled { opacity: 1; cursor: default; }
+input.tm-time-edit { width: 5.2em; padding: 2px 4px; border: 1px solid var(--tm-tone); border-radius: 8px; color: var(--ink); background: var(--paper); text-align: center; outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tm-tone) 18%, transparent); font-size: clamp(22px, 8cqi, 28px); }
+.tm-phases button small { margin-left: 4px; font-size: 10px; font-weight: 550; opacity: .75; }
+.tm-field { display: inline-flex; align-items: center; gap: 5px; }
+.tm-field input { width: 64px; height: 26px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--paper); font: 600 12.5px/1 var(--sans); font-variant-numeric: tabular-nums; text-align: right; }
+.tm-field input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent); }
+.tm-unit { color: var(--muted); font-size: 11.5px; }
 .tm-phase { position: relative; margin-top: 5px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
 .tm.running .tm-phase { color: color-mix(in srgb, var(--tm-tone) 80%, var(--ink)); }
 .tm-controls { display: flex; align-items: center; gap: 16px; }
@@ -1272,6 +1281,11 @@ button.cal-item:hover { background: var(--tint); }
 .timer-chip.paused .tc-time { opacity: .6; }
 .timer-chip[aria-expanded='true'] { box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 45%, transparent); }
 .timer-chip.ring { animation: tc-ring .5s ease-in-out 6; }
+.timer-chip.arriving { animation: tc-arrive .45s cubic-bezier(.3, 1.3, .5, 1); }
+@keyframes tc-arrive { from { opacity: 0; transform: translateY(6px) scale(.85); } }
+.timer-chip.done { --tc-progress: 1; }
+.timer-chip.leaving { opacity: 0; transform: scale(.85); transition: opacity .8s ease, transform .8s ease; }
+@media (prefers-reduced-motion: reduce) { .timer-chip.arriving { animation: none; } .timer-chip.leaving { transition: none; } }
 @keyframes tc-ring { 50% { transform: scale(1.12); } }
 .tc-emoji { font-size: 13px; }
 .timer-panel { width: min(320px, calc(100vw - 16px)); }
@@ -2420,7 +2434,8 @@ dialog::backdrop { background: var(--overlay); }
 .pr-slide.pr-cover { justify-content: center; }
 .pr-slide.pr-cover .pr-content { text-align: center; }
 #presentation .pr-cover .pr-content .pr-title { font-size: 2.6em; margin-bottom: .45em; }
-#presentation .pr-content p { margin: 0 0 .9em; color: inherit; font-size: inherit; }
+#presentation .pr-content p:not([data-ext-part]) { margin: 0 0 .9em; color: inherit; font-size: inherit; }
+#presentation .pr-content :is([data-ext="admonition"], blockquote, [data-ext="tab"], details) > p:last-child { margin-bottom: 0; }
 #presentation .pr-content :is(h1, h2, h3, h4, h5, h6) { font-family: var(--display); line-height: 1.2; color: var(--ink); }
 #presentation .pr-cover .pr-content > p { color: var(--muted); font-size: 1.15em; }
 #presentation .pr-content.editor { width: 100%; max-width: 48em; min-height: 0; margin: 0 auto; padding: 0; color: var(--copy); font-size: calc(var(--pr-fit) * clamp(17px, calc(1.1vw + 1.3vh), 38px)); line-height: 1.5; }
@@ -2451,6 +2466,14 @@ dialog::backdrop { background: var(--overlay); }
 .pr-clock { margin-right: 4px; padding: 2px 8px; border-radius: 999px; background: var(--tint); color: var(--accent-text); font-variant-numeric: tabular-nums; }
 .pr-clock:empty { display: none; }
 #presentation.is-full .pr-full .icon { transform: rotate(180deg); }
+.i-moon { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z'/%3E%3C/svg%3E"); }
+.i-theme-auto { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Cpath d='M12 4v16' /%3E%3Cpath d='M12 4a8 8 0 0 1 0 16z' fill='black'/%3E%3C/svg%3E"); }
+.i-laser { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='15.5' cy='8.5' r='2.6' fill='black'/%3E%3Cpath d='M13.3 10.7 4 20'/%3E%3Cpath d='M15.5 3v1.2M21 8.5h-1.2M19.4 4.6l-.9.9M19.4 12.4l-.9-.9'/%3E%3C/svg%3E"); }
+.pr-bar .icon-button[aria-pressed='true'] { color: #e5332a; background: color-mix(in srgb, #e5332a 12%, transparent); }
+.pr-laser-trail { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
+#presentation.laser-on .pr-stage, #presentation.laser-on .pr-stage * { cursor: none; }
+#presentation .pr-content .tab-bar { font-size: .62em; }
+#presentation .pr-content .tab-bar button { font-size: inherit; padding: .45em 1em; }
 .pr-overview { position: absolute; inset: 0; z-index: 4; display: flex; flex-direction: column; background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(6px); }
 .pr-overview[hidden] { display: none; }
 .pr-overview-head { display: flex; align-items: center; gap: 10px; padding: 18px 24px 8px; color: var(--muted); font: 13px var(--sans); }
@@ -18695,7 +18718,7 @@ function darkOnlyPalette() {
 function applyTheme() {
   const darkOnly = darkOnlyPalette();
   const dark = darkOnly || (preferredTheme ? preferredTheme === 'dark' : systemTheme.matches);
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  document.documentElement.dataset.theme = presentation?.theme || (dark ? 'dark' : 'light');
   $('themeToggle').setAttribute('aria-pressed', dark);
   $('themeToggle').disabled = darkOnly;
   $('themeToggle').title = darkOnly ? 'Il tema Natale è sempre scuro' : dark ? 'Passa al tema chiaro' : 'Passa al tema scuro';
@@ -20449,6 +20472,8 @@ const shortcutGroups = [
     ['Tutte le diapositive', 'G'],
     ['Schermo intero sì / no', 'F'],
     ['Schermo nero (un tasto qualsiasi per tornare)', 'B'],
+    ['Puntatore laser sì / no', 'L'],
+    ['Tema della presentazione: come Itaca, chiaro, scuro', 'T'],
     ['Esci dalla presentazione', 'Esc'],
   ]],
   ['Modifica', [
@@ -20630,6 +20655,7 @@ const glossaryMaterial = [
     ['Riquadro espandibile', '??? chiuso, ???+ aperto. Stessi tipi degli ammonimenti.', '??? tip "Approfondimento"\n    Si apre con un clic.\n\n???+ example "Esempio aperto"\n    Visibile subito.'],
     ['Schede', 'Più schede di seguito formano un gruppo; il contenuto di ognuna è rientrato.', '=== "Windows"\n\n    Apri il Prompt dei comandi.\n\n=== "macOS"\n\n    Apri il Terminale.'],
     ['Griglia di schede', 'Un elenco dentro <div class="grid cards" markdown> diventa una griglia di riquadri.', '<div class="grid cards" markdown>\n\n- :material-clock-fast: **Veloce**\n\n    Installazione in 5 minuti.\n\n- :material-scale-balance: **Libero**\n\n    Licenza MIT.\n\n</div>'],
+    ['Selezionare, spostare ed eliminare i blocchi', 'In Modifica, passando sopra un blocco compare la maniglia ⠿ a sinistra: un clic lo seleziona (anche Esc dal suo interno), trascinandola lo sposti dove vuoi, anche dentro un ammonimento o una scheda. Con il blocco selezionato: Canc elimina, Alt + ↑/↓ sposta, Ctrl/⌘ + D duplica, Ctrl/⌘ + C/X copia o taglia, F2 modifica. Ctrl/⌘ + Z annulla.', '!!! note "Dentro una scheda"\n    Un blocco può stare dentro un altro:\n    rientra il contenuto di 4 spazi.'],
     ['Didascalia', 'Il blocco /// caption subito dopo un’immagine o una tabella aggiunge la didascalia.', '![Pannello](_allegati/pannello.png)\n\n/// caption\nIl pannello di controllo\n///'],
   ]],
   ['Codice', [
@@ -20646,7 +20672,7 @@ const glossaryMaterial = [
   ['Note e definizioni', [
     ['Note a piè di pagina', 'Il richiamo [^n] nel testo; la nota, in qualsiasi punto, con [^n]: e il testo.', 'Una frase con una nota.[^1]\n\n[^1]: Il testo della nota.'],
     ['Annotazioni', '{ .annotate } dopo un paragrafo trasforma (1), (2)… in pulsanti che mostrano le voci dell’elenco numerato che segue.', 'Un testo con un’annotazione (1).\n{ .annotate }\n\n1.  Il contenuto dell’annotazione.'],
-    ['Abbreviazioni', 'Ogni occorrenza della sigla nel documento mostra la spiegazione al passaggio del puntatore.', 'Il formato HTML è ovunque.\n\n*[HTML]: Hyper Text Markup Language'],
+    ['Abbreviazioni', 'Valgono in tutto il documento: ogni volta che la sigla compare nel testo è sottolineata a puntini e mostra il significato passandoci sopra (o toccandola). Il blocco con le definizioni si vede solo in Modifica: Blocchi › Abbreviazione, o doppio clic sul blocco, apre la finestra per aggiungerle e cambiarle.', 'Il formato HTML è ovunque.\n\n*[HTML]: Hyper Text Markup Language'],
     ['Elenco di definizioni', 'Il termine su una riga, la definizione sotto preceduta da : e 3 spazi.', 'Markdown\n:   Linguaggio per scrivere testo formattato.'],
     ['Attributi', 'Tra graffe dopo l’elemento: #id per l’ancora, .classe, attributi come width per le immagini.', '## Installazione { #installa }\n\n![Logo](logo.png){ width="200" }'],
   ]],
@@ -24599,9 +24625,19 @@ $('trashButton')?.addEventListener('click', () => showTrash({ tab: 'trash', from
     }
     measure();
     sync();
+    if (typeof renderTimerViews === 'function' && $('timerChip')) {
+      delete $('timerChip').dataset.lifted;
+      renderTimerViews();
+    }
   };
   function storeLayout() {
     const value = { inside: [...items.children].map(child => child.id).filter(id => statusMovable.includes(id)), outside: outsideItems().map(child => child.id) };
+    // Il timer portato fuori solo mentre conta resta, per la disposizione, nel cassetto.
+    const lifted = $('timerChip');
+    if (lifted?.dataset.lifted !== undefined && value.outside.includes('timerChip')) {
+      value.outside = value.outside.filter(id => id !== 'timerChip');
+      value.inside.splice(Math.min(Number(lifted.dataset.lifted), value.inside.length), 0, 'timerChip');
+    }
     const same = JSON.stringify(value) === JSON.stringify(statusDefaultLayout);
     try { same ? localStorage.removeItem(statusLayoutKey) : localStorage.setItem(statusLayoutKey, JSON.stringify(value)); } catch {}
   }
@@ -26570,7 +26606,7 @@ function dashOptionRow(option) {
   }
   const label = dashEl('span', 'dp-label', option.label);
   if (option.type === 'node') {
-    row.classList.add('stacked');
+    row.classList.add(option.inline ? 'inline' : 'stacked');
     row.append(label, option.node);
     return row;
   }
@@ -28049,6 +28085,63 @@ function timerClock(ms) {
   const rest = String(Math.floor(seconds % 3600 / 60)).padStart(hours ? 2 : 1, '0') + ':' + String(seconds % 60).padStart(2, '0');
   return hours ? hours + ':' + rest : rest;
 }
+// Durata scritta a mano: «7» (minuti), «7:30», «1:20:00», «1h 20», «90 min», «45 s».
+function parseTimerDuration(text) {
+  const value = String(text).trim().toLowerCase().replace(',', '.');
+  if (!value) return null;
+  let ms = 0;
+  let match;
+  if ((match = /^(\d+):(\d{1,2})(?::(\d{1,2}))?$/.exec(value))) {
+    ms = match[3] !== undefined ? (+match[1] * 3600 + +match[2] * 60 + +match[3]) * 1000 : (+match[1] * 60 + +match[2]) * 1000;
+  } else if (/^\d+(\.\d+)?$/.test(value)) ms = parseFloat(value) * 6e4;
+  else if ((match = /^(\d+)\s*(?:h|ore|ora)\s*(?:e\s*)?(\d+)\s*(?:m|min|minuti|′|')?$/.exec(value))) ms = (+match[1] * 60 + +match[2]) * 6e4;
+  else {
+    const units = { h: 36e5, o: 36e5, m: 6e4, '′': 6e4, "'": 6e4, s: 1000, '″': 1000, '"': 1000 };
+    const parts = [...value.matchAll(/(\d+(?:\.\d+)?)\s*(h|ore|ora|o|min|minuti|minuto|m|′|'|sec|secondi|secondo|s|″|")/g)];
+    if (!parts.length || parts.map(part => part[0]).join('').replace(/\s/g, '') !== value.replace(/\s|e/g, '')) return null;
+    for (const part of parts) ms += parseFloat(part[1]) * units[part[2][0] === 'o' ? 'o' : part[2][0] === 'm' ? 'm' : part[2][0] === 's' ? 's' : part[2]];
+  }
+  return ms >= 1000 && ms <= 24 * 36e5 ? Math.round(ms / 1000) * 1000 : null;
+}
+// «25′», oppure «7:30» se ci sono anche i secondi.
+function timerMinutesLabel(minutes) {
+  return Number.isInteger(minutes) ? minutes + '′' : timerClock(minutes * 6e4);
+}
+// Cambia la durata della fase (o del timer) mostrata: vale subito se il tempo non è partito.
+function setTimerDuration(phase, minutes) {
+  const key = phase === 'work' ? 'work' : phase === 'short' ? 'short' : phase === 'long' ? 'long' : 'minutes';
+  timer[key] = minutes;
+  if (timer.phase === phase && !timer.running && timer.left === timer.total) timerSet(phase);
+  else if (timer.phase === phase && !timer.running) timerSet(phase);
+  storeTimer();
+  renderTimerViews();
+  for (const ctx of timerContexts()) dashRemount(ctx);
+}
+// Campo «minuti» per le opzioni (qualsiasi durata, non solo quelle proposte).
+function timerDurationOption(label, phase) {
+  const wrap = dashEl('span', 'tm-field');
+  const input = dashEl('input');
+  input.type = 'text';
+  input.inputMode = 'decimal';
+  input.setAttribute('aria-label', label + ' (minuti, oppure m:ss)');
+  input.title = 'Minuti (es. 25), oppure minuti e secondi (es. 7:30) · Invio per applicare';
+  const key = phase === 'work' ? 'work' : phase === 'short' ? 'short' : phase === 'long' ? 'long' : 'minutes';
+  const show = () => { input.value = Number.isInteger(timer[key]) ? String(timer[key]) : timerClock(timer[key] * 6e4); };
+  show();
+  const apply = () => {
+    const ms = parseTimerDuration(input.value);
+    if (!ms) return show();
+    if (ms / 6e4 !== timer[key]) setTimerDuration(phase, ms / 6e4);
+    show();
+  };
+  input.addEventListener('change', apply);
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); apply(); input.select(); }
+    else if (event.key === 'Escape' && input.value !== String(timer[key])) { event.preventDefault(); event.stopPropagation(); show(); }
+  });
+  wrap.append(input, dashEl('span', 'tm-unit', 'min'));
+  return { label, type: 'node', inline: true, node: wrap };
+}
 function timerSet(phase, start = false) {
   timer.phase = phase;
   timer.total = timer.left = timerPhaseMinutes(phase) * 6e4;
@@ -28098,6 +28191,7 @@ function timerFinish(natural) {
       next = timer.round % timer.every === 0 ? 'long' : 'short';
     } else next = 'work';
   }
+  if (natural && !(timer.auto && timer.mode === 'pomodoro')) timerShowDone(ended);
   timerSet(next, natural && timer.auto && timer.mode === 'pomodoro');
   if (!natural) return;
   timerChime();
@@ -28148,17 +28242,56 @@ function timerShown() {
 function timerContexts() {
   return [dashboard.widgets.get('timer'), timerPanelCtx].filter(ctx => ctx?.el?.isConnected);
 }
+// Mentre il timer conta l'icona sta nella barra anche se di solito è nel cassetto (o nascosta):
+// alla fine resta qualche secondo con «Finito» e poi svanisce, tornando dov'era.
+var timerDone = null;
+function placeTimerChip(chip, visible) {
+  const items = $('statusDrawerItems'), drawer = $('statusDrawer');
+  if (!items || !drawer) return;
+  if (visible && chip.parentElement === items) {
+    chip.dataset.lifted = String([...items.children].indexOf(chip));
+    drawer.after(chip);
+    chip.classList.remove('arriving');
+    void chip.offsetWidth;
+    chip.classList.add('arriving');
+  } else if (!visible && chip.dataset.lifted !== undefined) {
+    const index = Number(chip.dataset.lifted);
+    delete chip.dataset.lifted;
+    chip.classList.remove('arriving');
+    items.insertBefore(chip, items.children[index] || null);
+  }
+}
+function timerShowDone(ended) {
+  clearTimeout(timerDone?.timer);
+  timerDone = { phase: ended, timer: setTimeout(() => {
+    const chip = $('timerChip');
+    chip?.classList.add('leaving');
+    timerDone.timer = setTimeout(() => {
+      timerDone = null;
+      chip?.classList.remove('leaving');
+      renderTimerViews();
+    }, 900);
+  }, 7000) };
+}
 function renderTimerViews() {
   const chip = $('timerChip');
   if (chip) {
     const left = timerLeft();
     const busy = timer.running || left < timer.total;
-    chip.hidden = !timerShown() && !busy;
-    chip.classList.toggle('busy', busy);
+    if (busy && timerDone) {
+      clearTimeout(timerDone.timer);
+      timerDone = null;
+      chip.classList.remove('leaving');
+    }
+    const done = !busy && Boolean(timerDone);
+    placeTimerChip(chip, busy || done);
+    chip.hidden = !timerShown() && !busy && !done;
+    chip.classList.toggle('busy', busy || done);
+    chip.classList.toggle('done', done);
     chip.classList.toggle('paused', busy && !timer.running);
-    chip.dataset.phase = timer.phase;
-    chip.querySelector('.tc-emoji').textContent = busy ? timerEmoji() : '';
-    chip.querySelector('.tc-time').textContent = busy ? timerClock(left) : '';
+    chip.dataset.phase = done ? timerDone.phase : timer.phase;
+    chip.querySelector('.tc-emoji').textContent = busy ? timerEmoji() : done ? '✓' : '';
+    chip.querySelector('.tc-time').textContent = busy ? timerClock(left) : done ? 'Finito' : '';
     const label = busy ? (timer.mode === 'pomodoro' ? 'Pomodoro · ' + timerPhaseNames[timer.phase] : 'Timer') + ': ' + timerClock(left) + (timer.running ? '' : ' (in pausa)')
       : timer.mode === 'pomodoro' ? 'Pomodoro: ' + timer.work + ' minuti di lavoro e ' + timer.short + ' di pausa' : 'Timer';
     chip.title = label + '\nClic per i comandi del timer';
@@ -28242,10 +28375,11 @@ function dashTimerWidget() {
     id: 'timer', title: 'Timer', icon: 'timer', size: 1, sizes: [1, 2],
     desc: 'Pomodoro (25 minuti di lavoro e 5 di pausa) o un timer semplice',
     options: () => [
-      { label: 'Lavoro', choices: [15, 20, 25, 30, 45, 50].map(value => [value, value + '′']), get: () => timer.work, set: value => { timer.work = value; if (timer.phase === 'work' && !timer.running) timerSet('work'); storeTimer(); renderTimerViews(); } },
-      { label: 'Pausa', stacked: true, choices: [3, 5, 10].map(value => [value, value + '′']), get: () => timer.short, set: value => { timer.short = value; if (timer.phase === 'short' && !timer.running) timerSet('short'); storeTimer(); renderTimerViews(); } },
-      { label: 'Pausa lunga', choices: [10, 15, 20, 30].map(value => [value, value + '′']), get: () => timer.long, set: value => { timer.long = value; if (timer.phase === 'long' && !timer.running) timerSet('long'); storeTimer(); renderTimerViews(); } },
+      timerDurationOption('Lavoro', 'work'),
+      timerDurationOption('Pausa', 'short'),
+      timerDurationOption('Pausa lunga', 'long'),
       { label: 'Pausa lunga ogni … pomodori', choices: [3, 4, 5].map(value => [value, String(value), 'Pausa lunga ogni ' + value + ' pomodori']), get: () => timer.every, set: value => { timer.every = value; storeTimer(); renderTimerViews(); } },
+      timerDurationOption('Timer semplice', 'timer'),
       { label: 'Fase successiva da sola', type: 'switch', get: () => timer.auto, set: value => { timer.auto = value; storeTimer(); } },
       { label: 'Suono alla fine', type: 'switch', get: () => timer.sound, set: value => { timer.sound = value; storeTimer(); if (value) timerChime(); } },
     ],
@@ -28264,7 +28398,18 @@ function dashTimerWidget() {
       ring.setAttribute('aria-hidden', 'true');
       ring.innerHTML = '<circle class="tm-track" cx="60" cy="60" r="52"/><circle class="tm-progress" cx="60" cy="60" r="52" pathLength="1000"/>';
       const face = dashEl('div', 'tm-face');
-      face.append(ring, dashEl('span', 'tm-time'), dashEl('span', 'tm-phase'));
+      // Il tempo si cambia con un clic (fermo): qualsiasi durata, in entrambi i modi.
+      const time = dashEl('button', 'tm-time');
+      time.type = 'button';
+      time.onclick = () => editTimerFace(ctx, time);
+      time.addEventListener('wheel', event => {
+        if (timer.running || timer.left !== timer.total) return;
+        event.preventDefault();
+        const step = event.deltaY < 0 ? 1 : -1;
+        const minutes = Math.max(1, Math.round(timerPhaseMinutes() + step));
+        setTimerDuration(timer.phase, minutes);
+      }, { passive: false });
+      face.append(ring, time, dashEl('span', 'tm-phase'));
       if (timer.mode === 'pomodoro') face.append(dashEl('div', 'tm-rounds'));
       face.setAttribute('role', 'timer');
       const extra = dashEl('div', 'tm-extra');
@@ -28285,7 +28430,8 @@ function dashTimerWidget() {
       if (timer.mode === 'pomodoro') {
         const phases = dashEl('div', 'tm-phases');
         for (const phase of ['work', 'short', 'long']) {
-          const button = dashButton('', timerPhaseNames[phase], 'Passa a: ' + timerPhaseNames[phase].toLocaleLowerCase('it-IT') + ' (' + timerPhaseMinutes(phase) + ' minuti)', () => timerSet(phase));
+          const button = dashButton('', timerPhaseNames[phase], 'Passa a: ' + timerPhaseNames[phase].toLocaleLowerCase('it-IT') + ' (' + timerMinutesLabel(timerPhaseMinutes(phase)) + ') · la durata si cambia con un clic sul tempo', () => timerSet(phase));
+          button.append(dashEl('small', '', timerMinutesLabel(timerPhaseMinutes(phase))));
           button.dataset.phase = phase;
           phases.append(button);
         }
@@ -28313,13 +28459,47 @@ function dashTimerWidget() {
     },
   };
 }
+function editTimerFace(ctx, time) {
+  if (timer.running || timer.left !== timer.total) return;
+  const input = dashEl('input', 'tm-time tm-time-edit');
+  input.type = 'text';
+  input.inputMode = 'decimal';
+  input.value = timerClock(timer.total);
+  input.setAttribute('aria-label', 'Durata (minuti, m:ss o 1h 20)');
+  input.title = 'Scrivi i minuti (25), minuti e secondi (7:30) o ore (1h 20) · Invio per confermare, Esc per annullare';
+  let done = false;
+  const finish = apply => {
+    if (done) return;
+    done = true;
+    const ms = apply ? parseTimerDuration(input.value) : null;
+    if (apply && !ms && input.value.trim()) toast('Durata non valida: per esempio 25, 7:30 o 1h 20', 'warning');
+    input.replaceWith(time);
+    if (ms) setTimerDuration(timer.phase, ms / 6e4);
+    else dashTimerPaint(ctx);
+    (ctx.body.querySelector('.tm-time') || time).focus?.({ preventScroll: true });
+  };
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') { event.preventDefault(); finish(true); }
+    else if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); finish(false); }
+  });
+  input.addEventListener('blur', () => finish(true));
+  time.replaceWith(input);
+  input.focus();
+  input.select();
+}
 function dashTimerPaint(ctx) {
   const left = timerLeft();
   const wrap = ctx.body.querySelector('.tm');
   if (!wrap) return;
   wrap.dataset.phase = timer.phase;
   wrap.classList.toggle('running', timer.running);
-  ctx.body.querySelector('.tm-time').textContent = timerClock(left);
+  const time = ctx.body.querySelector('.tm-time');
+  if (time.tagName === 'BUTTON') {
+    time.textContent = timerClock(left);
+    const editable = !timer.running && left === timer.total;
+    time.disabled = !editable;
+    time.title = editable ? 'Clic per scegliere la durata (anche 7:30 o 1h 20) · rotella ±1 minuto' : '';
+  }
   ctx.body.querySelector('.tm-phase').textContent = timer.mode === 'timer' ? (timer.running ? 'in corso' : left < timer.total ? 'in pausa' : 'pronto') : timerPhaseNames[timer.phase] + (timer.running || left === timer.total ? '' : ' · pausa');
   ctx.body.querySelector('.tm-progress').style.strokeDashoffset = String(1000 * (1 - left / (timer.total || 1)));
   const main = ctx.body.querySelector('.tm-main');
@@ -35167,8 +35347,100 @@ function leaveInline(range, inline) {
   return tail;
 }
 
-function toggleCheckboxOnLine(task) {
+// Più righe selezionate: una casella per ognuna (prima solo la prima riga). Se le hanno già
+// tutte, le toglie. Le righe di un paragrafo con «a capo» diventano voci separate; le voci nuove
+// stanno in un solo elenco. Un solo Ctrl/⌘ + Z annulla tutto.
+function selectedCheckboxLines() {
+  const selection = getSelection();
+  if (!selection.rangeCount || selection.isCollapsed) return null;
+  const range = selection.getRangeAt(0);
+  if (!ed.contains(range.commonAncestorContainer) && range.commonAncestorContainer !== ed) return null;
+  const root = range.commonAncestorContainer.nodeType === Node.TEXT_NODE ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const texts = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!node.data.replaceAll(caretBoundary, '').trim() || !range.intersectsNode(node)) continue;
+    if (node === range.endContainer && range.endOffset === 0) continue;
+    if (node === range.startContainer && range.startOffset >= node.data.length && texts.length === 0) continue;
+    if (node.parentElement.closest('pre, [contenteditable="false"], [data-code-chrome], [data-ext-part="title"], summary')) continue;
+    texts.push(node);
+  }
+  return texts;
+}
+
+function splitParagraphAtBreaks(paragraph) {
+  const breaks = [...paragraph.childNodes].filter(node => node.nodeName === 'BR');
+  if (!breaks.length || (breaks.length === 1 && paragraph.lastChild === breaks[0])) return;
+  const parts = [];
+  let part = paragraph.cloneNode(false);
+  for (const node of [...paragraph.childNodes]) {
+    if (node.nodeName === 'BR') {
+      parts.push(part);
+      part = paragraph.cloneNode(false);
+    } else part.append(node);
+  }
+  parts.push(part);
+  paragraph.replaceWith(...parts.filter(item => item.textContent.replaceAll(caretBoundary, '').trim() || item.querySelector('img, input')));
+}
+
+function toggleCheckboxLines(task, texts) {
+  const before = { html: ed.innerHTML, caret: liveCaretPath() };
+  for (const node of texts) {
+    const line = checkboxLine(node);
+    if (line?.matches('p') && line.querySelector(':scope > br')) splitParagraphAtBreaks(line);
+  }
+  const lines = [...new Set(texts.map(node => checkboxLine(node)).filter(Boolean))];
+  const allHave = lines.every(line => checkboxesOnLine(line).length);
+  const changed = [];
+  for (const line of [...lines].reverse()) {
+    if (!line.isConnected || (!allHave && checkboxesOnLine(line).length)) {
+      if (line.isConnected) changed.unshift(line);
+      continue;
+    }
+    const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+    let first = null;
+    while (!first && walker.nextNode()) if (walker.currentNode.data.replaceAll(caretBoundary, '').trim()) first = walker.currentNode;
+    const caret = document.createRange();
+    if (first) caret.setStart(first, 0);
+    else caret.selectNodeContents(line);
+    caret.collapse(true);
+    selected = caret;
+    toggleCheckboxOnLine(task, true);
+    const done = checkboxLine(getSelection().anchorNode);
+    if (done) changed.unshift(done);
+  }
+  // Le voci nate da paragrafi vicini formano un solo elenco.
+  for (const list of [...ed.querySelectorAll('ul')]) {
+    const previous = list.previousElementSibling;
+    if (!list.isConnected || previous?.tagName !== 'UL' || !list.querySelector(':scope > li > input[data-task-checkbox]') ||
+      !previous.querySelector(':scope > li > input[data-task-checkbox]') || !lines.some(line => !line.isConnected || list.contains(line))) continue;
+    previous.append(...list.children);
+    list.remove();
+  }
+  configureVisualContent();
+  // Le righe restano selezionate: un altro clic toglie le caselle a tutte.
+  const first = changed.find(line => line.isConnected), last = changed.findLast(line => line.isConnected);
+  if (first && last) {
+    const range = document.createRange();
+    range.setStart(first, 0);
+    range.setEnd(last, last.childNodes.length);
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+    remember();
+  }
+  pushLiveUndo(before);
+  mark();
+  updateFormatButtons();
+}
+
+function toggleCheckboxOnLine(task, single = false) {
   if (!canEditVisual() || document.activeElement?.closest('pre')) return;
+  if (!single) {
+    restore();
+    const texts = selectedCheckboxLines();
+    if (texts?.length > 1 && (new Set(texts.map(node => checkboxLine(node))).size > 1 || checkboxLine(texts[0])?.querySelector(':scope > br'))) return toggleCheckboxLines(task, texts);
+  }
   restore();
   const selection = getSelection();
   const range = selection.getRangeAt(0).cloneRange();
@@ -39231,12 +39503,14 @@ function presentDialog() {
   dialog.setAttribute('aria-modal', 'true');
   dialog.tabIndex = -1;
   dialog.innerHTML = '<div class="pr-frame" tabindex="-1"><div class="pr-stage" aria-live="polite"></div><div class="pr-measure" aria-hidden="true"></div>' +
-    '<div class="pr-progress" aria-hidden="true"><i></i></div><div class="pr-blank" hidden></div>' +
+    '<div class="pr-progress" aria-hidden="true"><i></i></div><div class="pr-blank" hidden></div><canvas class="pr-laser-trail" aria-hidden="true"></canvas>' +
     '<nav class="pr-bar" aria-label="Comandi della presentazione">' +
     '<button type="button" class="icon-button pr-prev" title="Diapositiva precedente (←)" aria-label="Diapositiva precedente"><i class="icon i-arrow-left" aria-hidden="true"></i></button>' +
     '<span class="pr-count"></span>' +
     '<button type="button" class="icon-button pr-next" title="Diapositiva successiva (→ o Spazio)" aria-label="Diapositiva successiva"><i class="icon i-arrow-right" aria-hidden="true"></i></button>' +
     '<span class="pr-where"></span><span class="pr-clock" title="Tempo dall’inizio"></span>' +
+    '<button type="button" class="icon-button pr-laser" title="Puntatore laser (L)" aria-label="Puntatore laser" aria-pressed="false"><i class="icon i-laser" aria-hidden="true"></i></button>' +
+    '<button type="button" class="icon-button pr-theme" title="Tema della presentazione (T)" aria-label="Tema della presentazione"><i class="icon i-sun" aria-hidden="true"></i></button>' +
     '<button type="button" class="icon-button pr-grid" title="Tutte le diapositive (G)" aria-label="Tutte le diapositive"><i class="icon i-widgets" aria-hidden="true"></i></button>' +
     '<button type="button" class="icon-button pr-full" title="Schermo intero (F)" aria-label="Schermo intero"><i class="icon i-expand" aria-hidden="true"></i></button>' +
     '<button type="button" class="icon-button pr-exit" title="Esci dalla presentazione (Esc)" aria-label="Esci dalla presentazione"><i class="icon i-close" aria-hidden="true"></i></button>' +
@@ -39248,6 +39522,10 @@ function presentDialog() {
   q('.pr-grid').onclick = () => presentOverview(true);
   q('.pr-overview-close').onclick = () => presentOverview(false);
   q('.pr-full').onclick = presentToggleFullscreen;
+  q('.pr-laser').onclick = () => presentSetLaser(!presentation?.laser);
+  q('.pr-theme').onclick = presentCycleTheme;
+  dialog.addEventListener('pointermove', presentLaserMove);
+  dialog.addEventListener('pointerleave', () => presentLaserMove(null));
   q('.pr-exit').onclick = () => closePresentation();
   dialog.addEventListener('cancel', event => {
     event.preventDefault();
@@ -39301,8 +39579,31 @@ function presentDialog() {
 // dell'editor, con immagini, codice colorato e caselle.
 async function presentContent(path) {
   const article = document.createElement('div');
-  article.append(pdfContent());
-  for (const element of article.querySelectorAll('[data-code-chrome], select, button, .media-notes, .table-filter, [data-caret-boundary], .md-suggest, .pdf-selection-ring')) element.remove();
+  // Come in Lettura: stesse intestazioni dei riquadri, schede con la loro barra, diagrammi
+  // disegnati (prima la copia per la stampa toglieva tutte le «cromature» e i blocchi non erano
+  // uguali al documento).
+  if (sourceMode) article.append(pdfContent());
+  else {
+    const snapshot = editorForMarkdown();
+    article.append(...(snapshot === ed ? ed.cloneNode(true) : snapshot).childNodes);
+    for (const block of article.querySelectorAll('pre')) {
+      const diagram = block.querySelector('.diagram-view');
+      if (diagram?.querySelector('svg, img')) {
+        diagram.removeAttribute('data-code-chrome');
+        block.replaceWith(diagram);
+        continue;
+      }
+      const code = block.querySelector('.code-scroll code');
+      if (code) block.replaceChildren(code);
+    }
+    for (const image of article.querySelectorAll('img[data-src]')) {
+      image.removeAttribute('src');
+      image.classList.remove('missing', 'search-image-match');
+    }
+    for (const frame of article.querySelectorAll('[data-ext="pdf"] .pdf-frame')) frame.remove();
+  }
+  for (const element of article.querySelectorAll('.adm-tools, .code-block-header, .code-gutter, textarea, select, button:not(.tab-bar button), .media-notes, .table-filter, [data-caret-boundary], .md-suggest, .pdf-selection-ring, [data-ext="abbrdefs"], [data-ext="attrs"]')) element.remove();
+  for (const group of article.querySelectorAll('[data-ext="tabs"]')) decorateTabs(group, false);
   for (const element of article.querySelectorAll('[contenteditable]')) element.removeAttribute('contenteditable');
   for (const table of article.querySelectorAll('table')) table.removeAttribute('data-grid'), table.removeAttribute('data-wide');
   for (const code of article.querySelectorAll('pre code')) renderHighlightedCode(code, code.textContent, codeLanguage(code));
@@ -39588,6 +39889,14 @@ function presentKey(event) {
     return;
   }
   if (event.target.closest?.('.pr-bar button') && (key === 'Enter' || key === ' ')) return;
+  if (key === 'l' || key === 'L') {
+    event.preventDefault();
+    return presentSetLaser(!p.laser);
+  }
+  if (key === 't' || key === 'T') {
+    event.preventDefault();
+    return presentCycleTheme();
+  }
   const slide = dialog.querySelector('.pr-stage .pr-slide');
   const scrolls = slide && slide.scrollHeight > slide.clientHeight + 2;
   const next = ['ArrowRight', 'PageDown', 'Enter', 'n', 'N'].includes(key) || key === ' ' && !event.shiftKey || key === 'ArrowDown' && !scrolls;
@@ -39732,13 +40041,20 @@ async function openPresentation() {
   dialog.querySelector('.pr-stage').replaceChildren(Object.assign(document.createElement('p'), { className: 'pr-loading', textContent: 'Preparazione della presentazione…' }));
   dialog.querySelector('.pr-overview').hidden = true;
   dialog.querySelector('.pr-blank').hidden = true;
-  presentation = { path, index: 0, started: Date.now(), urls: [], ready: false, wasFull: false };
+  presentation = { path, index: 0, started: Date.now(), urls: [], ready: false, wasFull: false, laser: false, theme: '' };
+  const options = presentOptions();
+  presentApplyTheme(options.theme);
+  presentSetLaser(options.laser, false);
   dialog.show();
   $('app').inert = true;
   dialog.querySelector('.pr-frame').focus();
   // Schermo intero subito, nel gesto (dopo il caricamento delle immagini il browser lo rifiuterebbe).
   presentRequestFullscreen();
   try {
+    // Senza modifiche in sospeso si presenta la versione salvata sul disco: se il file è cambiato
+    // fuori da qui (un collega, un altro programma, git) prima si vedeva quella vecchia finché
+    // non si riapriva il documento.
+    if (!dirty && !pendingNewDocument) await followDiskChanges(true);
     const { blocks, urls } = await presentContent(path);
     if (!presentation || presentation.path !== path) {
       for (const url of urls) URL.revokeObjectURL(url);
@@ -39780,6 +40096,9 @@ function closePresentation() {
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   if (dialog.open) dialog.close();
   $('app').inert = false;
+  if (p.theme) applyTheme();
+  dialog.classList.remove('laser-on');
+  presentLaserMove(null);
   dialog.querySelector('.pr-stage').replaceChildren();
   dialog.querySelector('.pr-measure').replaceChildren();
   dialog.querySelector('.pr-cards').replaceChildren();
@@ -39792,6 +40111,114 @@ function closePresentation() {
     if (heading) setTimeout(() => heading.scrollIntoView({ block: 'start' }), 30);
     else if (p.index === 0) workspace.scrollTop = 0;
   }
+}
+
+
+// ── Presentazione: puntatore laser e tema chiaro/scuro (scelte ricordate) ──
+// Il laser è un punto rosso con una scia breve, disegnato su una tela sopra le diapositive solo
+// mentre il mouse si muove (fermo resta il punto). Il tema della presentazione può essere
+// diverso da quello di Itaca: «come Itaca», chiaro o scuro; uscendo torna quello di prima.
+const presentOptionsKey = 'itaca-present-options';
+function presentOptions() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(presentOptionsKey) || '{}');
+    return { laser: saved.laser === true, theme: ['light', 'dark'].includes(saved.theme) ? saved.theme : '' };
+  } catch {
+    return { laser: false, theme: '' };
+  }
+}
+function storePresentOptions(change) {
+  try { localStorage.setItem(presentOptionsKey, JSON.stringify({ ...presentOptions(), ...change })); } catch {}
+}
+function presentApplyTheme(theme) {
+  if (!presentation) return;
+  presentation.theme = theme;
+  applyTheme();
+  const button = presentDialog().querySelector('.pr-theme');
+  const names = { '': 'come Itaca', light: 'chiaro', dark: 'scuro' };
+  button.title = 'Tema della presentazione: ' + names[theme] + ' (T per cambiarlo)';
+  button.dataset.theme = theme || 'auto';
+  button.querySelector('.icon').className = 'icon ' + (theme === 'dark' ? 'i-moon' : theme === 'light' ? 'i-sun' : 'i-theme-auto');
+}
+function presentCycleTheme() {
+  if (!presentation) return;
+  const order = ['', 'light', 'dark'];
+  const next = order[(order.indexOf(presentation.theme) + 1) % order.length];
+  presentApplyTheme(next);
+  storePresentOptions({ theme: next });
+  toast('Tema della presentazione: ' + ({ '': 'come Itaca', light: 'chiaro', dark: 'scuro' })[next]);
+}
+function presentSetLaser(on, remember = true) {
+  if (!presentation) return;
+  presentation.laser = on;
+  const dialog = presentDialog();
+  dialog.classList.toggle('laser-on', on);
+  const button = dialog.querySelector('.pr-laser');
+  button.setAttribute('aria-pressed', String(on));
+  button.title = on ? 'Togli il puntatore laser (L)' : 'Puntatore laser (L)';
+  if (!on) presentLaserMove(null);
+  if (remember) storePresentOptions({ laser: on });
+}
+var presentLaser = { points: [], frame: 0, x: null, y: null };
+function presentLaserMove(event) {
+  const canvas = $('presentation')?.querySelector('.pr-laser-trail');
+  if (!canvas) return;
+  if (!event || !presentation?.laser || event.target.closest?.('.pr-bar, .pr-overview')) {
+    presentLaser.points = [];
+    presentLaser.x = null;
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const ratio = devicePixelRatio || 1;
+  if (canvas.width !== Math.round(rect.width * ratio) || canvas.height !== Math.round(rect.height * ratio)) {
+    canvas.width = Math.round(rect.width * ratio);
+    canvas.height = Math.round(rect.height * ratio);
+  }
+  presentLaser.x = event.clientX - rect.left;
+  presentLaser.y = event.clientY - rect.top;
+  presentLaser.points.push({ x: presentLaser.x, y: presentLaser.y, t: performance.now() });
+  if (!presentLaser.frame) presentLaser.frame = requestAnimationFrame(drawPresentLaser);
+}
+function drawPresentLaser() {
+  presentLaser.frame = 0;
+  const canvas = $('presentation')?.querySelector('.pr-laser-trail');
+  if (!canvas || presentLaser.x === null) return;
+  const context = canvas.getContext('2d');
+  const ratio = devicePixelRatio || 1;
+  const now = performance.now();
+  const life = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220;
+  presentLaser.points = presentLaser.points.filter(point => now - point.t < life);
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.lineCap = 'round';
+  context.lineJoin = 'round';
+  const points = presentLaser.points;
+  for (let index = 1; index < points.length; index++) {
+    const age = 1 - (now - points[index].t) / life;
+    context.strokeStyle = 'rgba(255, 40, 40, ' + (age * .55).toFixed(3) + ')';
+    context.lineWidth = 2 + 6 * age;
+    context.beginPath();
+    context.moveTo(points[index - 1].x, points[index - 1].y);
+    context.lineTo(points[index].x, points[index].y);
+    context.stroke();
+  }
+  const glow = context.createRadialGradient(presentLaser.x, presentLaser.y, 0, presentLaser.x, presentLaser.y, 22);
+  glow.addColorStop(0, 'rgba(255, 70, 60, .55)');
+  glow.addColorStop(1, 'rgba(255, 40, 40, 0)');
+  context.fillStyle = glow;
+  context.beginPath();
+  context.arc(presentLaser.x, presentLaser.y, 22, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = '#ff2b2b';
+  context.beginPath();
+  context.arc(presentLaser.x, presentLaser.y, 5.5, 0, Math.PI * 2);
+  context.fill();
+  context.fillStyle = 'rgba(255, 235, 230, .9)';
+  context.beginPath();
+  context.arc(presentLaser.x - 1.2, presentLaser.y - 1.2, 1.8, 0, Math.PI * 2);
+  context.fill();
+  if (points.length) presentLaser.frame = requestAnimationFrame(drawPresentLaser);
 }
 
 $('presentDocument').onclick = openPresentation;
